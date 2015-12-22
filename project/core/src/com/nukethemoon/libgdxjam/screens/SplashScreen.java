@@ -5,18 +5,18 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.nukethemoon.libgdxjam.App;
 
 public class SplashScreen implements Screen {
 
 	private SpriteBatch batch;
-	private TextureAtlas textureAtlas;
+
 	private Sprite ntmLogo;
 
 	public SplashScreen() {
-		textureAtlas = new TextureAtlas("textures/game.atlas");
+
 		batch = new SpriteBatch();
-		ntmLogo = new Sprite(textureAtlas.findRegion("ntm_logo"));
+		ntmLogo = new Sprite(App.TEXTURES.findRegion("ntm_logo"));
 	}
 
 	@Override
@@ -55,7 +55,6 @@ public class SplashScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		textureAtlas.dispose();
 		batch.dispose();
 	}
 }

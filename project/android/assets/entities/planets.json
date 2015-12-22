@@ -1,0 +1,19 @@
+{
+
+  "planets" : [
+
+	{
+	  "id" : "palnet01",
+	  "solarViewTexture" : "planet01Texture",
+	  "solarViewRadius" : 10,
+
+	  "planetProperties" : {
+		"seed": "234829347.2342438",
+		"jsonDefinition": "planet01.json"
+	  }
+	}
+
+
+  ]
+
+}

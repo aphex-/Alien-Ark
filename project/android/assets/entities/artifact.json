@@ -1,0 +1,28 @@
+{
+  "artefact" : [
+
+	{
+	  "id" : "artefact01",
+	  "type" : "attribute",
+	  "data" : "speed",
+	  "texture" : "artefact01Texture"
+	},
+
+	{
+	  "id" : "artefact02",
+	  "type" : "operator",
+	  "data" : "plus",
+	  "texture" : "artefact01Texture"
+	},
+
+	{
+	  "id" : "artefact03",
+	  "type" : "value",
+	  "data" : 100,
+	  "texture" : "artefact01Texture"
+	}
+
+  ]
+
+
+}

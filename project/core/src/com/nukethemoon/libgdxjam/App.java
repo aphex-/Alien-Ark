@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.nukethemoon.libgdxjam.input.InputController;
 import com.nukethemoon.libgdxjam.screens.MenuScreen;
@@ -17,6 +18,7 @@ public class App extends Game {
 	private static Skin UI_SKIN;
 	private static InputMultiplexer MULTIPLEXER;
 	private static App app;
+	public static TextureAtlas TEXTURES;
 
 	private static Map<Class<? extends Screen>, ? extends Screen> SCREENS = new HashMap<Class<? extends Screen>, Screen>();
 
@@ -28,6 +30,11 @@ public class App extends Game {
 		MULTIPLEXER.addProcessor(new InputController());
 		Gdx.input.setInputProcessor(MULTIPLEXER);
 		UI_SKIN = new Skin(Gdx.files.internal(Config.UI_SKIN_PATH));
+
+		TEXTURES = new TextureAtlas("textures/game.atlas");
+
+		// instance space ship
+		// load game entities
 
 		openScreen(SplashScreen.class);
 	}
