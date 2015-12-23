@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.nukethemoon.libgdxjam.input.InputController;
 import com.nukethemoon.libgdxjam.screens.MenuScreen;
+import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
 import com.nukethemoon.libgdxjam.screens.SplashScreen;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
 
@@ -37,7 +38,8 @@ public class App extends Game {
 		// instance space ship
 		// load game entities
 
-		openScreen(SplashScreen.class);
+		// openScreen(SplashScreen.class);
+		openPlanetScreen();
 	}
 
 
@@ -47,15 +49,15 @@ public class App extends Game {
 
 		}*/
 
-		/*MenuScreen menuScreen = new MenuScreen(UI_SKIN, MULTIPLEXER);
+		MenuScreen menuScreen = new MenuScreen(UI_SKIN, MULTIPLEXER);
 		menuScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		app.setScreen(menuScreen);
-		*/
+	}
 
-		PlanetScreen planetScreen = new PlanetScreen();
-		planetScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		app.setScreen(planetScreen);
-
+	private static void openPlanetScreen() {
+		PlanetScreen screen = new PlanetScreen(UI_SKIN, MULTIPLEXER);
+		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		app.setScreen(screen);
 	}
 
 
