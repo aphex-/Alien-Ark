@@ -1,4 +1,6 @@
 package com.nukethemoon.libgdxjam.game;
 
-public class Artifact {
+
+public abstract class Artifact {
+
 }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Log;
+import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.input.InputController;
 import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
 
@@ -159,7 +160,8 @@ public class PlanetScreen implements Screen {
 
     @Override
     public void resume() {
-
+        SpaceShipProperties.testInit();
+        SpaceShipProperties.computeSpeedPerUnit();
     }
 
     @Override
