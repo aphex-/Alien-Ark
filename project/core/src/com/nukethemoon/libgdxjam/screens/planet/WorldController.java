@@ -30,16 +30,17 @@ public class WorldController implements ChunkListener {
 			// add a callback to receive chunks
 			opus.addChunkListener(WorldController.this);
 
-			List<Vector2> positions = new ArrayList<Vector2>();
-			positions.add(new Vector2(0, 0));
-			requestChunks(positions);
+			requestChunks(	new Vector2(0, 0),
+							new Vector2(-1, 0),
+							new Vector2(1, 0));
+
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void requestChunks(List<Vector2> chunkCoordinates) throws ExecutionException, InterruptedException {
+	public void requestChunks(Vector2... chunkCoordinates) {
 		List<Vector2> requestList = new ArrayList<Vector2>();
 		for (Vector2 coordinate : chunkCoordinates) {
 			if (chunkMeshes.get(coordinate) == null) {
@@ -53,7 +54,15 @@ public class WorldController implements ChunkListener {
 				xCoordinates[i] = (int) requestList.get(i).x;
 				yCoordinates[i] = (int) requestList.get(i).y;
 			}
-			opus.requestChunks(xCoordinates, yCoordinates);
+
+			try {
+				opus.requestChunks(xCoordinates, yCoordinates);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+
 		}
 	}
 
@@ -73,5 +82,9 @@ public class WorldController implements ChunkListener {
 			ChunkGraphic mesh = entry.getValue();
 			batch.render(mesh.getModelInstance());
 		}
+	}
+
+	public int getChunkSize() {
+		return opus.getConfig().mapSize;
 	}
 }

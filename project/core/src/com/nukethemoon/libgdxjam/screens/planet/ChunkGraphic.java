@@ -1,13 +1,10 @@
 package com.nukethemoon.libgdxjam.screens.planet;
 
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -20,7 +17,7 @@ public class ChunkGraphic {
 
 
 	private static final float RECT_SIZE = 1;
-	private static final float MAX_HEIGHT = 1;
+	private static final float MAX_HEIGHT = 5;
 
 	private final ModelInstance modelInstance;
 	private final ShaderProgram shaderProgram;
@@ -28,6 +25,7 @@ public class ChunkGraphic {
 
 	public ChunkGraphic(Chunk chunk) {
 
+		MaterialInterpreter materialInterpreter = new MaterialInterpreter();
 		MeshBuilder meshBuilder = new MeshBuilder();
 
 		shaderProgram = new ShaderProgram(
@@ -45,11 +43,11 @@ public class ChunkGraphic {
 		ModelBuilder mob = new ModelBuilder();
 		mob.begin();
 
-		for (int y = 0; y < chunk.getHeight(); y++) {
-			for (int x = 0; x < chunk.getWidth(); x++) {
+		for (int y = 0; y < Math.abs(chunk.getHeight()); y++) {
+			for (int x = 0; x < Math.abs(chunk.getWidth()); x++) {
 				meshBuilder.begin(usage, GL20.GL_TRIANGLES);
 
-				float height = chunk.getAbsolute(x, y, 0);
+				float height = chunk.getRelative(x, y, 0);
 
 				Vector3 corner01 = new Vector3(
 						RECT_SIZE * x,
@@ -73,13 +71,16 @@ public class ChunkGraphic {
 
 				meshBuilder.rect(corner01, corner02, corner03, corner04, new Vector3(0, 0, 1));
 
-				Material material = new Material(ColorAttribute.createDiffuse(Color.RED),
-						ColorAttribute.createSpecular(1, 1, 1, 1),
-						FloatAttribute.createShininess(8f));
+				Material material = materialInterpreter.getMaterial(height);
+
 				mob.part("mesh1", meshBuilder.end(), GL20.GL_TRIANGLES, material);
 			}
 		}
 		modelInstance = new ModelInstance(mob.end());
+		modelInstance.transform.translate(
+				chunk.getChunkX() * chunk.getWidth(),
+				chunk.getChunkY() * chunk.getHeight(),
+				0);
 	}
 
 

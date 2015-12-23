@@ -80,6 +80,7 @@ public class DebugCameraInput implements InputProcessor {
 
 	@Override
 	public boolean scrolled(int amount) {
+		camera.position.z = camera.position.z + amount;
 		return false;
 	}
 }
