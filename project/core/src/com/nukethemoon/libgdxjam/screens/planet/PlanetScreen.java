@@ -71,9 +71,6 @@ public class PlanetScreen implements Screen {
 		modelBatch.end();
 
 
-		//world.render(delta, cam.combined);
-
-
 	}
 
 	@Override

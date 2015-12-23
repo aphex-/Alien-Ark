@@ -19,8 +19,8 @@ import com.nukethemoon.tools.opusproto.region.Chunk;
 public class ChunkGraphic {
 
 
-	private static final float RECT_SIZE = 5;
-	private static final float MAX_HEIGHT = 5;
+	private static final float RECT_SIZE = 1;
+	private static final float MAX_HEIGHT = 1;
 
 	private final ModelInstance modelInstance;
 	private final ShaderProgram shaderProgram;
@@ -35,7 +35,7 @@ public class ChunkGraphic {
 				new FileHandle("shaders/default.fragment.glsl"));
 
 		if (Config.DEBUG && !shaderProgram.isCompiled()) {
-			Log.l(LayerMesh.class, "Shader log " + shaderProgram.getLog());
+			Log.l(ChunkGraphic.class, "Shader log " + shaderProgram.getLog());
 		}
 
 		int usage = VertexAttributes.Usage.Position
@@ -79,10 +79,7 @@ public class ChunkGraphic {
 				mob.part("mesh1", meshBuilder.end(), GL20.GL_TRIANGLES, material);
 			}
 		}
-
-
 		modelInstance = new ModelInstance(mob.end());
-
 	}
 
 
