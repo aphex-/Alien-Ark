@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.nukethemoon.libgdxjam.input.InputController;
 import com.nukethemoon.libgdxjam.screens.MenuScreen;
 import com.nukethemoon.libgdxjam.screens.SplashScreen;
+import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,9 +47,15 @@ public class App extends Game {
 
 		}*/
 
-		MenuScreen menuScreen = new MenuScreen(UI_SKIN, MULTIPLEXER);
+		/*MenuScreen menuScreen = new MenuScreen(UI_SKIN, MULTIPLEXER);
 		menuScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		app.setScreen(menuScreen);
+		*/
+
+		PlanetScreen planetScreen = new PlanetScreen();
+		planetScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		app.setScreen(planetScreen);
+
 	}
 
 

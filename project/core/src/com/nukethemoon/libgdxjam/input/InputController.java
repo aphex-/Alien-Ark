@@ -1,5 +1,7 @@
 package com.nukethemoon.libgdxjam.input;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.Log;
@@ -8,10 +10,11 @@ public class InputController implements InputProcessor {
 
 	@Override
 	public boolean keyDown(int keycode) {
-		if (Config.DEBUG) {
+		boolean result = Gdx.input.isKeyPressed(keycode);
+		if (Config.DEBUG && result) {
 			Log.l(InputController.class, "key down " + keycode);
 		}
-		return false;
+		return result;
 	}
 
 	@Override
