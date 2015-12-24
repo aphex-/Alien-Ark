@@ -1,15 +1,12 @@
 package com.nukethemoon.libgdxjam.screens.planet;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
-import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.tools.opusproto.region.Chunk;
 
@@ -20,21 +17,16 @@ public class ChunkGraphic {
 	private static final float MAX_HEIGHT = 5;
 
 	private final ModelInstance modelInstance;
-	private final ShaderProgram shaderProgram;
+
+	private static MaterialInterpreter interpreter = new MaterialInterpreter();
 
 
 	public ChunkGraphic(Chunk chunk) {
 
-		MaterialInterpreter materialInterpreter = new MaterialInterpreter();
+		long l = System.currentTimeMillis();
+
+
 		MeshBuilder meshBuilder = new MeshBuilder();
-
-		shaderProgram = new ShaderProgram(
-				new FileHandle("shaders/default.vertex.glsl"),
-				new FileHandle("shaders/default.fragment.glsl"));
-
-		if (Config.DEBUG && !shaderProgram.isCompiled()) {
-			Log.l(ChunkGraphic.class, "Shader log " + shaderProgram.getLog());
-		}
 
 		int usage = VertexAttributes.Usage.Position
 				| VertexAttributes.Usage.ColorUnpacked
@@ -71,7 +63,7 @@ public class ChunkGraphic {
 
 				meshBuilder.rect(corner01, corner02, corner03, corner04, new Vector3(0, 0, 1));
 
-				Material material = materialInterpreter.getMaterial(height);
+				Material material = interpreter.getMaterial(height);
 
 				mob.part("mesh1", meshBuilder.end(), GL20.GL_TRIANGLES, material);
 			}
@@ -81,6 +73,11 @@ public class ChunkGraphic {
 				chunk.getChunkX() * chunk.getWidth(),
 				chunk.getChunkY() * chunk.getHeight(),
 				0);
+
+
+		long now = System.currentTimeMillis();
+
+		Log.l(ChunkGraphic.class, "Created Chunk Graphic x " + chunk.getChunkX() + " y " + chunk.getChunkY() + " in " + (now - l) + " millis.");
 	}
 
 

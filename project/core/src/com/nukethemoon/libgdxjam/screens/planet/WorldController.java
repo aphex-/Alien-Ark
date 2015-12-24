@@ -40,6 +40,8 @@ public class WorldController implements ChunkListener {
 		}
 	}
 
+
+
 	public void requestChunks(Vector2... chunkCoordinates) {
 		List<Vector2> requestList = new ArrayList<Vector2>();
 		for (Vector2 coordinate : chunkCoordinates) {
@@ -48,6 +50,8 @@ public class WorldController implements ChunkListener {
 			}
 		}
 		if (requestList.size() > 0) {
+
+
 			int[] xCoordinates = new int[requestList.size()];
 			int[] yCoordinates = new int[requestList.size()];
 			for (int i = 0; i < requestList.size(); i++) {
@@ -85,6 +89,6 @@ public class WorldController implements ChunkListener {
 	}
 
 	public int getChunkSize() {
-		return opus.getConfig().mapSize;
+		return opus.getConfig().chunkSize;
 	}
 }

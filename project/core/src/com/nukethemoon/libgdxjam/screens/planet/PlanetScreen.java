@@ -16,9 +16,9 @@ import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.nukethemoon.libgdxjam.Log;
+import com.nukethemoon.libgdxjam.game.Planet;
 import com.nukethemoon.libgdxjam.input.DebugCameraInput;
-
-import java.util.concurrent.ExecutionException;
 
 public class PlanetScreen implements Screen {
 
@@ -31,6 +31,9 @@ public class PlanetScreen implements Screen {
 	private final Vector3 shipPosition = new Vector3(0, 0, 10);
 	private float shipRotationZ = 0;
 	private float shipSpeed = 10;
+
+	private int lastShipChunkX = 0;
+	private int lastShipChunkY = 0;
 
 
 	private WorldController world;
@@ -66,6 +69,12 @@ public class PlanetScreen implements Screen {
 
 	Vector3 tmpVector = new Vector3(0, 0, 0);
 	Vector2 tmpVector2 = new Vector2();
+	Vector2 tmpVector3 = new Vector2();
+	Vector2 tmpVector4 = new Vector2();
+	Vector2 tmpVector5 = new Vector2();
+	Vector2 tmpVector6 = new Vector2();
+
+	float highestDelta = 0;
 
 	@Override
 	public void render(float delta) {
@@ -83,11 +92,22 @@ public class PlanetScreen implements Screen {
 		cam.up.set(0, 0, 1);
 		cam.update();
 
-		int chunkX = (int) (shipPosition.x / world.getChunkSize());
-		int chunkY = (int) (shipPosition.y / world.getChunkSize());
-		tmpVector2.set(chunkX, chunkY);
+		int chunkX = (int) Math.floor(shipPosition.x / world.getChunkSize());
+		int chunkY = (int) Math.floor(shipPosition.y / world.getChunkSize());
 
-		world.requestChunks(tmpVector2);
+		if (lastShipChunkX != chunkX || lastShipChunkY != chunkY) {
+			tmpVector2.set(chunkX, chunkY);
+			tmpVector3.set(chunkX, chunkY + 1);
+			tmpVector4.set(chunkX, chunkY - 1);
+			tmpVector5.set(chunkX + 1, chunkY);
+			tmpVector6.set(chunkX - 1, chunkY);
+			//world.requestChunks(tmpVector2, tmpVector3, tmpVector4, tmpVector5, tmpVector6);
+			world.requestChunks(tmpVector2);
+
+			lastShipChunkX = chunkX;
+			lastShipChunkY = chunkY;
+		}
+
 
 
 		tmpVector.set(0, shipSpeed * delta, 0);
@@ -117,7 +137,10 @@ public class PlanetScreen implements Screen {
 		world.render(modelBatch);
 		modelBatch.end();
 
-
+		if (delta > highestDelta) {
+			highestDelta = delta;
+			Log.l(Planet.class, "Highest Delta " + highestDelta);
+		}
 	}
 
 	@Override
