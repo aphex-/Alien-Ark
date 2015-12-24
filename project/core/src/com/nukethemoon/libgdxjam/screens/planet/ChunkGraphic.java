@@ -35,9 +35,9 @@ public class ChunkGraphic {
 		ModelBuilder mob = new ModelBuilder();
 		mob.begin();
 
+		meshBuilder.begin(usage, GL20.GL_TRIANGLES);
 		for (int y = 0; y < Math.abs(chunk.getHeight()); y++) {
 			for (int x = 0; x < Math.abs(chunk.getWidth()); x++) {
-				meshBuilder.begin(usage, GL20.GL_TRIANGLES);
 
 				float height = chunk.getRelative(x, y, 0);
 
@@ -61,13 +61,14 @@ public class ChunkGraphic {
 						RECT_SIZE * y + RECT_SIZE,
 						height * MAX_HEIGHT);
 
+				meshBuilder.setColor(interpreter.getColor(height));
 				meshBuilder.rect(corner01, corner02, corner03, corner04, new Vector3(0, 0, 1));
 
-				Material material = interpreter.getMaterial(height);
-
-				mob.part("mesh1", meshBuilder.end(), GL20.GL_TRIANGLES, material);
 			}
 		}
+		Material material = interpreter.getMaterial(0.5f);
+		mob.part("mesh1", meshBuilder.end(), GL20.GL_TRIANGLES, material);
+
 		modelInstance = new ModelInstance(mob.end());
 		modelInstance.transform.translate(
 				chunk.getChunkX() * chunk.getWidth(),
