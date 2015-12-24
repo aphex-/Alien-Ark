@@ -19,7 +19,7 @@ public class WorldController implements ChunkListener {
 
 	private float tileGraphicSize = 0.5f;
 
-	private int requestRadiusInTiles = 100;
+	private int requestRadiusInTiles = 200;
 	private int lastRequestCenterTileX = 0;
 	private int lastRequestCenterTileY = 0;
 
@@ -64,7 +64,7 @@ public class WorldController implements ChunkListener {
 				int tilePositionY = requestCenterTileY - requestRadiusInTiles + tileIndexY;
 
 				int distance = (int) Math.floor(Math.sqrt(Math.pow(requestCenterTileX - tilePositionX, 2) + Math.pow(requestCenterTileY - tilePositionY, 2)));
-				if (distance <= requestRadiusInTiles) {
+				if (Math.abs(distance) <= requestRadiusInTiles) {
 					int chunkX = tilePositionX / opus.getConfig().chunkSize;
 					int chunkY = tilePositionY / opus.getConfig().chunkSize;
 
