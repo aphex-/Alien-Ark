@@ -92,7 +92,9 @@ public class PlanetScreen implements Screen {
 		cam.up.set(0, 0, 1);
 		cam.update();
 
-		int chunkX = (int) Math.floor((shipPosition.x * world.getTileGraphicSize()) / world.getChunkSize());
+
+		world.updateRequestCenter(shipPosition.x, shipPosition.y);
+		/*int chunkX = (int) Math.floor((shipPosition.x * world.getTileGraphicSize()) / world.getChunkSize());
 		int chunkY = (int) Math.floor((shipPosition.y * world.getTileGraphicSize()) / world.getChunkSize());
 
 		if (lastShipChunkX != chunkX || lastShipChunkY != chunkY) {
@@ -106,7 +108,7 @@ public class PlanetScreen implements Screen {
 
 			lastShipChunkX = chunkX;
 			lastShipChunkY = chunkY;
-		}
+		}*/
 
 
 

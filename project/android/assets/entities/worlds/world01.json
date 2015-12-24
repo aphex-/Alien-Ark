@@ -149,7 +149,7 @@
   ],
   "worldConfig": {
     "seedString": "0.0",
-    "chunkSize": 50,
+    "chunkSize": 10,
     "name": "world01",
     "layerIds": [
       "EditorDefaultLayer"

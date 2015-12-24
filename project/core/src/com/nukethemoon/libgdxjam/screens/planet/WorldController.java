@@ -47,7 +47,7 @@ public class WorldController implements ChunkListener {
 		}
 	}
 
-	private void updateRequestCenter(float graphicX, float graphicY) {
+	public void updateRequestCenter(float graphicX, float graphicY) {
 		int requestCenterTileX = (int) Math.floor(graphicX / tileGraphicSize);
 		int requestCenterTileY = (int) Math.floor(graphicY / tileGraphicSize);
 
@@ -67,6 +67,8 @@ public class WorldController implements ChunkListener {
 				if (distance <= requestRadiusInTiles) {
 					int chunkX = tilePositionX / opus.getConfig().chunkSize;
 					int chunkY = tilePositionY / opus.getConfig().chunkSize;
+
+					requestChunks(new Vector2(chunkX, chunkY));
 				}
 			}
 		}
