@@ -16,6 +16,13 @@ import java.util.concurrent.ExecutionException;
 
 public class WorldController implements ChunkListener {
 
+
+	private float tileGraphicSize = 0.5f;
+
+	private int requestRadiusInTiles = 100;
+	private int lastRequestCenterTileX = 0;
+	private int lastRequestCenterTileY = 0;
+
 	private Opus opus;
 	private Map<Vector2, ChunkGraphic> chunkMeshes = new HashMap<Vector2, ChunkGraphic>();
 
@@ -40,6 +47,30 @@ public class WorldController implements ChunkListener {
 		}
 	}
 
+	private void updateRequestCenter(float graphicX, float graphicY) {
+		int requestCenterTileX = (int) Math.floor(graphicX / tileGraphicSize);
+		int requestCenterTileY = (int) Math.floor(graphicY / tileGraphicSize);
+
+		if (lastRequestCenterTileX == requestCenterTileX && lastRequestCenterTileY == requestCenterTileY) {
+			return;
+		}
+
+		lastRequestCenterTileX = requestCenterTileX;
+		lastRequestCenterTileY = requestCenterTileY;
+
+		for (int tileIndexX = 0; tileIndexX < requestRadiusInTiles; tileIndexX++) {
+			for (int tileIndexY = 0; tileIndexY < requestRadiusInTiles; tileIndexY++) {
+				int tilePositionX = requestCenterTileX - requestRadiusInTiles + tileIndexX;
+				int tilePositionY = requestCenterTileY - requestRadiusInTiles + tileIndexY;
+
+				int distance = (int) Math.floor(Math.sqrt(Math.pow(requestCenterTileX - tilePositionX, 2) + Math.pow(requestCenterTileY - tilePositionY, 2)));
+				if (distance <= requestRadiusInTiles) {
+					int chunkX = tilePositionX / opus.getConfig().chunkSize;
+					int chunkY = tilePositionY / opus.getConfig().chunkSize;
+				}
+			}
+		}
+	}
 
 
 	public void requestChunks(Vector2... chunkCoordinates) {
@@ -72,7 +103,7 @@ public class WorldController implements ChunkListener {
 
 	@Override
 	public void onChunkCreated(int x, int y, Chunk chunk) {
-		ChunkGraphic chunkMesh = new ChunkGraphic(chunk);
+		ChunkGraphic chunkMesh = new ChunkGraphic(chunk, tileGraphicSize);
 		Vector2 positionVector = new Vector2(x, y);
 		if (chunkMeshes.get(positionVector) == null) {
 			chunkMeshes.put(positionVector, chunkMesh);
@@ -90,5 +121,9 @@ public class WorldController implements ChunkListener {
 
 	public int getChunkSize() {
 		return opus.getConfig().chunkSize;
+	}
+
+	public float getTileGraphicSize() {
+		return tileGraphicSize;
 	}
 }

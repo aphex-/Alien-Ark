@@ -92,8 +92,8 @@ public class PlanetScreen implements Screen {
 		cam.up.set(0, 0, 1);
 		cam.update();
 
-		int chunkX = (int) Math.floor(shipPosition.x / world.getChunkSize());
-		int chunkY = (int) Math.floor(shipPosition.y / world.getChunkSize());
+		int chunkX = (int) Math.floor((shipPosition.x * world.getTileGraphicSize()) / world.getChunkSize());
+		int chunkY = (int) Math.floor((shipPosition.y * world.getTileGraphicSize()) / world.getChunkSize());
 
 		if (lastShipChunkX != chunkX || lastShipChunkY != chunkY) {
 			tmpVector2.set(chunkX, chunkY);

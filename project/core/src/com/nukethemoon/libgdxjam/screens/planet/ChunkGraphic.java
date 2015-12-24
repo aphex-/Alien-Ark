@@ -13,15 +13,14 @@ import com.nukethemoon.tools.opusproto.region.Chunk;
 public class ChunkGraphic {
 
 
-	private static final float RECT_SIZE = 1;
-	private static final float MAX_HEIGHT = 5;
+	private static final float MAX_HEIGHT = 3;
 
 	private final ModelInstance modelInstance;
 
 	private static MaterialInterpreter interpreter = new MaterialInterpreter();
 
 
-	public ChunkGraphic(Chunk chunk) {
+	public ChunkGraphic(Chunk chunk, float tileSize) {
 
 		long l = System.currentTimeMillis();
 
@@ -42,23 +41,23 @@ public class ChunkGraphic {
 				float height = chunk.getRelative(x, y, 0);
 
 				Vector3 corner01 = new Vector3(
-						RECT_SIZE * x,
-						RECT_SIZE * y,
+						tileSize * x,
+						tileSize * y,
 						height * MAX_HEIGHT);
 
 				Vector3 corner02 = new Vector3(
-						RECT_SIZE * x + RECT_SIZE,
-						RECT_SIZE * y,
+						tileSize * x + tileSize,
+						tileSize * y,
 						height * MAX_HEIGHT);
 
 				Vector3 corner03 = new Vector3(
-						RECT_SIZE * x + RECT_SIZE,
-						RECT_SIZE * y + RECT_SIZE,
+						tileSize * x + tileSize,
+						tileSize * y + tileSize,
 						height * MAX_HEIGHT);
 
 				Vector3 corner04 = new Vector3(
-						RECT_SIZE * x,
-						RECT_SIZE * y + RECT_SIZE,
+						tileSize * x,
+						tileSize * y + tileSize,
 						height * MAX_HEIGHT);
 
 				meshBuilder.setColor(interpreter.getColor(height));
@@ -71,8 +70,8 @@ public class ChunkGraphic {
 
 		modelInstance = new ModelInstance(mob.end());
 		modelInstance.transform.translate(
-				chunk.getChunkX() * chunk.getWidth(),
-				chunk.getChunkY() * chunk.getHeight(),
+				chunk.getChunkX() * chunk.getWidth() * tileSize,
+				chunk.getChunkY() * chunk.getHeight() * tileSize,
 				0);
 
 
