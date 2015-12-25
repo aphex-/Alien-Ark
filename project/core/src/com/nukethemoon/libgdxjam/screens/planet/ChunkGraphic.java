@@ -28,7 +28,7 @@ public class ChunkGraphic {
 		MeshBuilder meshBuilder = new MeshBuilder();
 
 		int usage = VertexAttributes.Usage.Position
-				| VertexAttributes.Usage.ColorUnpacked
+				| VertexAttributes.Usage.ColorPacked
 				| VertexAttributes.Usage.Normal;
 
 		ModelBuilder mob = new ModelBuilder();
@@ -65,8 +65,36 @@ public class ChunkGraphic {
 
 			}
 		}
-		Material material = interpreter.getMaterial(0.5f);
-		mob.part("mesh1", meshBuilder.end(), GL20.GL_TRIANGLES, material);
+		Material baseMaterial = new Material();
+		mob.part("BASE", meshBuilder.end(), GL20.GL_TRIANGLES, baseMaterial);
+
+
+		meshBuilder.begin(usage, GL20.GL_TRIANGLES);
+		Vector3 corner01 = new Vector3(
+				0f,
+				0f,
+				0.1f * MAX_HEIGHT);
+
+		Vector3 corner02 = new Vector3(
+				0f,
+				chunk.getHeight() * tileSize,
+				0.1f * MAX_HEIGHT);
+
+		Vector3 corner03 = new Vector3(
+				chunk.getWidth() * tileSize,
+				chunk.getHeight() * tileSize,
+				0.1f * MAX_HEIGHT);
+
+		Vector3 corner04 = new Vector3(
+				chunk.getWidth() * tileSize,
+				0F,
+				0.1f * MAX_HEIGHT);
+
+		meshBuilder.rect(corner01, corner02, corner03, corner04, new Vector3(0, 0, 1));
+
+		Material waterMaterial = new Material();
+		mob.part("WATER", meshBuilder.end(), GL20.GL_TRIANGLES, waterMaterial);
+
 
 		modelInstance = new ModelInstance(mob.end());
 		modelInstance.transform.translate(
