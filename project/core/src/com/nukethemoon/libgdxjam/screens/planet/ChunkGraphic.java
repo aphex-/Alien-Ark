@@ -1,10 +1,13 @@
 package com.nukethemoon.libgdxjam.screens.planet;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.nukethemoon.tools.opusproto.region.Chunk;
@@ -14,7 +17,7 @@ public class ChunkGraphic {
 
 	private static final float LANDSCAPE_MAX_HEIGHT = 3;
 	private final int VERTEX_ATTRIBUTES = VertexAttributes.Usage.Position
-			| VertexAttributes.Usage.ColorPacked
+			| VertexAttributes.Usage.ColorUnpacked
 			| VertexAttributes.Usage.Normal;
 
 	private final ModelInstance modelInstance;
@@ -25,6 +28,7 @@ public class ChunkGraphic {
 
 
 	public ChunkGraphic(Chunk chunk, float tileSize) {
+
 
 		interpreter = new MaterialInterpreter();
 		meshBuilder = new MeshBuilder();
@@ -40,9 +44,6 @@ public class ChunkGraphic {
 				chunk.getChunkY() * chunk.getHeight() * tileSize,
 				0);
 
-
-		//long now = System.currentTimeMillis();
-		//Log.l(ChunkGraphic.class, "Created Chunk Graphic x " + chunk.getChunkX() + " y " + chunk.getChunkY() + " in " + (now - l) + " millis.");
 	}
 
 
@@ -63,7 +64,12 @@ public class ChunkGraphic {
 		Vector3 corner01 = new Vector3();
 		Vector3 corner02 = new Vector3();
 		Vector3 corner03 = new Vector3();
-		Vector3 normal = new Vector3(0, 0, 1);
+
+		MeshPartBuilder.VertexInfo vertexInfo01 = new MeshPartBuilder.VertexInfo();
+		MeshPartBuilder.VertexInfo vertexInfo02 = new MeshPartBuilder.VertexInfo();
+		MeshPartBuilder.VertexInfo vertexInfo03 = new MeshPartBuilder.VertexInfo();
+
+		Vector3 normal;
 
 		meshBuilder.begin(VERTEX_ATTRIBUTES, GL20.GL_TRIANGLES);
 
@@ -101,18 +107,35 @@ public class ChunkGraphic {
 				corner03.set(offsetX + tileSize, offsetY,
 						h3 * LANDSCAPE_MAX_HEIGHT);
 
+				Color color = interpreter.getColor(h0);
 
-				meshBuilder.setColor(interpreter.getColor(h0));
-				meshBuilder.triangle(corner02, corner01, corner00);
-				meshBuilder.triangle(corner03, corner02, corner00);
+				normal = calcNormal(corner00, corner01, corner02);
+				vertexInfo01.set(corner00, normal, color, null);
+				vertexInfo02.set(corner01, normal, color, null);
+				vertexInfo03.set(corner02, normal, color, null);
+				meshBuilder.triangle(vertexInfo03, vertexInfo02, vertexInfo01);
+
+				normal = calcNormal(corner02, corner03, corner00);
+				vertexInfo01.set(corner02, normal, color, null);
+				vertexInfo02.set(corner03, normal, color, null);
+				vertexInfo03.set(corner00, normal, color, null);
+				meshBuilder.triangle(vertexInfo03, vertexInfo02, vertexInfo01);
 
 			}
 		}
-		Material baseMaterial = new Material();
+
+		Material baseMaterial = new Material(new ColorAttribute(ColorAttribute.Diffuse, Color.GRAY));
+		//Material baseMaterial = new Material();
+
 
 		modelBuilder.part("BASE", meshBuilder.end(), GL20.GL_TRIANGLES, baseMaterial);
 	}
 
+	private Vector3 calcNormal(Vector3 v01, Vector3 v02, Vector3 v03) {
+		Vector3 seg1 = v01.cpy(); seg1.sub(v02);
+		Vector3 seg2 = v03.cpy(); seg2.sub(v02);
+		return seg1.crs(seg2).nor();
+	}
 
 	private void createWaterPart(float tileSize, Chunk chunk) {
 		meshBuilder.begin(VERTEX_ATTRIBUTES, GL20.GL_TRIANGLES);
@@ -144,12 +167,6 @@ public class ChunkGraphic {
 		modelBuilder.part("WATER", meshBuilder.end(), GL20.GL_TRIANGLES, waterMaterial);
 	}
 
-
-	/*static Vector3 calculateFaceNormal(Vector3 v1,Vector3 v2,Vector3 v3){
-		Vector3 crossProduct;
-		crossProduct = v2.sub(v1).scl(v3.sub(v2));
-		return crossProduct.nor();
-	}*/
 
 	public ModelInstance getModelInstance() {
 		return modelInstance;

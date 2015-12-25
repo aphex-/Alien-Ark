@@ -26,6 +26,7 @@ public class WorldController implements ChunkListener {
 	private Opus opus;
 	private Map<Vector2, ChunkGraphic> chunkMeshes = new HashMap<Vector2, ChunkGraphic>();
 
+
 	public WorldController() {
 
 		OpusLoaderJson loader = new OpusLoaderJson();
