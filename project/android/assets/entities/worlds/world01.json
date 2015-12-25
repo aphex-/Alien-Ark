@@ -94,16 +94,6 @@
     {
       "items": [
         {
-          "startValue": 0.0,
-          "endValue": 0.05,
-          "starColorR": 0.12941177,
-          "starColorG": 0.05882353,
-          "starColorB": 0.40392157,
-          "endColorR": 0.11764706,
-          "endColorG": 0.0,
-          "endColorB": 0.8862745
-        },
-        {
           "startValue": 0.05,
           "endValue": 0.18,
           "starColorR": 0.8235294,

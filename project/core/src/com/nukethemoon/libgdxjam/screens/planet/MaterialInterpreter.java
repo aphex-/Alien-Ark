@@ -35,9 +35,6 @@ public class MaterialInterpreter {
 	}
 
 	public Color getColor(float value) {
-		if (value < 0.1) {
-			return waterColor;
-		}
 		if (value < 0.18) {
 			return sandColor;
 		}

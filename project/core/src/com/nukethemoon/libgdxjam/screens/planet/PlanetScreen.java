@@ -30,10 +30,8 @@ public class PlanetScreen implements Screen {
 	private final Vector3 shipPosition = new Vector3(0, 0, 6);
 	private final ShapeRenderer screenShapeRenderer;
 	private float shipRotationZ = 0;
-	private float shipSpeed = 10;
+	private float shipSpeed = 4;
 
-	private int lastShipChunkX = 0;
-	private int lastShipChunkY = 0;
 
 
 	private WorldController world;
@@ -41,8 +39,9 @@ public class PlanetScreen implements Screen {
 	public PlanetScreen(Skin uiSkin, InputMultiplexer multiplexer) {
 		modelBatch = new ModelBatch();
 		environment = new Environment();
-		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
-		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.3f, 0.3f, 0.3f, 1f));
+		environment.add(new DirectionalLight().set(0.8f, 0.5f, 0.5f, -1f, -0.8f, -0.2f));
+		environment.add(new DirectionalLight().set(0.8f, 0.5f, 0.5f, 1f, 0.8f, -0.2f));
 
 		screenShapeRenderer = new ShapeRenderer();
 		screenShapeRenderer.setAutoShapeType(true);
