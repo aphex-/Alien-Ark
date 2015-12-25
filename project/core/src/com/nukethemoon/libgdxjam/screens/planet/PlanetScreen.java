@@ -135,7 +135,7 @@ public class PlanetScreen implements Screen {
 
 		modelBatch.begin(cam);
 		modelBatch.render(ship, environment);
-		world.render(modelBatch);
+		world.render(modelBatch, environment);
 		modelBatch.end();
 
 		drawOrigin();

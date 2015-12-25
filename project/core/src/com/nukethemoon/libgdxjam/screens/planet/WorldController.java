@@ -1,5 +1,6 @@
 package com.nukethemoon.libgdxjam.screens.planet;
 
+import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.nukethemoon.libgdxjam.Log;
@@ -115,10 +116,10 @@ public class WorldController implements ChunkListener {
 		}
 	}
 
-	public void render(ModelBatch batch) {
+	public void render(ModelBatch batch, Environment environment) {
 		for (Map.Entry<Vector2, ChunkGraphic> entry : chunkMeshes.entrySet()) {
 			ChunkGraphic mesh = entry.getValue();
-			batch.render(mesh.getModelInstance());
+			batch.render(mesh.getModelInstance(), environment);
 		}
 	}
 
