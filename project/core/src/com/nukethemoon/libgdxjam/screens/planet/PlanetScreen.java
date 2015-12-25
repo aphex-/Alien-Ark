@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -13,11 +14,9 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.nukethemoon.libgdxjam.Log;
-import com.nukethemoon.libgdxjam.game.Planet;
 import com.nukethemoon.libgdxjam.input.DebugCameraInput;
 
 public class PlanetScreen implements Screen {
@@ -28,7 +27,8 @@ public class PlanetScreen implements Screen {
 	private final Model model;
 	private final ModelInstance ship;
 
-	private final Vector3 shipPosition = new Vector3(0, 0, 10);
+	private final Vector3 shipPosition = new Vector3(0, 0, 6);
+	private final ShapeRenderer screenShapeRenderer;
 	private float shipRotationZ = 0;
 	private float shipSpeed = 10;
 
@@ -43,6 +43,9 @@ public class PlanetScreen implements Screen {
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
 		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+
+		screenShapeRenderer = new ShapeRenderer();
+		screenShapeRenderer.setAutoShapeType(true);
 
 		cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		cam.position.set(0, 0, 10f);
@@ -68,13 +71,9 @@ public class PlanetScreen implements Screen {
 	}
 
 	Vector3 tmpVector = new Vector3(0, 0, 0);
-	Vector2 tmpVector2 = new Vector2();
-	Vector2 tmpVector3 = new Vector2();
-	Vector2 tmpVector4 = new Vector2();
-	Vector2 tmpVector5 = new Vector2();
-	Vector2 tmpVector6 = new Vector2();
 
-	float highestDelta = 0;
+
+
 
 	@Override
 	public void render(float delta) {
@@ -87,7 +86,7 @@ public class PlanetScreen implements Screen {
 		tmpVector.set(0, -10, 0);
 		tmpVector.rotate(shipRotationZ, 0, 0, 1);
 		tmpVector.add(shipPosition);
-		cam.position.set(tmpVector.x, tmpVector.y, 20);
+		cam.position.set(tmpVector.x, tmpVector.y, shipPosition.z + 6);
 		cam.lookAt(shipPosition);
 		cam.up.set(0, 0, 1);
 		cam.update();
@@ -139,10 +138,20 @@ public class PlanetScreen implements Screen {
 		world.render(modelBatch);
 		modelBatch.end();
 
-		if (delta > highestDelta) {
-			highestDelta = delta;
-			Log.l(Planet.class, "Highest Delta " + highestDelta);
-		}
+		drawOrigin();
+	}
+
+
+	private void drawOrigin() {
+		screenShapeRenderer.setProjectionMatrix(cam.combined);
+		screenShapeRenderer.begin();
+
+		screenShapeRenderer.setColor(Color.RED); // x
+		screenShapeRenderer.line(0, 0, 0, 100, 0, 0);
+
+		screenShapeRenderer.setColor(Color.YELLOW); // y
+		screenShapeRenderer.line(0, 0, 0, 0, 100, 0);
+		screenShapeRenderer.end();
 	}
 
 	@Override
