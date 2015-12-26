@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 public class WorldController implements ChunkListener {
 
 
-	private float tileGraphicSize = 0.3f;
+	private float tileGraphicSize = 0.5f;
 
 	private int requestRadiusInTiles = 200;
 	private int lastRequestCenterTileX = 0;

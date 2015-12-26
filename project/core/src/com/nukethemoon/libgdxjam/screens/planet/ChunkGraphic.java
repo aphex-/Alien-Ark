@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.tools.opusproto.region.Chunk;
 
 public class ChunkGraphic {
@@ -61,7 +62,6 @@ public class ChunkGraphic {
 
 	private void createLandscapePart(float tileSize, Chunk chunk) {
 
-
 		Vector3 corner00 = new Vector3();
 		Vector3 corner01 = new Vector3();
 		Vector3 corner02 = new Vector3();
@@ -79,6 +79,8 @@ public class ChunkGraphic {
 		for (int y = 0; y < Math.abs(chunk.getHeight()); y++) {
 			for (int x = 0; x < Math.abs(chunk.getWidth()); x++) {
 
+				float offsetX = tileSize * x;
+				float offsetY = tileSize * y;
 				float h0 = chunk.getRelative(x, y, 0);
 				float h1 = h0;
 				float h2 = h0;
@@ -95,10 +97,10 @@ public class ChunkGraphic {
 					h3 = chunk.getRelative(x + 1, y, 0);
 				}
 
+				int topologyIndex = getTopologyIndex(h0, h1, h2, h3);
 
+				Log.l(ChunkGraphic.class, topologyIndex + "");
 
-				float offsetX = tileSize * x;
-				float offsetY = tileSize * y;
 
 				corner00.set(offsetX, offsetY,
 						h0 * LANDSCAPE_MAX_HEIGHT);
@@ -136,6 +138,7 @@ public class ChunkGraphic {
 		modelBuilder.part("BASE", meshBuilder.end(), GL20.GL_TRIANGLES, baseMaterial);
 	}
 
+
 		/*
 		Tile:
 	         c1______c2			   c1______c2
@@ -147,7 +150,7 @@ public class ChunkGraphic {
 	         Topology0				Topology1
 	 */
 
-	private int getTopolgyIndex(float height00, float height01, float height02, float height03) {
+	private int getTopologyIndex(float height00, float height01, float height02, float height03) {
 		float topology01Distance = getDistance(height00, height01, height02)
 				+ getDistance(height02, height03, height00);
 
