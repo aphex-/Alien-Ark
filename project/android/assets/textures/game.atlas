@@ -6,9 +6,9 @@ filter: Nearest,Nearest
 repeat: none
 exhaust_placeholder
   rotate: false
-  xy: 154, 88
-  size: 50, 23
-  orig: 50, 23
+  xy: 370, 114
+  size: 40, 105
+  orig: 40, 105
   offset: 0, 0
   index: -1
 ntm_logo
@@ -41,8 +41,8 @@ planet_3_placeholder
   index: -1
 ship_placeholder
   rotate: false
-  xy: 370, 137
-  size: 40, 82
-  orig: 40, 82
+  xy: 412, 114
+  size: 40, 105
+  orig: 40, 105
   offset: 0, 0
   index: -1
