@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
-import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.tools.opusproto.region.Chunk;
 
 public class ChunkGraphic {
@@ -62,14 +61,16 @@ public class ChunkGraphic {
 
 	private void createLandscapePart(float tileSize, Chunk chunk) {
 
-		Vector3 corner00 = new Vector3();
-		Vector3 corner01 = new Vector3();
-		Vector3 corner02 = new Vector3();
-		Vector3 corner03 = new Vector3();
+		Vector3 corner0 = new Vector3();
+		Vector3 corner1 = new Vector3();
+		Vector3 corner2 = new Vector3();
+		Vector3 corner3 = new Vector3();
 
-		MeshPartBuilder.VertexInfo vertexInfo01 = new MeshPartBuilder.VertexInfo();
-		MeshPartBuilder.VertexInfo vertexInfo02 = new MeshPartBuilder.VertexInfo();
-		MeshPartBuilder.VertexInfo vertexInfo03 = new MeshPartBuilder.VertexInfo();
+		Vector3 tmpCorner = new Vector3();
+
+		MeshPartBuilder.VertexInfo vertexInfo1 = new MeshPartBuilder.VertexInfo();
+		MeshPartBuilder.VertexInfo vertexInfo2 = new MeshPartBuilder.VertexInfo();
+		MeshPartBuilder.VertexInfo vertexInfo3 = new MeshPartBuilder.VertexInfo();
 
 		Vector3 normal;
 
@@ -97,35 +98,34 @@ public class ChunkGraphic {
 					h3 = chunk.getRelative(x + 1, y, 0);
 				}
 
+
+				corner0.set(offsetX, offsetY,
+						h0 * LANDSCAPE_MAX_HEIGHT);
+				corner1.set(offsetX, offsetY + tileSize,
+						h1 * LANDSCAPE_MAX_HEIGHT);
+				corner2.set(offsetX + tileSize, offsetY + tileSize,
+						h2 * LANDSCAPE_MAX_HEIGHT);
+				corner3.set(offsetX + tileSize, offsetY,
+						h3 * LANDSCAPE_MAX_HEIGHT);
+
 				int topologyIndex = getTopologyIndex(h0, h1, h2, h3);
 
-				Log.l(ChunkGraphic.class, topologyIndex + "");
-
-
-				corner00.set(offsetX, offsetY,
-						h0 * LANDSCAPE_MAX_HEIGHT);
-				corner01.set(offsetX, offsetY + tileSize,
-						h1 * LANDSCAPE_MAX_HEIGHT);
-				corner02.set(offsetX + tileSize, offsetY + tileSize,
-						h2 * LANDSCAPE_MAX_HEIGHT);
-				corner03.set(offsetX + tileSize, offsetY,
-						h3 * LANDSCAPE_MAX_HEIGHT);
 
 				Color color = interpreter.getColor((h0 + (h1 * 2) + h2) / 2f);
 
-				normal = calcNormal(corner00, corner01, corner02);
-				vertexInfo01.set(corner00, normal, color, null);
-				vertexInfo02.set(corner01, normal, color, null);
-				vertexInfo03.set(corner02, normal, color, null);
-				meshBuilder.triangle(vertexInfo03, vertexInfo02, vertexInfo01);
+				normal = calcNormal(corner0, corner1, corner2);
+				vertexInfo1.set(corner0, normal, color, null);
+				vertexInfo2.set(corner1, normal, color, null);
+				vertexInfo3.set(corner2, normal, color, null);
+				meshBuilder.triangle(vertexInfo3, vertexInfo2, vertexInfo1);
 
 				color = interpreter.getColor((h2 + (h3 * 2) + h0) / 2f);
 
-				normal = calcNormal(corner02, corner03, corner00);
-				vertexInfo01.set(corner02, normal, color, null);
-				vertexInfo02.set(corner03, normal, color, null);
-				vertexInfo03.set(corner00, normal, color, null);
-				meshBuilder.triangle(vertexInfo03, vertexInfo02, vertexInfo01);
+				normal = calcNormal(corner2, corner3, corner0);
+				vertexInfo1.set(corner2, normal, color, null);
+				vertexInfo2.set(corner3, normal, color, null);
+				vertexInfo3.set(corner0, normal, color, null);
+				meshBuilder.triangle(vertexInfo3, vertexInfo2, vertexInfo1);
 
 			}
 		}
