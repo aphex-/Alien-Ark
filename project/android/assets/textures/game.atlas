@@ -6,8 +6,15 @@ filter: Nearest,Nearest
 repeat: none
 ntm_logo
   rotate: false
-  xy: 2, 2
+  xy: 2, 86
   size: 150, 150
   orig: 150, 150
+  offset: 0, 0
+  index: -1
+ship_placeholder
+  rotate: false
+  xy: 2, 2
+  size: 40, 82
+  orig: 40, 82
   offset: 0, 0
   index: -1

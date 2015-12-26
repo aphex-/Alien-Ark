@@ -11,6 +11,7 @@ import com.nukethemoon.libgdxjam.screens.MenuScreen;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
 import com.nukethemoon.libgdxjam.screens.SplashScreen;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
+import com.nukethemoon.libgdxjam.screens.solar.SolarScreen;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +40,8 @@ public class App extends Game {
 		// load game entities
 
 		// openScreen(SplashScreen.class);
-		openPlanetScreen();
+		//openPlanetScreen();
+		openSolarScreen();
 	}
 
 
@@ -56,6 +58,12 @@ public class App extends Game {
 
 	private static void openPlanetScreen() {
 		PlanetScreen screen = new PlanetScreen(UI_SKIN, MULTIPLEXER);
+		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		app.setScreen(screen);
+	}
+
+	private static void openSolarScreen() {
+		SolarScreen screen = new SolarScreen(UI_SKIN, MULTIPLEXER);
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		app.setScreen(screen);
 	}
