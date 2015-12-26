@@ -1,4 +1,4 @@
-package com.nukethemoon.libgdxjam.screens.planet;
+package com.nukethemoon.libgdxjam.screens.solar;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -18,9 +18,14 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.nukethemoon.libgdxjam.input.DebugCameraInput;
+import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
+import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
+import com.nukethemoon.libgdxjam.screens.planet.WorldController;
 
 public class SolarScreen implements Screen {
 
+    Vector3 tmpVector = new Vector3(0, 0, 0);
 
     private final ModelBatch modelBatch;
     private final Environment environment;
@@ -32,16 +37,16 @@ public class SolarScreen implements Screen {
     private final ShapeRenderer screenShapeRenderer;
     private float shipRotationZ = 0;
 
-    private int [] shipSpeedLevels = new int []{0, 1, 2, 4, 6, 8};
+    private int[] shipSpeedLevels = new int[]{0, 1, 2, 4, 6, 8};
     private final int MAX_SPEED_LEVEL = shipSpeedLevels.length - 1;
     private static final float SPEED_DECREASE_BY_DECAY_RATE = 0.02f;
     private static final float SPEED_DECREASE_BY_BRAKES_RATE = 0.1f;
     private float currentSpeedDecay = 0;
     private int currentSpeedLevel = 0;
 
-
     private WorldController world;
-
+    private int screenWidth;
+    private int screenHeight;
 
     public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
         modelBatch = new ModelBatch();
@@ -68,16 +73,14 @@ public class SolarScreen implements Screen {
 
         multiplexer.addProcessor(new DebugCameraInput(cam));
 
-
     }
+
 
     @Override
     public void show() {
 
+        
     }
-
-    Vector3 tmpVector = new Vector3(0, 0, 0);
-
 
     @Override
     public void render(float delta) {
@@ -96,7 +99,7 @@ public class SolarScreen implements Screen {
 
         world.updateRequestCenter(shipPosition.x, shipPosition.y);
         /*int chunkX = (int) Math.floor((shipPosition.x * world.getTileGraphicSize()) / world.getChunkSize());
-		int chunkY = (int) Math.floor((shipPosition.y * world.getTileGraphicSize()) / world.getChunkSize());
+        int chunkY = (int) Math.floor((shipPosition.y * world.getTileGraphicSize()) / world.getChunkSize());
 
 		if (lastShipChunkX != chunkX || lastShipChunkY != chunkY) {
 			tmpVector2.set(chunkX, chunkY);
@@ -113,7 +116,6 @@ public class SolarScreen implements Screen {
 
         tmpVector.set(0, calculateBoostedSpeed() * delta, 0);
         tmpVector.rotate(shipRotationZ, 0, 0, 1);
-
 
         ship.transform.idt();
 
@@ -145,7 +147,7 @@ public class SolarScreen implements Screen {
         currentSpeedDecay += SPEED_DECREASE_BY_DECAY_RATE;
         if (currentSpeedDecay > 1) {
             currentSpeedDecay = 0;
-            currentSpeedLevel -=1;
+            currentSpeedLevel -= 1;
         }
         if (Gdx.app.getInput().isKeyPressed(19)) {
             currentSpeedLevel += 1;
@@ -168,7 +170,6 @@ public class SolarScreen implements Screen {
         return 4;
     }
 
-
     private void drawOrigin() {
         screenShapeRenderer.setProjectionMatrix(cam.combined);
         screenShapeRenderer.begin();
@@ -179,16 +180,6 @@ public class SolarScreen implements Screen {
         screenShapeRenderer.setColor(Color.YELLOW); // y
         screenShapeRenderer.line(0, 0, 0, 0, 100, 0);
         screenShapeRenderer.end();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
-    public void pause() {
-
     }
 
     @Override
@@ -206,5 +197,31 @@ public class SolarScreen implements Screen {
 
     }
 
+    @Override
+    public void resize(int width, int height) {
+        this.screenWidth = width;
+        this.screenHeight = height;
+    }
 
+    @Override
+    public void pause() {
+
+    }
+
+
+    private boolean isArkCollidingWithPlanet() {
+        return false;
+    }
+
+    private boolean isArcSelected() {
+        return false;
+    }
+
+    private void openPlanetScreen() {
+        App.openScreen(PlanetScreen.class);
+    }
+
+    private void openArkScreen() {
+        App.openScreen(ArkScreen.class);
+    }
 }
