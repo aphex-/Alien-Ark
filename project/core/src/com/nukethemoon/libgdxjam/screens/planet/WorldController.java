@@ -123,11 +123,5 @@ public class WorldController implements ChunkListener {
 		}
 	}
 
-	public int getChunkSize() {
-		return opus.getConfig().chunkSize;
-	}
 
-	public float getTileGraphicSize() {
-		return tileGraphicSize;
-	}
 }

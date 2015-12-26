@@ -2,6 +2,7 @@ package com.nukethemoon.libgdxjam.screens.planet;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.graphics.Color;
@@ -17,19 +18,22 @@ import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.nukethemoon.libgdxjam.input.DebugCameraInput;
+import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 
-public class PlanetScreen implements Screen {
+public class PlanetScreen implements Screen, InputProcessor {
 
 
 	private final ModelBatch modelBatch;
 	private final Environment environment;
-	private final PerspectiveCamera cam;
+	private final PerspectiveCamera camera;
 	private final Model model;
 	private final ModelInstance ship;
 
 	private final Vector3 shipPosition = new Vector3(0, 0, 6);
 	private final ShapeRenderer screenShapeRenderer;
+	private final InputMultiplexer multiplexer;
+
+
 	private float shipRotationZ = 0;
 
 	private int [] shipSpeedLevels = new int []{0, 1, 2, 4, 6, 8};
@@ -37,13 +41,18 @@ public class PlanetScreen implements Screen {
 	private static final float SPEED_DECREASE_BY_DECAY_RATE = 0.02f;
 	private static final float SPEED_DECREASE_BY_BRAKES_RATE = 0.1f;
 	private float currentSpeedDecay = 0;
-	private int currentSpeedLevel = 0;
+	private int currentSpeedLevel = 10;
 
+	private Vector3 tmpVector = new Vector3(0, 0, 0);
 
 	private WorldController world;
 
 
-	public PlanetScreen(Skin uiSkin, InputMultiplexer multiplexer) {
+	private final FreeCameraInput freeCameraInput;
+
+	public PlanetScreen(Skin uiSkin, InputMultiplexer pMultiplexer) {
+
+
 		modelBatch = new ModelBatch();
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.3f, 0.3f, 0.3f, 1f));
@@ -53,12 +62,12 @@ public class PlanetScreen implements Screen {
 		screenShapeRenderer = new ShapeRenderer();
 		screenShapeRenderer.setAutoShapeType(true);
 
-		cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.position.set(0, 0, 10f);
-		cam.lookAt(0, 0, 0);
-		cam.near = 0.01f;
-		cam.far = 30000f;
-		cam.update();
+		camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		camera.position.set(0, 0, 10f);
+		camera.lookAt(0, 0, 0);
+		camera.near = 0.01f;
+		camera.far = 30000f;
+		camera.update();
 
 		ModelLoader loader = new ObjLoader();
 		model = loader.loadModel(Gdx.files.internal("models/ship_placeholder.obj"));
@@ -66,8 +75,11 @@ public class PlanetScreen implements Screen {
 
 		world = new WorldController();
 
-		multiplexer.addProcessor(new DebugCameraInput(cam));
-
+		multiplexer = pMultiplexer;
+		multiplexer.addProcessor(this);
+		freeCameraInput = new FreeCameraInput(camera);
+		freeCameraInput.setEnabled(false);
+		multiplexer.addProcessor(freeCameraInput);
 
 	}
 
@@ -75,8 +87,6 @@ public class PlanetScreen implements Screen {
 	public void show() {
 
 	}
-
-	Vector3 tmpVector = new Vector3(0, 0, 0);
 
 
 	@Override
@@ -88,28 +98,18 @@ public class PlanetScreen implements Screen {
 		tmpVector.set(0, -10, 0);
 		tmpVector.rotate(shipRotationZ, 0, 0, 1);
 		tmpVector.add(shipPosition);
-		cam.position.set(tmpVector.x, tmpVector.y, shipPosition.z + 6);
-		cam.lookAt(shipPosition);
-		cam.up.set(0, 0, 1);
-		cam.update();
+
+		if (!freeCameraInput.isEnabled()) {
+			camera.position.set(tmpVector.x, tmpVector.y, shipPosition.z + 6);
+			camera.lookAt(shipPosition);
+			camera.up.set(0, 0, 1);
+		} else {
+			freeCameraInput.update(delta);
+		}
+		camera.update();
 
 
 		world.updateRequestCenter(shipPosition.x, shipPosition.y);
-		/*int chunkX = (int) Math.floor((shipPosition.x * world.getTileGraphicSize()) / world.getChunkSize());
-		int chunkY = (int) Math.floor((shipPosition.y * world.getTileGraphicSize()) / world.getChunkSize());
-
-		if (lastShipChunkX != chunkX || lastShipChunkY != chunkY) {
-			tmpVector2.set(chunkX, chunkY);
-			tmpVector3.set(chunkX, chunkY + 1);
-			tmpVector4.set(chunkX, chunkY - 1);
-			tmpVector5.set(chunkX + 1, chunkY);
-			tmpVector6.set(chunkX - 1, chunkY);
-			//world.requestChunks(tmpVector2, tmpVector3, tmpVector4, tmpVector5, tmpVector6);
-			world.requestChunks(tmpVector2);
-
-			lastShipChunkX = chunkX;
-			lastShipChunkY = chunkY;
-		}*/
 
 		tmpVector.set(0, calculateBoostedSpeed() * delta, 0);
 		tmpVector.rotate(shipRotationZ, 0, 0, 1);
@@ -133,7 +133,7 @@ public class PlanetScreen implements Screen {
 		ship.transform.rotate(0, 0, 1, shipRotationZ);
 
 
-		modelBatch.begin(cam);
+		modelBatch.begin(camera);
 		modelBatch.render(ship, environment);
 		world.render(modelBatch, environment);
 		modelBatch.end();
@@ -170,7 +170,7 @@ public class PlanetScreen implements Screen {
 
 
 	private void drawOrigin() {
-		screenShapeRenderer.setProjectionMatrix(cam.combined);
+		screenShapeRenderer.setProjectionMatrix(camera.combined);
 		screenShapeRenderer.begin();
 
 		screenShapeRenderer.setColor(Color.RED); // x
@@ -207,4 +207,47 @@ public class PlanetScreen implements Screen {
 	}
 
 
+
+	@Override
+	public boolean keyDown(int keycode) {
+		if (keycode == 61) {
+			freeCameraInput.setEnabled(!freeCameraInput.isEnabled());
+		}
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		return false;
+	}
 }

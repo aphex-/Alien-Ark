@@ -17,7 +17,7 @@ import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.nukethemoon.libgdxjam.input.DebugCameraInput;
+import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
@@ -71,7 +71,7 @@ public class SolarScreen implements Screen {
 
         world = new WorldController();
 
-        multiplexer.addProcessor(new DebugCameraInput(cam));
+        multiplexer.addProcessor(new FreeCameraInput(cam));
 
     }
 
