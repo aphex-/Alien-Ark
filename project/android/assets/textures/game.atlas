@@ -4,6 +4,13 @@ size: 512,256
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+exhaust_placeholder
+  rotate: false
+  xy: 154, 88
+  size: 50, 23
+  orig: 50, 23
+  offset: 0, 0
+  index: -1
 ntm_logo
   rotate: false
   xy: 2, 69
