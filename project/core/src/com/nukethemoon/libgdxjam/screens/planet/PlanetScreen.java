@@ -21,78 +21,81 @@ import com.nukethemoon.libgdxjam.input.DebugCameraInput;
 
 public class PlanetScreen implements Screen {
 
-	private final ModelBatch modelBatch;
-	private final Environment environment;
-	private final PerspectiveCamera cam;
-	private final Model model;
-	private final ModelInstance ship;
 
-	private final Vector3 shipPosition = new Vector3(0, 0, 6);
-	private final ShapeRenderer screenShapeRenderer;
-	private float shipRotationZ = 0;
-	private float shipSpeed = 4;
+    private final ModelBatch modelBatch;
+    private final Environment environment;
+    private final PerspectiveCamera cam;
+    private final Model model;
+    private final ModelInstance ship;
 
+    private final Vector3 shipPosition = new Vector3(0, 0, 6);
+    private final ShapeRenderer screenShapeRenderer;
+    private float shipRotationZ = 0;
 
-
-	private WorldController world;
-
-	public PlanetScreen(Skin uiSkin, InputMultiplexer multiplexer) {
-		modelBatch = new ModelBatch();
-		environment = new Environment();
-		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.3f, 0.3f, 0.3f, 1f));
-		environment.add(new DirectionalLight().set(0.8f, 0.5f, 0.5f, -1f, -0.8f, -0.2f));
-		environment.add(new DirectionalLight().set(0.8f, 0.5f, 0.5f, 1f, 0.8f, -0.2f));
-
-		screenShapeRenderer = new ShapeRenderer();
-		screenShapeRenderer.setAutoShapeType(true);
-
-		cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.position.set(0, 0, 10f);
-		cam.lookAt(0,0,0);
-		cam.near = 0.01f;
-		cam.far = 30000f;
-		cam.update();
-
-		ModelLoader loader = new ObjLoader();
-		model = loader.loadModel(Gdx.files.internal("models/ship_placeholder.obj"));
-		ship = new ModelInstance(model);
-
-		world = new WorldController();
-
-		multiplexer.addProcessor(new DebugCameraInput(cam));
+    private int [] shipSpeedLevels = new int []{0, 1, 2, 4, 6, 8};
+    private final int MAX_SPEED_LEVEL = shipSpeedLevels.length - 1;
+    private static final float SPEED_DECREASE_BY_DECAY_RATE = 0.02f;
+    private static final float SPEED_DECREASE_BY_BRAKES_RATE = 0.1f;
+    private float currentSpeedDecay = 0;
+    private int currentSpeedLevel = 0;
 
 
-	}
-
-	@Override
-	public void show() {
-
-	}
-
-	Vector3 tmpVector = new Vector3(0, 0, 0);
+    private WorldController world;
 
 
+    public PlanetScreen(Skin uiSkin, InputMultiplexer multiplexer) {
+        modelBatch = new ModelBatch();
+        environment = new Environment();
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.3f, 0.3f, 0.3f, 1f));
+        environment.add(new DirectionalLight().set(0.8f, 0.5f, 0.5f, -1f, -0.8f, -0.2f));
+        environment.add(new DirectionalLight().set(0.8f, 0.5f, 0.5f, 1f, 0.8f, -0.2f));
+
+        screenShapeRenderer = new ShapeRenderer();
+        screenShapeRenderer.setAutoShapeType(true);
+
+        cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cam.position.set(0, 0, 10f);
+        cam.lookAt(0, 0, 0);
+        cam.near = 0.01f;
+        cam.far = 30000f;
+        cam.update();
+
+        ModelLoader loader = new ObjLoader();
+        model = loader.loadModel(Gdx.files.internal("models/ship_placeholder.obj"));
+        ship = new ModelInstance(model);
+
+        world = new WorldController();
+
+        multiplexer.addProcessor(new DebugCameraInput(cam));
 
 
-	@Override
-	public void render(float delta) {
-		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+    }
+
+    @Override
+    public void show() {
+
+    }
+
+    Vector3 tmpVector = new Vector3(0, 0, 0);
 
 
+    @Override
+    public void render(float delta) {
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
 
-		tmpVector.set(0, -10, 0);
-		tmpVector.rotate(shipRotationZ, 0, 0, 1);
-		tmpVector.add(shipPosition);
-		cam.position.set(tmpVector.x, tmpVector.y, shipPosition.z + 6);
-		cam.lookAt(shipPosition);
-		cam.up.set(0, 0, 1);
-		cam.update();
+        tmpVector.set(0, -10, 0);
+        tmpVector.rotate(shipRotationZ, 0, 0, 1);
+        tmpVector.add(shipPosition);
+        cam.position.set(tmpVector.x, tmpVector.y, shipPosition.z + 6);
+        cam.lookAt(shipPosition);
+        cam.up.set(0, 0, 1);
+        cam.update();
 
 
-		world.updateRequestCenter(shipPosition.x, shipPosition.y);
-		/*int chunkX = (int) Math.floor((shipPosition.x * world.getTileGraphicSize()) / world.getChunkSize());
+        world.updateRequestCenter(shipPosition.x, shipPosition.y);
+        /*int chunkX = (int) Math.floor((shipPosition.x * world.getTileGraphicSize()) / world.getChunkSize());
 		int chunkY = (int) Math.floor((shipPosition.y * world.getTileGraphicSize()) / world.getChunkSize());
 
 		if (lastShipChunkX != chunkX || lastShipChunkY != chunkY) {
@@ -108,75 +111,100 @@ public class PlanetScreen implements Screen {
 			lastShipChunkY = chunkY;
 		}*/
 
+        tmpVector.set(0, calculateBoostedSpeed() * delta, 0);
+        tmpVector.rotate(shipRotationZ, 0, 0, 1);
 
 
-		tmpVector.set(0, shipSpeed * delta, 0);
-		tmpVector.rotate(shipRotationZ, 0, 0, 1);
+        ship.transform.idt();
+
+        shipPosition.add(tmpVector);
+        ship.transform.translate(shipPosition.x, shipPosition.y, shipPosition.z);
 
 
-		ship.transform.idt();
+        if (Gdx.app.getInput().isKeyPressed(21)) {
+            shipRotationZ += 100 * delta;
+        }
 
-		shipPosition.add(tmpVector);
-		ship.transform.translate(shipPosition.x, shipPosition.y, shipPosition.z);
-
-		if (Gdx.app.getInput().isKeyPressed(21)) {
-			shipRotationZ += 100 * delta;
-		}
-
-		if (Gdx.app.getInput().isKeyPressed(22)) {
-			shipRotationZ -= 100 * delta;
-		}
+        if (Gdx.app.getInput().isKeyPressed(22)) {
+            shipRotationZ -= 100 * delta;
+        }
 
 
-
-		ship.transform.rotate(0, 0, 1, shipRotationZ);
-
-
-		modelBatch.begin(cam);
-		modelBatch.render(ship, environment);
-		world.render(modelBatch, environment);
-		modelBatch.end();
-
-		drawOrigin();
-	}
+        ship.transform.rotate(0, 0, 1, shipRotationZ);
 
 
-	private void drawOrigin() {
-		screenShapeRenderer.setProjectionMatrix(cam.combined);
-		screenShapeRenderer.begin();
+        modelBatch.begin(cam);
+        modelBatch.render(ship, environment);
+        world.render(modelBatch, environment);
+        modelBatch.end();
 
-		screenShapeRenderer.setColor(Color.RED); // x
-		screenShapeRenderer.line(0, 0, 0, 100, 0, 0);
+        drawOrigin();
+    }
 
-		screenShapeRenderer.setColor(Color.YELLOW); // y
-		screenShapeRenderer.line(0, 0, 0, 0, 100, 0);
-		screenShapeRenderer.end();
-	}
+    private int calculateBoostedSpeed() {
+        currentSpeedDecay += SPEED_DECREASE_BY_DECAY_RATE;
+        if (currentSpeedDecay > 1) {
+            currentSpeedDecay = 0;
+            currentSpeedLevel -=1;
+        }
+        if (Gdx.app.getInput().isKeyPressed(19)) {
+            currentSpeedLevel += 1;
+        }
+        if (Gdx.app.getInput().isKeyPressed(20)) {
+            currentSpeedDecay += SPEED_DECREASE_BY_BRAKES_RATE;
+        }
 
-	@Override
-	public void resize(int width, int height) {
+        if (currentSpeedLevel < 0) {
+            currentSpeedLevel = 0;
+        }
+        if (currentSpeedLevel > MAX_SPEED_LEVEL) {
+            currentSpeedLevel = MAX_SPEED_LEVEL;
+        }
 
-	}
+        return shipSpeedLevels[currentSpeedLevel];
+    }
 
-	@Override
-	public void pause() {
+    private int calculateConstantSpeed() {
+        return 4;
+    }
 
-	}
 
-	@Override
-	public void resume() {
+    private void drawOrigin() {
+        screenShapeRenderer.setProjectionMatrix(cam.combined);
+        screenShapeRenderer.begin();
 
-	}
+        screenShapeRenderer.setColor(Color.RED); // x
+        screenShapeRenderer.line(0, 0, 0, 100, 0, 0);
 
-	@Override
-	public void hide() {
+        screenShapeRenderer.setColor(Color.YELLOW); // y
+        screenShapeRenderer.line(0, 0, 0, 0, 100, 0);
+        screenShapeRenderer.end();
+    }
 
-	}
+    @Override
+    public void resize(int width, int height) {
 
-	@Override
-	public void dispose() {
+    }
 
-	}
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void dispose() {
+
+    }
 
 
 }
