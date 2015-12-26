@@ -1,227 +1,288 @@
 package com.nukethemoon.libgdxjam.screens.solar;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.loaders.ModelLoader;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.nukethemoon.libgdxjam.input.FreeCameraInput;
+import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
 import com.nukethemoon.libgdxjam.screens.planet.WorldController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SolarScreen implements Screen {
 
-    Vector3 tmpVector = new Vector3(0, 0, 0);
+	private static final int NUMBER_OF_PLANETS = 3;
 
-    private final ModelBatch modelBatch;
-    private final Environment environment;
-    private final PerspectiveCamera cam;
-    private final Model model;
-    private final ModelInstance ship;
+	private final Vector2 shipPosition = new Vector2(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
 
-    private final Vector3 shipPosition = new Vector3(0, 0, 6);
-    private final ShapeRenderer screenShapeRenderer;
-    private float shipRotationZ = 0;
+	//0 - 359
+	private float adjustRotation = 0;
 
-    private int[] shipSpeedLevels = new int[]{0, 1, 2, 4, 6, 8};
-    private final int MAX_SPEED_LEVEL = shipSpeedLevels.length - 1;
-    private static final float SPEED_DECREASE_BY_DECAY_RATE = 0.02f;
-    private static final float SPEED_DECREASE_BY_BRAKES_RATE = 0.1f;
-    private float currentSpeedDecay = 0;
-    private int currentSpeedLevel = 0;
+	//starts at 90 - ark facing up
+	private float currentRotation = 90;
 
-    private WorldController world;
-    private int screenWidth;
-    private int screenHeight;
+	private Vector2[] planetPositions = new Vector2[]{new Vector2(323,556), new Vector2(555,111), new Vector2(123,484)};
 
-    public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
-        modelBatch = new ModelBatch();
-        environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.3f, 0.3f, 0.3f, 1f));
-        environment.add(new DirectionalLight().set(0.8f, 0.5f, 0.5f, -1f, -0.8f, -0.2f));
-        environment.add(new DirectionalLight().set(0.8f, 0.5f, 0.5f, 1f, 0.8f, -0.2f));
-
-        screenShapeRenderer = new ShapeRenderer();
-        screenShapeRenderer.setAutoShapeType(true);
-
-        cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(0, 0, 10f);
-        cam.lookAt(0, 0, 0);
-        cam.near = 0.01f;
-        cam.far = 30000f;
-        cam.update();
-
-        ModelLoader loader = new ObjLoader();
-        model = loader.loadModel(Gdx.files.internal("models/ship_placeholder.obj"));
-        ship = new ModelInstance(model);
-
-        world = new WorldController();
-
-        multiplexer.addProcessor(new FreeCameraInput(cam));
-
-    }
+	private float[] shipSpeedLevels = new float[]{0, 0.5f, 1f, 1.5f, 2.0f, 3.0f};
+	private final int MAX_SPEED_LEVEL = shipSpeedLevels.length - 1;
+	private static final float SPEED_DECREASE_BY_DECAY_RATE = 0.02f;
+	private static final float SPEED_DECREASE_BY_BRAKES_RATE = 0.1f;
+	private float currentSpeedDecay = 0;
+	private int currentSpeedLevel = 0;
 
 
-    @Override
-    public void show() {
+	private static final int INITIAL_ARK_POSITION_Y = 10;
+	private static final int INITIAL_ARK_POSITION_X = 10;
 
-        
-    }
+	private SpriteBatch batch;
 
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+	private Sprite arkSprite;
+	private final Sprite[] planetSprites = new Sprite[NUMBER_OF_PLANETS];
 
+	private int screenHeight;
+	private int screenWidth;
 
-        tmpVector.set(0, -10, 0);
-        tmpVector.rotate(shipRotationZ, 0, 0, 1);
-        tmpVector.add(shipPosition);
-        cam.position.set(tmpVector.x, tmpVector.y, shipPosition.z + 6);
-        cam.lookAt(shipPosition);
-        cam.up.set(0, 0, 1);
-        cam.update();
+	float arkHeight;
+	float arkWidth;
 
 
-        world.updateRequestCenter(shipPosition.x, shipPosition.y);
-        /*int chunkX = (int) Math.floor((shipPosition.x * world.getTileGraphicSize()) / world.getChunkSize());
-        int chunkY = (int) Math.floor((shipPosition.y * world.getTileGraphicSize()) / world.getChunkSize());
+	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
+		batch = new SpriteBatch();
+		arkSprite = new Sprite(App.TEXTURES.findRegion("ship_placeholder"));
 
-		if (lastShipChunkX != chunkX || lastShipChunkY != chunkY) {
-			tmpVector2.set(chunkX, chunkY);
-			tmpVector3.set(chunkX, chunkY + 1);
-			tmpVector4.set(chunkX, chunkY - 1);
-			tmpVector5.set(chunkX + 1, chunkY);
-			tmpVector6.set(chunkX - 1, chunkY);
-			//world.requestChunks(tmpVector2, tmpVector3, tmpVector4, tmpVector5, tmpVector6);
-			world.requestChunks(tmpVector2);
+		setupPlanets();
+	}
 
-			lastShipChunkX = chunkX;
-			lastShipChunkY = chunkY;
-		}*/
+	private void setupPlanets() {
+		planetSprites[0] = new Sprite(App.TEXTURES.findRegion("planet_1_placeholder"));
+		planetSprites[1] = new Sprite(App.TEXTURES.findRegion("planet_2_placeholder"));
+		planetSprites[2] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));
 
-        tmpVector.set(0, calculateBoostedSpeed() * delta, 0);
-        tmpVector.rotate(shipRotationZ, 0, 0, 1);
+		for (int i = 0 ; i < NUMBER_OF_PLANETS; i++) {
+			planetSprites[i].setPosition(planetPositions[i].x, planetPositions[i].y);
+		}
+	}
 
-        ship.transform.idt();
-
-        shipPosition.add(tmpVector);
-        ship.transform.translate(shipPosition.x, shipPosition.y, shipPosition.z);
-
-
-        if (Gdx.app.getInput().isKeyPressed(21)) {
-            shipRotationZ += 100 * delta;
-        }
-
-        if (Gdx.app.getInput().isKeyPressed(22)) {
-            shipRotationZ -= 100 * delta;
-        }
+	@Override
+	public void show() {
+		batch = new SpriteBatch();
+		arkSprite.setX(INITIAL_ARK_POSITION_X);
+		arkSprite.setY(INITIAL_ARK_POSITION_Y);
+		arkWidth = arkSprite.getWidth();
+		arkHeight = arkSprite.getHeight();
+	}
 
 
-        ship.transform.rotate(0, 0, 1, shipRotationZ);
+	@Override
+	public void render(float delta) {
+		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		handleArkMovementInput(delta);
+		renderPlanets();
+		renderArc();
+		handleAppNavigation();
+	}
 
 
-        modelBatch.begin(cam);
-        modelBatch.render(ship, environment);
-        world.render(modelBatch, environment);
-        modelBatch.end();
-
-        drawOrigin();
-    }
-
-    private int calculateBoostedSpeed() {
-        currentSpeedDecay += SPEED_DECREASE_BY_DECAY_RATE;
-        if (currentSpeedDecay > 1) {
-            currentSpeedDecay = 0;
-            currentSpeedLevel -= 1;
-        }
-        if (Gdx.app.getInput().isKeyPressed(19)) {
-            currentSpeedLevel += 1;
-        }
-        if (Gdx.app.getInput().isKeyPressed(20)) {
-            currentSpeedDecay += SPEED_DECREASE_BY_BRAKES_RATE;
-        }
-
-        if (currentSpeedLevel < 0) {
-            currentSpeedLevel = 0;
-        }
-        if (currentSpeedLevel > MAX_SPEED_LEVEL) {
-            currentSpeedLevel = MAX_SPEED_LEVEL;
-        }
-
-        return shipSpeedLevels[currentSpeedLevel];
-    }
-
-    private int calculateConstantSpeed() {
-        return 4;
-    }
-
-    private void drawOrigin() {
-        screenShapeRenderer.setProjectionMatrix(cam.combined);
-        screenShapeRenderer.begin();
-
-        screenShapeRenderer.setColor(Color.RED); // x
-        screenShapeRenderer.line(0, 0, 0, 100, 0, 0);
-
-        screenShapeRenderer.setColor(Color.YELLOW); // y
-        screenShapeRenderer.line(0, 0, 0, 0, 100, 0);
-        screenShapeRenderer.end();
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        this.screenWidth = width;
-        this.screenHeight = height;
-    }
-
-    @Override
-    public void pause() {
-
-    }
+	private void renderArc() {
+		moveArcPosition(currentRotation);
+		batch.begin();
+		if (adjustRotation != 0) {
 
 
-    private boolean isArkCollidingWithPlanet() {
-        return false;
-    }
+			currentRotation += adjustRotation;
+			if (currentRotation < 0) {
+				currentRotation += 360;
+			}
+			currentRotation = currentRotation % 360;
+			arkSprite.rotate(adjustRotation);
+			Log.l(PlanetScreen.class, "currentRotation: " + currentRotation + " -  new Rotation:" + adjustRotation);
+			adjustRotation = 0;
 
-    private boolean isArcSelected() {
-        return false;
-    }
+		}
+		arkSprite.draw(batch);
+		batch.end();
+	}
 
-    private void openPlanetScreen() {
-        App.openScreen(PlanetScreen.class);
-    }
 
-    private void openArkScreen() {
-        App.openScreen(ArkScreen.class);
-    }
+
+	private void renderPlanets() {
+		batch.begin();
+		for (Sprite planetSprite : planetSprites) {
+			planetSprite.draw(batch);
+		}
+		batch.end();
+	}
+
+	/*
+	 x     y
+deg sin  cos
+---------------
+0    0    1
+90   1    0
+180  0   -1
+270 -1    0
+*/
+	private void handleArkMovementInput(float delta) {
+		currentSpeedDecay += SPEED_DECREASE_BY_DECAY_RATE;
+		if (currentSpeedDecay > 1) {
+			currentSpeedDecay = 0;
+			currentSpeedLevel -= 1;
+		}
+		if (Gdx.app.getInput().isKeyPressed(19)) {
+			currentSpeedLevel += 1;
+		}
+		if (Gdx.app.getInput().isKeyPressed(20)) {
+			currentSpeedDecay += SPEED_DECREASE_BY_BRAKES_RATE;
+		}
+
+		if (currentSpeedLevel < 0) {
+			currentSpeedLevel = 0;
+		}
+		if (currentSpeedLevel > MAX_SPEED_LEVEL) {
+			currentSpeedLevel = MAX_SPEED_LEVEL;
+		}
+
+		if (Gdx.app.getInput().isKeyPressed(Input.Keys.RIGHT)) {
+			adjustRotation = adjustRotation - (50 * delta);
+		} else if (Gdx.app.getInput().isKeyPressed(Input.Keys.LEFT)) {
+			adjustRotation = adjustRotation + (50 * delta);
+		}
+	}
+
+	private void moveArcPosition(float delta) {
+		double radians = Math.toRadians(currentRotation);
+		float translateX = (float) Math.cos(radians) * (shipSpeedLevels[currentSpeedLevel]);
+		float translateY = (float) Math.sin(radians) * (shipSpeedLevels[currentSpeedLevel]);
+
+		arkSprite.translate(translateX, translateY);
+
+
+
+		shipPosition.x = arkSprite.getX();
+		shipPosition.y = arkSprite.getY();
+		checkIfArkIsOffScreenAndCorrect();
+	}
+
+	private int calculateConstantSpeed() {
+		return 4;
+	}
+
+	private void drawOrigin() {
+	}
+
+	@Override
+	public void resume() {
+
+	}
+
+	@Override
+	public void hide() {
+
+	}
+
+	@Override
+	public void dispose() {
+
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		this.screenWidth = width;
+		this.screenHeight = height;
+	}
+
+	@Override
+	public void pause() {
+
+	}
+
+
+	private boolean isArkCollidingWithPlanet() {
+		for (Sprite planetSprite : planetSprites) {
+			Rectangle planetBounds = planetSprite.getBoundingRectangle();
+			Rectangle arkBounds = arkSprite.getBoundingRectangle();
+			if (Intersector.overlaps(planetBounds, arkBounds)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isArcSelected() {
+		return false;
+	}
+
+	private void openPlanetScreen() {
+		App.openPlanetScreen();
+	}
+
+	private void openArkScreen() {
+		App.openScreen(ArkScreen.class);
+	}
+
+
+	private List<Vector2> calculatePlanetPositions() {
+		return null;
+	}
+
+
+
+
+
+
+	private void checkIfArkIsOffScreenAndCorrect() {
+		if (isArkOffscreenLeft()) {
+			arkSprite.translateX(0 - shipPosition.x + screenWidth - 20);
+		}
+		if (isArkOffscreenRight()) {
+			arkSprite.translateX(-1 * (arkWidth + screenWidth - 20));
+		}
+		if (isArkOffscreenTop()) {
+			arkSprite.translateY(-1 * (arkHeight + screenHeight - 20));
+		}
+		if (isArkOffscreenBottom()) {
+			arkSprite.translateY(0 - shipPosition.y + screenHeight - 20);
+		}
+
+	}
+
+	private boolean isArkOffscreenBottom() {
+		return shipPosition.y < 0 - arkHeight;
+	}
+
+	private boolean isArkOffscreenTop() {
+		return screenHeight < shipPosition.y;
+	}
+
+	private boolean isArkOffscreenRight() {
+		return screenWidth < shipPosition.x;
+	}
+
+	private boolean isArkOffscreenLeft() {
+		return shipPosition.x < 0 - arkWidth;
+	}
+
+	private void handleAppNavigation() {
+		if (isArkCollidingWithPlanet()) {
+			openPlanetScreen();
+		}
+
+		if (isArcSelected()) {
+			openArkScreen();
+		}
+	}
+
+
 }
