@@ -56,13 +56,13 @@ public class App extends Game {
 		app.setScreen(menuScreen);
 	}
 
-	private static void openPlanetScreen() {
+	public static void openPlanetScreen() {
 		PlanetScreen screen = new PlanetScreen(UI_SKIN, MULTIPLEXER);
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		app.setScreen(screen);
 	}
 
-	private static void openSolarScreen() {
+	public static void openSolarScreen() {
 		SolarScreen screen = new SolarScreen(UI_SKIN, MULTIPLEXER);
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		app.setScreen(screen);

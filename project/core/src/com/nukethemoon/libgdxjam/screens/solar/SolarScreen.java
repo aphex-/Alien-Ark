@@ -7,6 +7,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.nukethemoon.libgdxjam.Log;
@@ -20,33 +22,34 @@ import java.util.List;
 
 public class SolarScreen implements Screen {
 
-	Vector2 tmpVector = new Vector2(0, 0);
-
+	private static final int NUMBER_OF_PLANETS = 3;
 
 	private final Vector2 shipPosition = new Vector2(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
 
-
 	//0 - 359
-	private float shipRotationDegrees = 0;
+	private float adjustRotation = 0;
+
+	//starts at 90 - ark facing up
 	private float currentRotation = 90;
 
-	private int[] shipSpeedLevels = new int[]{0, 1, 2, 4, 6, 8};
+	private Vector2[] planetPositions = new Vector2[]{new Vector2(323,556), new Vector2(555,111), new Vector2(123,484)};
+
+	private float[] shipSpeedLevels = new float[]{0, 0.5f, 1f, 1.5f, 2.0f, 3.0f};
 	private final int MAX_SPEED_LEVEL = shipSpeedLevels.length - 1;
 	private static final float SPEED_DECREASE_BY_DECAY_RATE = 0.02f;
 	private static final float SPEED_DECREASE_BY_BRAKES_RATE = 0.1f;
 	private float currentSpeedDecay = 0;
 	private int currentSpeedLevel = 0;
 
-	private WorldController world;
-
 
 	private static final int INITIAL_ARK_POSITION_Y = 10;
 	private static final int INITIAL_ARK_POSITION_X = 10;
-	private List<Vector2> planetPositions = new ArrayList<Vector2>();
 
 	private SpriteBatch batch;
 
 	private Sprite arkSprite;
+	private final Sprite[] planetSprites = new Sprite[NUMBER_OF_PLANETS];
+
 	private int screenHeight;
 	private int screenWidth;
 
@@ -57,6 +60,18 @@ public class SolarScreen implements Screen {
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
 		batch = new SpriteBatch();
 		arkSprite = new Sprite(App.TEXTURES.findRegion("ship_placeholder"));
+
+		setupPlanets();
+	}
+
+	private void setupPlanets() {
+		planetSprites[0] = new Sprite(App.TEXTURES.findRegion("planet_1_placeholder"));
+		planetSprites[1] = new Sprite(App.TEXTURES.findRegion("planet_2_placeholder"));
+		planetSprites[2] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));
+
+		for (int i = 0 ; i < NUMBER_OF_PLANETS; i++) {
+			planetSprites[i].setPosition(planetPositions[i].x, planetPositions[i].y);
+		}
 	}
 
 	@Override
@@ -66,8 +81,6 @@ public class SolarScreen implements Screen {
 		arkSprite.setY(INITIAL_ARK_POSITION_Y);
 		arkWidth = arkSprite.getWidth();
 		arkHeight = arkSprite.getHeight();
-
-		planetPositions = calculatePlanetPositions();
 	}
 
 
@@ -75,33 +88,53 @@ public class SolarScreen implements Screen {
 	public void render(float delta) {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		renderArc();
-		renderPlanets();
 		handleArkMovementInput(delta);
+		renderPlanets();
+		renderArc();
 		handleAppNavigation();
 	}
 
 
 	private void renderArc() {
+		moveArcPosition(currentRotation);
 		batch.begin();
-		if (shipRotationDegrees != 0) {
+		if (adjustRotation != 0) {
 
 
-			currentRotation += shipRotationDegrees;
+			currentRotation += adjustRotation;
 			if (currentRotation < 0) {
 				currentRotation += 360;
 			}
 			currentRotation = currentRotation % 360;
-			arkSprite.rotate(shipRotationDegrees);
-			Log.l(PlanetScreen.class, "currentRotation: " + currentRotation + " -  new Rotation:" + shipRotationDegrees);
-			shipRotationDegrees = 0;
+			arkSprite.rotate(adjustRotation);
+			Log.l(PlanetScreen.class, "currentRotation: " + currentRotation + " -  new Rotation:" + adjustRotation);
+			adjustRotation = 0;
 
 		}
 		arkSprite.draw(batch);
 		batch.end();
 	}
 
-	private int calculateBoostedSpeed() {
+
+
+	private void renderPlanets() {
+		batch.begin();
+		for (Sprite planetSprite : planetSprites) {
+			planetSprite.draw(batch);
+		}
+		batch.end();
+	}
+
+	/*
+	 x     y
+deg sin  cos
+---------------
+0    0    1
+90   1    0
+180  0   -1
+270 -1    0
+*/
+	private void handleArkMovementInput(float delta) {
 		currentSpeedDecay += SPEED_DECREASE_BY_DECAY_RATE;
 		if (currentSpeedDecay > 1) {
 			currentSpeedDecay = 0;
@@ -121,7 +154,25 @@ public class SolarScreen implements Screen {
 			currentSpeedLevel = MAX_SPEED_LEVEL;
 		}
 
-		return shipSpeedLevels[currentSpeedLevel];
+		if (Gdx.app.getInput().isKeyPressed(Input.Keys.RIGHT)) {
+			adjustRotation = adjustRotation - (50 * delta);
+		} else if (Gdx.app.getInput().isKeyPressed(Input.Keys.LEFT)) {
+			adjustRotation = adjustRotation + (50 * delta);
+		}
+	}
+
+	private void moveArcPosition(float delta) {
+		double radians = Math.toRadians(currentRotation);
+		float translateX = (float) Math.cos(radians) * (shipSpeedLevels[currentSpeedLevel]);
+		float translateY = (float) Math.sin(radians) * (shipSpeedLevels[currentSpeedLevel]);
+
+		arkSprite.translate(translateX, translateY);
+
+
+
+		shipPosition.x = arkSprite.getX();
+		shipPosition.y = arkSprite.getY();
+		checkIfArkIsOffScreenAndCorrect();
 	}
 
 	private int calculateConstantSpeed() {
@@ -159,6 +210,13 @@ public class SolarScreen implements Screen {
 
 
 	private boolean isArkCollidingWithPlanet() {
+		for (Sprite planetSprite : planetSprites) {
+			Rectangle planetBounds = planetSprite.getBoundingRectangle();
+			Rectangle arkBounds = arkSprite.getBoundingRectangle();
+			if (Intersector.overlaps(planetBounds, arkBounds)) {
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -167,7 +225,7 @@ public class SolarScreen implements Screen {
 	}
 
 	private void openPlanetScreen() {
-		App.openScreen(PlanetScreen.class);
+		App.openPlanetScreen();
 	}
 
 	private void openArkScreen() {
@@ -180,44 +238,9 @@ public class SolarScreen implements Screen {
 	}
 
 
-	private void renderPlanets() {
-
-	}
-
-	/*
-		 x     y
-	deg sin  cos
-	---------------
-	0    0    1
-	90   1    0
-	180  0   -1
-	270 -1    0
-	*/
-	private void handleArkMovementInput(float delta) {
-		if (Gdx.app.getInput().isKeyPressed(Input.Keys.UP)) {
-			moveArcPosition(delta);
-		} else if (Gdx.app.getInput().isKeyPressed(Input.Keys.RIGHT)) {
-			shipRotationDegrees = shipRotationDegrees + (50 * delta);
-		} else if (Gdx.app.getInput().isKeyPressed(Input.Keys.DOWN)) {
-			moveArcPosition(delta);
-		} else if (Gdx.app.getInput().isKeyPressed(Input.Keys.LEFT)) {
-			shipRotationDegrees = shipRotationDegrees - (50 * delta);
-		}
-	}
-
-	private void moveArcPosition(float delta) {
-		double radians = Math.toRadians(currentRotation);
-		float translateX = (float) Math.cos(radians) ;
-		float translateY = (float) Math.sin(radians) ;
-
-		arkSprite.translate(translateX, translateY);
 
 
 
-		shipPosition.x = arkSprite.getX();
-		shipPosition.y = arkSprite.getY();
-		checkIfArkIsOffScreenAndCorrect();
-	}
 
 	private void checkIfArkIsOffScreenAndCorrect() {
 		if (isArkOffscreenLeft()) {
