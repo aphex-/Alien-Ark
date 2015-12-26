@@ -149,7 +149,7 @@ public class SolarScreen implements Screen {
 			currentSpeedDecay = 0;
 			currentSpeedLevel -= 1;
 		}
-		
+
 		if (Gdx.app.getInput().isKeyPressed(19)) {
 			currentSpeedLevel += 1;
 			showExhaust = true;
@@ -213,8 +213,8 @@ public class SolarScreen implements Screen {
 		for (int i = 0; i < planetSprites.length; i++) {
 			Sprite planetSprite = planetSprites[i];
 			Rectangle planetBounds = planetSprite.getBoundingRectangle();
-			Rectangle arkBounds = arkSprite.getBoundingRectangle();
-			if (Intersector.overlaps(planetBounds, arkBounds)) {
+
+			if (planetBounds.contains(shipPosition.x, shipPosition.y)) {
 				return i;
 			}
 		}

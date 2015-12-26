@@ -41,14 +41,11 @@ public class WorldController implements ChunkListener {
 	private int chunkBufferSize;
 
 	public WorldController(int worldIndex) {
-
-
 		String worldName = String.format(WORLD_NAME, worldIndex);
 
 		OpusLoaderJson loader = new OpusLoaderJson();
 		try {
-			// add a callback to receive chunks
-			opus.addChunkListener(WorldController.this);
+			// load opus by a json file
 			opus = loader.load(worldName);
 
 			chunkBufferSize = (requestRadiusInTiles / opus.getConfig().chunkSize) * 2;
