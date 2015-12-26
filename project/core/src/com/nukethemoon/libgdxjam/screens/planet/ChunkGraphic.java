@@ -15,7 +15,7 @@ import com.nukethemoon.tools.opusproto.region.Chunk;
 public class ChunkGraphic {
 
 
-	private static final float LANDSCAPE_MAX_HEIGHT = 3;
+	private static final float LANDSCAPE_MAX_HEIGHT = 12;
 	private final int VERTEX_ATTRIBUTES = VertexAttributes.Usage.Position
 			| VertexAttributes.Usage.ColorUnpacked
 			| VertexAttributes.Usage.Normal;
@@ -25,9 +25,11 @@ public class ChunkGraphic {
 	private static MaterialInterpreter interpreter;
 	private final MeshBuilder meshBuilder;
 	private final ModelBuilder modelBuilder;
+	private Chunk chunk;
 
 
 	public ChunkGraphic(Chunk chunk, float tileSize) {
+		this.chunk = chunk;
 
 
 		interpreter = new MaterialInterpreter();
@@ -177,7 +179,7 @@ public class ChunkGraphic {
 	private void createWaterPart(float tileSize, Chunk chunk) {
 		meshBuilder.begin(VERTEX_ATTRIBUTES, GL20.GL_TRIANGLES);
 
-		float z = 0.007f * LANDSCAPE_MAX_HEIGHT;
+		float z = 0.009f * LANDSCAPE_MAX_HEIGHT;
 		float width = chunk.getWidth() * tileSize;
 		float height = chunk.getHeight() * tileSize;
 
@@ -199,6 +201,11 @@ public class ChunkGraphic {
 
 	public ModelInstance getModelInstance() {
 		return modelInstance;
+	}
+
+
+	public Chunk getChunk() {
+		return chunk;
 	}
 
 

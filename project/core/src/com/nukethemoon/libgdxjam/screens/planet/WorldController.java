@@ -9,6 +9,7 @@ import com.nukethemoon.tools.opusproto.generator.Opus;
 import com.nukethemoon.tools.opusproto.loader.json.OpusLoaderJson;
 import com.nukethemoon.tools.opusproto.region.Chunk;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,80 +19,61 @@ import java.util.concurrent.ExecutionException;
 public class WorldController implements ChunkListener {
 
 
-	private float tileGraphicSize = 0.5f;
+
+	private float tileGraphicSize = 2f;
 
 	private int requestRadiusInTiles = 200;
 	private int lastRequestCenterTileX = 0;
 	private int lastRequestCenterTileY = 0;
 
 	private Opus opus;
-	private Map<Vector2, ChunkGraphic> chunkMeshes = new HashMap<Vector2, ChunkGraphic>();
+
+	private List<Point> tmpRequestList = new ArrayList<Point>();
+	private List<Point> tmpRemoveList = new ArrayList<Point>();
+
+
+	private List<Point> currentVisibleChunkPositions = new ArrayList<Point>();
+	private Map<Point, ChunkGraphic> chunkBuffer = new HashMap<Point, ChunkGraphic>();
+
+	private Vector2 tmpVector1 = new Vector2();
+	private Vector2 tmpVector2 = new Vector2();
+
+	private int chunkBufferSize;
 
 
 	public WorldController() {
-
 		OpusLoaderJson loader = new OpusLoaderJson();
-
-
 		try {
 			// load opus by a json file
 			opus = loader.load("entities/worlds/world01.json");
+
+			chunkBufferSize = (requestRadiusInTiles / opus.getConfig().chunkSize) * 2;
+
 			// add a callback to receive chunks
-			opus.addChunkListener(WorldController.this);
-
-			requestChunks(	new Vector2(0, 0),
-							new Vector2(-1, 0),
-							new Vector2(1, 0));
-
+			opus.addChunkListener(this);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void updateRequestCenter(float graphicX, float graphicY) {
-		int requestCenterTileX = (int) Math.floor(graphicX / tileGraphicSize);
-		int requestCenterTileY = (int) Math.floor(graphicY / tileGraphicSize);
 
-		if (lastRequestCenterTileX == requestCenterTileX && lastRequestCenterTileY == requestCenterTileY) {
-			return;
-		}
+	public void requestChunks(List<Point> chunkCoordinates) {
+		Log.l(WorldController.class, "Requesting chunks. Buffer size: " + chunkBuffer.size());
 
-		lastRequestCenterTileX = requestCenterTileX;
-		lastRequestCenterTileY = requestCenterTileY;
-
-		for (int tileIndexX = 0; tileIndexX < requestRadiusInTiles; tileIndexX++) {
-			for (int tileIndexY = 0; tileIndexY < requestRadiusInTiles; tileIndexY++) {
-				int tilePositionX = requestCenterTileX - requestRadiusInTiles + tileIndexX;
-				int tilePositionY = requestCenterTileY - requestRadiusInTiles + tileIndexY;
-
-				int distance = (int) Math.floor(Math.sqrt(Math.pow(requestCenterTileX - tilePositionX, 2) + Math.pow(requestCenterTileY - tilePositionY, 2)));
-				if (Math.abs(distance) <= requestRadiusInTiles) {
-					int chunkX = tilePositionX / opus.getConfig().chunkSize;
-					int chunkY = tilePositionY / opus.getConfig().chunkSize;
-
-					requestChunks(new Vector2(chunkX, chunkY));
-				}
-			}
-		}
-	}
-
-
-	public void requestChunks(Vector2... chunkCoordinates) {
-		List<Vector2> requestList = new ArrayList<Vector2>();
-		for (Vector2 coordinate : chunkCoordinates) {
-			if (chunkMeshes.get(coordinate) == null) {
+		List<Point> requestList = new ArrayList<Point>();
+		for (Point coordinate : chunkCoordinates) {
+			if (chunkBuffer.get(coordinate) == null) {
 				requestList.add(coordinate);
 			}
 		}
+
 		if (requestList.size() > 0) {
-
-
 			int[] xCoordinates = new int[requestList.size()];
 			int[] yCoordinates = new int[requestList.size()];
 			for (int i = 0; i < requestList.size(); i++) {
-				xCoordinates[i] = (int) requestList.get(i).x;
-				yCoordinates[i] = (int) requestList.get(i).y;
+				xCoordinates[i] = requestList.get(i).x;
+				yCoordinates[i] = requestList.get(i).y;
 			}
 
 			try {
@@ -105,19 +87,101 @@ public class WorldController implements ChunkListener {
 		}
 	}
 
+
+
+	public void updateRequestCenter(float graphicX, float graphicY) {
+		int requestCenterTileX = (int) (Math.floor(graphicX) / tileGraphicSize);
+		int requestCenterTileY = (int) (Math.floor(graphicY) / tileGraphicSize);
+
+		if (lastRequestCenterTileX == requestCenterTileX && lastRequestCenterTileY == requestCenterTileY) {
+			// return if requested the same tile again
+			return;
+		}
+		lastRequestCenterTileX = requestCenterTileX;
+		lastRequestCenterTileY = requestCenterTileY;
+
+		tmpVector2.set(requestCenterTileX, requestCenterTileY);
+
+		int chunkSize = opus.getConfig().chunkSize;
+		int chunkBufferCenterX = (int) Math.floor(requestCenterTileX / chunkSize);
+		int chunkBufferCenterY = (int) Math.floor(requestCenterTileY / chunkSize);
+
+
+		currentVisibleChunkPositions.clear();
+
+		for (int chunkIndexX = 0; chunkIndexX < chunkBufferSize; chunkIndexX++) {
+			for (int chunkIndexY = 0; chunkIndexY < chunkBufferSize; chunkIndexY++) {
+				boolean isInRadius = false;
+				int currentChunkX = chunkBufferCenterX + chunkIndexX - (chunkBufferSize / 2);
+				int currentChunkY = chunkBufferCenterY + chunkIndexY - (chunkBufferSize / 2);
+
+				// chunk tile corner 1
+				tmpVector1.set(currentChunkX * chunkSize, currentChunkY * chunkSize);
+				if (Math.abs(tmpVector1.dst(tmpVector2)) < requestRadiusInTiles) {
+					isInRadius = true;
+				}
+				// chunk tile corner 2
+				tmpVector1.set(currentChunkX * chunkSize, currentChunkY * chunkSize + chunkSize);
+				if (Math.abs(tmpVector1.dst(tmpVector2)) < requestRadiusInTiles) {
+					isInRadius = true;
+				}
+				// chunk tile corner 3
+				tmpVector1.set(currentChunkX * chunkSize + chunkSize, currentChunkY * chunkSize + chunkSize);
+				if (Math.abs(tmpVector1.dst(tmpVector2)) < requestRadiusInTiles) {
+					isInRadius = true;
+				}
+				// chunk tile corner 4
+				tmpVector1.set(currentChunkX * chunkSize + chunkSize, currentChunkY * chunkSize);
+				if (Math.abs(tmpVector1.dst(tmpVector2)) < requestRadiusInTiles) {
+					isInRadius = true;
+				}
+
+				if (isInRadius) {
+					currentVisibleChunkPositions.add(new Point(currentChunkX, currentChunkY));
+				}
+			}
+		}
+
+		tmpRequestList.clear();
+		tmpRemoveList.clear();
+
+
+		// remove non visible chunks
+		for (Map.Entry<Point, ChunkGraphic> entry : chunkBuffer.entrySet()) {
+			if (!currentVisibleChunkPositions.contains(entry.getKey())) {
+				tmpRemoveList.add(entry.getKey());
+			}
+		}
+		for (Point p : tmpRemoveList) {
+			chunkBuffer.remove(p);
+		}
+
+		// request visible chunk
+		for (Point p : currentVisibleChunkPositions) {
+			if (chunkBuffer.get(p) == null) {
+				tmpRequestList.add(p);
+			}
+		}
+
+		if (tmpRequestList.size() > 0) {
+			requestChunks(tmpRequestList);
+		}
+	}
+
 	@Override
 	public void onChunkCreated(int x, int y, Chunk chunk) {
-		ChunkGraphic chunkMesh = new ChunkGraphic(chunk, tileGraphicSize);
-		Vector2 positionVector = new Vector2(x, y);
-		if (chunkMeshes.get(positionVector) == null) {
-			chunkMeshes.put(positionVector, chunkMesh);
+		Point point = new Point(x, y);
+		if (chunkBuffer.get(point) == null) {
+			ChunkGraphic chunkMesh = new ChunkGraphic(chunk, tileGraphicSize);
+			chunkBuffer.put(point, chunkMesh);
 		} else {
 			Log.d(getClass(), "Created a chunk that already exists. x " + x + " y " + y);
 		}
 	}
 
+
 	public void render(ModelBatch batch, Environment environment) {
-		for (Map.Entry<Vector2, ChunkGraphic> entry : chunkMeshes.entrySet()) {
+		for (Map.Entry<Point, ChunkGraphic> entry : chunkBuffer.entrySet()) {
 			ChunkGraphic mesh = entry.getValue();
 			batch.render(mesh.getModelInstance(), environment);
 		}

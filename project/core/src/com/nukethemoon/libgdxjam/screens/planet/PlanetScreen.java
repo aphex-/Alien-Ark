@@ -29,19 +29,19 @@ public class PlanetScreen implements Screen, InputProcessor {
 	private final Model model;
 	private final ModelInstance ship;
 
-	private final Vector3 shipPosition = new Vector3(0, 0, 6);
+	private final Vector3 shipPosition = new Vector3(0, 0, 20);
 	private final ShapeRenderer screenShapeRenderer;
 	private final InputMultiplexer multiplexer;
 
 
 	private float shipRotationZ = 0;
 
-	private int [] shipSpeedLevels = new int []{0, 1, 2, 4, 6, 8};
+	private int [] shipSpeedLevels = new int []{0, 2, 4, 8, 12, 20};
 	private final int MAX_SPEED_LEVEL = shipSpeedLevels.length - 1;
 	private static final float SPEED_DECREASE_BY_DECAY_RATE = 0.02f;
 	private static final float SPEED_DECREASE_BY_BRAKES_RATE = 0.1f;
 	private float currentSpeedDecay = 0;
-	private int currentSpeedLevel = 10;
+	private int currentSpeedLevel = 8;
 
 	private Vector3 tmpVector = new Vector3(0, 0, 0);
 
