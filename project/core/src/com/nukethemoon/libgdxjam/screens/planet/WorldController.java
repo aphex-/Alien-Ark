@@ -106,7 +106,7 @@ public class WorldController implements ChunkListener {
 
 		tmpVector2.set(requestCenterTileX, requestCenterTileY);
 
-		int chunkSize = opus.getConfig().chunkSize;
+		int chunkSize = opus.getConfig().chunkSize - 1;
 		int chunkBufferCenterX = (int) Math.floor(requestCenterTileX / chunkSize);
 		int chunkBufferCenterY = (int) Math.floor(requestCenterTileY / chunkSize);
 
@@ -152,6 +152,7 @@ public class WorldController implements ChunkListener {
 		// remove non visible chunks
 		for (Map.Entry<Point, ChunkGraphic> entry : chunkGraphicBuffer.entrySet()) {
 			if (!currentVisibleChunkPositions.contains(entry.getKey())) {
+				entry.getValue().dispose();
 				tmpRemoveList.add(entry.getKey());
 			}
 		}

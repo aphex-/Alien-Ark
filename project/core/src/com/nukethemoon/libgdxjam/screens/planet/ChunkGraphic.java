@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
@@ -27,6 +28,7 @@ public class ChunkGraphic {
 	private static MaterialInterpreter interpreter;
 	private final MeshBuilder meshBuilder;
 	private final ModelBuilder modelBuilder;
+	private final Model model;
 
 	private Chunk chunk;
 	private float tileSize;
@@ -56,7 +58,8 @@ public class ChunkGraphic {
 		createLandscapePart(chunk);
 		createWaterPart(chunk);
 
-		modelInstance = new ModelInstance(modelBuilder.end());
+		model = modelBuilder.end();
+		modelInstance = new ModelInstance(model);
 		modelInstance.transform.translate(
 				chunk.getChunkX() * (chunk.getWidth() - 1) * tileSize,
 				chunk.getChunkY() * (chunk.getHeight() - 1) * tileSize,
@@ -230,4 +233,7 @@ public class ChunkGraphic {
 	}
 
 
+	public void dispose() {
+		model.dispose();
+	}
 }
