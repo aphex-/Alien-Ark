@@ -147,7 +147,7 @@ public class PlanetScreen implements Screen, InputProcessor {
 
 		world.updateRequestCenter(shipPosition.x, shipPosition.y);
 
-		tmpVector.set(0, calculateBoostedSpeed() * delta, 0);
+		tmpVector.set(0, calculateBoostedSpeed() * 0.1f, 0);
 		tmpVector.rotate(shipRotationZ, 0, 0, 1);
 
 
