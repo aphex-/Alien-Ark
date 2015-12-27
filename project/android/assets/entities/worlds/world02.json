@@ -106,8 +106,8 @@
         {
           "startValue": 0.18,
           "endValue": 1.0,
-          "starColorR": 0.09803999,
-          "starColorG": 0.53333996,
+          "starColorR": 0.09803922,
+          "starColorG": 0.53333336,
           "starColorB": 0.0,
           "endColorR": 0.0,
           "endColorG": 1.0,
@@ -139,8 +139,8 @@
   ],
   "worldConfig": {
     "seedString": "0.0",
-    "chunkSize": 15,
-    "name": "world01",
+    "chunkSize": 20,
+    "name": "world02",
     "layerIds": [
       "EditorDefaultLayer"
     ]

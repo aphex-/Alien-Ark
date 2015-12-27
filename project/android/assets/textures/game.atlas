@@ -4,6 +4,13 @@ size: 512,256
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+exhaust_placeholder
+  rotate: false
+  xy: 370, 114
+  size: 40, 105
+  orig: 40, 105
+  offset: 0, 0
+  index: -1
 ntm_logo
   rotate: false
   xy: 2, 69
@@ -34,8 +41,8 @@ planet_3_placeholder
   index: -1
 ship_placeholder
   rotate: false
-  xy: 370, 137
-  size: 40, 82
-  orig: 40, 82
+  xy: 412, 114
+  size: 40, 105
+  orig: 40, 105
   offset: 0, 0
   index: -1

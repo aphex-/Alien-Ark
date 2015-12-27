@@ -50,7 +50,7 @@ public class PlanetScreen implements Screen, InputProcessor {
 
 	private final FreeCameraInput freeCameraInput;
 
-	public PlanetScreen(Skin uiSkin, InputMultiplexer pMultiplexer) {
+	public PlanetScreen(Skin uiSkin, InputMultiplexer pMultiplexer, int worldIndex) {
 
 
 		modelBatch = new ModelBatch();
@@ -73,7 +73,7 @@ public class PlanetScreen implements Screen, InputProcessor {
 		model = loader.loadModel(Gdx.files.internal("models/ship_placeholder.obj"));
 		ship = new ModelInstance(model);
 
-		world = new WorldController();
+		world = new WorldController(worldIndex);
 
 		multiplexer = pMultiplexer;
 		multiplexer.addProcessor(this);

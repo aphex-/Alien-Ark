@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 
 public class WorldController implements ChunkListener {
 
+	private static final String WORLD_NAME = "entities/worlds/world0%d.json";
 
 
 	private float tileGraphicSize = 2f;
@@ -31,7 +32,6 @@ public class WorldController implements ChunkListener {
 	private List<Point> tmpRequestList = new ArrayList<Point>();
 	private List<Point> tmpRemoveList = new ArrayList<Point>();
 
-
 	private List<Point> currentVisibleChunkPositions = new ArrayList<Point>();
 	private Map<Point, ChunkGraphic> chunkBuffer = new HashMap<Point, ChunkGraphic>();
 
@@ -40,12 +40,13 @@ public class WorldController implements ChunkListener {
 
 	private int chunkBufferSize;
 
+	public WorldController(int worldIndex) {
+		String worldName = String.format(WORLD_NAME, worldIndex);
 
-	public WorldController() {
 		OpusLoaderJson loader = new OpusLoaderJson();
 		try {
 			// load opus by a json file
-			opus = loader.load("entities/worlds/world01.json");
+			opus = loader.load(worldName);
 
 			chunkBufferSize = (requestRadiusInTiles / opus.getConfig().chunkSize) * 2;
 
