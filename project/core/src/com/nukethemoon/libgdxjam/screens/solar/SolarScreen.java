@@ -7,11 +7,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
 
@@ -234,34 +232,34 @@ public class SolarScreen implements Screen {
 	}
 
 	private void checkIfArkIsOffScreenAndCorrect() {
-		if (isArkOffscreenLeft()) {
+		if (isArkOffScreenLeft()) {
 			arkSprite.translateX(0 - shipPosition.x + screenWidth - 20);
 		}
-		if (isArkOffscreenRight()) {
+		if (isArkOffScreenRight()) {
 			arkSprite.translateX(-1 * (arkWidth + screenWidth - 20));
 		}
-		if (isArkOffscreenTop()) {
+		if (isArkOffScreenTop()) {
 			arkSprite.translateY(-1 * (arkHeight + screenHeight - 20));
 		}
-		if (isArkOffscreenBottom()) {
+		if (isArkOffScreenBottom()) {
 			arkSprite.translateY(0 - shipPosition.y + screenHeight - 20);
 		}
 
 	}
 
-	private boolean isArkOffscreenBottom() {
+	private boolean isArkOffScreenBottom() {
 		return shipPosition.y < 0 - arkHeight;
 	}
 
-	private boolean isArkOffscreenTop() {
+	private boolean isArkOffScreenTop() {
 		return screenHeight < shipPosition.y;
 	}
 
-	private boolean isArkOffscreenRight() {
+	private boolean isArkOffScreenRight() {
 		return screenWidth < shipPosition.x;
 	}
 
-	private boolean isArkOffscreenLeft() {
+	private boolean isArkOffScreenLeft() {
 		return shipPosition.x < 0 - arkWidth;
 	}
 
