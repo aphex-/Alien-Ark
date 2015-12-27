@@ -20,115 +20,79 @@ public class ChunkGraphic {
 			| VertexAttributes.Usage.ColorUnpacked
 			| VertexAttributes.Usage.Normal;
 
+	private final static float WATER_HEIGHT = 0.1f;
+
 	private final ModelInstance modelInstance;
 
 	private static MaterialInterpreter interpreter;
 	private final MeshBuilder meshBuilder;
 	private final ModelBuilder modelBuilder;
+
 	private Chunk chunk;
+	private float tileSize;
+
+	private Vector3 tmpCorner0 = new Vector3();
+	private Vector3 tmpCorner1 = new Vector3();
+	private Vector3 tmpCorner2 = new Vector3();
+	private Vector3 tmpCorner3 = new Vector3();
+
+	private MeshPartBuilder.VertexInfo tmpVertexInfo1 = new MeshPartBuilder.VertexInfo();
+	private MeshPartBuilder.VertexInfo tmpVertexInfo2 = new MeshPartBuilder.VertexInfo();
+	private MeshPartBuilder.VertexInfo tmpVertexInfo3 = new MeshPartBuilder.VertexInfo();
+
+	private Vector3 tmpNormal;
 
 
 	public ChunkGraphic(Chunk chunk, float tileSize) {
 		this.chunk = chunk;
-
+		this.tileSize = tileSize;
 
 		interpreter = new MaterialInterpreter();
 		meshBuilder = new MeshBuilder();
 		modelBuilder = new ModelBuilder();
 
 		modelBuilder.begin();
-		createLandscapePart(tileSize, chunk);
-		createWaterPart(tileSize, chunk);
+		createLandscapePart(chunk);
+		createWaterPart(chunk);
 
 		modelInstance = new ModelInstance(modelBuilder.end());
 		modelInstance.transform.translate(
 				chunk.getChunkX() * chunk.getWidth() * tileSize,
 				chunk.getChunkY() * chunk.getHeight() * tileSize,
 				0);
-
 	}
 
 
-
-	/*
-		Tile:
-	         c1______c2			   c1______c2
-	          |    /|				|\    |
-	          |  /  |				|  \  |
-	          |/____|				|____\|
-	         c0		c3			  c0	   c3
-
-	         Topology1				Topology2
-	 */
-
-	private void createLandscapePart(float tileSize, Chunk chunk) {
-
-		Vector3 corner0 = new Vector3();
-		Vector3 corner1 = new Vector3();
-		Vector3 corner2 = new Vector3();
-		Vector3 corner3 = new Vector3();
-
-		Vector3 tmpCorner = new Vector3();
-
-		MeshPartBuilder.VertexInfo vertexInfo1 = new MeshPartBuilder.VertexInfo();
-		MeshPartBuilder.VertexInfo vertexInfo2 = new MeshPartBuilder.VertexInfo();
-		MeshPartBuilder.VertexInfo vertexInfo3 = new MeshPartBuilder.VertexInfo();
-
-		Vector3 normal;
+	private void createLandscapePart(Chunk chunk) {
 
 		meshBuilder.begin(VERTEX_ATTRIBUTES, GL20.GL_TRIANGLES);
-
 
 		for (int y = 0; y < Math.abs(chunk.getHeight()); y++) {
 			for (int x = 0; x < Math.abs(chunk.getWidth()); x++) {
 
 				float offsetX = tileSize * x;
 				float offsetY = tileSize * y;
-				float h0 = chunk.getRelative(x, y, 0);
-				float h1 = h0;
-				float h2 = h0;
-				float h3 = h0;
+				float height0 = chunk.getRelative(x, y, 0);
+				float height1 = height0;
+				float height2 = height0;
+				float height3 = height0;
 
 				// neighbour heights
 				if (y + 1 < chunk.getHeight()) {
-					h1 = chunk.getRelative(x, y + 1, 0);
+					height1 = chunk.getRelative(x, y + 1, 0);
 					if (x + 1 < chunk.getWidth()) {
-						h2 = chunk.getRelative(x + 1, y + 1, 0);
+						height2 = chunk.getRelative(x + 1, y + 1, 0);
 					}
 				}
 				if (x + 1 < chunk.getWidth()) {
-					h3 = chunk.getRelative(x + 1, y, 0);
+					height3 = chunk.getRelative(x + 1, y, 0);
 				}
 
+				boolean tileIsUnderWater = (height0 < WATER_HEIGHT && height1 < WATER_HEIGHT && height2 < WATER_HEIGHT && height3 < WATER_HEIGHT);
 
-				corner0.set(offsetX, offsetY,
-						h0 * LANDSCAPE_MAX_HEIGHT);
-				corner1.set(offsetX, offsetY + tileSize,
-						h1 * LANDSCAPE_MAX_HEIGHT);
-				corner2.set(offsetX + tileSize, offsetY + tileSize,
-						h2 * LANDSCAPE_MAX_HEIGHT);
-				corner3.set(offsetX + tileSize, offsetY,
-						h3 * LANDSCAPE_MAX_HEIGHT);
-
-				int topologyIndex = getTopologyIndex(h0, h1, h2, h3);
-
-
-				Color color = interpreter.getColor((h0 + (h1 * 2) + h2) / 2f);
-
-				normal = calcNormal(corner0, corner1, corner2);
-				vertexInfo1.set(corner0, normal, color, null);
-				vertexInfo2.set(corner1, normal, color, null);
-				vertexInfo3.set(corner2, normal, color, null);
-				meshBuilder.triangle(vertexInfo3, vertexInfo2, vertexInfo1);
-
-				color = interpreter.getColor((h2 + (h3 * 2) + h0) / 2f);
-
-				normal = calcNormal(corner2, corner3, corner0);
-				vertexInfo1.set(corner2, normal, color, null);
-				vertexInfo2.set(corner3, normal, color, null);
-				vertexInfo3.set(corner0, normal, color, null);
-				meshBuilder.triangle(vertexInfo3, vertexInfo2, vertexInfo1);
-
+				if (!tileIsUnderWater) {
+					createTile(offsetX, offsetY, height0, height1, height2, height3);
+				}
 			}
 		}
 
@@ -138,6 +102,71 @@ public class ChunkGraphic {
 
 
 		modelBuilder.part("BASE", meshBuilder.end(), GL20.GL_TRIANGLES, baseMaterial);
+	}
+
+	private void createTile(float offsetX, float offsetY, float height0, float height1, float height2, float height3) {
+		tmpCorner0.set(offsetX, offsetY, height0 * LANDSCAPE_MAX_HEIGHT);
+		tmpCorner1.set(offsetX, offsetY + tileSize, height1 * LANDSCAPE_MAX_HEIGHT);
+		tmpCorner2.set(offsetX + tileSize, offsetY + tileSize, height2 * LANDSCAPE_MAX_HEIGHT);
+		tmpCorner3.set(offsetX + tileSize, offsetY, height3 * LANDSCAPE_MAX_HEIGHT);
+
+		int topologyIndex = getTopologyIndex(height0, height1, height2, height3);
+
+					/*
+						Tile:
+						   c1______c2		   c1______c2
+							|    /|				|\    |
+							|  /  |				|  \  |
+							|/____|				|____\|
+						  c0		c3		   c0	   c3
+
+							Topology1				Topology2
+					*/
+
+
+		if (topologyIndex == 0) {
+
+			float averageHeightRect0 = (height0 + height1 + height2) / 3f;
+			float averageHeightRect1 = (height2 + height3 + height0) / 3f;
+
+			Color color = interpreter.getColor(averageHeightRect0);
+
+			tmpNormal = calcNormal(tmpCorner0, tmpCorner1, tmpCorner2);
+			tmpVertexInfo1.set(tmpCorner0, tmpNormal, color, null);
+			tmpVertexInfo2.set(tmpCorner1, tmpNormal, color, null);
+			tmpVertexInfo3.set(tmpCorner2, tmpNormal, color, null);
+			meshBuilder.triangle(tmpVertexInfo3, tmpVertexInfo2, tmpVertexInfo1);
+
+
+			color = interpreter.getColor(averageHeightRect1);
+
+			tmpNormal = calcNormal(tmpCorner2, tmpCorner3, tmpCorner0);
+			tmpVertexInfo1.set(tmpCorner2, tmpNormal, color, null);
+			tmpVertexInfo2.set(tmpCorner3, tmpNormal, color, null);
+			tmpVertexInfo3.set(tmpCorner0, tmpNormal, color, null);
+			meshBuilder.triangle(tmpVertexInfo3, tmpVertexInfo2, tmpVertexInfo1);
+		} else {
+
+			float averageHeightRect0 = (height0 + height1 + height3) / 3f;
+			float averageHeightRect1 = (height2 + height3 + height1) / 3f;
+
+			Color color = interpreter.getColor(averageHeightRect0);
+
+			tmpNormal = calcNormal(tmpCorner0, tmpCorner1, tmpCorner3);
+			tmpVertexInfo1.set(tmpCorner0, tmpNormal, color, null);
+			tmpVertexInfo2.set(tmpCorner1, tmpNormal, color, null);
+			tmpVertexInfo3.set(tmpCorner3, tmpNormal, color, null);
+			meshBuilder.triangle(tmpVertexInfo3, tmpVertexInfo2, tmpVertexInfo1);
+
+
+			color = interpreter.getColor(averageHeightRect1);
+
+			tmpNormal = calcNormal(tmpCorner2, tmpCorner3, tmpCorner1);
+			tmpVertexInfo1.set(tmpCorner2, tmpNormal, color, null);
+			tmpVertexInfo2.set(tmpCorner3, tmpNormal, color, null);
+			tmpVertexInfo3.set(tmpCorner1, tmpNormal, color, null);
+			meshBuilder.triangle(tmpVertexInfo3, tmpVertexInfo2, tmpVertexInfo1);
+		}
 	}
 
 
@@ -176,10 +205,10 @@ public class ChunkGraphic {
 		return seg1.crs(seg2).nor();
 	}
 
-	private void createWaterPart(float tileSize, Chunk chunk) {
+	private void createWaterPart(Chunk chunk) {
 		meshBuilder.begin(VERTEX_ATTRIBUTES, GL20.GL_TRIANGLES);
 
-		float z = 0.009f * LANDSCAPE_MAX_HEIGHT;
+		float z = WATER_HEIGHT * LANDSCAPE_MAX_HEIGHT;
 		float width = chunk.getWidth() * tileSize;
 		float height = chunk.getHeight() * tileSize;
 
