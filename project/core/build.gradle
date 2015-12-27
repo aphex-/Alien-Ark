@@ -9,3 +9,10 @@ sourceSets.main.java.srcDirs = [ "src/" ]
 eclipse.project {
     name = appName + "-core"
 }
+
+
+dependencies {
+    compile 'com.google.code.gson:gson:2.3'
+    compile files('libs/opuslib-0.0.1a.jar')
+    compile files('libs/opusloaderjson-0.0.1a.jar')
+}

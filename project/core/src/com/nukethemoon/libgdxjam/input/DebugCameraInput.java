@@ -1,18 +1,50 @@
 package com.nukethemoon.libgdxjam.input;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.nukethemoon.libgdxjam.Config;
-import com.nukethemoon.libgdxjam.Log;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 
-public class InputController implements InputProcessor {
+
+public class DebugCameraInput implements InputProcessor {
+
+	private PerspectiveCamera camera;
+
+	public DebugCameraInput(PerspectiveCamera camera) {
+		this.camera = camera;
+	}
 
 	@Override
 	public boolean keyDown(int keycode) {
-		boolean result = Gdx.input.isKeyPressed(keycode);
-		if (Config.DEBUG && result) {
-			Log.l(InputController.class, "key down " + keycode);
+		if (keycode == 51) {
+			// W
+			camera.position.y = camera.position.y + 1;
 		}
+
+		if (keycode == 29) {
+			// A
+			camera.position.x = camera.position.x - 1;
+		}
+
+		if (keycode == 47) {
+			// S
+			camera.position.y = camera.position.y - 1;
+		}
+
+		if (keycode == 32) {
+			// D
+			camera.position.x = camera.position.x + 1;
+		}
+
+		if (keycode == 45) {
+			// Q
+			camera.position.z = camera.position.z + 1;
+		}
+
+
+		if (keycode == 33) {
+			// E
+			camera.position.z = camera.position.z - 1;
+		}
+
 		return false;
 	}
 
@@ -28,9 +60,6 @@ public class InputController implements InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if (Config.DEBUG) {
-			Log.l(InputController.class, "touch down x " + screenX + " y " + screenY);
-		}
 		return false;
 	}
 
