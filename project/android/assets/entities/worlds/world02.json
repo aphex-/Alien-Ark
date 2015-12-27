@@ -1,0 +1,148 @@
+{
+  "version": "0.0.1a",
+  "samplerConfigs": [
+    {
+      "type": "NoiseConfig",
+      "data": {
+        "noiseAlgorithmName": "SimplexNoise",
+        "id": "EditorDefaultSampler",
+        "worldSeedModifier": 0.0,
+        "scale": 1.0,
+        "modifiers": []
+      }
+    },
+    {
+      "type": "MaskedSamplerConfig",
+      "data": {
+        "samplerItems": [
+          {
+            "samplerReferenceId": "Continent",
+            "operator": "Plus",
+            "invert": false,
+            "active": true,
+            "scaleModifier": 1.0,
+            "seedModifier": 0.0,
+            "multiply": 1.0
+          },
+          {
+            "samplerReferenceId": "HeightMap",
+            "operator": "Plus",
+            "invert": false,
+            "active": true,
+            "scaleModifier": 1.0,
+            "seedModifier": 0.0,
+            "multiply": 1.0
+          }
+        ],
+        "id": "EditorDefaultMask",
+        "worldSeedModifier": 0.0,
+        "scale": 1.0,
+        "modifiers": []
+      }
+    },
+    {
+      "type": "AContinentConfig",
+      "data": {
+        "size": 0.5,
+        "edge": 0.05,
+        "iterations": 5,
+        "growth": 2.0,
+        "noiseAlgorithmName": "SimplexNoise",
+        "smoothEdge": false,
+        "id": "Continent",
+        "worldSeedModifier": 0.0,
+        "scale": 15.0,
+        "modifiers": []
+      }
+    },
+    {
+      "type": "NoiseConfig",
+      "data": {
+        "noiseAlgorithmName": "SimplexNoise",
+        "id": "HeightMap",
+        "worldSeedModifier": 0.0,
+        "scale": 60.0,
+        "modifiers": [
+          {
+            "type": "Multiply",
+            "value": 0.85
+          },
+          {
+            "type": "Add",
+            "value": 0.15
+          }
+        ]
+      }
+    }
+  ],
+  "interpreters": [
+    {
+      "items": [
+        {
+          "startValue": 0.0,
+          "endValue": 1.0,
+          "starColorR": 0.0,
+          "starColorG": 0.0,
+          "starColorB": 0.0,
+          "endColorR": 1.0,
+          "endColorG": 1.0,
+          "endColorB": 1.0
+        }
+      ],
+      "id": "EditorDefaultInterpreter"
+    },
+    {
+      "items": [
+        {
+          "startValue": 0.05,
+          "endValue": 0.18,
+          "starColorR": 0.8235294,
+          "starColorG": 0.63529414,
+          "starColorB": 0.47843137,
+          "endColorR": 0.91764706,
+          "endColorG": 0.73333335,
+          "endColorB": 0.58431375
+        },
+        {
+          "startValue": 0.18,
+          "endValue": 1.0,
+          "starColorR": 0.09803922,
+          "starColorG": 0.53333336,
+          "starColorB": 0.0,
+          "endColorR": 0.0,
+          "endColorG": 1.0,
+          "endColorB": 0.0
+        }
+      ],
+      "id": "LandscapeInterpreter"
+    }
+  ],
+  "layerConfigs": [
+    {
+      "interpreterId": "LandscapeInterpreter",
+      "samplerItems": [
+        {
+          "samplerReferenceId": "EditorDefaultMask",
+          "operator": "Plus",
+          "invert": false,
+          "active": true,
+          "scaleModifier": 1.0,
+          "seedModifier": 0.0,
+          "multiply": 1.0
+        }
+      ],
+      "id": "EditorDefaultLayer",
+      "worldSeedModifier": 0.0,
+      "scale": 1.0,
+      "modifiers": []
+    }
+  ],
+  "worldConfig": {
+    "seedString": "0.0",
+    "chunkSize": 20,
+    "name": "world02",
+    "layerIds": [
+      "EditorDefaultLayer"
+    ]
+  }
+}
