@@ -50,16 +50,7 @@ public class ChunkGraphic {
 
 
 
-	/*
-		Tile:
-	         c1______c2			   c1______c2
-	          |    /|				|\    |
-	          |  /  |				|  \  |
-	          |/____|				|____\|
-	         c0		c3			  c0	   c3
 
-	         Topology1				Topology2
-	 */
 
 	private void createLandscapePart(float tileSize, Chunk chunk) {
 
@@ -100,34 +91,68 @@ public class ChunkGraphic {
 					h3 = chunk.getRelative(x + 1, y, 0);
 				}
 
-
-				corner0.set(offsetX, offsetY,
-						h0 * LANDSCAPE_MAX_HEIGHT);
-				corner1.set(offsetX, offsetY + tileSize,
-						h1 * LANDSCAPE_MAX_HEIGHT);
-				corner2.set(offsetX + tileSize, offsetY + tileSize,
-						h2 * LANDSCAPE_MAX_HEIGHT);
-				corner3.set(offsetX + tileSize, offsetY,
-						h3 * LANDSCAPE_MAX_HEIGHT);
+				corner0.set(offsetX, offsetY, h0 * LANDSCAPE_MAX_HEIGHT);
+				corner1.set(offsetX, offsetY + tileSize, h1 * LANDSCAPE_MAX_HEIGHT);
+				corner2.set(offsetX + tileSize, offsetY + tileSize, h2 * LANDSCAPE_MAX_HEIGHT);
+				corner3.set(offsetX + tileSize, offsetY, h3 * LANDSCAPE_MAX_HEIGHT);
 
 				int topologyIndex = getTopologyIndex(h0, h1, h2, h3);
 
+				/*
+					Tile:
+	         		   c1______c2		   c1______c2
+	          			|    /|				|\    |
+	          			|  /  |				|  \  |
+	          			|/____|				|____\|
+	         		  c0		c3		   c0	   c3
 
-				Color color = interpreter.getColor((h0 + (h1 * 2) + h2) / 2f);
+			         Topology1				Topology2
+	 */
 
-				normal = calcNormal(corner0, corner1, corner2);
-				vertexInfo1.set(corner0, normal, color, null);
-				vertexInfo2.set(corner1, normal, color, null);
-				vertexInfo3.set(corner2, normal, color, null);
-				meshBuilder.triangle(vertexInfo3, vertexInfo2, vertexInfo1);
 
-				color = interpreter.getColor((h2 + (h3 * 2) + h0) / 2f);
+				if (topologyIndex == 0) {
 
-				normal = calcNormal(corner2, corner3, corner0);
-				vertexInfo1.set(corner2, normal, color, null);
-				vertexInfo2.set(corner3, normal, color, null);
-				vertexInfo3.set(corner0, normal, color, null);
-				meshBuilder.triangle(vertexInfo3, vertexInfo2, vertexInfo1);
+					float averageHeightRect0 = (h0 + h1 + h2) / 3f;
+					float averageHeightRect1 = (h2 + h3 + h0) / 3f;
+
+					Color color = interpreter.getColor(averageHeightRect0);
+
+					normal = calcNormal(corner0, corner1, corner2);
+					vertexInfo1.set(corner0, normal, color, null);
+					vertexInfo2.set(corner1, normal, color, null);
+					vertexInfo3.set(corner2, normal, color, null);
+					meshBuilder.triangle(vertexInfo3, vertexInfo2, vertexInfo1);
+
+
+					color = interpreter.getColor(averageHeightRect1);
+
+					normal = calcNormal(corner2, corner3, corner0);
+					vertexInfo1.set(corner2, normal, color, null);
+					vertexInfo2.set(corner3, normal, color, null);
+					vertexInfo3.set(corner0, normal, color, null);
+					meshBuilder.triangle(vertexInfo3, vertexInfo2, vertexInfo1);
+				} else {
+
+					float averageHeightRect0 = (h0 + h1 + h3) / 3f;
+					float averageHeightRect1 = (h2 + h3 + h1) / 3f;
+
+					Color color = interpreter.getColor(averageHeightRect0);
+
+					normal = calcNormal(corner0, corner1, corner3);
+					vertexInfo1.set(corner0, normal, color, null);
+					vertexInfo2.set(corner1, normal, color, null);
+					vertexInfo3.set(corner3, normal, color, null);
+					meshBuilder.triangle(vertexInfo3, vertexInfo2, vertexInfo1);
+
+
+					color = interpreter.getColor(averageHeightRect1);
+
+					normal = calcNormal(corner2, corner3, corner1);
+					vertexInfo1.set(corner2, normal, color, null);
+					vertexInfo2.set(corner3, normal, color, null);
+					vertexInfo3.set(corner1, normal, color, null);
+					meshBuilder.triangle(vertexInfo3, vertexInfo2, vertexInfo1);
+				}
 
 			}
 		}
