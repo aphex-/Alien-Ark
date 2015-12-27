@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 
 public class WorldController implements ChunkListener {
 
-	private static final String WORLD_NAME = "entities/worlds/world0%d.json";
+	private static final String WORLD_NAME = "entities/planets/planet01/opusConfig.json";
 
 
 	private float tileGraphicSize = 2f;

@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -23,6 +24,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.DevWindow;
@@ -42,6 +45,7 @@ public class PlanetScreen implements Screen, InputProcessor {
 	private final Skin uiSkin;
 	private final int worldIndex;
 
+	private final Gson gson;
 
 	private float shipRotationZ = 0;
 
@@ -63,14 +67,12 @@ public class PlanetScreen implements Screen, InputProcessor {
 		uiSkin = puiSkin;
 		worldIndex = pWorldIndex;
 		multiplexer = pMultiplexer;
-		initStage();
 
+
+		gson = new GsonBuilder().setPrettyPrinting().create();
 
 		modelBatch = new ModelBatch();
 		environment = new Environment();
-		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.3f, 0.3f, 0.3f, 1f));
-		environment.add(new DirectionalLight().set(0.8f, 0.5f, 0.5f, -1f, -0.8f, -0.2f));
-		environment.add(new DirectionalLight().set(0.8f, 0.5f, 0.5f, 1f, 0.8f, -0.2f));
 
 		screenShapeRenderer = new ShapeRenderer();
 		screenShapeRenderer.setAutoShapeType(true);
@@ -93,15 +95,36 @@ public class PlanetScreen implements Screen, InputProcessor {
 		freeCameraInput = new FreeCameraInput(camera);
 		freeCameraInput.setEnabled(false);
 		multiplexer.addProcessor(freeCameraInput);
+
+		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/planet01/sceneConfig.json");
+		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
+
+		/*String str = gson.toJson(planetConfig);
+		FileHandle fileHandle = new FileHandle("entities/planets/planet01/sceneConfig.json");
+		fileHandle.writeString(str, false);*/
+
+		load(planetConfig);
+
+		initStage(planetConfig);
 	}
 
-	private void initStage() {
+	private void load(PlanetConfig planetConfig) {
+		environment.set();
+		for (ColorAttribute cAttribute : planetConfig.environmentColorAttributes) {
+			environment.set(cAttribute);
+		}
+		for (DirectionalLight dLight : planetConfig.environmentDirectionalLights) {
+			environment.add(dLight);
+		}
+	}
+
+	private void initStage(PlanetConfig planetConfig) {
 		stage = new Stage(new ScreenViewport());
 		multiplexer.addProcessor(stage);
 
 
 		if (Config.DEBUG) {
-			final DevWindow devWindow = new DevWindow(uiSkin);
+			final DevWindow devWindow = new DevWindow(uiSkin, planetConfig);
 			devWindow.setVisible(false);
 			stage.addActor(devWindow);
 
