@@ -33,7 +33,9 @@ public class WorldController implements ChunkListener {
 	private List<Point> tmpRemoveList = new ArrayList<Point>();
 
 	private List<Point> currentVisibleChunkPositions = new ArrayList<Point>();
-	private Map<Point, ChunkGraphic> chunkBuffer = new HashMap<Point, ChunkGraphic>();
+
+	private Map<Point, ChunkGraphic> chunkGraphicBuffer = new HashMap<Point, ChunkGraphic>();
+
 
 	private Vector2 tmpVector1 = new Vector2();
 	private Vector2 tmpVector2 = new Vector2();
@@ -60,11 +62,11 @@ public class WorldController implements ChunkListener {
 
 
 	public void requestChunks(List<Point> chunkCoordinates) {
-		Log.l(WorldController.class, "Requesting chunks. Buffer size: " + chunkBuffer.size());
+		Log.l(WorldController.class, "Requesting chunks. Buffer size: " + chunkGraphicBuffer.size());
 
 		List<Point> requestList = new ArrayList<Point>();
 		for (Point coordinate : chunkCoordinates) {
-			if (chunkBuffer.get(coordinate) == null) {
+			if (chunkGraphicBuffer.get(coordinate) == null) {
 				requestList.add(coordinate);
 			}
 		}
@@ -98,6 +100,7 @@ public class WorldController implements ChunkListener {
 			// return if requested the same tile again
 			return;
 		}
+		// buffer the last request position
 		lastRequestCenterTileX = requestCenterTileX;
 		lastRequestCenterTileY = requestCenterTileY;
 
@@ -110,12 +113,12 @@ public class WorldController implements ChunkListener {
 
 		currentVisibleChunkPositions.clear();
 
+		// find chunks that are in the view radius
 		for (int chunkIndexX = 0; chunkIndexX < chunkBufferSize; chunkIndexX++) {
 			for (int chunkIndexY = 0; chunkIndexY < chunkBufferSize; chunkIndexY++) {
 				boolean isInRadius = false;
 				int currentChunkX = chunkBufferCenterX + chunkIndexX - (chunkBufferSize / 2);
 				int currentChunkY = chunkBufferCenterY + chunkIndexY - (chunkBufferSize / 2);
-
 				// chunk tile corner 1
 				tmpVector1.set(currentChunkX * chunkSize, currentChunkY * chunkSize);
 				if (Math.abs(tmpVector1.dst(tmpVector2)) < requestRadiusInTiles) {
@@ -136,7 +139,6 @@ public class WorldController implements ChunkListener {
 				if (Math.abs(tmpVector1.dst(tmpVector2)) < requestRadiusInTiles) {
 					isInRadius = true;
 				}
-
 				if (isInRadius) {
 					currentVisibleChunkPositions.add(new Point(currentChunkX, currentChunkY));
 				}
@@ -148,22 +150,23 @@ public class WorldController implements ChunkListener {
 
 
 		// remove non visible chunks
-		for (Map.Entry<Point, ChunkGraphic> entry : chunkBuffer.entrySet()) {
+		for (Map.Entry<Point, ChunkGraphic> entry : chunkGraphicBuffer.entrySet()) {
 			if (!currentVisibleChunkPositions.contains(entry.getKey())) {
 				tmpRemoveList.add(entry.getKey());
 			}
 		}
 		for (Point p : tmpRemoveList) {
-			chunkBuffer.remove(p);
+			chunkGraphicBuffer.remove(p);
 		}
 
-		// request visible chunk
+		// add chunks that are not already loaded
 		for (Point p : currentVisibleChunkPositions) {
-			if (chunkBuffer.get(p) == null) {
+			if (chunkGraphicBuffer.get(p) == null) {
 				tmpRequestList.add(p);
 			}
 		}
 
+		// request visible chunks
 		if (tmpRequestList.size() > 0) {
 			requestChunks(tmpRequestList);
 		}
@@ -172,9 +175,9 @@ public class WorldController implements ChunkListener {
 	@Override
 	public void onChunkCreated(int x, int y, Chunk chunk) {
 		Point point = new Point(x, y);
-		if (chunkBuffer.get(point) == null) {
+		if (chunkGraphicBuffer.get(point) == null) {
 			ChunkGraphic chunkMesh = new ChunkGraphic(chunk, tileGraphicSize);
-			chunkBuffer.put(point, chunkMesh);
+			chunkGraphicBuffer.put(point, chunkMesh);
 		} else {
 			Log.d(getClass(), "Created a chunk that already exists. x " + x + " y " + y);
 		}
@@ -182,7 +185,7 @@ public class WorldController implements ChunkListener {
 
 
 	public void render(ModelBatch batch, Environment environment) {
-		for (Map.Entry<Point, ChunkGraphic> entry : chunkBuffer.entrySet()) {
+		for (Map.Entry<Point, ChunkGraphic> entry : chunkGraphicBuffer.entrySet()) {
 			ChunkGraphic mesh = entry.getValue();
 			batch.render(mesh.getModelInstance(), environment);
 		}
