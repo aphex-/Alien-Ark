@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
@@ -27,6 +28,7 @@ public class ChunkGraphic {
 	private static MaterialInterpreter interpreter;
 	private final MeshBuilder meshBuilder;
 	private final ModelBuilder modelBuilder;
+	private final Model model;
 
 	private Chunk chunk;
 	private float tileSize;
@@ -47,6 +49,7 @@ public class ChunkGraphic {
 		this.chunk = chunk;
 		this.tileSize = tileSize;
 
+
 		interpreter = new MaterialInterpreter();
 		meshBuilder = new MeshBuilder();
 		modelBuilder = new ModelBuilder();
@@ -55,10 +58,11 @@ public class ChunkGraphic {
 		createLandscapePart(chunk);
 		createWaterPart(chunk);
 
-		modelInstance = new ModelInstance(modelBuilder.end());
+		model = modelBuilder.end();
+		modelInstance = new ModelInstance(model);
 		modelInstance.transform.translate(
-				chunk.getChunkX() * chunk.getWidth() * tileSize,
-				chunk.getChunkY() * chunk.getHeight() * tileSize,
+				chunk.getChunkX() * (chunk.getWidth() - 1) * tileSize,
+				chunk.getChunkY() * (chunk.getHeight() - 1) * tileSize,
 				0);
 	}
 
@@ -67,26 +71,17 @@ public class ChunkGraphic {
 
 		meshBuilder.begin(VERTEX_ATTRIBUTES, GL20.GL_TRIANGLES);
 
-		for (int y = 0; y < Math.abs(chunk.getHeight()); y++) {
-			for (int x = 0; x < Math.abs(chunk.getWidth()); x++) {
+ 		int chunkSize = chunk.getWidth() - 1; // overlap 1
+
+		for (int y = 0; y < chunkSize; y++) {
+			for (int x = 0; x < chunkSize; x++) {
 
 				float offsetX = tileSize * x;
 				float offsetY = tileSize * y;
 				float height0 = chunk.getRelative(x, y, 0);
-				float height1 = height0;
-				float height2 = height0;
-				float height3 = height0;
-
-				// neighbour heights
-				if (y + 1 < chunk.getHeight()) {
-					height1 = chunk.getRelative(x, y + 1, 0);
-					if (x + 1 < chunk.getWidth()) {
-						height2 = chunk.getRelative(x + 1, y + 1, 0);
-					}
-				}
-				if (x + 1 < chunk.getWidth()) {
-					height3 = chunk.getRelative(x + 1, y, 0);
-				}
+				float height1 = chunk.getRelative(x, y + 1, 0);
+				float height2 = chunk.getRelative(x + 1, y + 1, 0);
+				float height3 = chunk.getRelative(x + 1, y, 0);
 
 				boolean tileIsUnderWater = (height0 < WATER_HEIGHT && height1 < WATER_HEIGHT && height2 < WATER_HEIGHT && height3 < WATER_HEIGHT);
 
@@ -100,9 +95,9 @@ public class ChunkGraphic {
 				new ColorAttribute(ColorAttribute.Diffuse, Color.LIGHT_GRAY));
 		//Material baseMaterial = new Material();
 
-
 		modelBuilder.part("BASE", meshBuilder.end(), GL20.GL_TRIANGLES, baseMaterial);
 	}
+
 
 	private void createTile(float offsetX, float offsetY, float height0, float height1, float height2, float height3) {
 		tmpCorner0.set(offsetX, offsetY, height0 * LANDSCAPE_MAX_HEIGHT);
@@ -238,4 +233,7 @@ public class ChunkGraphic {
 	}
 
 
+	public void dispose() {
+		model.dispose();
+	}
 }

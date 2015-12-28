@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -17,10 +18,20 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
+import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
+import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWindow;
 
-public class PlanetScreen implements Screen, InputProcessor {
+public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener {
 
 
 	private final ModelBatch modelBatch;
@@ -32,7 +43,10 @@ public class PlanetScreen implements Screen, InputProcessor {
 	private final Vector3 shipPosition = new Vector3(0, 0, 20);
 	private final ShapeRenderer screenShapeRenderer;
 	private final InputMultiplexer multiplexer;
+	private final Skin uiSkin;
+	private final int worldIndex;
 
+	private final Gson gson;
 
 	private float shipRotationZ = 0;
 
@@ -46,18 +60,20 @@ public class PlanetScreen implements Screen, InputProcessor {
 	private Vector3 tmpVector = new Vector3(0, 0, 0);
 
 	private WorldController world;
-
+	private Stage stage;
 
 	private final FreeCameraInput freeCameraInput;
 
-	public PlanetScreen(Skin uiSkin, InputMultiplexer pMultiplexer, int worldIndex) {
+	public PlanetScreen(Skin puiSkin, InputMultiplexer pMultiplexer, int pWorldIndex) {
+		uiSkin = puiSkin;
+		worldIndex = pWorldIndex;
+		multiplexer = pMultiplexer;
 
+
+		gson = new GsonBuilder().setPrettyPrinting().create();
 
 		modelBatch = new ModelBatch();
 		environment = new Environment();
-		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.3f, 0.3f, 0.3f, 1f));
-		environment.add(new DirectionalLight().set(0.8f, 0.5f, 0.5f, -1f, -0.8f, -0.2f));
-		environment.add(new DirectionalLight().set(0.8f, 0.5f, 0.5f, 1f, 0.8f, -0.2f));
 
 		screenShapeRenderer = new ShapeRenderer();
 		screenShapeRenderer.setAutoShapeType(true);
@@ -75,12 +91,58 @@ public class PlanetScreen implements Screen, InputProcessor {
 
 		world = new WorldController(worldIndex);
 
-		multiplexer = pMultiplexer;
+
 		multiplexer.addProcessor(this);
 		freeCameraInput = new FreeCameraInput(camera);
 		freeCameraInput.setEnabled(false);
 		multiplexer.addProcessor(freeCameraInput);
 
+		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/planet01/sceneConfig.json");
+		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
+
+		/*String str = gson.toJson(planetConfig);
+		FileHandle fileHandle = new FileHandle("entities/planets/planet01/sceneConfig.json");
+		fileHandle.writeString(str, false);*/
+
+		onReloadScene(planetConfig);
+
+		initStage(planetConfig);
+	}
+
+	@Override
+	public void onReloadScene(PlanetConfig planetConfig) {
+		environment.clear();
+		for (ColorAttribute cAttribute : planetConfig.environmentColorAttributes) {
+			environment.set(cAttribute);
+		}
+		for (DirectionalLight dLight : planetConfig.environmentDirectionalLights) {
+			environment.add(dLight);
+		}
+	}
+
+
+
+	private void initStage(PlanetConfig planetConfig) {
+		stage = new Stage(new ScreenViewport());
+		multiplexer.addProcessor(stage);
+
+
+		if (Config.DEBUG) {
+			final DevelopmentWindow developmentWindow = new DevelopmentWindow(uiSkin, stage, planetConfig, this);
+			developmentWindow.setVisible(false);
+			stage.addActor(developmentWindow);
+
+			TextButton devButton = new TextButton("dev", uiSkin);
+			devButton.setPosition(10, Gdx.graphics.getHeight() - devButton.getHeight() - 10);
+			stage.addActor(devButton);
+
+			devButton.addListener(new ClickListener() {
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					developmentWindow.setVisible(true);
+				}
+			});
+		}
 	}
 
 	@Override
@@ -91,7 +153,7 @@ public class PlanetScreen implements Screen, InputProcessor {
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(0, 0, 0,1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
@@ -112,7 +174,7 @@ public class PlanetScreen implements Screen, InputProcessor {
 
 		world.updateRequestCenter(shipPosition.x, shipPosition.y);
 
-		tmpVector.set(0, calculateBoostedSpeed() * delta, 0);
+		tmpVector.set(0, calculateBoostedSpeed() * 0.1f, 0);
 		tmpVector.rotate(shipRotationZ, 0, 0, 1);
 
 
@@ -140,6 +202,12 @@ public class PlanetScreen implements Screen, InputProcessor {
 		modelBatch.end();
 
 		drawOrigin();
+
+		if (stage != null) {
+			stage.act(delta);
+			stage.draw();
+		}
+
 	}
 
 	private int calculateBoostedSpeed() {
@@ -251,4 +319,6 @@ public class PlanetScreen implements Screen, InputProcessor {
 	public boolean scrolled(int amount) {
 		return false;
 	}
+
+
 }

@@ -138,9 +138,10 @@
     }
   ],
   "worldConfig": {
+    "chunkOverlap" : 1,
     "seedString": "0.0",
     "chunkSize": 20,
-    "name": "world02",
+    "name": "world03",
     "layerIds": [
       "EditorDefaultLayer"
     ]
