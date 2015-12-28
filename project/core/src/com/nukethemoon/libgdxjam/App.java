@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.nukethemoon.libgdxjam.input.InputController;
 import com.nukethemoon.libgdxjam.screens.MenuScreen;
+import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
 import com.nukethemoon.libgdxjam.screens.solar.SolarScreen;
 
@@ -38,7 +39,8 @@ public class App extends Game {
 		// load game entities
 
 		// openScreen(SplashScreen.class);
-		openPlanetScreen(1);
+		//openPlanetScreen(1);
+		openArkScreen();
 		//openSolarScreen();
 	}
 
@@ -62,6 +64,12 @@ public class App extends Game {
 
 	public static void openSolarScreen() {
 		SolarScreen screen = new SolarScreen(UI_SKIN, MULTIPLEXER);
+		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		app.setScreen(screen);
+	}
+
+	public static void openArkScreen() {
+		Screen screen = new ArkScreen(UI_SKIN, MULTIPLEXER);
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		app.setScreen(screen);
 	}
