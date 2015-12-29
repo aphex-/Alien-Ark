@@ -1,4 +1,4 @@
-package com.nukethemoon.libgdxjam.screens.planet.devtools;
+package com.nukethemoon.libgdxjam.screens.planet.devtools.forms;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -17,16 +17,16 @@ public class ColorForm extends Table {
 
 		final Slider sliderR = new Slider(0f, 1f, 0.01f, false, skin);
 		sliderR.setValue(color.r);
-		final Label labelR = new Label("", skin);
-		labelR.setWidth(30);
+		final Label labelR = new Label(color.r + "", skin);
+		labelR.setWidth(50);
 		final Slider sliderG = new Slider(0f, 1f, 0.01f, false, skin);
 		sliderG.setValue(color.g);
-		final Label labelG = new Label("", skin);
-		labelG.setWidth(30);
+		final Label labelG = new Label(color.g + "", skin);
+		labelG.setWidth(50);
 		final Slider sliderB = new Slider(0f, 1f, 0.01f, false, skin);
 		sliderB.setValue(color.b);
-		final Label labelB = new Label("", skin);
-		labelB.setWidth(30);
+		final Label labelB = new Label(color.b + "", skin);
+		labelB.setWidth(50);
 
 		ChangeListener changeListener = new ChangeListener() {
 			@Override
@@ -41,7 +41,6 @@ public class ColorForm extends Table {
 				labelG.setText(g + "");
 				labelB.setText(b + "");
 				listener.onColorChange(r, g, b);
-				pack();
 			}
 		};
 
@@ -54,17 +53,17 @@ public class ColorForm extends Table {
 
 		add(new Label("r", skin));
 		add(sliderR);
-		add(labelR);
+		add(labelR).width(50);
 		row();
 
 		add(new Label("g", skin));
 		add(sliderG);
-		add(labelG);
+		add(labelG).width(50);
 		row();
 
 		add(new Label("b", skin));
 		add(sliderB);
-		add(labelB);
+		add(labelB).width(50);
 		row();
 
 		pack();

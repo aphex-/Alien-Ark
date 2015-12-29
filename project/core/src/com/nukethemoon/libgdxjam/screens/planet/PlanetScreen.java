@@ -28,9 +28,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
-import com.nukethemoon.libgdxjam.screens.planet.devtools.DevWindow;
+import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
+import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWindow;
 
-public class PlanetScreen implements Screen, InputProcessor {
+public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener {
 
 
 	private final ModelBatch modelBatch;
@@ -103,13 +104,14 @@ public class PlanetScreen implements Screen, InputProcessor {
 		FileHandle fileHandle = new FileHandle("entities/planets/planet01/sceneConfig.json");
 		fileHandle.writeString(str, false);*/
 
-		load(planetConfig);
+		onReloadScene(planetConfig);
 
 		initStage(planetConfig);
 	}
 
-	private void load(PlanetConfig planetConfig) {
-		environment.set();
+	@Override
+	public void onReloadScene(PlanetConfig planetConfig) {
+		environment.clear();
 		for (ColorAttribute cAttribute : planetConfig.environmentColorAttributes) {
 			environment.set(cAttribute);
 		}
@@ -118,15 +120,17 @@ public class PlanetScreen implements Screen, InputProcessor {
 		}
 	}
 
+
+
 	private void initStage(PlanetConfig planetConfig) {
 		stage = new Stage(new ScreenViewport());
 		multiplexer.addProcessor(stage);
 
 
 		if (Config.DEBUG) {
-			final DevWindow devWindow = new DevWindow(uiSkin, planetConfig);
-			devWindow.setVisible(false);
-			stage.addActor(devWindow);
+			final DevelopmentWindow developmentWindow = new DevelopmentWindow(uiSkin, stage, planetConfig, this);
+			developmentWindow.setVisible(false);
+			stage.addActor(developmentWindow);
 
 			TextButton devButton = new TextButton("dev", uiSkin);
 			devButton.setPosition(10, Gdx.graphics.getHeight() - devButton.getHeight() - 10);
@@ -135,7 +139,7 @@ public class PlanetScreen implements Screen, InputProcessor {
 			devButton.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
-					devWindow.setVisible(true);
+					developmentWindow.setVisible(true);
 				}
 			});
 		}
@@ -315,4 +319,6 @@ public class PlanetScreen implements Screen, InputProcessor {
 	public boolean scrolled(int amount) {
 		return false;
 	}
+
+
 }

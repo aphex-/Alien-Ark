@@ -1,47 +1,68 @@
 
 game.png
-size: 512,256
+size: 1024,256
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 exhaust_placeholder
   rotate: false
-  xy: 370, 114
+  xy: 978, 132
   size: 40, 105
   orig: 40, 105
   offset: 0, 0
   index: -1
 ntm_logo
   rotate: false
-  xy: 2, 69
+  xy: 713, 87
   size: 150, 150
   orig: 150, 150
   offset: 0, 0
   index: -1
+placeholder_kreis
+  rotate: false
+  xy: 2, 2
+  size: 235, 235
+  orig: 235, 235
+  offset: 0, 0
+  index: -1
+placeholder_square
+  rotate: false
+  xy: 239, 2
+  size: 235, 235
+  orig: 235, 235
+  offset: 0, 0
+  index: -1
+placeholder_tri
+  rotate: false
+  xy: 476, 24
+  size: 235, 213
+  orig: 235, 213
+  offset: 0, 0
+  index: -1
 planet_1_placeholder
   rotate: false
-  xy: 154, 113
+  xy: 865, 131
   size: 111, 106
   orig: 111, 106
   offset: 0, 0
   index: -1
 planet_2_placeholder
   rotate: false
-  xy: 2, 2
+  xy: 713, 20
   size: 65, 65
   orig: 65, 65
   offset: 0, 0
   index: -1
 planet_3_placeholder
   rotate: false
-  xy: 267, 118
+  xy: 865, 28
   size: 101, 101
   orig: 101, 101
   offset: 0, 0
   index: -1
 ship_placeholder
   rotate: false
-  xy: 412, 114
+  xy: 968, 24
   size: 40, 105
   orig: 40, 105
   offset: 0, 0
