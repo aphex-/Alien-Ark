@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -12,8 +14,12 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
+import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
+import com.badlogic.gdx.graphics.g3d.particles.batches.BufferedParticleBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -30,38 +36,32 @@ import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWind
 public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener {
 
 
-	private final ModelBatch modelBatch;
-	private final Environment environment;
-	private final PerspectiveCamera camera;
+	private ModelBatch modelBatch;
+	private Environment environment;
+	private PerspectiveCamera camera;
+	private ParticleSystem particleSystem;
+	private BufferedParticleBatch particleSpriteBatch;
 
 	private Rocket rocket;
 
-	private final Vector3 shipPosition = new Vector3(0, 0, 20);
 	private final ShapeRenderer screenShapeRenderer;
 	private final InputMultiplexer multiplexer;
 	private final Skin uiSkin;
 	private final int worldIndex;
-
 	private final Gson gson;
-
-	private float shipRotationZ = 0;
 
 	private int [] shipSpeedLevels = new int []{0, 2, 4, 8, 12, 20};
 	private final int MAX_SPEED_LEVEL = shipSpeedLevels.length - 1;
 	private static final float SPEED_DECREASE_BY_DECAY_RATE = 0.02f;
 	private static final float SPEED_DECREASE_BY_BRAKES_RATE = 0.1f;
-
-	private static final int CAMERA_Z_OFFSET = 10;
-
 	private float currentSpeedDecay = 0;
 	private int currentSpeedLevel = 8;
-
-	private Vector3 tmpVector = new Vector3(0, 0, 0);
 
 	private WorldController world;
 	private Stage stage;
 
 	private final FreeCameraInput freeCameraInput;
+	private ParticleEffect effect;
 
 	public PlanetScreen(Skin puiSkin, InputMultiplexer pMultiplexer, int pWorldIndex) {
 		uiSkin = puiSkin;
@@ -96,9 +96,36 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		FileHandle fileHandle = new FileHandle("entities/planets/planet01/sceneConfig.json");
 		fileHandle.writeString(str, false);*/
 
+
+
 		onReloadScene(planetConfig);
 
+		initParticles();
 		initStage(planetConfig);
+	}
+
+	private void initParticles() {
+		// particles
+		particleSystem = ParticleSystem.get();
+		particleSpriteBatch = new BillboardParticleBatch();
+
+		particleSpriteBatch.setCamera(camera);
+		particleSystem.add(particleSpriteBatch);
+
+		AssetManager assets = new AssetManager();
+		ParticleEffectLoader.ParticleEffectLoadParameter loadParam = new ParticleEffectLoader.ParticleEffectLoadParameter(particleSystem.getBatches());
+		ParticleEffectLoader loader = new ParticleEffectLoader(new InternalFileHandleResolver());
+		assets.setLoader(ParticleEffect.class, loader);
+		assets.load("particles/rocket_thruster.pfx", ParticleEffect.class, loadParam);
+		assets.finishLoading();
+
+		ParticleEffect originalEffect = assets.get("particles/rocket_thruster.pfx");
+		// we cannot use the originalEffect, we must make a copy each time we create new particle effect
+		effect = originalEffect.copy();
+		effect.init();
+		effect.start();  // optional: particle will begin playing immediately
+		particleSystem.add(effect);
+		rocket.setParticleEffect(effect);
 	}
 
 	@Override
@@ -179,9 +206,16 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		rocket.update();
 
 		modelBatch.begin(camera);
-		modelBatch.render(rocket.getModelInstance(), environment);
+		rocket.drawModel(modelBatch, environment);
 		world.render(modelBatch, environment);
 		modelBatch.end();
+
+
+		particleSystem.update();
+		particleSystem.begin();
+		particleSystem.draw();
+		particleSystem.end();
+		modelBatch.render(particleSystem);
 
 		drawOrigin();
 
