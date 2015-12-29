@@ -4,18 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -37,8 +33,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private final ModelBatch modelBatch;
 	private final Environment environment;
 	private final PerspectiveCamera camera;
-	private final Model model;
-	private final ModelInstance ship;
+
+	private Rocket rocket;
 
 	private final Vector3 shipPosition = new Vector3(0, 0, 20);
 	private final ShapeRenderer screenShapeRenderer;
@@ -54,6 +50,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private final int MAX_SPEED_LEVEL = shipSpeedLevels.length - 1;
 	private static final float SPEED_DECREASE_BY_DECAY_RATE = 0.02f;
 	private static final float SPEED_DECREASE_BY_BRAKES_RATE = 0.1f;
+
+	private static final int CAMERA_Z_OFFSET = 10;
+
 	private float currentSpeedDecay = 0;
 	private int currentSpeedLevel = 8;
 
@@ -69,7 +68,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		worldIndex = pWorldIndex;
 		multiplexer = pMultiplexer;
 
-
+		rocket = new Rocket();
 		gson = new GsonBuilder().setPrettyPrinting().create();
 
 		modelBatch = new ModelBatch();
@@ -79,15 +78,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		screenShapeRenderer.setAutoShapeType(true);
 
 		camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		camera.position.set(0, 0, 10f);
-		camera.lookAt(0, 0, 0);
 		camera.near = 0.01f;
 		camera.far = 30000f;
-		camera.update();
-
-		ModelLoader loader = new ObjLoader();
-		model = loader.loadModel(Gdx.files.internal("models/ship_placeholder.obj"));
-		ship = new ModelInstance(model);
 
 		world = new WorldController(worldIndex);
 
@@ -157,47 +149,39 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-
-		tmpVector.set(0, -10, 0);
-		tmpVector.rotate(shipRotationZ, 0, 0, 1);
-		tmpVector.add(shipPosition);
+		world.updateRequestCenter(rocket.getPosition().x, rocket.getPosition().y);
 
 		if (!freeCameraInput.isEnabled()) {
-			camera.position.set(tmpVector.x, tmpVector.y, shipPosition.z + 6);
-			camera.lookAt(shipPosition);
+			camera.position.set(rocket.getPosition().x, rocket.getPosition().y - 20, rocket.getPosition().z + 6);
+			camera.lookAt(rocket.getPosition());
 			camera.up.set(0, 0, 1);
 		} else {
 			freeCameraInput.update(delta);
 		}
 		camera.update();
 
-
-		world.updateRequestCenter(shipPosition.x, shipPosition.y);
-
-		tmpVector.set(0, calculateBoostedSpeed() * 0.1f, 0);
-		tmpVector.rotate(shipRotationZ, 0, 0, 1);
-
-
-		ship.transform.idt();
-
-		shipPosition.add(tmpVector);
-		ship.transform.translate(shipPosition.x, shipPosition.y, shipPosition.z);
-
-
 		if (Gdx.app.getInput().isKeyPressed(21)) {
-			shipRotationZ += 100 * delta;
+			rocket.rotateLeft();
+
 		}
 
 		if (Gdx.app.getInput().isKeyPressed(22)) {
-			shipRotationZ -= 100 * delta;
+			rocket.rotateRight();
 		}
 
+		if (Gdx.app.getInput().isKeyPressed(19)) {
+			rocket.rotateDown();
+		}
 
-		ship.transform.rotate(0, 0, 1, shipRotationZ);
+		if (Gdx.app.getInput().isKeyPressed(20)) {
+			rocket.rotateUp();
+		}
 
+		rocket.thrust();
+		rocket.update();
 
 		modelBatch.begin(camera);
-		modelBatch.render(ship, environment);
+		modelBatch.render(rocket.getModelInstance(), environment);
 		world.render(modelBatch, environment);
 		modelBatch.end();
 
