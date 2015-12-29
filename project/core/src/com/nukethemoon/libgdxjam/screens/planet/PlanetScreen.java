@@ -142,7 +142,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	}
 
-
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -152,9 +151,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		world.updateRequestCenter(rocket.getPosition().x, rocket.getPosition().y);
 
 		if (!freeCameraInput.isEnabled()) {
-			camera.position.set(rocket.getPosition().x, rocket.getPosition().y - 20, rocket.getPosition().z + 6);
-			camera.lookAt(rocket.getPosition());
-			camera.up.set(0, 0, 1);
+			rocket.applyThirdPerson(camera);
+
 		} else {
 			freeCameraInput.update(delta);
 		}
@@ -301,6 +299,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public boolean scrolled(int amount) {
+		if (amount > 0) {
+			rocket.increaseThirdPersonOffsetY();
+		} else {
+			rocket.reduceThirdPersonOffsetY();
+		}
+
 		return false;
 	}
 
