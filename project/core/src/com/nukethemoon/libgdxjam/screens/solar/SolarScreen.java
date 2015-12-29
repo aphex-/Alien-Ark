@@ -15,6 +15,19 @@ import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
 
 public class SolarScreen implements Screen {
 
+	//TODO:
+	/*
+	- wir machen den solarscreen größer so dass wir ein bisschen in alle richtungen scrollen können
+	//wenn der sichtbare bereich verlassen wird wird der screen automatisch mit allen objekten gescrollt
+
+	
+
+	- in die mitte kommt eine fette sonne, wenn du da rein fliegst, explodiert das schiff und sind alle aliens tot
+	- die planeten werden zufällig plaziert, opus sagt mir wo
+	- show fuel/stats
+	- open ark screen on ui button
+	- planeten müssen entdeckt werden per radar */
+
 	private static final int NUMBER_OF_PLANETS = 3;
 
 	private final Vector2 shipPosition = new Vector2(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
