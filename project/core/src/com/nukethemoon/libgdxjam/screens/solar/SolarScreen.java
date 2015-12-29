@@ -17,8 +17,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.nukethemoon.libgdxjam.App;
-import com.nukethemoon.libgdxjam.Log;
-import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
+import com.nukethemoon.tools.opusproto.gemoetry.PointList;
+import com.nukethemoon.tools.opusproto.gemoetry.scatterer.massspring.SimplePositionConfig;
+import com.nukethemoon.tools.opusproto.gemoetry.scatterer.massspring.SimplePositionScattering;
+import com.nukethemoon.tools.opusproto.noise.Algorithms;
 
 public class SolarScreen implements Screen {
 
@@ -26,15 +28,12 @@ public class SolarScreen implements Screen {
 	/*
 	//- wir machen den solarscreen größer so dass wir ein bisschen in alle richtungen scrollen können
 	//wenn der sichtbare bereich verlassen wird wird der screen automatisch mit allen objekten gescrollt
-
-	- apply attributes to solarscreen
-
 	- in die mitte kommt eine fette sonne, wenn du da rein fliegst, explodiert das schiff und sind alle aliens tot
-	- die planeten werden zufällig plaziert, opus sagt mir wo
+	- apply attributes to solarscreen
 	- show fuel/stats
 	- planeten müssen entdeckt werden per radar */
 
-	private static final int NUMBER_OF_PLANETS = 3;
+	private static final int NUMBER_OF_PLANETS = 6;
 
 	private final Vector2 shipPosition = new Vector2(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
 
@@ -44,7 +43,7 @@ public class SolarScreen implements Screen {
 	//starts at 90 - ark facing up
 	private float currentRotation = 90;
 
-	private Vector2[] planetPositions = new Vector2[]{new Vector2(323, 556), new Vector2(555, 111), new Vector2(123, 484)};
+	private Vector2[] planetPositions = new Vector2[NUMBER_OF_PLANETS];
 
 	private float[] shipSpeedLevels = new float[]{0, 0.5f, 1f, 1.5f, 2.0f, 3.0f};
 	private final int MAX_SPEED_LEVEL = shipSpeedLevels.length - 1;
@@ -81,7 +80,6 @@ public class SolarScreen implements Screen {
 		exhaustSprite = new Sprite(App.TEXTURES.findRegion("exhaust_placeholder"));
 
 		setupSpaceship();
-		setupPlanets();
 		setupArkButton(uiSkin, multiplexer);
 	}
 
@@ -97,10 +95,46 @@ public class SolarScreen implements Screen {
 		planetSprites[0] = new Sprite(App.TEXTURES.findRegion("planet_1_placeholder"));
 		planetSprites[1] = new Sprite(App.TEXTURES.findRegion("planet_2_placeholder"));
 		planetSprites[2] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));
+		planetSprites[3] = new Sprite(App.TEXTURES.findRegion("planet_1_placeholder"));
+		planetSprites[4] = new Sprite(App.TEXTURES.findRegion("planet_2_placeholder"));
+		planetSprites[5] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));
 
+		Algorithms algorithms = new Algorithms();
+		SimplePositionConfig positionConfig = new SimplePositionConfig("internal");
+		SimplePositionScattering scattering = new SimplePositionScattering(positionConfig, 2323.34523, algorithms, null);
+		PointList pointList = (PointList) scattering.createGeometries(100, 100, screenWidth - 100, screenHeight - 100, 994234.234234);
+        pointList = spreadOutPointList(pointList);
 		for (int i = 0; i < NUMBER_OF_PLANETS; i++) {
-			planetSprites[i].setPosition(planetPositions[i].x, planetPositions[i].y);
+
+			float[] points = pointList.getPoints();
+			Vector2 planetPosition = calculateSuitablePlanetPosition(points, i);
+			planetSprites[i].setPosition(planetPosition.x, planetPosition.y);
+			planetPositions[i] = planetPosition;
 		}
+	}
+
+	private Vector2 calculateSuitablePlanetPosition(float[] points, int lastIndex) {
+		boolean foundPosition = false;
+		Vector2 result = new Vector2(100,100);
+		int pointCounter = lastIndex;
+		while (!foundPosition && pointCounter < points.length - 1) {
+			result = new Vector2(points[pointCounter], points[pointCounter+ 1]);
+			for (int i = 0; i < lastIndex; i++) {
+				if (planetSprites[i].getBoundingRectangle().contains(result.x, result.y)) {
+					foundPosition = false;
+					break;
+				} else {
+					foundPosition = true;
+				}
+			}
+			pointCounter++;
+		}
+		return result;
+
+	}
+
+	private PointList spreadOutPointList(PointList pointList) {
+		return pointList;
 	}
 
 	private void setupArkButton(Skin uiSkin, InputMultiplexer multiplexer) {
@@ -243,6 +277,8 @@ public class SolarScreen implements Screen {
 	public void resize(int width, int height) {
 		this.screenWidth = width;
 		this.screenHeight = height;
+
+		setupPlanets();
 	}
 
 	@Override
