@@ -9,23 +9,29 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
 
 public class SolarScreen implements Screen {
 
 	//TODO:
 	/*
-	- wir machen den solarscreen größer so dass wir ein bisschen in alle richtungen scrollen können
+	//- wir machen den solarscreen größer so dass wir ein bisschen in alle richtungen scrollen können
 	//wenn der sichtbare bereich verlassen wird wird der screen automatisch mit allen objekten gescrollt
 
-	
+	- apply attributes to solarscreen
 
 	- in die mitte kommt eine fette sonne, wenn du da rein fliegst, explodiert das schiff und sind alle aliens tot
 	- die planeten werden zufällig plaziert, opus sagt mir wo
 	- show fuel/stats
-	- open ark screen on ui button
 	- planeten müssen entdeckt werden per radar */
 
 	private static final int NUMBER_OF_PLANETS = 3;
@@ -65,6 +71,9 @@ public class SolarScreen implements Screen {
 	float arkWidth;
 	private boolean showExhaust = false;
 
+	private Stage stage;
+	private Table contentTable;
+
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
 		batch = new SpriteBatch();
@@ -73,6 +82,7 @@ public class SolarScreen implements Screen {
 
 		setupSpaceship();
 		setupPlanets();
+		setupArkButton(uiSkin, multiplexer);
 	}
 
 	private void setupSpaceship() {
@@ -93,6 +103,24 @@ public class SolarScreen implements Screen {
 		}
 	}
 
+	private void setupArkButton(Skin uiSkin, InputMultiplexer multiplexer) {
+		stage = new Stage(new ScreenViewport());
+		multiplexer.addProcessor(stage);
+
+		contentTable = new Table(uiSkin).debug();
+		contentTable.setPosition(1200, 600);
+
+		TextButton arkScreenButton = new TextButton("open Ark", uiSkin);
+		arkScreenButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				openArkScreen();
+			}
+		});
+		contentTable.add(arkScreenButton);
+		stage.addActor(contentTable);
+	}
+
 	@Override
 	public void show() {
 		batch = new SpriteBatch();
@@ -106,6 +134,8 @@ public class SolarScreen implements Screen {
 		renderPlanets();
 		renderArc();
 		handleAppNavigation();
+		stage.act(delta);
+		stage.draw();
 	}
 
 	private void renderArc() {
@@ -241,7 +271,7 @@ public class SolarScreen implements Screen {
 	}
 
 	private void openArkScreen() {
-		App.openScreen(ArkScreen.class);
+		App.openArkScreen();
 	}
 
 	private void checkIfArkIsOffScreenAndCorrect() {

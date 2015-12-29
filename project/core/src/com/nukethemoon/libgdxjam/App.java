@@ -40,8 +40,8 @@ public class App extends Game {
 
 		// openScreen(SplashScreen.class);
 		//openPlanetScreen(1);
-		openArkScreen();
-		//openSolarScreen();
+		//openArkScreen();
+		openSolarScreen();
 	}
 
 
