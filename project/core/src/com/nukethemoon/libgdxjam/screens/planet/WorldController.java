@@ -26,6 +26,7 @@ public class WorldController implements ChunkListener {
 	private int requestRadiusInTiles = 200;
 	private int lastRequestCenterTileX = 0;
 	private int lastRequestCenterTileY = 0;
+	private long requestCount = 0;
 
 	private Opus opus;
 
@@ -96,10 +97,12 @@ public class WorldController implements ChunkListener {
 		int requestCenterTileX = (int) (Math.floor(graphicX) / tileGraphicSize);
 		int requestCenterTileY = (int) (Math.floor(graphicY) / tileGraphicSize);
 
-		if (lastRequestCenterTileX == requestCenterTileX && lastRequestCenterTileY == requestCenterTileY) {
+		if (lastRequestCenterTileX == requestCenterTileX && lastRequestCenterTileY == requestCenterTileY && requestCount < 0) {
 			// return if requested the same tile again
 			return;
 		}
+
+		requestCount++;
 		// buffer the last request position
 		lastRequestCenterTileX = requestCenterTileX;
 		lastRequestCenterTileY = requestCenterTileY;
