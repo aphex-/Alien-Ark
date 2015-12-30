@@ -42,8 +42,10 @@ public class WorldController implements ChunkListener {
 	private Vector2 tmpVector2 = new Vector2();
 
 	private int chunkBufferSize;
+	private PlanetConfig planetConfig;
 
-	public WorldController(int worldIndex) {
+	public WorldController(int worldIndex, PlanetConfig pPlanetConfig) {
+		this.planetConfig = pPlanetConfig;
 		String worldName = String.format(WORLD_NAME, worldIndex);
 
 		OpusLoaderJson loader = new OpusLoaderJson();
@@ -180,7 +182,7 @@ public class WorldController implements ChunkListener {
 	public void onChunkCreated(int x, int y, Chunk chunk) {
 		Point point = new Point(x, y);
 		if (chunkGraphicBuffer.get(point) == null) {
-			ChunkGraphic chunkMesh = new ChunkGraphic(chunk, tileGraphicSize);
+			ChunkGraphic chunkMesh = new ChunkGraphic(chunk, tileGraphicSize, planetConfig);
 			chunkGraphicBuffer.put(point, chunkMesh);
 		} else {
 			Log.d(getClass(), "Created a chunk that already exists. x " + x + " y " + y);

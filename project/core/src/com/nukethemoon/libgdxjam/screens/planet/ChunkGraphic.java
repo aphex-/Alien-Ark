@@ -43,11 +43,12 @@ public class ChunkGraphic {
 	private MeshPartBuilder.VertexInfo tmpVertexInfo3 = new MeshPartBuilder.VertexInfo();
 
 	private Vector3 tmpNormal;
+	private PlanetConfig planetConfig;
 
-
-	public ChunkGraphic(Chunk chunk, float tileSize) {
+	public ChunkGraphic(Chunk chunk, float tileSize, PlanetConfig pPlanetConfig) {
 		this.chunk = chunk;
 		this.tileSize = tileSize;
+		this.planetConfig = pPlanetConfig;
 
 
 		interpreter = new MaterialInterpreter();

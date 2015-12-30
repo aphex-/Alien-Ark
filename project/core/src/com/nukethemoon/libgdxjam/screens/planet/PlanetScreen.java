@@ -63,6 +63,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private final FreeCameraInput freeCameraInput;
 	private ParticleEffect effect;
 
+	private boolean pause = false;
+
 	public PlanetScreen(Skin puiSkin, InputMultiplexer pMultiplexer, int pWorldIndex) {
 		uiSkin = puiSkin;
 		worldIndex = pWorldIndex;
@@ -81,22 +83,15 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		camera.near = 0.01f;
 		camera.far = 30000f;
 
-		world = new WorldController(worldIndex);
+		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/planet01/sceneConfig.json");
+		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
 
+		world = new WorldController(worldIndex, planetConfig);
 
 		multiplexer.addProcessor(this);
 		freeCameraInput = new FreeCameraInput(camera);
 		freeCameraInput.setEnabled(false);
 		multiplexer.addProcessor(freeCameraInput);
-
-		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/planet01/sceneConfig.json");
-		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
-
-		/*String str = gson.toJson(planetConfig);
-		FileHandle fileHandle = new FileHandle("entities/planets/planet01/sceneConfig.json");
-		fileHandle.writeString(str, false);*/
-
-
 
 		onReloadScene(planetConfig);
 
@@ -175,10 +170,16 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		world.updateRequestCenter(rocket.getPosition().x, rocket.getPosition().y);
+		if (!pause) {
+			world.updateRequestCenter(rocket.getPosition().x, rocket.getPosition().y);
+		}
 
 		if (!freeCameraInput.isEnabled()) {
-			rocket.applyThirdPerson(camera);
+
+			if (!pause) {
+				rocket.applyThirdPerson(camera);
+			}
+
 
 		} else {
 			freeCameraInput.update(delta);
@@ -202,16 +203,20 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			rocket.rotateUp();
 		}
 
-		rocket.thrust();
-		rocket.update();
+		if (!pause) {
+			rocket.thrust();
+			rocket.update();
+		}
 
 		modelBatch.begin(camera);
 		rocket.drawModel(modelBatch, environment);
 		world.render(modelBatch, environment);
 		modelBatch.end();
 
+		if (!pause) {
+			particleSystem.update();
+		}
 
-		particleSystem.update();
 		particleSystem.begin();
 		particleSystem.draw();
 		particleSystem.end();
@@ -297,6 +302,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public boolean keyDown(int keycode) {
 		if (keycode == 61) {
 			freeCameraInput.setEnabled(!freeCameraInput.isEnabled());
+		}
+		if (keycode == 44) {
+			pause = !pause;
 		}
 		return false;
 	}
