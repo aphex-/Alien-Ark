@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -40,8 +41,8 @@ public class SolarScreen implements Screen {
 	- show fuel/stats
 	- planeten müssen entdeckt werden per radar */
 
-	private static final int NUMBER_OF_PLANETS = 6;
-	private static final int RAYS_NUM = 9;
+	private static final int NUMBER_OF_PLANETS = 12;
+	private static final int RAYS_NUM = 33;
 
 	private final Vector2 shipPosition = new Vector2(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
 	private final RayHandler rayHandler;
@@ -94,7 +95,7 @@ public class SolarScreen implements Screen {
 		World world = new World(new Vector2(0, 0), true);
 		rayHandler = new RayHandler(world);
 		rayHandler.setShadows(true);
- 		new PointLight(rayHandler, RAYS_NUM, new Color(1, 1, 1, 0.9f), 2000, 0, 0);
+
 		//new DirectionalLight(rayHandler, RAYS_NUM, new Color(1, 0.6f, 0.9f, 0.6f), 45);
 
 		setupSpaceship();
@@ -110,19 +111,29 @@ public class SolarScreen implements Screen {
 	}
 
 	private void setupPlanets() {
-		planetSprites[0] = new Sprite(App.TEXTURES.findRegion("planet_1_placeholder"));
+		planetSprites[0] = new Sprite(App.TEXTURES.findRegion("sun_placeholder"));
 		planetSprites[1] = new Sprite(App.TEXTURES.findRegion("planet_2_placeholder"));
 		planetSprites[2] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));
 		planetSprites[3] = new Sprite(App.TEXTURES.findRegion("planet_1_placeholder"));
 		planetSprites[4] = new Sprite(App.TEXTURES.findRegion("planet_2_placeholder"));
 		planetSprites[5] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));
+		planetSprites[6] = new Sprite(App.TEXTURES.findRegion("planet_1_placeholder"));
+		planetSprites[7] = new Sprite(App.TEXTURES.findRegion("planet_2_placeholder"));
+		planetSprites[8] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));
+		planetSprites[9] = new Sprite(App.TEXTURES.findRegion("planet_1_placeholder"));
+		planetSprites[10] = new Sprite(App.TEXTURES.findRegion("planet_2_placeholder"));
+		planetSprites[11] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));
+
+
+		planetPositions[0] = new Vector2((screenWidth/2)-150, (screenHeight/2) -150) ;
+		planetSprites[0].setPosition(planetPositions[0].x, planetPositions[0].y );
+
 
 		Algorithms algorithms = new Algorithms();
 		SimplePositionConfig positionConfig = new SimplePositionConfig("internal");
 		SimplePositionScattering scattering = new SimplePositionScattering(positionConfig, 2323.34523, algorithms, null);
-		PointList pointList = (PointList) scattering.createGeometries(100, 100, screenWidth - 100, screenHeight - 100, 994234.234234);
-        pointList = spreadOutPointList(pointList);
-		for (int i = 0; i < NUMBER_OF_PLANETS; i++) {
+		PointList pointList = (PointList) scattering.createGeometries(0, 0, screenWidth, screenHeight, 994234.234234);
+		for (int i = 1; i < NUMBER_OF_PLANETS; i++) {
 
 			float[] points = pointList.getPoints();
 			Vector2 planetPosition = calculateSuitablePlanetPosition(points, i);
@@ -138,7 +149,9 @@ public class SolarScreen implements Screen {
 		while (!foundPosition && pointCounter < points.length - 1) {
 			result = new Vector2(points[pointCounter], points[pointCounter+ 1]);
 			for (int i = 0; i < lastIndex; i++) {
-				if (planetSprites[i].getBoundingRectangle().contains(result.x, result.y)) {
+				planetSprites[lastIndex].setPosition(result.x, result.y);
+				Rectangle proposedRect = planetSprites[lastIndex].getBoundingRectangle();
+				if (Intersector.overlaps(planetSprites[i].getBoundingRectangle(), proposedRect)) {
 					foundPosition = false;
 					break;
 				} else {
@@ -149,10 +162,6 @@ public class SolarScreen implements Screen {
 		}
 		return result;
 
-	}
-
-	private PointList spreadOutPointList(PointList pointList) {
-		return pointList;
 	}
 
 	private void setupArkButton(Skin uiSkin, InputMultiplexer multiplexer) {
@@ -306,6 +315,8 @@ public class SolarScreen implements Screen {
 		camera = new OrthographicCamera(screenWidth, screenHeight);
 		camera.position.set(0, screenWidth / 2f, 0);
 		camera.update();
+
+		new PointLight(rayHandler, RAYS_NUM, new Color(1, 1, 1, 0.44f), 2000, 0, 600);
 
 
 		setupPlanets();
