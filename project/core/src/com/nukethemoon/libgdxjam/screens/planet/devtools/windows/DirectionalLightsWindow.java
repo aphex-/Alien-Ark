@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.forms.DirectionalLightsForm;
@@ -44,7 +45,7 @@ public class DirectionalLightsWindow extends ClosableWindow {
 	}
 
 	private void savePlanetConfig(PlanetConfig planetConfig) {
-		Gson gson = new Gson();
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String str = gson.toJson(planetConfig);
 
 		FileHandle fileHandle = new FileHandle(

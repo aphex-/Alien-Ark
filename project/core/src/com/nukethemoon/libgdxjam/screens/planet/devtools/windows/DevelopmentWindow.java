@@ -4,7 +4,6 @@ package com.nukethemoon.libgdxjam.screens.planet.devtools.windows;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -19,7 +18,7 @@ public class DevelopmentWindow extends ClosableWindow {
 
 	public static NinePatchDrawable INNER_BACKGROUND;
 
-	public DevelopmentWindow(final Skin skin, Stage stage, final PlanetConfig planetConfig, ReloadSceneListener reloadSceneListener) {
+	public DevelopmentWindow(final Skin skin, Stage stage, final PlanetConfig planetConfig, final ReloadSceneListener reloadSceneListener) {
 		super("Development", skin);
 		NinePatch patch = new NinePatch(new Texture(Gdx.files.internal("skin/background.png")),
 				1, 1, 1, 1);
@@ -36,15 +35,17 @@ public class DevelopmentWindow extends ClosableWindow {
 		stage.addActor(materialsWindow);
 
 
-		ColorAttribute colorAttribute = planetConfig.environmentColorAttributes.get(0);
-		com.nukethemoon.libgdxjam.screens.planet.devtools.forms.ColorForm cf = new com.nukethemoon.libgdxjam.screens.planet.devtools.forms.ColorForm(skin, colorAttribute.color, new com.nukethemoon.libgdxjam.screens.planet.devtools.forms.ColorForm.ColorChangeListener() {
+		/*final ColorAttribute colorAttribute = planetConfig.environmentColorAttributes.get(0);
+		ColorAttributeForm colorAttributeForm = new ColorAttributeForm(skin, colorAttribute, new ColorAttributeForm.ColorAttributeChangeListener() {
 			@Override
-			public void onColorChange(float v, float v1, float v2) {
-				pack();
+			public void onColorAttributeChange(ColorAttribute attribute) {
+				planetConfig.environmentColorAttributes.remove(colorAttribute);
+				planetConfig.environmentColorAttributes.add(attribute);
+				reloadSceneListener.onReloadScene(planetConfig);
 			}
 		});
-		add(cf);
-		row();
+		add(colorAttributeForm);
+		row();*/
 
 
 		TextButton lightsButton = new TextButton("Directional Lights", skin);

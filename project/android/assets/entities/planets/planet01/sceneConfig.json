@@ -1,1 +1,50 @@
-{"id":"planet01","environmentColorAttributes":[{"color":{"r":0.3,"g":0.3,"b":0.3,"a":1.0},"type":32,"typeBit":5}],"environmentDirectionalLights":[{"direction":{"x":1.0,"y":0.5,"z":-0.15},"color":{"r":0.91,"g":1.0,"b":0.5,"a":1.0}},{"direction":{"x":0.77151674,"y":0.6172134,"z":-0.15430336},"color":{"r":0.8,"g":0.5,"b":0.5,"a":1.0}},{"direction":{"x":0.0,"y":0.0,"z":0.0},"color":{"r":0.0,"g":0.0,"b":0.0,"a":1.0}}]}
+{
+  "id": "planet01",
+  "environmentColorAttributes": [{
+	"color": {
+	  "r": 0.3,
+	  "g": 0.3,
+	  "b": 0.3,
+	  "a": 1.0
+	},
+	"type": 32,
+	"typeBit": 5
+  }],
+  "environmentDirectionalLights": [{
+	"direction": {
+	  "x": 1.0,
+	  "y": 0.5,
+	  "z": -0.15
+	},
+	"color": {
+	  "r": 0.91,
+	  "g": 1.0,
+	  "b": 0.5,
+	  "a": 1.0
+	}
+  }, {
+	"direction": {
+	  "x": 0.77151674,
+	  "y": 0.6172134,
+	  "z": -0.15430336
+	},
+	"color": {
+	  "r": 0.8,
+	  "g": 0.5,
+	  "b": 0.5,
+	  "a": 1.0
+	}
+  }, {
+	"direction": {
+	  "x": 0.0,
+	  "y": 0.0,
+	  "z": 0.0
+	},
+	"color": {
+	  "r": 0.0,
+	  "g": 0.0,
+	  "b": 0.0,
+	  "a": 1.0
+	}
+  }]
+}

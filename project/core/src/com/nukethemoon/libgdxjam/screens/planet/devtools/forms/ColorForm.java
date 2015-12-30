@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 public class ColorForm extends Table {
 
 
+	protected final Label titleLabel;
 
 	public ColorForm(Skin skin, final Color color, final ColorChangeListener listener) {
 		pad(2);
@@ -48,7 +49,8 @@ public class ColorForm extends Table {
 		sliderG.addListener(changeListener);
 		sliderB.addListener(changeListener);
 
-		add(new Label("Color", skin));
+		titleLabel = new Label("Color", skin);
+		add(titleLabel);
 		row();
 
 		add(new Label("r", skin));
