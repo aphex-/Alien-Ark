@@ -3,9 +3,12 @@ package com.nukethemoon.libgdxjam.screens.planet;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
@@ -36,11 +39,16 @@ public class Rocket {
 
 	private Vector3 tmpCamPosition = new Vector3();
 	private Vector3 tmpCamOffset = new Vector3();
+	private ParticleEffect particleEffect;
 
 	public Rocket() {
 		ModelLoader loader = new ObjLoader();
 		Model model = loader.loadModel(Gdx.files.internal("models/rocket.obj"));
 		modelInstance = new ModelInstance(model);
+	}
+
+	public void setParticleEffect(ParticleEffect particleEffect) {
+		this.particleEffect = particleEffect;
 	}
 
 	public void rotateLeft() {
@@ -125,4 +133,11 @@ public class Rocket {
 
 		lastCamPosition.set(camera.position);
 	}
+
+
+	public void drawModel(ModelBatch modelBatch, Environment environment) {
+		modelBatch.render(getModelInstance(), environment);
+		particleEffect.setTransform(modelInstance.transform);
+	}
+
 }
