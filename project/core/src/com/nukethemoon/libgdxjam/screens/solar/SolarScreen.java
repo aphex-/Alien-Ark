@@ -4,11 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -22,6 +25,10 @@ import com.nukethemoon.tools.opusproto.gemoetry.scatterer.massspring.SimplePosit
 import com.nukethemoon.tools.opusproto.gemoetry.scatterer.massspring.SimplePositionScattering;
 import com.nukethemoon.tools.opusproto.noise.Algorithms;
 
+import box2dLight.DirectionalLight;
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
+
 public class SolarScreen implements Screen {
 
 	//TODO:
@@ -34,8 +41,11 @@ public class SolarScreen implements Screen {
 	- planeten müssen entdeckt werden per radar */
 
 	private static final int NUMBER_OF_PLANETS = 6;
+	private static final int RAYS_NUM = 9;
 
 	private final Vector2 shipPosition = new Vector2(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
+	private final RayHandler rayHandler;
+	private OrthographicCamera camera;
 
 	//0 - 359
 	private float adjustRotation = 0;
@@ -51,6 +61,8 @@ public class SolarScreen implements Screen {
 	private static final float SPEED_DECREASE_BY_BRAKES_RATE = 0.1f;
 	private float currentSpeedDecay = 0;
 	private int currentSpeedLevel = 0;
+
+
 
 
 	private static final int INITIAL_ARK_POSITION_Y = 10;
@@ -78,6 +90,12 @@ public class SolarScreen implements Screen {
 		batch = new SpriteBatch();
 		arkSprite = new Sprite(App.TEXTURES.findRegion("ship_placeholder"));
 		exhaustSprite = new Sprite(App.TEXTURES.findRegion("exhaust_placeholder"));
+
+		World world = new World(new Vector2(0, 0), true);
+		rayHandler = new RayHandler(world);
+		rayHandler.setShadows(true);
+ 		new PointLight(rayHandler, RAYS_NUM, new Color(1, 1, 1, 0.9f), 2000, 0, 0);
+		//new DirectionalLight(rayHandler, RAYS_NUM, new Color(1, 0.6f, 0.9f, 0.6f), 45);
 
 		setupSpaceship();
 		setupArkButton(uiSkin, multiplexer);
@@ -168,6 +186,13 @@ public class SolarScreen implements Screen {
 		renderPlanets();
 		renderArc();
 		handleAppNavigation();
+
+
+		rayHandler.setCombinedMatrix(camera);
+		rayHandler.updateAndRender();
+
+		camera.update();
+
 		stage.act(delta);
 		stage.draw();
 	}
@@ -270,13 +295,18 @@ public class SolarScreen implements Screen {
 
 	@Override
 	public void dispose() {
-
+		rayHandler.dispose();
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		this.screenWidth = width;
 		this.screenHeight = height;
+
+		camera = new OrthographicCamera(screenWidth, screenHeight);
+		camera.position.set(0, screenWidth / 2f, 0);
+		camera.update();
+
 
 		setupPlanets();
 	}
