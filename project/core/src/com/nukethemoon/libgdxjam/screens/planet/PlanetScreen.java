@@ -48,7 +48,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private final InputMultiplexer multiplexer;
 	private final Skin uiSkin;
 	private final int worldIndex;
-	private final Gson gson;
+
 
 	private int [] shipSpeedLevels = new int []{0, 2, 4, 8, 12, 20};
 	private final int MAX_SPEED_LEVEL = shipSpeedLevels.length - 1;
@@ -65,6 +65,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private boolean pause = false;
 
+	public static Gson gson;
+
 	public PlanetScreen(Skin puiSkin, InputMultiplexer pMultiplexer, int pWorldIndex) {
 		uiSkin = puiSkin;
 		worldIndex = pWorldIndex;
@@ -72,6 +74,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		rocket = new Rocket();
 		gson = new GsonBuilder().setPrettyPrinting().create();
+
 
 		modelBatch = new ModelBatch();
 		environment = new Environment();
@@ -85,6 +88,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/planet01/sceneConfig.json");
 		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
+		planetConfig.deserialize();
+
+		/*Material waterMaterial = new Material(
+				ColorAttribute.createReflection(Color.WHITE),
+				new ColorAttribute(ColorAttribute.Specular, 1, 1, 1, 1));
+		planetConfig.serializedMaterials.put("Water01", new GsonMaterial(waterMaterial));*/
 
 		world = new WorldController(worldIndex, planetConfig);
 

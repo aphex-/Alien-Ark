@@ -216,9 +216,7 @@ public class ChunkGraphic {
 		meshBuilder.setColor(0, 0, 1, 0.5f);
 		meshBuilder.rect(corner01, corner02, corner03, corner04, new Vector3(0, 0, 1));
 
-		Material waterMaterial = new Material(
-				ColorAttribute.createReflection(Color.WHITE),
-				new ColorAttribute(ColorAttribute.Specular, 1, 1, 1, 1));
+		Material waterMaterial = planetConfig.materials.get("Water01");
 
 		modelBuilder.part("WATER", meshBuilder.end(), GL20.GL_TRIANGLES, waterMaterial);
 	}
