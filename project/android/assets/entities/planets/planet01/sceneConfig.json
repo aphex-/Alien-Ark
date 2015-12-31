@@ -88,6 +88,21 @@
           "typeBit": 0
         }
       ]
+    },
+    "Landscape01": {
+      "id": "mtl9502",
+      "colorAttributes": [
+        {
+          "color": {
+            "r": 0.7490196,
+            "g": 0.7490196,
+            "b": 0.7490196,
+            "a": 1.0
+          },
+          "type": 1,
+          "typeBit": 0
+        }
+      ]
     }
   }
 }

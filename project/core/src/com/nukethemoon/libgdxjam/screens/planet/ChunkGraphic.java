@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -92,11 +91,8 @@ public class ChunkGraphic {
 			}
 		}
 
-		Material baseMaterial = new Material(
-				new ColorAttribute(ColorAttribute.Diffuse, Color.LIGHT_GRAY));
-		//Material baseMaterial = new Material();
-
-		modelBuilder.part("BASE", meshBuilder.end(), GL20.GL_TRIANGLES, baseMaterial);
+		Material landscapeMaterial = planetConfig.materials.get("Landscape01");
+		modelBuilder.part("Landscape01", meshBuilder.end(), GL20.GL_TRIANGLES, landscapeMaterial);
 	}
 
 
@@ -213,7 +209,6 @@ public class ChunkGraphic {
 		Vector3 corner03 = new Vector3(width, height, z);
 		Vector3 corner04 = new Vector3(0f, height, z);
 
-		//meshBuilder.setColor(0, 0, 1, 0.5f);
 		meshBuilder.rect(corner01, corner02, corner03, corner04, new Vector3(0, 0, 1));
 
 		Material waterMaterial = planetConfig.materials.get("Water01");
