@@ -29,7 +29,6 @@ public class ChunkGraphic {
 	private final ModelBuilder modelBuilder;
 	private final Model model;
 
-	private Chunk chunk;
 	private float tileSize;
 
 	private Vector3 tmpCorner0 = new Vector3();
@@ -45,10 +44,8 @@ public class ChunkGraphic {
 	private PlanetConfig planetConfig;
 
 	public ChunkGraphic(Chunk chunk, float tileSize, PlanetConfig pPlanetConfig) {
-		this.chunk = chunk;
 		this.tileSize = tileSize;
 		this.planetConfig = pPlanetConfig;
-
 
 		interpreter = new MaterialInterpreter();
 		meshBuilder = new MeshBuilder();
@@ -197,22 +194,21 @@ public class ChunkGraphic {
 		return seg1.crs(seg2).nor();
 	}
 
+	/**
+	 * Creates a water plane.
+	 * @param chunk The chunk.
+	 */
 	private void createWaterPart(Chunk chunk) {
 		meshBuilder.begin(VERTEX_ATTRIBUTES, GL20.GL_TRIANGLES);
-
 		float z = WATER_HEIGHT * LANDSCAPE_MAX_HEIGHT;
 		float width = chunk.getWidth() * tileSize;
 		float height = chunk.getHeight() * tileSize;
-
 		Vector3 corner01 = new Vector3(0f, 0f, z);
 		Vector3 corner02 = new Vector3(width, 0f, z);
 		Vector3 corner03 = new Vector3(width, height, z);
 		Vector3 corner04 = new Vector3(0f, height, z);
-
 		meshBuilder.rect(corner01, corner02, corner03, corner04, new Vector3(0, 0, 1));
-
 		Material waterMaterial = planetConfig.materials.get("Water01");
-
 		modelBuilder.part("WATER", meshBuilder.end(), GL20.GL_TRIANGLES, waterMaterial);
 	}
 
@@ -220,7 +216,6 @@ public class ChunkGraphic {
 	public ModelInstance getModelInstance() {
 		return modelInstance;
 	}
-
 
 	public void dispose() {
 		model.dispose();
