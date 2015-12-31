@@ -7,11 +7,13 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -25,6 +27,9 @@ import com.nukethemoon.tools.opusproto.gemoetry.PointList;
 import com.nukethemoon.tools.opusproto.gemoetry.scatterer.massspring.SimplePositionConfig;
 import com.nukethemoon.tools.opusproto.gemoetry.scatterer.massspring.SimplePositionScattering;
 import com.nukethemoon.tools.opusproto.noise.Algorithms;
+
+import java.security.SecureRandom;
+import java.util.Random;
 
 import box2dLight.DirectionalLight;
 import box2dLight.PointLight;
@@ -44,7 +49,7 @@ public class SolarScreen implements Screen {
 	private static final int NUMBER_OF_PLANETS = 12;
 	private static final int RAYS_NUM = 33;
 
-	private final Vector2 shipPosition = new Vector2(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
+	private Vector2 shipPosition = new Vector2(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
 	private final RayHandler rayHandler;
 	private OrthographicCamera camera;
 
@@ -85,6 +90,7 @@ public class SolarScreen implements Screen {
 
 	private Stage stage;
 	private Table contentTable;
+	private Sprite sunSprite;
 
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
@@ -93,6 +99,7 @@ public class SolarScreen implements Screen {
 		exhaustSprite = new Sprite(App.TEXTURES.findRegion("exhaust_placeholder"));
 
 		World world = new World(new Vector2(0, 0), true);
+
 		rayHandler = new RayHandler(world);
 		rayHandler.setShadows(true);
 
@@ -111,7 +118,7 @@ public class SolarScreen implements Screen {
 	}
 
 	private void setupPlanets() {
-		planetSprites[0] = new Sprite(App.TEXTURES.findRegion("sun_placeholder"));
+		planetSprites[0] = new Sprite(App.TEXTURES.findRegion("planet_1_placeholder"));
 		planetSprites[1] = new Sprite(App.TEXTURES.findRegion("planet_2_placeholder"));
 		planetSprites[2] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));
 		planetSprites[3] = new Sprite(App.TEXTURES.findRegion("planet_1_placeholder"));
@@ -125,15 +132,16 @@ public class SolarScreen implements Screen {
 		planetSprites[11] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));
 
 
-		planetPositions[0] = new Vector2((screenWidth/2)-150, (screenHeight/2) -150) ;
-		planetSprites[0].setPosition(planetPositions[0].x, planetPositions[0].y );
 
+
+		sunSprite = new Sprite(App.TEXTURES.findRegion("sun_placeholder"));
+		sunSprite.setPosition(600, 600);
 
 		Algorithms algorithms = new Algorithms();
 		SimplePositionConfig positionConfig = new SimplePositionConfig("internal");
 		SimplePositionScattering scattering = new SimplePositionScattering(positionConfig, 2323.34523, algorithms, null);
-		PointList pointList = (PointList) scattering.createGeometries(0, 0, screenWidth, screenHeight, 994234.234234);
-		for (int i = 1; i < NUMBER_OF_PLANETS; i++) {
+		PointList pointList = (PointList) scattering.createGeometries(150, 150, 5000, 5000, 994234.234234);
+		for (int i = 0; i < NUMBER_OF_PLANETS; i++) {
 
 			float[] points = pointList.getPoints();
 			Vector2 planetPosition = calculateSuitablePlanetPosition(points, i);
@@ -146,12 +154,19 @@ public class SolarScreen implements Screen {
 		boolean foundPosition = false;
 		Vector2 result = new Vector2(100,100);
 		int pointCounter = lastIndex;
+		Random random = new Random(System.currentTimeMillis());
 		while (!foundPosition && pointCounter < points.length - 1) {
-			result = new Vector2(points[pointCounter], points[pointCounter+ 1]);
+
+			int x  = random.nextInt(1200);
+			int y = random.nextInt(1200);
+			result = new Vector2(x, y);
 			for (int i = 0; i < lastIndex; i++) {
 				planetSprites[lastIndex].setPosition(result.x, result.y);
 				Rectangle proposedRect = planetSprites[lastIndex].getBoundingRectangle();
-				if (Intersector.overlaps(planetSprites[i].getBoundingRectangle(), proposedRect)) {
+				if (Intersector.overlaps(sunSprite.getBoundingRectangle(), proposedRect)) {
+					foundPosition = false;
+					break;
+				} else if (Intersector.overlaps(planetSprites[i].getBoundingRectangle(), proposedRect)) {
 					foundPosition = false;
 					break;
 				} else {
@@ -194,13 +209,15 @@ public class SolarScreen implements Screen {
 		handleArkMovementInput(delta);
 		renderPlanets();
 		renderArc();
-		handleAppNavigation();
+		//handleAppNavigation();
 
 
 		rayHandler.setCombinedMatrix(camera);
 		rayHandler.updateAndRender();
 
+		camera.position.set(arkSprite.getX(), arkSprite.getY(), 0);
 		camera.update();
+		batch.setProjectionMatrix(camera.combined);
 
 		stage.act(delta);
 		stage.draw();
@@ -236,6 +253,7 @@ public class SolarScreen implements Screen {
 
 	private void renderPlanets() {
 		batch.begin();
+		sunSprite.draw(batch);
 		for (Sprite planetSprite : planetSprites) {
 			planetSprite.draw(batch);
 		}
@@ -289,7 +307,7 @@ public class SolarScreen implements Screen {
 		shipPosition.y = arkSprite.getY();
 
 		exhaustSprite.setPosition(shipPosition.x, shipPosition.y);
-		checkIfArkIsOffScreenAndCorrect();
+		//checkIfArkIsOffScreenAndCorrect();
 	}
 
 	@Override
@@ -316,7 +334,7 @@ public class SolarScreen implements Screen {
 		camera.position.set(0, screenWidth / 2f, 0);
 		camera.update();
 
-		new PointLight(rayHandler, RAYS_NUM, new Color(1, 1, 1, 0.44f), 2000, 0, 600);
+		new PointLight(rayHandler, RAYS_NUM, new Color(1, 1, 1, 0.50f), 2000, 700, 700);
 
 
 		setupPlanets();
