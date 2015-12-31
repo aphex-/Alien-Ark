@@ -1,49 +1,55 @@
-package com.nukethemoon.libgdxjam.screens.planet.devtools.windows;
+package com.nukethemoon.libgdxjam.screens.planet.devtools.forms;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
-import com.nukethemoon.libgdxjam.screens.planet.devtools.forms.ColorAndVectorForm;
+import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWindow;
 
-public class SceneWindow extends ClosableWindow {
+public class DirectionalLightsForm extends Table {
 
-	private final Table content;
-	private final Skin skin;
-	private final ReloadSceneListener reloadSceneListener;
 	private final TextButton addButton;
+	private final Table content;
+	private PlanetConfig planetConfig;
+	private ReloadSceneListener listener;
 
-
-	public SceneWindow(Skin skin, final ReloadSceneListener reloadSceneListener) {
-		super("Scene", skin);
-		this.skin = skin;
-		this.reloadSceneListener = reloadSceneListener;
-
-		addButton = new TextButton("add light", skin);
+	public DirectionalLightsForm(Skin skin, ReloadSceneListener reloadSceneListener) {
+		setSkin(skin);
+		addButton = new TextButton("add new light", skin);
+		listener = reloadSceneListener;
 		add(addButton);
 		row();
 
 		content = new Table();
-		add(content);
+		content.setBackground(DevelopmentWindow.INNER_BACKGROUND);
+		content.pad(5);
+		ScrollPane pane = new ScrollPane(content);
+		pane.setScrollingDisabled(true, false);
+		pane.setScrollBarPositions(false, true);
+		pane.setScrollbarsOnTop(true);
+
+		add(pane).height(300);
+		row();
+
 	}
 
-	public void load(final PlanetConfig planetConfig) {
-		getTitleLabel().setText("Scene " + planetConfig.id);
-
-
+	public void load(final PlanetConfig pPlanetConfig) {
+		planetConfig = pPlanetConfig;
+		content.clear();
 		addButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				DirectionalLight directionalLight = new DirectionalLight();
-				planetConfig.environmentDirectionalLights.add(directionalLight);
-				addLight(directionalLight, planetConfig.environmentDirectionalLights.size() + 1, planetConfig);
-				reloadSceneListener.onReloadScene(planetConfig);
+				pPlanetConfig.environmentDirectionalLights.add(directionalLight);
+				addLight(directionalLight, pPlanetConfig.environmentDirectionalLights.size() + 1, pPlanetConfig);
+				listener.onReloadScene(pPlanetConfig);
 				pack();
 			}
 		});
@@ -51,13 +57,15 @@ public class SceneWindow extends ClosableWindow {
 
 		// directional lights
 		int index = 1;
-		for (final DirectionalLight dLight : planetConfig.environmentDirectionalLights) {
-			addLight(dLight, index, planetConfig);
+		for (final DirectionalLight dLight : pPlanetConfig.environmentDirectionalLights) {
+			addLight(dLight, index, pPlanetConfig);
 			index++;
 		}
 
 		pack();
 	}
+
+
 
 	private void addLight(final DirectionalLight dLight, int index, final PlanetConfig planetConfig) {
 		final ColorAndVectorForm colorAndVectorForm = new ColorAndVectorForm(getSkin(),
@@ -75,13 +83,11 @@ public class SceneWindow extends ClosableWindow {
 				content.removeActor(colorAndVectorForm);
 				pack();
 				planetConfig.environmentDirectionalLights.remove(dLight);
-				reloadSceneListener.onReloadScene(planetConfig);
+				listener.onReloadScene(planetConfig);
 			}
 		});
 
 		content.add(colorAndVectorForm).padTop(10);
 		content.row();
 	}
-
-
 }
