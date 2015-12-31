@@ -39,9 +39,9 @@ public class App extends Game {
 		// load game entities
 
 		// openScreen(SplashScreen.class);
-		//openPlanetScreen(1);
+		openPlanetScreen(1);
 		//openArkScreen();
-		openSolarScreen();
+		//openSolarScreen();
 	}
 
 

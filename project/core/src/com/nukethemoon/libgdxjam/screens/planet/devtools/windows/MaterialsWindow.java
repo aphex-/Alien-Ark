@@ -2,8 +2,8 @@ package com.nukethemoon.libgdxjam.screens.planet.devtools.windows;
 
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
-import com.nukethemoon.libgdxjam.screens.planet.devtools.GsonMaterial;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.forms.MaterialForm;
 
@@ -11,29 +11,34 @@ import java.util.Map;
 
 public class MaterialsWindow extends ClosableWindow {
 
+	private Table content = new Table();
+
 	public MaterialsWindow(Skin skin, ReloadSceneListener reloadSceneListener) {
 		super("Materials", skin);
 
-
+		add(content);
 
 		pack();
 	}
 
 	public void load(PlanetConfig config) {
-		for (Map.Entry<String, GsonMaterial> entry : config.serializedMaterials.entrySet()) {
-			Material material = entry.getValue().createMaterial();
+		content.clear();
+		for (Map.Entry<String, Material> entry : config.materials.entrySet()) {
+			Material material = entry.getValue();
 			String materialId = entry.getKey();
 
-			MaterialForm materialForm = new MaterialForm(getSkin(), material, materialId, new MaterialForm.MaterialChangeListener() {
+			MaterialForm materialForm = new MaterialForm(getSkin(),
+					material, materialId, new MaterialForm.MaterialChangeListener() {
 				@Override
 				public void onMaterialChange(Material material) {
 
 				}
 			});
 
-			add(materialForm);
-			row();
+			content.add(materialForm);
+			content.row();
 		}
+		content.pack();
 		pack();
 	}
 }

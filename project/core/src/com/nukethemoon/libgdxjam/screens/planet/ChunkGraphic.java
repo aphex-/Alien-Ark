@@ -213,7 +213,7 @@ public class ChunkGraphic {
 		Vector3 corner03 = new Vector3(width, height, z);
 		Vector3 corner04 = new Vector3(0f, height, z);
 
-		meshBuilder.setColor(0, 0, 1, 0.5f);
+		//meshBuilder.setColor(0, 0, 1, 0.5f);
 		meshBuilder.rect(corner01, corner02, corner03, corner04, new Vector3(0, 0, 1));
 
 		Material waterMaterial = planetConfig.materials.get("Water01");
@@ -224,11 +224,6 @@ public class ChunkGraphic {
 
 	public ModelInstance getModelInstance() {
 		return modelInstance;
-	}
-
-
-	public Chunk getChunk() {
-		return chunk;
 	}
 
 
