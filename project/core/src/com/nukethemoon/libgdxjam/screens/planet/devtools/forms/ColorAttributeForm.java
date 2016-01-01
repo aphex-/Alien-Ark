@@ -15,6 +15,9 @@ public class ColorAttributeForm extends ColorForm {
 		super(skin, colorAttribute.color, new ColorChangeListener() {
 			@Override
 			public void onColorChange(float r, float g, float b) {
+				colorAttribute.color.r = r;
+				colorAttribute.color.g = g;
+				colorAttribute.color.b = b;
 				listener.onColorAttributeChange(colorAttribute);
 			}
 		});

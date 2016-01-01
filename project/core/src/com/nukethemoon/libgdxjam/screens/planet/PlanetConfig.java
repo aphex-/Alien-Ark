@@ -17,9 +17,9 @@ public class PlanetConfig {
 	public List<DirectionalLight> environmentDirectionalLights = new ArrayList<DirectionalLight>();
 
 	// just for serialization
-	public Map<String, GsonMaterial> serializedMaterials = new HashMap<String, GsonMaterial>();
+	public  Map<String, GsonMaterial> serializedMaterials = new HashMap<String, GsonMaterial>();
 
-	public Map<String, Material> materials = new HashMap<String, Material>();
+	public transient Map<String, Material> materials = new HashMap<String, Material>();
 
 	public void deserialize() {
 		for (Map.Entry<String, GsonMaterial> entry : serializedMaterials.entrySet()) {

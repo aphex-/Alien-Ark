@@ -2,8 +2,10 @@ package com.nukethemoon.libgdxjam.screens.planet.devtools.windows;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -11,8 +13,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
+import com.nukethemoon.libgdxjam.screens.planet.devtools.GsonMaterial;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
+
+import java.util.Map;
 
 public class DevelopmentWindow extends ClosableWindow {
 
@@ -77,5 +84,21 @@ public class DevelopmentWindow extends ClosableWindow {
 		add(new Label("'p' toggle pause", skin)).left().fill();
 
 		pack();
+	}
+
+	public static void savePlanetConfig(PlanetConfig planetConfig) {
+		planetConfig.serializedMaterials.clear();
+		for (Map.Entry<String, Material> entity : planetConfig.materials.entrySet()) {
+			planetConfig.serializedMaterials.put(entity.getKey(), new GsonMaterial(entity.getValue()));
+		}
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String str = gson.toJson(planetConfig);
+
+
+
+		FileHandle fileHandle = new FileHandle(
+				"entities/planets/"+ planetConfig.id +"/sceneConfig.json");
+		fileHandle.writeString(str, false);
 	}
 }
