@@ -27,7 +27,7 @@ public class SpriteDragAndDropProcessor extends InputAdapter {
 		touchPoint.set(screenX, Gdx.graphics.getHeight() - screenY);
 		selectedSprite = getHitSprite(touchPoint);
 
-		return true;
+		return false;
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class SpriteDragAndDropProcessor extends InputAdapter {
 
 		selectedSprite = null;
 
-		return true;
+		return false;
 	}
 
 	@Override

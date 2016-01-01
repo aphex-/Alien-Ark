@@ -14,6 +14,8 @@ import java.util.List;
 
 public class SpaceShipProperties {
 
+	public static final SpaceShipProperties properties = new SpaceShipProperties(); //TODO!
+
 	private Vector2 position;
 	private Vector2 movementVector;
 	private float fuelPerUnit = 1f;
@@ -22,14 +24,18 @@ public class SpaceShipProperties {
 
 	private List<Artifact> artifacts = new ArrayList<Artifact>();
 
-	private static List<Alien> aliens = new ArrayList<Alien>();
+	private List<Alien> aliens = new ArrayList<Alien>();
 
-	public static void testInit(){
+	public void testInit(){
 		AttributeArtifact a = new AttributeArtifact(Speed.class);
 		ValueArtifact v = new ValueArtifact(10);
 		OperatorArtifact o = new Increase();
 
-		Alien alien = new Alien(a, o, v);
+		artifacts.add(a);
+		artifacts.add(v);
+		artifacts.add(o);
+
+		Alien alien = Alien.createAlien(a, o, v);
 
 		aliens.add(alien);
 
@@ -37,12 +43,12 @@ public class SpaceShipProperties {
 		 v = new ValueArtifact(0.5f);
 		 o = new Decrease();
 
-		 alien = new Alien(a, o, v);
+		 alien = Alien.createAlien(a, o, v);
 		aliens.add(alien);
 	}
 
 
-	public static float computeSpeedPerUnit() {
+	public float computeSpeedPerUnit() {
 
 		Speed speed = new Speed();
 		for (Alien a:aliens) {
@@ -51,4 +57,11 @@ public class SpaceShipProperties {
 		return speed.getCurrentValue();
 	}
 
+	public List<Alien> getAliens() {
+		return aliens;
+	}
+
+	public List<Artifact> getArtifacts() {
+		return artifacts;
+	}
 }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.input.InputController;
 import com.nukethemoon.libgdxjam.screens.MenuScreen;
 import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
@@ -39,8 +40,9 @@ public class App extends Game {
 		// load game entities
 
 		// openScreen(SplashScreen.class);
-		openPlanetScreen(1);
-		//openArkScreen();
+		//openPlanetScreen(1);
+		SpaceShipProperties.properties.testInit();
+		openArkScreen();
 		//openSolarScreen();
 	}
 
