@@ -12,3 +12,9 @@ java -jar packr/packr.jar \
      -resources ../project/android/assets/ \
      -minimizejre "soft" \
      -outdir packr/out
+
+mv packr/out/Contents/MacOS/assets/* packr/out/Contents/MacOS/
+rm -rf packr/out/Contents/MacOS/assets/
+echo ================================
+echo Deployed to 'packr/out/Contents'
+echo ================================
