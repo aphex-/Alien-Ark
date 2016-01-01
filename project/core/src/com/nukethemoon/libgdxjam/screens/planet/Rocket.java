@@ -17,6 +17,7 @@ public class Rocket {
 	private static final float THIRD_PERSON_OFFSET_Z = 10;
 
 	private final ModelInstance modelInstance;
+	private final Model model;
 
 	private float currentSpeed = 0.3f;
 	private float maneuverability = 1f;
@@ -43,7 +44,7 @@ public class Rocket {
 
 	public Rocket() {
 		ModelLoader loader = new ObjLoader();
-		Model model = loader.loadModel(Gdx.files.internal("models/rocket.obj"));
+		model = loader.loadModel(Gdx.files.internal("models/rocket.obj"));
 		modelInstance = new ModelInstance(model);
 	}
 
@@ -138,6 +139,11 @@ public class Rocket {
 	public void drawModel(ModelBatch modelBatch, Environment environment) {
 		modelBatch.render(getModelInstance(), environment);
 		particleEffect.setTransform(modelInstance.transform);
+	}
+
+	public void dispose() {
+		model.dispose();
+		particleEffect.dispose();
 	}
 
 }

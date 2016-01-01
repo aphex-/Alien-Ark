@@ -198,4 +198,10 @@ public class WorldController implements ChunkListener {
 	}
 
 
+	public void dispose() {
+		for (ChunkGraphic g : chunkGraphicBuffer.values()) {
+			g.dispose();
+		}
+	}
+
 }

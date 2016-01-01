@@ -32,6 +32,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
@@ -40,7 +41,7 @@ import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWind
 public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener {
 
 
-	private final ModelInstance sphere;
+	private ModelInstance environmentSphere;
 	private ModelBatch modelBatch;
 	private Environment environment;
 	private PerspectiveCamera camera;
@@ -49,18 +50,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private Rocket rocket;
 
-	private final ShapeRenderer screenShapeRenderer;
+	private final ShapeRenderer shapeRenderer;
 	private final InputMultiplexer multiplexer;
 	private final Skin uiSkin;
 	private final int worldIndex;
-
-
-	private int [] shipSpeedLevels = new int []{0, 2, 4, 8, 12, 20};
-	private final int MAX_SPEED_LEVEL = shipSpeedLevels.length - 1;
-	private static final float SPEED_DECREASE_BY_DECAY_RATE = 0.02f;
-	private static final float SPEED_DECREASE_BY_BRAKES_RATE = 0.1f;
-	private float currentSpeedDecay = 0;
-	private int currentSpeedLevel = 8;
 
 	private WorldController world;
 	private Stage stage;
@@ -69,8 +62,11 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private ParticleEffect effect;
 
 	private boolean pause = false;
+	private boolean renderEnabled = true;
 
 	public static Gson gson;
+	private AssetManager assetManager;
+	private Model sphereModel;
 
 	public PlanetScreen(Skin puiSkin, InputMultiplexer pMultiplexer, int pWorldIndex) {
 		uiSkin = puiSkin;
@@ -84,8 +80,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		modelBatch = new ModelBatch();
 		environment = new Environment();
 
-		screenShapeRenderer = new ShapeRenderer();
-		screenShapeRenderer.setAutoShapeType(true);
+		shapeRenderer = new ShapeRenderer();
+		shapeRenderer.setAutoShapeType(true);
 
 		camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera.near = 0.01f;
@@ -95,11 +91,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
 		planetConfig.deserialize();
 
-		/*Material waterMaterial = new Material(
-				ColorAttribute.createReflection(Color.WHITE),
-				new ColorAttribute(ColorAttribute.Specular, 1, 1, 1, 1));
-		planetConfig.serializedMaterials.put("Water01", new GsonMaterial(waterMaterial));*/
-
 		world = new WorldController(worldIndex, planetConfig);
 
 		multiplexer.addProcessor(this);
@@ -108,13 +99,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		multiplexer.addProcessor(freeCameraInput);
 
 
-		ModelLoader loader = new ObjLoader();
-		Model model = loader.loadModel(Gdx.files.internal("models/sphere01.obj"));
-		sphere = new ModelInstance(model);
-		sphere.transform.scl(1000);
-
+		loadSphere(planetConfig.id);
 		onReloadScene(planetConfig);
-
 		initParticles();
 		initStage(planetConfig);
 	}
@@ -127,14 +113,14 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		particleSpriteBatch.setCamera(camera);
 		particleSystem.add(particleSpriteBatch);
 
-		AssetManager assets = new AssetManager();
+		assetManager = new AssetManager();
 		ParticleEffectLoader.ParticleEffectLoadParameter loadParam = new ParticleEffectLoader.ParticleEffectLoadParameter(particleSystem.getBatches());
 		ParticleEffectLoader loader = new ParticleEffectLoader(new InternalFileHandleResolver());
-		assets.setLoader(ParticleEffect.class, loader);
-		assets.load("particles/rocket_thruster.pfx", ParticleEffect.class, loadParam);
-		assets.finishLoading();
+		assetManager.setLoader(ParticleEffect.class, loader);
+		assetManager.load("particles/rocket_thruster.pfx", ParticleEffect.class, loadParam);
+		assetManager.finishLoading();
 
-		ParticleEffect originalEffect = assets.get("particles/rocket_thruster.pfx");
+		ParticleEffect originalEffect = assetManager.get("particles/rocket_thruster.pfx");
 		// we cannot use the originalEffect, we must make a copy each time we create new particle effect
 		effect = originalEffect.copy();
 		effect.init();
@@ -154,12 +140,16 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		}
 	}
 
-
+	private void loadSphere(String planetId) {
+		ModelLoader loader = new ObjLoader();
+		sphereModel = loader.loadModel(Gdx.files.internal("models/sphere01.obj"),
+				new SphereTextureProvider(planetId));
+		environmentSphere = new ModelInstance(sphereModel);
+	}
 
 	private void initStage(PlanetConfig planetConfig) {
 		stage = new Stage(new ScreenViewport());
 		multiplexer.addProcessor(stage);
-
 
 		if (Config.DEBUG) {
 			final DevelopmentWindow developmentWindow = new DevelopmentWindow(uiSkin, stage, planetConfig, this);
@@ -177,6 +167,22 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				}
 			});
 		}
+
+		final TextButton leaveButton = new TextButton("Leave Planet", uiSkin);
+		leaveButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				leavePlanet();
+			}
+		});
+		leaveButton.setPosition(10, 10);
+		stage.addActor(leaveButton);
+	}
+
+	private void leavePlanet() {
+		renderEnabled = false;
+		dispose();
+		App.openSolarScreen();
 	}
 
 	@Override
@@ -186,6 +192,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void render(float delta) {
+		if (!renderEnabled) {
+			return;
+		}
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
@@ -232,11 +241,11 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		rocket.drawModel(modelBatch, environment);
 		world.render(modelBatch, environment);
 
-		sphere.transform.idt();
-		sphere.transform.setToTranslation(rocket.getPosition().x, rocket.getPosition().y, 0);
-		sphere.transform.scl(1000);
+		environmentSphere.transform.idt();
+		environmentSphere.transform.setToTranslation(rocket.getPosition().x, rocket.getPosition().y, 0);
+		environmentSphere.transform.scl(1000);
 
-		modelBatch.render(sphere);
+		modelBatch.render(environmentSphere);
 		modelBatch.end();
 
 		if (!pause) {
@@ -257,44 +266,16 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	}
 
-	private int calculateBoostedSpeed() {
-		currentSpeedDecay += SPEED_DECREASE_BY_DECAY_RATE;
-		if (currentSpeedDecay > 1) {
-			currentSpeedDecay = 0;
-			currentSpeedLevel -=1;
-		}
-		if (Gdx.app.getInput().isKeyPressed(19)) {
-			currentSpeedLevel += 1;
-		}
-		if (Gdx.app.getInput().isKeyPressed(20)) {
-			currentSpeedDecay += SPEED_DECREASE_BY_BRAKES_RATE;
-		}
-
-		if (currentSpeedLevel < 0) {
-			currentSpeedLevel = 0;
-		}
-		if (currentSpeedLevel > MAX_SPEED_LEVEL) {
-			currentSpeedLevel = MAX_SPEED_LEVEL;
-		}
-
-		return shipSpeedLevels[currentSpeedLevel];
-	}
-
-	private int calculateConstantSpeed() {
-		return 4;
-	}
-
-
 	private void drawOrigin() {
-		screenShapeRenderer.setProjectionMatrix(camera.combined);
-		screenShapeRenderer.begin();
+		shapeRenderer.setProjectionMatrix(camera.combined);
+		shapeRenderer.begin();
 
-		screenShapeRenderer.setColor(Color.RED); // x
-		screenShapeRenderer.line(0, 0, 0, 100, 0, 0);
+		shapeRenderer.setColor(Color.RED); // x
+		shapeRenderer.line(0, 0, 0, 100, 0, 0);
 
-		screenShapeRenderer.setColor(Color.YELLOW); // y
-		screenShapeRenderer.line(0, 0, 0, 0, 100, 0);
-		screenShapeRenderer.end();
+		shapeRenderer.setColor(Color.YELLOW); // y
+		shapeRenderer.line(0, 0, 0, 0, 100, 0);
+		shapeRenderer.end();
 	}
 
 	@Override
@@ -319,7 +300,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void dispose() {
-
+		world.dispose();
+		modelBatch.dispose();
+		rocket.dispose();
+		assetManager.dispose();
+		sphereModel.dispose();
+		shapeRenderer.dispose();
 	}
 
 

@@ -1,0 +1,108 @@
+{
+  "id": "planet02",
+  "environmentColorAttributes": [
+    {
+      "color": {
+        "r": 0.3,
+        "g": 0.3,
+        "b": 0.3,
+        "a": 1.0
+      },
+      "type": 32,
+      "typeBit": 5
+    }
+  ],
+  "environmentDirectionalLights": [
+    {
+      "direction": {
+        "x": 1.0,
+        "y": 0.82,
+        "z": -0.14
+      },
+      "color": {
+        "r": 0.48,
+        "g": 0.7,
+        "b": 0.39,
+        "a": 1.0
+      }
+    },
+    {
+      "direction": {
+        "x": 0.58,
+        "y": 0.62,
+        "z": -0.15
+      },
+      "color": {
+        "r": 0.93,
+        "g": 0.91,
+        "b": 0.83,
+        "a": 1.0
+      }
+    },
+    {
+      "direction": {
+        "x": 1.0,
+        "y": 0.58,
+        "z": 0.79
+      },
+      "color": {
+        "r": 0.53,
+        "g": 0.53,
+        "b": 0.52,
+        "a": 1.0
+      }
+    }
+  ],
+  "serializedMaterials": {
+    "Water01": {
+      "id": "mtl5",
+      "colorAttributes": [
+        {
+          "color": {
+            "r": 0.72,
+            "g": 0.42,
+            "b": 0.0,
+            "a": 1.0
+          },
+          "type": 16,
+          "typeBit": 4
+        },
+        {
+          "color": {
+            "r": 0.03,
+            "g": 0.48,
+            "b": 1.0,
+            "a": 1.0
+          },
+          "type": 2,
+          "typeBit": 1
+        },
+        {
+          "color": {
+            "r": 0.0,
+            "g": 0.16,
+            "b": 1.0,
+            "a": 1.0
+          },
+          "type": 1,
+          "typeBit": 0
+        }
+      ]
+    },
+    "Landscape01": {
+      "id": "mtl9502",
+      "colorAttributes": [
+        {
+          "color": {
+            "r": 0.7490196,
+            "g": 0.7490196,
+            "b": 0.7490196,
+            "a": 1.0
+          },
+          "type": 1,
+          "typeBit": 0
+        }
+      ]
+    }
+  }
+}
