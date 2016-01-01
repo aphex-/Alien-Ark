@@ -5,15 +5,19 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
@@ -36,6 +40,7 @@ import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWind
 public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener {
 
 
+	private final ModelInstance sphere;
 	private ModelBatch modelBatch;
 	private Environment environment;
 	private PerspectiveCamera camera;
@@ -101,6 +106,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		freeCameraInput = new FreeCameraInput(camera);
 		freeCameraInput.setEnabled(false);
 		multiplexer.addProcessor(freeCameraInput);
+
+
+		ModelLoader loader = new ObjLoader();
+		Model model = loader.loadModel(Gdx.files.internal("models/sphere01.obj"));
+		sphere = new ModelInstance(model);
+		sphere.transform.scl(1000);
 
 		onReloadScene(planetConfig);
 
@@ -220,6 +231,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		modelBatch.begin(camera);
 		rocket.drawModel(modelBatch, environment);
 		world.render(modelBatch, environment);
+
+		sphere.transform.idt();
+		sphere.transform.setToTranslation(rocket.getPosition().x, rocket.getPosition().y, 0);
+		sphere.transform.scl(1000);
+
+		modelBatch.render(sphere);
 		modelBatch.end();
 
 		if (!pause) {
