@@ -209,7 +209,7 @@ public class SolarScreen implements Screen {
 		handleArkMovementInput(delta);
 		renderPlanets();
 		renderArc();
-		//handleAppNavigation();
+		handleAppNavigation();
 
 
 		rayHandler.setCombinedMatrix(camera);
