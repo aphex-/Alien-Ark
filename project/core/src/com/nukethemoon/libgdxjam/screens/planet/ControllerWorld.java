@@ -3,7 +3,9 @@ package com.nukethemoon.libgdxjam.screens.planet;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.Log;
+import com.nukethemoon.libgdxjam.screens.planet.graphic.ChunkGraphic;
 import com.nukethemoon.tools.opusproto.generator.ChunkListener;
 import com.nukethemoon.tools.opusproto.generator.Opus;
 import com.nukethemoon.tools.opusproto.loader.json.OpusLoaderJson;
@@ -16,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public class WorldController implements ChunkListener {
+public class ControllerWorld implements ChunkListener, Disposable {
 
 	private static final String WORLD_NAME = "entities/planets/planet01/opusConfig.json";
 
@@ -43,15 +45,18 @@ public class WorldController implements ChunkListener {
 
 	private int chunkBufferSize;
 	private PlanetConfig planetConfig;
+	private ControllerCollision controllerCollision;
 
-	public WorldController(int worldIndex, PlanetConfig pPlanetConfig) {
+	public ControllerWorld(int worldIndex, PlanetConfig pPlanetConfig, ControllerCollision controllerCollision) {
 		this.planetConfig = pPlanetConfig;
+		this.controllerCollision = controllerCollision;
 		String worldName = String.format(WORLD_NAME, worldIndex);
 
 		OpusLoaderJson loader = new OpusLoaderJson();
 		try {
 			// load opus by a json file
 			opus = loader.load(worldName);
+			com.nukethemoon.tools.opusproto.log.Log.logLevel = com.nukethemoon.tools.opusproto.log.Log.LogType.Error;
 
 			chunkBufferSize = (requestRadiusInTiles / opus.getConfig().chunkSize) * 2;
 
@@ -65,7 +70,6 @@ public class WorldController implements ChunkListener {
 
 
 	public void requestChunks(List<Point> chunkCoordinates) {
-		Log.l(WorldController.class, "Requesting chunks. Buffer size: " + chunkGraphicBuffer.size());
 
 		List<Point> requestList = new ArrayList<Point>();
 		for (Point coordinate : chunkCoordinates) {
@@ -157,7 +161,9 @@ public class WorldController implements ChunkListener {
 		// remove non visible chunks
 		for (Map.Entry<Point, ChunkGraphic> entry : chunkGraphicBuffer.entrySet()) {
 			if (!currentVisibleChunkPositions.contains(entry.getKey())) {
-				entry.getValue().dispose();
+				ChunkGraphic c = entry.getValue();
+				controllerCollision.removeCollisionObject(c.getCollisionObject());
+				c.dispose();
 				tmpRemoveList.add(entry.getKey());
 			}
 		}
@@ -183,6 +189,9 @@ public class WorldController implements ChunkListener {
 		Point point = new Point(x, y);
 		if (chunkGraphicBuffer.get(point) == null) {
 			ChunkGraphic chunkMesh = new ChunkGraphic(chunk, tileGraphicSize, planetConfig);
+
+			controllerCollision.addCollisionObject(chunkMesh.getCollisionObject(),
+					ControllerCollision.CollideType.GROUND, ControllerCollision.CollideType.ROCKET);
 			chunkGraphicBuffer.put(point, chunkMesh);
 		} else {
 			Log.d(getClass(), "Created a chunk that already exists. x " + x + " y " + y);

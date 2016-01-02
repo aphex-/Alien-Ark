@@ -11,17 +11,24 @@ import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.utils.Disposable;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.GameObject;
 
-public class Rocket {
+public class Rocket extends GameObject implements Disposable {
 
 	private static final float THIRD_PERSON_OFFSET_Z = 10;
 
 	private final ModelInstance modelInstance;
 	private final Model model;
 
+
+
 	private float currentSpeed = 0.3f;
 	private float maneuverability = 1f;
-
 
 	private Vector3 position = new Vector3(0, 0, 10);
 	private Matrix4 rotationMatrix = new Matrix4();
@@ -46,6 +53,17 @@ public class Rocket {
 		ModelLoader loader = new ObjLoader();
 		model = loader.loadModel(Gdx.files.internal("models/rocket.obj"));
 		modelInstance = new ModelInstance(model);
+
+		// bullet related stuff
+		collisionObject = new btCollisionObject();
+		BoundingBox boundingBox = new BoundingBox();
+		boundingBox = model.calculateBoundingBox(boundingBox);
+		btCollisionShape shape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.5f));
+
+		collisionObject.setCollisionShape(shape);
+		collisionObject.setUserValue(0);
+		collisionObject.setCollisionFlags(collisionObject.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+
 	}
 
 	public void setParticleEffect(ParticleEffect particleEffect) {
@@ -65,7 +83,7 @@ public class Rocket {
 	}
 
 	public void rotateDown() {
-		xRotation = (xRotation + maneuverability)  % 360;
+		xRotation = (xRotation + maneuverability) % 360;
 	}
 
 
@@ -82,6 +100,8 @@ public class Rocket {
 
 		modelInstance.transform.mul(translationMatrix);
 		modelInstance.transform.mul(rotationMatrix);
+
+		collisionObject.setWorldTransform(modelInstance.transform);
 	}
 
 	public ModelInstance getModelInstance() {
@@ -141,6 +161,7 @@ public class Rocket {
 		particleEffect.setTransform(modelInstance.transform);
 	}
 
+	@Override
 	public void dispose() {
 		model.dispose();
 		particleEffect.dispose();

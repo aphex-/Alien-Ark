@@ -55,7 +55,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private final Skin uiSkin;
 	private final int worldIndex;
 
-	private WorldController world;
+	private ControllerWorld worldController;
+	private ControllerCollision collisionController;
+
 	private Stage stage;
 
 	private final FreeCameraInput freeCameraInput;
@@ -91,7 +93,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
 		planetConfig.deserialize();
 
-		world = new WorldController(worldIndex, planetConfig);
+		collisionController = new ControllerCollision();
+		worldController = new ControllerWorld(worldIndex, planetConfig, collisionController);
+		collisionController.addCollisionObject(rocket.getCollisionObject(), ControllerCollision.CollideType.ROCKET, ControllerCollision.CollideType.ALL);
 
 		multiplexer.addProcessor(this);
 		freeCameraInput = new FreeCameraInput(camera);
@@ -143,7 +147,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private void loadSphere(String planetId) {
 		ModelLoader loader = new ObjLoader();
 		sphereModel = loader.loadModel(Gdx.files.internal("models/sphere01.obj"),
-				new SphereTextureProvider(planetId));
+				new com.nukethemoon.libgdxjam.screens.planet.graphic.SphereTextureProvider(planetId));
 		environmentSphere = new ModelInstance(sphereModel);
 	}
 
@@ -200,7 +204,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
 		if (!pause) {
-			world.updateRequestCenter(rocket.getPosition().x, rocket.getPosition().y);
+			worldController.updateRequestCenter(rocket.getPosition().x, rocket.getPosition().y);
 		}
 
 		if (!freeCameraInput.isEnabled()) {
@@ -239,7 +243,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		modelBatch.begin(camera);
 		rocket.drawModel(modelBatch, environment);
-		world.render(modelBatch, environment);
+		worldController.render(modelBatch, environment);
 
 		environmentSphere.transform.idt();
 		environmentSphere.transform.setToTranslation(rocket.getPosition().x, rocket.getPosition().y, 0);
@@ -263,6 +267,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			stage.act(delta);
 			stage.draw();
 		}
+
+		collisionController.debugRender(camera);
+		collisionController.discreteDetection();
 
 	}
 
@@ -300,7 +307,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void dispose() {
-		world.dispose();
+		worldController.dispose();
 		modelBatch.dispose();
 		rocket.dispose();
 		assetManager.dispose();

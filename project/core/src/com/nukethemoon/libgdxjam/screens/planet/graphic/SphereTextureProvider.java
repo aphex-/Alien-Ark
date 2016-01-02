@@ -1,4 +1,4 @@
-package com.nukethemoon.libgdxjam.screens.planet;
+package com.nukethemoon.libgdxjam.screens.planet.graphic;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.utils.TextureProvider;

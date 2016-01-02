@@ -1,18 +1,25 @@
-package com.nukethemoon.libgdxjam.screens.planet;
+package com.nukethemoon.libgdxjam.screens.planet.graphic;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.GameObject;
 import com.nukethemoon.tools.opusproto.region.Chunk;
 
-public class ChunkGraphic {
+public class ChunkGraphic extends GameObject {
 
 
 	private static final float LANDSCAPE_MAX_HEIGHT = 12;
@@ -23,6 +30,7 @@ public class ChunkGraphic {
 	private final static float WATER_HEIGHT = 0.1f;
 
 	private final ModelInstance modelInstance;
+	private btCollisionShape btCollisionShape;
 
 	private static MaterialInterpreter interpreter;
 	private final MeshBuilder meshBuilder;
@@ -52,15 +60,30 @@ public class ChunkGraphic {
 		modelBuilder = new ModelBuilder();
 
 		modelBuilder.begin();
+		modelBuilder.node().id = "Landscape01";
 		createLandscapePart(chunk);
+		modelBuilder.node().id = "Water01";
 		createWaterPart(chunk);
-
 		model = modelBuilder.end();
+
 		modelInstance = new ModelInstance(model);
 		modelInstance.transform.translate(
 				chunk.getChunkX() * (chunk.getWidth() - 1) * tileSize,
 				chunk.getChunkY() * (chunk.getHeight() - 1) * tileSize,
 				0);
+
+
+		Node landscapeNode = model.getNode("Landscape01");
+		if (landscapeNode.parts.get(0).meshPart.size > 0) {
+			// landscape tiles can have a size of null if they are under water.
+			collisionObject = new btCollisionObject();
+			btCollisionShape = Bullet.obtainStaticNodeShape(landscapeNode, false);
+			collisionObject.setCollisionShape(btCollisionShape);
+			collisionObject.setUserValue(1);
+			collisionObject.setCollisionFlags(collisionObject.getCollisionFlags()
+					| btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+			collisionObject.setWorldTransform(modelInstance.transform);
+		}
 	}
 
 
@@ -69,6 +92,7 @@ public class ChunkGraphic {
 		meshBuilder.begin(VERTEX_ATTRIBUTES, GL20.GL_TRIANGLES);
 
  		int chunkSize = chunk.getWidth() - 1; // overlap 1
+		boolean allTilesUnderWater = true;
 
 		for (int y = 0; y < chunkSize; y++) {
 			for (int x = 0; x < chunkSize; x++) {
@@ -83,13 +107,16 @@ public class ChunkGraphic {
 				boolean tileIsUnderWater = (height0 < WATER_HEIGHT && height1 < WATER_HEIGHT && height2 < WATER_HEIGHT && height3 < WATER_HEIGHT);
 
 				if (!tileIsUnderWater) {
+					allTilesUnderWater = false;
 					createTile(offsetX, offsetY, height0, height1, height2, height3);
 				}
 			}
 		}
 
 		Material landscapeMaterial = planetConfig.materials.get("Landscape01");
-		modelBuilder.part("Landscape01", meshBuilder.end(), GL20.GL_TRIANGLES, landscapeMaterial);
+		Mesh mesh = meshBuilder.end();
+		// id, mesh, primitiveType, offset, size, material
+		modelBuilder.part("Landscape01", mesh, GL20.GL_TRIANGLES, 0, mesh.getNumIndices(), landscapeMaterial);
 	}
 
 
@@ -209,7 +236,9 @@ public class ChunkGraphic {
 		Vector3 corner04 = new Vector3(0f, height, z);
 		meshBuilder.rect(corner01, corner02, corner03, corner04, new Vector3(0, 0, 1));
 		Material waterMaterial = planetConfig.materials.get("Water01");
-		modelBuilder.part("WATER", meshBuilder.end(), GL20.GL_TRIANGLES, waterMaterial);
+		Mesh mesh = meshBuilder.end();
+
+		modelBuilder.part("WATER", mesh, GL20.GL_TRIANGLES, waterMaterial);
 	}
 
 
@@ -219,5 +248,11 @@ public class ChunkGraphic {
 
 	public void dispose() {
 		model.dispose();
+		if (collisionObject != null) {
+			collisionObject.dispose();
+		}
+		if (btCollisionShape != null) {
+			btCollisionShape.dispose();
+		}
 	}
 }
