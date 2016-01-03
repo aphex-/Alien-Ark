@@ -8,11 +8,10 @@ import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btBroadphaseInterface;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionConfiguration;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObjectWrapper;
 import com.badlogic.gdx.physics.bullet.collision.btDbvtBroadphase;
 import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
 import com.badlogic.gdx.physics.bullet.collision.btDispatcher;
-import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
+import com.badlogic.gdx.physics.bullet.dynamics.InternalTickCallback;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
@@ -56,9 +55,14 @@ public class ControllerPhysic extends ContactListener {
 			debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
 			dynamicsWorld.setDebugDrawer(debugDrawer);
 		}
+
+
+		dynamicsWorld.setInternalTickCallback(null);
+		TickCallback tickCallback = new TickCallback();
+		tickCallback.attach();
 	}
 
-	@Override
+	/*@Override
 	public boolean onContactAdded(btManifoldPoint cp, btCollisionObjectWrapper colObj0Wrap, int partId0, int index0,
 								   btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
 
@@ -68,7 +72,7 @@ public class ControllerPhysic extends ContactListener {
 		Log.e(ControllerPhysic.class, "Collision " + objectId1 + " " + objectId2);
 
 		return true;
-	}
+	}*/
 
 	/*@Override
 	public boolean onContactAdded (btCollisionObject colObj0, int partId0, int index0, btCollisionObject colObj1, int partId1,
@@ -136,5 +140,14 @@ public class ControllerPhysic extends ContactListener {
 		broadphase.dispose();
 		constraintSolver.dispose();
 		super.dispose();
+	}
+
+	public static class TickCallback extends InternalTickCallback {
+
+		@Override
+		public void onInternalTick(btDynamicsWorld dynamicsWorld, float timeStep) {
+			//super.onInternalTick(dynamicsWorld, timeStep);
+			Log.e(ControllerPhysic.class, "tick");
+		}
 	}
 }

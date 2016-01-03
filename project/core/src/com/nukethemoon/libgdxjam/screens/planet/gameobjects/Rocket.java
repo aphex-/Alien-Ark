@@ -12,14 +12,17 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
-import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 import com.badlogic.gdx.utils.Disposable;
+import com.nukethemoon.libgdxjam.Log;
 
 public class Rocket extends GameObject implements Disposable {
 
 	private static final float THIRD_PERSON_OFFSET_Z = 10;
 	private static final Vector3 START_POSITION = new Vector3(0, 50, 30);
+	private static final Vector3 LAUNCH_IMPULSE = new Vector3(0, 0, 15);
 
 	private final ModelInstance modelInstance;
 	private final Model model;
@@ -43,6 +46,7 @@ public class Rocket extends GameObject implements Disposable {
 	private Vector3 tmpMovement = new Vector3();
 
 	private boolean thrusting = true;
+	private boolean moving = true;
 
 	private ParticleEffect particleEffect;
 	private ParticleSystem particleSystem;
@@ -55,9 +59,20 @@ public class Rocket extends GameObject implements Disposable {
 		modelInstance = new ModelInstance(model);
 
 		// init physic
-		btCollisionShape shape = new btSphereShape(1);
+
+		BoundingBox boundingBox = new BoundingBox();
+		model.calculateBoundingBox(boundingBox);
+		btCollisionShape shape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.5f));
+		//shape.setMargin(1f);
+
+		/*btCollisionShape shape = new btSphereShape(1);*/
+
 		modelInstance.transform.setToTranslation(START_POSITION);
-		initRigidBody(shape, 1, 0, modelInstance.transform);
+
+		float mass = 1;
+		float friction = 2;
+		float damping = 1;
+		initRigidBody(shape, mass, friction, damping, 0, modelInstance.transform);
 	}
 
 
@@ -96,18 +111,45 @@ public class Rocket extends GameObject implements Disposable {
 			drill += 2;
 		}
 
-		rotationMatrix.setToRotation(Vector3.Z, zRotation);
-		rotationMatrix.rotate(Vector3.X, xRotation);
-		rotationMatrix.rotate(Vector3.Y, drill);
-		modelInstance.transform.mul(rotationMatrix);
+		if (rigidBody.getLinearVelocity().len() != 0) {
+			rotationMatrix.setToRotation(Vector3.Z, zRotation);
+			rotationMatrix.rotate(Vector3.X, xRotation);
+			rotationMatrix.rotate(Vector3.Y, drill);
+			modelInstance.transform.mul(rotationMatrix);
+		} else {
+			if (moving) {
+				moving = false;
+				onStops();
+			}
+		}
+	}
+
+	private void onLaunch() {
+		rigidBody.applyCentralImpulse(LAUNCH_IMPULSE);
+		moving = true;
+	}
+
+	private void onStops() {
+		Log.e(Rocket.class, "stops");
+	}
+
+	private void onThrustEnabled() {
+		particleSystem.add(particleEffect);
+		if (!moving) {
+			onLaunch();
+		}
+	}
+
+	private void onThrustDisabled() {
+		particleSystem.remove(particleEffect);
 	}
 
 	public void toggleThrust() {
 		thrusting = !thrusting;
 		if (!thrusting) {
-			particleSystem.remove(particleEffect);
+			onThrustDisabled();
 		} else {
-			particleSystem.add(particleEffect);
+			onThrustEnabled();
 		}
 	}
 
@@ -137,7 +179,13 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	public void applyThirdPerson(Camera camera) {
-		tmpCamPosition.set(getPosition());
+
+		Vector3 position = getPosition();
+		if (position.z < 0) {
+			return;
+		}
+
+		tmpCamPosition.set(position);
 
 		tmpCamOffset.set(getDirection());
 		tmpCamOffset.scl(-thirdPersonOffsetY);
@@ -150,8 +198,10 @@ public class Rocket extends GameObject implements Disposable {
 		tmpCamPosition.y = lastCamPosition.y + (tmpCamPosition.y - lastCamPosition.y) / 30f;
 		tmpCamPosition.z = lastCamPosition.z + (tmpCamPosition.z - lastCamPosition.z) / 30f;
 
+		tmpCamPosition.z = Math.max(tmpCamPosition.z, 1);
+
 		camera.position.set(tmpCamPosition);
-		camera.lookAt(getPosition());
+		camera.lookAt(position);
 		camera.up.set(Vector3.Z);
 
 		lastCamPosition.set(camera.position);

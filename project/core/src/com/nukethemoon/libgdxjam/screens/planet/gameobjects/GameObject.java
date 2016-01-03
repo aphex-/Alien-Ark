@@ -12,7 +12,7 @@ public abstract class GameObject{
 	public btRigidBody rigidBody;
 	private static Vector3 localInertia = new Vector3();
 
-	protected void initRigidBody(btCollisionShape shape, float mass, int userValue, Matrix4 transform) {
+	protected void initRigidBody(btCollisionShape shape, float mass, float friction, float damping, int userValue, Matrix4 transform) {
 		if (mass > 0f) {
 			shape.calculateLocalInertia(mass, localInertia);
 		} else {
@@ -20,6 +20,7 @@ public abstract class GameObject{
 		}
 		btRigidBody.btRigidBodyConstructionInfo constructionInfo = new btRigidBody.btRigidBodyConstructionInfo(
 				mass, null, shape, localInertia);
+		constructionInfo.setFriction(friction);
 		rigidBody = new btRigidBody(constructionInfo);
 		rigidBody.setUserValue(userValue);
 		rigidBody.setMotionState(new MotionState(transform));

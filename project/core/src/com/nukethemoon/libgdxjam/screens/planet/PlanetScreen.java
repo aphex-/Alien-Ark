@@ -211,12 +211,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		}
 
 		if (!freeCameraInput.isEnabled()) {
-
 			if (!pause) {
 				rocket.applyThirdPerson(camera);
 			}
-
-
 		} else {
 			freeCameraInput.update(delta);
 		}

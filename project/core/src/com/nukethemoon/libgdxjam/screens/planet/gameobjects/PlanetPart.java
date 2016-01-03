@@ -76,7 +76,12 @@ public class PlanetPart extends GameObject {
 		if (landscapeNode.parts.get(0).meshPart.size > 0) {
 			// landscape tiles can have a size of null if they are under water.
 			collisionShape = Bullet.obtainStaticNodeShape(landscapeNode, false);
-			initRigidBody(collisionShape, 0, 1, modelInstance.transform);
+			collisionShape.setMargin(1f);
+
+			float mass = 0;
+			float friction = 1;
+			float damping = 1;
+			initRigidBody(collisionShape, mass, friction, damping, 1, modelInstance.transform);
 		}
 	}
 
