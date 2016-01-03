@@ -1,25 +1,28 @@
 package com.nukethemoon.libgdxjam.screens.planet;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btBroadphaseInterface;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionConfiguration;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObjectWrapper;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionWorld;
 import com.badlogic.gdx.physics.bullet.collision.btDbvtBroadphase;
 import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
 import com.badlogic.gdx.physics.bullet.collision.btDispatcher;
 import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
+import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
+import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
+import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.Log;
 
-public class ControllerCollision extends ContactListener {
+public class ControllerPhysic extends ContactListener {
 
-	private DebugDrawer debugDrawer;
 
 	public enum CollideType {
 		GROUND((short) (1<<8)),
@@ -34,20 +37,24 @@ public class ControllerCollision extends ContactListener {
 
 	private btCollisionConfiguration collisionConfig;
 	private btDispatcher dispatcher;
+	private final btSequentialImpulseConstraintSolver constraintSolver;
 
 	private btBroadphaseInterface broadphase;
-	private btCollisionWorld collisionWorld;
+	private btDynamicsWorld dynamicsWorld;
+	private DebugDrawer debugDrawer;
 
-	public ControllerCollision() {
+	public ControllerPhysic(float gravity) {
 		collisionConfig = new btDefaultCollisionConfiguration();
 		dispatcher = new btCollisionDispatcher(collisionConfig);
 		broadphase = new btDbvtBroadphase();
-		collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfig);
+		constraintSolver = new btSequentialImpulseConstraintSolver();
+		dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
+		dynamicsWorld.setGravity(new Vector3(0, 0, gravity));
 
 		if (Config.DEBUG_BULLET) {
 			debugDrawer = new DebugDrawer();
 			debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
-			collisionWorld.setDebugDrawer(debugDrawer);
+			dynamicsWorld.setDebugDrawer(debugDrawer);
 		}
 	}
 
@@ -58,7 +65,7 @@ public class ControllerCollision extends ContactListener {
 		int objectId1 = colObj0Wrap.getCollisionObject().getUserValue();
 		int objectId2 = colObj1Wrap.getCollisionObject().getUserValue();
 
-		Log.e(ControllerCollision.class, "Collision " + objectId1 + " " + objectId2);
+		Log.e(ControllerPhysic.class, "Collision " + objectId1 + " " + objectId2);
 
 		return true;
 	}
@@ -78,7 +85,7 @@ public class ControllerCollision extends ContactListener {
 		return true;
 	}*/
 
-	public void addCollisionObject(btCollisionObject object, CollideType type, CollideType... collidesTo) {
+	public void addRigidBody(btRigidBody object, CollideType type, CollideType... collidesTo) {
 		if (object == null) {
 			return;
 		}
@@ -86,33 +93,36 @@ public class ControllerCollision extends ContactListener {
 		for (CollideType c : collidesTo) {
 			collidesToMask = (short) (collidesToMask | c.mask);
 		}
-		collisionWorld.addCollisionObject(object, type.mask, collidesToMask);
+		dynamicsWorld.addRigidBody(object, type.mask, collidesToMask);
 	}
 
-	public void addCollisionObject(btCollisionObject object, CollideType type) {
+	public void addRigidBody(btRigidBody object, CollideType type) {
 		if (object == null) {
 			return;
 		}
-		collisionWorld.addCollisionObject(object, type.mask, CollideType.ALL.mask);
+		dynamicsWorld.addRigidBody(object, type.mask, CollideType.ALL.mask);
 	}
 
-	public void removeCollisionObject(btCollisionObject object) {
+	public void removeRigidBody(btRigidBody object) {
 		if (object == null) {
 			return;
 		}
-		collisionWorld.removeCollisionObject(object);
+		dynamicsWorld.removeRigidBody(object);
 		object.dispose();
 	}
 
-	public void discreteDetection() {
-		collisionWorld.performDiscreteCollisionDetection();
+	public void stepSimulation() {
+		float timeStep = Math.min(1f / 30f, Gdx.graphics.getDeltaTime());
+		int maxSubSteps = 5;
+		float fixedTimeStep = 1f / 60f;
+		dynamicsWorld.stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
 	}
 
 
 	public void debugRender(Camera camera) {
 		if (Config.DEBUG_BULLET) {
 			debugDrawer.begin(camera);
-			collisionWorld.debugDrawWorld();
+			dynamicsWorld.debugDrawWorld();
 			debugDrawer.end();
 		}
 
@@ -122,8 +132,9 @@ public class ControllerCollision extends ContactListener {
 	public void dispose() {
 		collisionConfig.dispose();
 		dispatcher.dispose();
-		collisionWorld.dispose();
+		dynamicsWorld.dispose();
 		broadphase.dispose();
+		constraintSolver.dispose();
 		super.dispose();
 	}
 }

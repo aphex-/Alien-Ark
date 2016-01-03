@@ -37,6 +37,8 @@ import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWindow;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
+import com.nukethemoon.libgdxjam.screens.planet.helper.SphereTextureProvider;
 
 public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener {
 
@@ -55,8 +57,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private final Skin uiSkin;
 	private final int worldIndex;
 
-	private ControllerWorld worldController;
-	private ControllerCollision collisionController;
+	private ControllerPlanet worldController;
+	private ControllerPhysic collisionController;
 
 	private Stage stage;
 
@@ -93,9 +95,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
 		planetConfig.deserialize();
 
-		collisionController = new ControllerCollision();
-		worldController = new ControllerWorld(worldIndex, planetConfig, collisionController);
-		collisionController.addCollisionObject(rocket.getCollisionObject(), ControllerCollision.CollideType.ROCKET, ControllerCollision.CollideType.ALL);
+		collisionController = new ControllerPhysic(planetConfig.gravity);
+		worldController = new ControllerPlanet(worldIndex, planetConfig, collisionController);
+		collisionController.addRigidBody(rocket.getRigidBody(),
+				ControllerPhysic.CollideType.ROCKET, ControllerPhysic.CollideType.ALL);
 
 		multiplexer.addProcessor(this);
 		freeCameraInput = new FreeCameraInput(camera);
@@ -130,7 +133,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		effect.init();
 		effect.start();  // optional: particle will begin playing immediately
 		particleSystem.add(effect);
-		rocket.setParticleEffect(effect);
+		rocket.setParticleEffect(effect, particleSystem);
 	}
 
 	@Override
@@ -147,7 +150,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private void loadSphere(String planetId) {
 		ModelLoader loader = new ObjLoader();
 		sphereModel = loader.loadModel(Gdx.files.internal("models/sphere01.obj"),
-				new com.nukethemoon.libgdxjam.screens.planet.graphic.SphereTextureProvider(planetId));
+				new SphereTextureProvider(planetId));
 		environmentSphere = new ModelInstance(sphereModel);
 	}
 
@@ -237,7 +240,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		}
 
 		if (!pause) {
-			rocket.thrust();
+			//rocket.thrust();
 			rocket.update();
 		}
 
@@ -269,7 +272,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		}
 
 		collisionController.debugRender(camera);
-		collisionController.discreteDetection();
+		collisionController.stepSimulation();
 
 	}
 
@@ -324,6 +327,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		}
 		if (keycode == 44) {
 			pause = !pause;
+		}
+		if (keycode == 62) {
+			rocket.toggleThrust();
 		}
 		return false;
 	}

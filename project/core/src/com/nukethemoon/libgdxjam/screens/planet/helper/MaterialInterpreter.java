@@ -1,4 +1,4 @@
-package com.nukethemoon.libgdxjam.screens.planet.graphic;
+package com.nukethemoon.libgdxjam.screens.planet.helper;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Material;

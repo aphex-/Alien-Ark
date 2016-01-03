@@ -1,4 +1,4 @@
-package com.nukethemoon.libgdxjam.screens.planet.graphic;
+package com.nukethemoon.libgdxjam.screens.planet.gameobjects;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -13,13 +13,12 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
-import com.nukethemoon.libgdxjam.screens.planet.gameobjects.GameObject;
+import com.nukethemoon.libgdxjam.screens.planet.helper.MaterialInterpreter;
 import com.nukethemoon.tools.opusproto.region.Chunk;
 
-public class ChunkGraphic extends GameObject {
+public class PlanetPart extends GameObject {
 
 
 	private static final float LANDSCAPE_MAX_HEIGHT = 12;
@@ -30,7 +29,7 @@ public class ChunkGraphic extends GameObject {
 	private final static float WATER_HEIGHT = 0.1f;
 
 	private final ModelInstance modelInstance;
-	private btCollisionShape btCollisionShape;
+	private btCollisionShape collisionShape;
 
 	private static MaterialInterpreter interpreter;
 	private final MeshBuilder meshBuilder;
@@ -51,7 +50,7 @@ public class ChunkGraphic extends GameObject {
 	private Vector3 tmpNormal;
 	private PlanetConfig planetConfig;
 
-	public ChunkGraphic(Chunk chunk, float tileSize, PlanetConfig pPlanetConfig) {
+	public PlanetPart(Chunk chunk, float tileSize, PlanetConfig pPlanetConfig) {
 		this.tileSize = tileSize;
 		this.planetConfig = pPlanetConfig;
 
@@ -76,13 +75,8 @@ public class ChunkGraphic extends GameObject {
 		Node landscapeNode = model.getNode("Landscape01");
 		if (landscapeNode.parts.get(0).meshPart.size > 0) {
 			// landscape tiles can have a size of null if they are under water.
-			collisionObject = new btCollisionObject();
-			btCollisionShape = Bullet.obtainStaticNodeShape(landscapeNode, false);
-			collisionObject.setCollisionShape(btCollisionShape);
-			collisionObject.setUserValue(1);
-			collisionObject.setCollisionFlags(collisionObject.getCollisionFlags()
-					| btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
-			collisionObject.setWorldTransform(modelInstance.transform);
+			collisionShape = Bullet.obtainStaticNodeShape(landscapeNode, false);
+			initRigidBody(collisionShape, 0, 1, modelInstance.transform);
 		}
 	}
 
@@ -248,11 +242,11 @@ public class ChunkGraphic extends GameObject {
 
 	public void dispose() {
 		model.dispose();
-		if (collisionObject != null) {
-			collisionObject.dispose();
+		if (rigidBody != null) {
+			rigidBody.dispose();
 		}
-		if (btCollisionShape != null) {
-			btCollisionShape.dispose();
+		if (collisionShape != null) {
+			collisionShape.dispose();
 		}
 	}
 }

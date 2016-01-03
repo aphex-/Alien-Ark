@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.Log;
-import com.nukethemoon.libgdxjam.screens.planet.graphic.ChunkGraphic;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPart;
 import com.nukethemoon.tools.opusproto.generator.ChunkListener;
 import com.nukethemoon.tools.opusproto.generator.Opus;
 import com.nukethemoon.tools.opusproto.loader.json.OpusLoaderJson;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public class ControllerWorld implements ChunkListener, Disposable {
+public class ControllerPlanet implements ChunkListener, Disposable {
 
 	private static final String WORLD_NAME = "entities/planets/planet01/opusConfig.json";
 
@@ -37,7 +37,7 @@ public class ControllerWorld implements ChunkListener, Disposable {
 
 	private List<Point> currentVisibleChunkPositions = new ArrayList<Point>();
 
-	private Map<Point, ChunkGraphic> chunkGraphicBuffer = new HashMap<Point, ChunkGraphic>();
+	private Map<Point, PlanetPart> chunkGraphicBuffer = new HashMap<Point, PlanetPart>();
 
 
 	private Vector2 tmpVector1 = new Vector2();
@@ -45,11 +45,11 @@ public class ControllerWorld implements ChunkListener, Disposable {
 
 	private int chunkBufferSize;
 	private PlanetConfig planetConfig;
-	private ControllerCollision controllerCollision;
+	private ControllerPhysic controllerPhysic;
 
-	public ControllerWorld(int worldIndex, PlanetConfig pPlanetConfig, ControllerCollision controllerCollision) {
+	public ControllerPlanet(int worldIndex, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic) {
 		this.planetConfig = pPlanetConfig;
-		this.controllerCollision = controllerCollision;
+		this.controllerPhysic = controllerPhysic;
 		String worldName = String.format(WORLD_NAME, worldIndex);
 
 		OpusLoaderJson loader = new OpusLoaderJson();
@@ -159,10 +159,10 @@ public class ControllerWorld implements ChunkListener, Disposable {
 
 
 		// remove non visible chunks
-		for (Map.Entry<Point, ChunkGraphic> entry : chunkGraphicBuffer.entrySet()) {
+		for (Map.Entry<Point, PlanetPart> entry : chunkGraphicBuffer.entrySet()) {
 			if (!currentVisibleChunkPositions.contains(entry.getKey())) {
-				ChunkGraphic c = entry.getValue();
-				controllerCollision.removeCollisionObject(c.getCollisionObject());
+				PlanetPart c = entry.getValue();
+				controllerPhysic.removeRigidBody(c.getRigidBody());
 				c.dispose();
 				tmpRemoveList.add(entry.getKey());
 			}
@@ -188,10 +188,10 @@ public class ControllerWorld implements ChunkListener, Disposable {
 	public void onChunkCreated(int x, int y, Chunk chunk) {
 		Point point = new Point(x, y);
 		if (chunkGraphicBuffer.get(point) == null) {
-			ChunkGraphic chunkMesh = new ChunkGraphic(chunk, tileGraphicSize, planetConfig);
+			PlanetPart chunkMesh = new PlanetPart(chunk, tileGraphicSize, planetConfig);
 
-			controllerCollision.addCollisionObject(chunkMesh.getCollisionObject(),
-					ControllerCollision.CollideType.GROUND, ControllerCollision.CollideType.ROCKET);
+			controllerPhysic.addRigidBody(chunkMesh.getRigidBody(),
+					ControllerPhysic.CollideType.GROUND, ControllerPhysic.CollideType.ROCKET);
 			chunkGraphicBuffer.put(point, chunkMesh);
 		} else {
 			Log.d(getClass(), "Created a chunk that already exists. x " + x + " y " + y);
@@ -200,15 +200,15 @@ public class ControllerWorld implements ChunkListener, Disposable {
 
 
 	public void render(ModelBatch batch, Environment environment) {
-		for (Map.Entry<Point, ChunkGraphic> entry : chunkGraphicBuffer.entrySet()) {
-			ChunkGraphic mesh = entry.getValue();
+		for (Map.Entry<Point, PlanetPart> entry : chunkGraphicBuffer.entrySet()) {
+			PlanetPart mesh = entry.getValue();
 			batch.render(mesh.getModelInstance(), environment);
 		}
 	}
 
 
 	public void dispose() {
-		for (ChunkGraphic g : chunkGraphicBuffer.values()) {
+		for (PlanetPart g : chunkGraphicBuffer.values()) {
 			g.dispose();
 		}
 	}

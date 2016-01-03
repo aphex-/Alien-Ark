@@ -13,6 +13,9 @@ import java.util.Map;
 
 public class PlanetConfig {
 	public String id;
+
+	public float gravity = -10;
+
 	public List<ColorAttribute> environmentColorAttributes = new ArrayList<ColorAttribute>();
 	public List<DirectionalLight> environmentDirectionalLights = new ArrayList<DirectionalLight>();
 

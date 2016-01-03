@@ -1,5 +1,6 @@
 {
   "id": "planet01",
+  "gravity" : -25,
   "environmentColorAttributes": [
     {
       "color": {
