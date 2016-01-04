@@ -16,7 +16,6 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.utils.Disposable;
-import com.nukethemoon.libgdxjam.Log;
 
 public class Rocket extends GameObject implements Disposable {
 
@@ -72,6 +71,7 @@ public class Rocket extends GameObject implements Disposable {
 
 		float mass = 1;
 		initRigidBody(shape, mass, friction, 0, modelInstance.transform);
+		rigidBody.setActivationState(4); // disable deactivation
 	}
 
 
@@ -134,7 +134,7 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	private void onStops() {
-		Log.e(Rocket.class, "stops");
+
 	}
 
 	private void onThrustEnabled() {
