@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -59,8 +58,6 @@ public class Rocket extends GameObject implements Disposable {
 	private boolean thrusting = true;
 	private boolean moving = true;
 
-	private ParticleEffect particleEffect;
-	private ParticleSystem particleSystem;
 
 	private RocketListener listener;
 
@@ -87,17 +84,14 @@ public class Rocket extends GameObject implements Disposable {
 		float mass = 1;
 		initRigidBody(shape, mass, friction, USER_VALUE, modelInstance.transform);
 		rigidBody.setActivationState(4); // disable deactivation
+
+		rigidBody.setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(speed));
 	}
 
 	public void setListener(RocketListener listener) {
 		this.listener = listener;
 	}
 
-
-	public void setParticleEffect(ParticleEffect particleEffect, ParticleSystem particleSystem) {
-		this.particleEffect = particleEffect;
-		this.particleSystem = particleSystem;
-	}
 
 	public void rotateLeft() {
 		if (thrusting) {
@@ -129,16 +123,16 @@ public class Rocket extends GameObject implements Disposable {
 			drill += 2;
 		}
 
-		if (rigidBody.getLinearVelocity().len() != 0) {
-			rotationMatrix.setToRotation(Vector3.Z, zRotation);
-			rotationMatrix.rotate(Vector3.X, xRotation);
-			rotationMatrix.rotate(Vector3.Y, drill);
-			modelInstance.transform.mul(rotationMatrix);
-		} else {
+		rotationMatrix.setToRotation(Vector3.Z, zRotation);
+		rotationMatrix.rotate(Vector3.X, xRotation);
+		rotationMatrix.rotate(Vector3.Y, drill);
+		modelInstance.transform.mul(rotationMatrix);
+
+		if (rigidBody.getLinearVelocity().len() < 0.1) {
 			if (moving) {
-				moving = false;
-				onStops();
+				onLanded();
 			}
+			moving = false;
 		}
 	}
 
@@ -163,10 +157,9 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
-	private void onStops() {
-
+	private void onLanded() {
 		if (listener != null) {
-			listener.onRocketStopped();
+			listener.onRocketLanded();
 		}
 	}
 
@@ -174,7 +167,6 @@ public class Rocket extends GameObject implements Disposable {
 		if (fuel <= 0) {
 			return;
 		}
-		particleSystem.add(particleEffect);
 		if (!moving) {
 			onLaunch();
 		}
@@ -185,8 +177,6 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	private void onThrustDisabled() {
-		particleSystem.remove(particleEffect);
-
 		if (listener != null) {
 			listener.onRocketDisabledThrust();
 		}
@@ -257,15 +247,14 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 
-	public void drawModel(ModelBatch modelBatch, Environment environment) {
+	public void drawModel(ModelBatch modelBatch, Environment environment, ParticleEffect thrustEffect) {
 		modelBatch.render(modelInstance, environment);
-		particleEffect.setTransform(modelInstance.transform);
+		thrustEffect.setTransform(modelInstance.transform);
 	}
 
 	@Override
 	public void dispose() {
 		model.dispose();
-		particleEffect.dispose();
 	}
 
 	public void onBulletTick() {

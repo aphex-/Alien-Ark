@@ -41,6 +41,10 @@ import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.helper.SphereTextureProvider;
 import com.nukethemoon.libgdxjam.ui.RocketMainUI;
+import com.nukethemoon.libgdxjam.ui.Toast;
+import com.nukethemoon.tools.ani.Ani;
+import com.nukethemoon.tools.ani.AnimationFinishedListener;
+import com.nukethemoon.tools.ani.BaseAnimation;
 
 public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener, RocketListener {
 
@@ -76,7 +80,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private AssetManager assetManager;
 	private Model sphereModel;
 
+	private Ani ani;
+
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pWorldIndex) {
+		ani = new Ani();
 		uiSkin = pUISkin;
 		worldIndex = pWorldIndex;
 		multiplexer = pMultiplexer;
@@ -137,7 +144,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		effect.init();
 		effect.start();  // optional: particle will begin playing immediately
 		particleSystem.add(effect);
-		rocket.setParticleEffect(effect, particleSystem);
 	}
 
 	@Override
@@ -252,7 +258,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		}
 
 		modelBatch.begin(camera);
-		rocket.drawModel(modelBatch, environment);
+		rocket.drawModel(modelBatch, environment, effect);
 		worldController.render(modelBatch, environment);
 
 		environmentSphere.transform.idt();
@@ -280,6 +286,23 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		collisionController.debugRender(camera);
 		collisionController.stepSimulation(delta);
+
+		ani.update();
+	}
+
+	private void showToast(String text) {
+		final Toast t = new Toast(uiSkin);
+		t.setText(text);
+		stage.addActor(t);
+		Toast.ShowToastAnimation animation = new Toast.ShowToastAnimation(t, new AnimationFinishedListener() {
+			@Override
+			public void onAnimationFinished(BaseAnimation baseAnimation) {
+				t.remove();
+			}
+		});
+		ani.add(animation);
+
+
 	}
 
 	private void drawOrigin() {
@@ -322,6 +345,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		assetManager.dispose();
 		sphereModel.dispose();
 		shapeRenderer.dispose();
+		effect.dispose();
 	}
 
 
@@ -383,8 +407,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 
 	@Override
-	public void onRocketStopped() {
-
+	public void onRocketLanded() {
+		showToast("Rocked landed");
 	}
 
 	@Override
@@ -394,12 +418,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRocketDisabledThrust() {
-
+		particleSystem.remove(effect);
 	}
 
 	@Override
 	public void onRocketEnabledThrust() {
-
+		particleSystem.add(effect);
 	}
 
 	@Override

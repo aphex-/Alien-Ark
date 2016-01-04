@@ -2,7 +2,7 @@ package com.nukethemoon.libgdxjam.screens.planet.gameobjects;
 
 public interface RocketListener {
 
-	void onRocketStopped();
+	void onRocketLanded();
 	void onRocketLaunched();
 	void onRocketDisabledThrust();
 	void onRocketEnabledThrust();

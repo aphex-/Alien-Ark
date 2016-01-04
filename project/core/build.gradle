@@ -13,6 +13,7 @@ eclipse.project {
 
 dependencies {
     compile 'com.google.code.gson:gson:2.3'
+    compile files('libs/Ani-1.0.0.jar')
     compile files('libs/opuslib-0.0.1a.jar')
     compile files('libs/opusloaderjson-0.0.1a.jar')
 }
