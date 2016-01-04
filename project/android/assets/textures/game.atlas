@@ -6,84 +6,98 @@ filter: Nearest,Nearest
 repeat: none
 button
   rotate: false
-  xy: 304, 368
+  xy: 154, 69
   size: 135, 135
   orig: 135, 135
   offset: 0, 0
   index: -1
+buttonbg01
+  rotate: false
+  xy: 304, 406
+  size: 92, 100
+  orig: 92, 100
+  offset: 0, 0
+  index: -1
 exhaust_placeholder
   rotate: false
-  xy: 441, 398
+  xy: 304, 299
   size: 40, 105
   orig: 40, 105
   offset: 0, 0
   index: -1
 ntm_logo
   rotate: false
-  xy: 2, 51
+  xy: 2, 54
   size: 150, 150
   orig: 150, 150
   offset: 0, 0
   index: -1
 placeholder_alien
   rotate: false
-  xy: 304, 163
+  xy: 388, 303
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 placeholder_kreis
   rotate: false
-  xy: 406, 159
+  xy: 404, 201
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 placeholder_square
   rotate: false
-  xy: 267, 61
+  xy: 404, 99
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 placeholder_tri
   rotate: false
-  xy: 154, 2
+  xy: 291, 5
   size: 100, 91
   orig: 100, 91
   offset: 0, 0
   index: -1
 planet_1_placeholder
   rotate: false
-  xy: 154, 95
+  xy: 291, 98
   size: 111, 106
   orig: 111, 106
   offset: 0, 0
   index: -1
 planet_2_placeholder
   rotate: false
-  xy: 369, 92
+  xy: 154, 2
   size: 65, 65
   orig: 65, 65
   offset: 0, 0
   index: -1
 planet_3_placeholder
   rotate: false
-  xy: 304, 265
+  xy: 404, 405
   size: 101, 101
   orig: 101, 101
   offset: 0, 0
   index: -1
+popupbg01
+  rotate: false
+  xy: 2, 18
+  size: 34, 34
+  orig: 34, 34
+  offset: 0, 0
+  index: -1
 ship_placeholder
   rotate: false
-  xy: 407, 261
+  xy: 346, 299
   size: 40, 105
   orig: 40, 105
   offset: 0, 0
   index: -1
 sun_placeholder
   rotate: false
-  xy: 2, 203
+  xy: 2, 206
   size: 300, 300
   orig: 300, 300
   offset: 0, 0

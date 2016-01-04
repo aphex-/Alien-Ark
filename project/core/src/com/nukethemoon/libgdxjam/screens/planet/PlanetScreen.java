@@ -40,8 +40,9 @@ import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWind
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.helper.SphereTextureProvider;
-import com.nukethemoon.libgdxjam.ui.RocketMainUI;
-import com.nukethemoon.libgdxjam.ui.Toast;
+import com.nukethemoon.libgdxjam.ui.GameOverTable;
+import com.nukethemoon.libgdxjam.ui.RocketMainTable;
+import com.nukethemoon.libgdxjam.ui.ToastTable;
 import com.nukethemoon.tools.ani.Ani;
 import com.nukethemoon.tools.ani.AnimationFinishedListener;
 import com.nukethemoon.tools.ani.BaseAnimation;
@@ -58,7 +59,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private Rocket rocket;
 
-	private RocketMainUI mainUI;
+	private RocketMainTable mainUI;
 
 	private final ShapeRenderer shapeRenderer;
 	private final InputMultiplexer multiplexer;
@@ -73,6 +74,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private final FreeCameraInput freeCameraInput;
 	private ParticleEffect effect;
 
+	private boolean gameOver = false;
 	private boolean pause = false;
 	private boolean renderEnabled = true;
 
@@ -185,7 +187,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			});
 		}
 
-		mainUI = new RocketMainUI(uiSkin);
+		mainUI = new RocketMainTable(uiSkin);
 		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
 		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
 		stage.addActor(mainUI);
@@ -285,16 +287,20 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		}
 
 		collisionController.debugRender(camera);
-		collisionController.stepSimulation(delta);
+
+		if (!gameOver) {
+			collisionController.stepSimulation(delta);
+		}
+
 
 		ani.update();
 	}
 
 	private void showToast(String text) {
-		final Toast t = new Toast(uiSkin);
+		final ToastTable t = new ToastTable(uiSkin);
 		t.setText(text);
 		stage.addActor(t);
-		Toast.ShowToastAnimation animation = new Toast.ShowToastAnimation(t, new AnimationFinishedListener() {
+		ToastTable.ShowToastAnimation animation = new ToastTable.ShowToastAnimation(t, new AnimationFinishedListener() {
 			@Override
 			public void onAnimationFinished(BaseAnimation baseAnimation) {
 				t.remove();
@@ -408,6 +414,11 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		return false;
 	}
 
+	private void onGameOver() {
+		gameOver = true;
+		GameOverTable gameOverTable = new GameOverTable(uiSkin);
+		stage.addActor(gameOverTable);
+	}
 
 	@Override
 	public void onRocketLanded() {
@@ -441,6 +452,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRocketExploded() {
-
+		onGameOver();
 	}
 }

@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-public class RocketMainUI extends Table {
+public class RocketMainTable extends Table {
 
 	private ProgressBar shieldBar;
 	private Label shieldLabel;
@@ -14,7 +14,7 @@ public class RocketMainUI extends Table {
 	private ProgressBar fuelBar;
 	private Label fuelLabel;
 
-	public RocketMainUI(Skin skin) {
+	public RocketMainTable(Skin skin) {
 		setSkin(skin);
 
 		shieldLabel = new Label("", skin);

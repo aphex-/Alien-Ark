@@ -6,7 +6,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.physics.bullet.Bullet;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.nukethemoon.libgdxjam.input.InputController;
 import com.nukethemoon.libgdxjam.screens.MenuScreen;
 import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
@@ -18,7 +17,7 @@ import java.util.Map;
 
 public class App extends Game {
 
-	private static Skin UI_SKIN;
+
 	private static InputMultiplexer MULTIPLEXER;
 	private static App app;
 	public static TextureAtlas TEXTURES;
@@ -30,12 +29,14 @@ public class App extends Game {
 	public void create () {
 		app = this;
 		Bullet.init();
+		TEXTURES = new TextureAtlas("textures/game.atlas");
+		Styles.init(TEXTURES);
 		MULTIPLEXER = new InputMultiplexer();
 		MULTIPLEXER.addProcessor(new InputController());
 		Gdx.input.setInputProcessor(MULTIPLEXER);
-		UI_SKIN = new Skin(Gdx.files.internal(Config.UI_SKIN_PATH));
 
-		TEXTURES = new TextureAtlas("textures/game.atlas");
+
+
 
 		// instance space ship
 		// load game entities
@@ -53,32 +54,32 @@ public class App extends Game {
 		if (screen == null) {
 
 		}*/
-
-		MenuScreen menuScreen = new MenuScreen(UI_SKIN, MULTIPLEXER);
+		MenuScreen menuScreen = new MenuScreen(Styles.UI_SKIN, MULTIPLEXER);
 		menuScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		app.setScreen(menuScreen);
 	}
 
 	public static void openPlanetScreen(int worldIndex) {
-
-		PlanetScreen screen = new PlanetScreen(UI_SKIN, MULTIPLEXER, worldIndex);
+		PlanetScreen screen = new PlanetScreen(Styles.UI_SKIN, MULTIPLEXER, worldIndex);
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		app.setScreen(screen);
 	}
 
 	public static void openSolarScreen() {
-
-		SolarScreen screen = new SolarScreen(UI_SKIN, MULTIPLEXER);
+		SolarScreen screen = new SolarScreen(Styles.UI_SKIN, MULTIPLEXER);
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		app.setScreen(screen);
 	}
 
 	public static void openArkScreen() {
 
-		Screen screen = new ArkScreen(UI_SKIN, MULTIPLEXER);
+		Screen screen = new ArkScreen(Styles.UI_SKIN, MULTIPLEXER);
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		app.setScreen(screen);
 	}
 
 
+	public static void onGameOver() {
+
+	}
 }
