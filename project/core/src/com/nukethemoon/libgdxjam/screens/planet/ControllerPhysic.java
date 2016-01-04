@@ -1,6 +1,5 @@
 package com.nukethemoon.libgdxjam.screens.planet;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
@@ -18,9 +17,12 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.nukethemoon.libgdxjam.Config;
-import com.nukethemoon.libgdxjam.Log;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 
 public class ControllerPhysic extends ContactListener {
+
+
+	private final TickCallback tickCallback;
 
 
 	public enum CollideType {
@@ -42,7 +44,7 @@ public class ControllerPhysic extends ContactListener {
 	private btDynamicsWorld dynamicsWorld;
 	private DebugDrawer debugDrawer;
 
-	public ControllerPhysic(float gravity) {
+	public ControllerPhysic(float gravity, Rocket rocket) {
 		collisionConfig = new btDefaultCollisionConfiguration();
 		dispatcher = new btCollisionDispatcher(collisionConfig);
 		broadphase = new btDbvtBroadphase();
@@ -56,10 +58,8 @@ public class ControllerPhysic extends ContactListener {
 			dynamicsWorld.setDebugDrawer(debugDrawer);
 		}
 
+		tickCallback = new TickCallback(dynamicsWorld, rocket);
 
-		dynamicsWorld.setInternalTickCallback(null);
-		TickCallback tickCallback = new TickCallback();
-		tickCallback.attach();
 	}
 
 	/*@Override
@@ -115,9 +115,9 @@ public class ControllerPhysic extends ContactListener {
 		object.dispose();
 	}
 
-	public void stepSimulation() {
-		float timeStep = Math.min(1f / 30f, Gdx.graphics.getDeltaTime());
-		int maxSubSteps = 5;
+	public void stepSimulation(float delta) {
+		float timeStep = Math.min(1f / 60f, delta);
+		int maxSubSteps = 10;
 		float fixedTimeStep = 1f / 60f;
 		dynamicsWorld.stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
 	}
@@ -139,15 +139,23 @@ public class ControllerPhysic extends ContactListener {
 		dynamicsWorld.dispose();
 		broadphase.dispose();
 		constraintSolver.dispose();
+		tickCallback.dispose();
 		super.dispose();
 	}
 
 	public static class TickCallback extends InternalTickCallback {
 
-		@Override
-		public void onInternalTick(btDynamicsWorld dynamicsWorld, float timeStep) {
-			//super.onInternalTick(dynamicsWorld, timeStep);
-			Log.e(ControllerPhysic.class, "tick");
+		private Rocket rocket;
+
+		public TickCallback (btDynamicsWorld dynamicsWorld, Rocket rocket) {
+			super(dynamicsWorld, true);
+			this.rocket = rocket;
 		}
+
+		@Override
+		public void onInternalTick (btDynamicsWorld dynamicsWorld, float timeStep) {
+			rocket.onBulletTick();
+		}
+
 	}
 }

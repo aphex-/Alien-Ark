@@ -22,12 +22,14 @@ public class Rocket extends GameObject implements Disposable {
 
 	private static final float THIRD_PERSON_OFFSET_Z = 10;
 	private static final Vector3 START_POSITION = new Vector3(0, 50, 30);
-	private static final Vector3 LAUNCH_IMPULSE = new Vector3(0, 0, 15);
+	private static final Vector3 LAUNCH_IMPULSE = new Vector3(0, 0, 55);
 
 	private final ModelInstance modelInstance;
 	private final Model model;
 
 	private float maneuverability = 1f;
+	private float speed = 35f;
+	private float friction = 0.5f;
 
 	float drill = 0;
 	float xRotation = 0;
@@ -63,16 +65,13 @@ public class Rocket extends GameObject implements Disposable {
 		BoundingBox boundingBox = new BoundingBox();
 		model.calculateBoundingBox(boundingBox);
 		btCollisionShape shape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.5f));
-		//shape.setMargin(1f);
 
-		/*btCollisionShape shape = new btSphereShape(1);*/
+		//btCollisionShape shape = new btSphereShape(1);
 
 		modelInstance.transform.setToTranslation(START_POSITION);
 
 		float mass = 1;
-		float friction = 2;
-		float damping = 1;
-		initRigidBody(shape, mass, friction, damping, 0, modelInstance.transform);
+		initRigidBody(shape, mass, friction, 0, modelInstance.transform);
 	}
 
 
@@ -124,6 +123,11 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
+	private void thrust() {
+		tmpMovement.set(getDirection()).nor().scl(speed);
+		rigidBody.applyCentralForce(tmpMovement);
+	}
+
 	private void onLaunch() {
 		rigidBody.applyCentralImpulse(LAUNCH_IMPULSE);
 		moving = true;
@@ -151,11 +155,6 @@ public class Rocket extends GameObject implements Disposable {
 		} else {
 			onThrustEnabled();
 		}
-	}
-
-	private void thrust() {
-		tmpMovement.set(getDirection()).nor().scl(35);
-		rigidBody.setLinearVelocity(tmpMovement);
 	}
 
 	public Vector3 getDirection() {
@@ -194,9 +193,9 @@ public class Rocket extends GameObject implements Disposable {
 		tmpCamPosition.z += THIRD_PERSON_OFFSET_Z;
 
 		// creating a delay for the camera
-		tmpCamPosition.x = lastCamPosition.x + (tmpCamPosition.x - lastCamPosition.x) / 30f;
-		tmpCamPosition.y = lastCamPosition.y + (tmpCamPosition.y - lastCamPosition.y) / 30f;
-		tmpCamPosition.z = lastCamPosition.z + (tmpCamPosition.z - lastCamPosition.z) / 30f;
+		//tmpCamPosition.x = lastCamPosition.x + (tmpCamPosition.x - lastCamPosition.x) / 20f;
+		//tmpCamPosition.y = lastCamPosition.y + (tmpCamPosition.y - lastCamPosition.y) / 20f;
+		//tmpCamPosition.z = lastCamPosition.z + (tmpCamPosition.z - lastCamPosition.z) / 20f;
 
 		tmpCamPosition.z = Math.max(tmpCamPosition.z, 1);
 
@@ -219,4 +218,15 @@ public class Rocket extends GameObject implements Disposable {
 		particleEffect.dispose();
 	}
 
+	public void onBulletTick() {
+		// cap the peed
+		if (thrusting) {
+			Vector3 linearVelocity = rigidBody.getLinearVelocity();
+			float tickSpeed = linearVelocity.len();
+			if (tickSpeed > speed) {
+				linearVelocity.scl(speed / tickSpeed);
+				rigidBody.setLinearVelocity(tmpMovement);
+			}
+		}
+	}
 }

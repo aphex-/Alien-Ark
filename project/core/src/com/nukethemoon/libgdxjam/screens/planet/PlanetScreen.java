@@ -95,7 +95,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
 		planetConfig.deserialize();
 
-		collisionController = new ControllerPhysic(planetConfig.gravity);
+		collisionController = new ControllerPhysic(planetConfig.gravity, rocket);
 		worldController = new ControllerPlanet(worldIndex, planetConfig, collisionController);
 		collisionController.addRigidBody(rocket.getRigidBody(),
 				ControllerPhysic.CollideType.ROCKET, ControllerPhysic.CollideType.ALL);
@@ -206,6 +206,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
+		collisionController.debugRender(camera);
+		collisionController.stepSimulation(delta);
+
 		if (!pause) {
 			worldController.updateRequestCenter(rocket.getPosition().x, rocket.getPosition().y);
 		}
@@ -268,8 +271,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			stage.draw();
 		}
 
-		collisionController.debugRender(camera);
-		collisionController.stepSimulation();
 
 	}
 
