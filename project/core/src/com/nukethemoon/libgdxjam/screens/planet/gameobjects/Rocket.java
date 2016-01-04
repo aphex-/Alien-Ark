@@ -16,8 +16,11 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.utils.Disposable;
+import com.nukethemoon.libgdxjam.screens.planet.ControllerPhysic;
 
 public class Rocket extends GameObject implements Disposable {
+
+	public static final int USER_VALUE = 1337;
 
 	private static final float THIRD_PERSON_OFFSET_Z = 10;
 	private static final Vector3 START_POSITION = new Vector3(0, 50, 30);
@@ -29,6 +32,11 @@ public class Rocket extends GameObject implements Disposable {
 	private float maneuverability = 1f;
 	private float speed = 35f;
 	private float friction = 0.5f;
+	private int shield = 100;
+	private int maxShield = 1000;
+	private int fuel = 100;
+	private int maxFuel = 1000;
+
 
 	float drill = 0;
 	float xRotation = 0;
@@ -52,6 +60,10 @@ public class Rocket extends GameObject implements Disposable {
 	private ParticleEffect particleEffect;
 	private ParticleSystem particleSystem;
 
+	private RocketListener listener;
+
+	private float tickFuelCount = 1;
+
 
 	public Rocket() {
 		// init graphic
@@ -70,8 +82,12 @@ public class Rocket extends GameObject implements Disposable {
 		modelInstance.transform.setToTranslation(START_POSITION);
 
 		float mass = 1;
-		initRigidBody(shape, mass, friction, 0, modelInstance.transform);
+		initRigidBody(shape, mass, friction, USER_VALUE, modelInstance.transform);
 		rigidBody.setActivationState(4); // disable deactivation
+	}
+
+	public void setListener(RocketListener listener) {
+		this.listener = listener;
 	}
 
 
@@ -124,28 +140,59 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	private void thrust() {
+		if (fuel <= 0) {
+			return;
+		}
 		tmpMovement.set(getDirection()).nor().scl(speed);
 		rigidBody.applyCentralForce(tmpMovement);
 	}
 
 	private void onLaunch() {
+		if (fuel <= 0) {
+			return;
+		}
+
 		rigidBody.applyCentralImpulse(LAUNCH_IMPULSE);
 		moving = true;
+
+		if (listener != null) {
+			listener.onRocketLaunched();
+		}
 	}
 
 	private void onStops() {
 
+		if (listener != null) {
+			listener.onRocketStopped();
+		}
 	}
 
 	private void onThrustEnabled() {
+		if (fuel <= 0) {
+			return;
+		}
 		particleSystem.add(particleEffect);
 		if (!moving) {
 			onLaunch();
+		}
+
+		if (listener != null) {
+			listener.onRocketEnabledThrust();
 		}
 	}
 
 	private void onThrustDisabled() {
 		particleSystem.remove(particleEffect);
+
+		if (listener != null) {
+			listener.onRocketDisabledThrust();
+		}
+	}
+
+	private void onExplode() {
+		if (listener != null) {
+			listener.onRocketExploded();
+		}
 	}
 
 	public void toggleThrust() {
@@ -219,8 +266,24 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	public void onBulletTick() {
-		// cap the peed
+		if (fuel <= 0) {
+			if (thrusting) {
+				onThrustDisabled();
+			}
+			return;
+		}
+
 		if (thrusting) {
+			tickFuelCount = tickFuelCount - 0.01f;
+			if (tickFuelCount <= 0) {
+				tickFuelCount = 1;
+				fuel = fuel -1;
+				if (listener != null) {
+					listener.onRocketFuelConsumed();
+				}
+			}
+
+			// cap the peed
 			Vector3 linearVelocity = rigidBody.getLinearVelocity();
 			float tickSpeed = linearVelocity.len();
 			if (tickSpeed > speed) {
@@ -228,5 +291,35 @@ public class Rocket extends GameObject implements Disposable {
 				rigidBody.setLinearVelocity(tmpMovement);
 			}
 		}
+	}
+
+	public void collidedWith(int userValue1) {
+		if (userValue1 == ControllerPhysic.DAMAGE_ON_COLLIDE_USER_VALUE) {
+			shield--;
+
+			if (listener != null) {
+				listener.onRocketDamage();
+			}
+		}
+
+		if (shield == 0) {
+			onExplode();
+		}
+	}
+
+	public int getShield() {
+		return shield;
+	}
+
+	public int getMaxShield() {
+		return maxShield;
+	}
+
+	public int getFuel() {
+		return fuel;
+	}
+
+	public int getMaxFuel() {
+		return maxFuel;
 	}
 }

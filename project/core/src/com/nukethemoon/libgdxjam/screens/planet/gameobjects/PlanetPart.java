@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.nukethemoon.libgdxjam.screens.planet.ControllerPhysic;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
 import com.nukethemoon.libgdxjam.screens.planet.helper.MaterialInterpreter;
 import com.nukethemoon.tools.opusproto.region.Chunk;
@@ -80,7 +81,7 @@ public class PlanetPart extends GameObject {
 
 			float mass = 0;
 			float friction = 1;
-			initRigidBody(collisionShape, mass, friction,  1, modelInstance.transform);
+			initRigidBody(collisionShape, mass, friction, ControllerPhysic.DAMAGE_ON_COLLIDE_USER_VALUE, modelInstance.transform);
 		}
 	}
 

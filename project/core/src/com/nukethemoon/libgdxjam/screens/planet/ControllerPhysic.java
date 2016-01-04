@@ -21,8 +21,10 @@ import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 
 public class ControllerPhysic extends ContactListener {
 
+	public static final int DAMAGE_ON_COLLIDE_USER_VALUE = 1;
 
 	private final TickCallback tickCallback;
+	private Rocket rocket;
 
 
 	public enum CollideType {
@@ -45,6 +47,7 @@ public class ControllerPhysic extends ContactListener {
 	private DebugDrawer debugDrawer;
 
 	public ControllerPhysic(float gravity, Rocket rocket) {
+		this.rocket = rocket;
 		collisionConfig = new btDefaultCollisionConfiguration();
 		dispatcher = new btCollisionDispatcher(collisionConfig);
 		broadphase = new btDbvtBroadphase();
@@ -71,23 +74,31 @@ public class ControllerPhysic extends ContactListener {
 
 		Log.e(ControllerPhysic.class, "Collision " + objectId1 + " " + objectId2);
 
+
+
+
+		Log.e(ControllerPhysic.class, "impact");
+
 		return true;
 	}*/
 
 	/*@Override
 	public boolean onContactAdded (btCollisionObject colObj0, int partId0, int index0, btCollisionObject colObj1, int partId1,
 								   int index1) {
-		instances.get(colObj0.getUserValue()).moving = false;
-		instances.get(colObj1.getUserValue()).moving = false;
+
+
 		return true;
 	}*/
 
-	/*@Override
+	@Override
 	public boolean onContactAdded (int userValue0, int partId0, int index0, int userValue1, int partId1, int index1) {
-		instances.get(userValue0).moving = false;
-		instances.get(userValue1).moving = false;
+		if (userValue0 == Rocket.USER_VALUE) {
+			rocket.collidedWith(userValue1);
+		} else if (userValue1 == Rocket.USER_VALUE) {
+			rocket.collidedWith(userValue0);
+		}
 		return true;
-	}*/
+	}
 
 	public void addRigidBody(btRigidBody object, CollideType type, CollideType... collidesTo) {
 		if (object == null) {

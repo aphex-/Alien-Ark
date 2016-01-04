@@ -38,9 +38,11 @@ import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWindow;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.helper.SphereTextureProvider;
+import com.nukethemoon.libgdxjam.ui.RocketMainUI;
 
-public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener {
+public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener, RocketListener {
 
 
 	private ModelInstance environmentSphere;
@@ -51,6 +53,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private BufferedParticleBatch particleSpriteBatch;
 
 	private Rocket rocket;
+
+	private RocketMainUI mainUI;
 
 	private final ShapeRenderer shapeRenderer;
 	private final InputMultiplexer multiplexer;
@@ -72,14 +76,14 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private AssetManager assetManager;
 	private Model sphereModel;
 
-	public PlanetScreen(Skin puiSkin, InputMultiplexer pMultiplexer, int pWorldIndex) {
-		uiSkin = puiSkin;
+	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pWorldIndex) {
+		uiSkin = pUISkin;
 		worldIndex = pWorldIndex;
 		multiplexer = pMultiplexer;
 
 		rocket = new Rocket();
+		rocket.setListener(this);
 		gson = new GsonBuilder().setPrettyPrinting().create();
-
 
 		modelBatch = new ModelBatch();
 		environment = new Environment();
@@ -174,6 +178,11 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				}
 			});
 		}
+
+		mainUI = new RocketMainUI(uiSkin);
+		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
+		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
+		stage.addActor(mainUI);
 
 		final TextButton leaveButton = new TextButton("Leave Planet", uiSkin);
 		leaveButton.addListener(new ClickListener() {
@@ -373,4 +382,38 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	}
 
 
+	@Override
+	public void onRocketStopped() {
+
+	}
+
+	@Override
+	public void onRocketLaunched() {
+
+	}
+
+	@Override
+	public void onRocketDisabledThrust() {
+
+	}
+
+	@Override
+	public void onRocketEnabledThrust() {
+
+	}
+
+	@Override
+	public void onRocketDamage() {
+		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
+	}
+
+	@Override
+	public void onRocketFuelConsumed() {
+		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
+	}
+
+	@Override
+	public void onRocketExploded() {
+
+	}
 }
