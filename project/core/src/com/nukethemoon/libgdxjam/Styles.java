@@ -21,7 +21,7 @@ public class Styles {
 
 	public static Color COLOR_01 = new Color(28f / 255f, 25f / 255f, 18f / 255f, 1);
 
-	public static BitmapFont FONT_DOSIS_12;
+	public static BitmapFont FONT_DOSIS_SMALL;
 
 	public static Label.LabelStyle LABEL_01;
 
@@ -30,8 +30,8 @@ public class Styles {
 	public static void init(TextureAtlas atlas) {
 		UI_SKIN = new Skin();
 
-		FONT_DOSIS_12 = createFont("fonts/Dosis-Medium.ttf", 20, Color.WHITE);
-		loadDefaultSkin(FONT_DOSIS_12);
+		FONT_DOSIS_SMALL = createFont("fonts/Dosis-Medium.ttf", 20, Color.WHITE);
+		loadDefaultSkin(FONT_DOSIS_SMALL);
 
 
 		NINE_PATCH_POPUP_BG_01 = new NinePatchDrawable(new NinePatch(atlas.findRegion("popupbg01"),16, 16, 16, 16));
@@ -46,7 +46,7 @@ public class Styles {
 
 		Label.LabelStyle standardLabelStyle = UI_SKIN.get(Label.LabelStyle.class);
 		LABEL_01 = new Label.LabelStyle(standardLabelStyle);
-		LABEL_01.font = FONT_DOSIS_12;
+		LABEL_01.font = FONT_DOSIS_SMALL;
 
 	}
 
