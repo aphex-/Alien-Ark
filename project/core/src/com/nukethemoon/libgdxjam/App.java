@@ -80,6 +80,6 @@ public class App extends Game {
 
 
 	public static void onGameOver() {
-
+		openSolarScreen();
 	}
 }
