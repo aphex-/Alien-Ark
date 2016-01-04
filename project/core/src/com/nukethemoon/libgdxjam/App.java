@@ -60,18 +60,21 @@ public class App extends Game {
 	}
 
 	public static void openPlanetScreen(int worldIndex) {
+
 		PlanetScreen screen = new PlanetScreen(UI_SKIN, MULTIPLEXER, worldIndex);
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		app.setScreen(screen);
 	}
 
 	public static void openSolarScreen() {
+
 		SolarScreen screen = new SolarScreen(UI_SKIN, MULTIPLEXER);
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		app.setScreen(screen);
 	}
 
 	public static void openArkScreen() {
+
 		Screen screen = new ArkScreen(UI_SKIN, MULTIPLEXER);
 		screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		app.setScreen(screen);

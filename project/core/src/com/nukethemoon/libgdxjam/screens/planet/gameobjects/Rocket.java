@@ -254,7 +254,7 @@ public class Rocket extends GameObject implements Disposable {
 
 	@Override
 	public void dispose() {
-		model.dispose();
+		//model.dispose();
 	}
 
 	public void onBulletTick() {

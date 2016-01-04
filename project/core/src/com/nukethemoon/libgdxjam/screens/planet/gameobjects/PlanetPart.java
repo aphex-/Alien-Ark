@@ -246,7 +246,7 @@ public class PlanetPart extends GameObject {
 	}
 
 	public void dispose() {
-		model.dispose();
+		//model.dispose();
 		if (rigidBody != null) {
 			rigidBody.dispose();
 		}

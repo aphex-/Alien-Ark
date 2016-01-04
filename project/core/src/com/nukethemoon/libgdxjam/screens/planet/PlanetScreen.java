@@ -339,12 +339,15 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void dispose() {
+		particleSystem.removeAll();
+		particleSystem.getBatches().clear();
+
 		worldController.dispose();
 		modelBatch.dispose();
 		rocket.dispose();
 		assetManager.dispose();
-		sphereModel.dispose();
-		shapeRenderer.dispose();
+		//sphereModel.dispose();
+		//shapeRenderer.dispose();
 		effect.dispose();
 	}
 
