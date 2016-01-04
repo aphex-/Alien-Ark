@@ -16,7 +16,6 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.utils.Disposable;
-import com.nukethemoon.libgdxjam.screens.planet.ControllerPhysic;
 
 public class Rocket extends GameObject implements Disposable {
 
@@ -24,7 +23,10 @@ public class Rocket extends GameObject implements Disposable {
 
 	private static final float THIRD_PERSON_OFFSET_Z = 10;
 	private static final Vector3 START_POSITION = new Vector3(0, 50, 30);
+
 	private static final Vector3 LAUNCH_IMPULSE = new Vector3(0, 0, 55);
+	private static final int LAUNCH_INDESTRUCTIBLE_TICKS = 100;
+	private long ticksSinceLastLaunch = 0;
 
 	private final ModelInstance modelInstance;
 	private final Model model;
@@ -63,6 +65,7 @@ public class Rocket extends GameObject implements Disposable {
 	private RocketListener listener;
 
 	private float tickFuelCount = 1;
+
 
 
 	public Rocket() {
@@ -151,7 +154,7 @@ public class Rocket extends GameObject implements Disposable {
 		if (fuel <= 0) {
 			return;
 		}
-
+		ticksSinceLastLaunch = 0;
 		rigidBody.applyCentralImpulse(LAUNCH_IMPULSE);
 		moving = true;
 
@@ -272,6 +275,9 @@ public class Rocket extends GameObject implements Disposable {
 			}
 			return;
 		}
+		if (moving) {
+			ticksSinceLastLaunch++;
+		}
 
 		if (thrusting) {
 			tickFuelCount = tickFuelCount - 0.01f;
@@ -293,17 +299,21 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
-	public void collidedWith(int userValue1) {
-		if (userValue1 == ControllerPhysic.DAMAGE_ON_COLLIDE_USER_VALUE) {
+	private void dealDamage() {
+		if (ticksSinceLastLaunch > LAUNCH_INDESTRUCTIBLE_TICKS) {
 			shield--;
-
 			if (listener != null) {
 				listener.onRocketDamage();
 			}
 		}
-
 		if (shield == 0) {
 			onExplode();
+		}
+	}
+
+	public void collidedWith(int userValue1) {
+		if (userValue1 == PlanetPart.GROUND_USER_VALUE && thrusting) {
+			dealDamage();
 		}
 	}
 

@@ -21,8 +21,6 @@ import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 
 public class ControllerPhysic extends ContactListener {
 
-	public static final int DAMAGE_ON_COLLIDE_USER_VALUE = 1;
-
 	private final TickCallback tickCallback;
 	private Rocket rocket;
 
