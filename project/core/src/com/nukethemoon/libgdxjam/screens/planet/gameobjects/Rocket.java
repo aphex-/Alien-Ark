@@ -57,7 +57,7 @@ public class Rocket extends GameObject implements Disposable {
 
 	private boolean thrusting = true;
 	private boolean moving = true;
-
+	private boolean exploded = false;
 
 	private RocketListener listener;
 
@@ -183,6 +183,7 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	private void onExplode() {
+		exploded = true;
 		if (listener != null) {
 			listener.onRocketExploded();
 		}
@@ -247,9 +248,15 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 
-	public void drawModel(ModelBatch modelBatch, Environment environment, ParticleEffect thrustEffect) {
-		modelBatch.render(modelInstance, environment);
+
+	public void drawModel(ModelBatch modelBatch, Environment environment, ParticleEffect thrustEffect,
+						  ParticleEffect effectExplosion) {
+
+		if (!exploded) {
+			modelBatch.render(modelInstance, environment);
+		}
 		thrustEffect.setTransform(modelInstance.transform);
+		effectExplosion.setTransform(modelInstance.transform);
 	}
 
 	@Override

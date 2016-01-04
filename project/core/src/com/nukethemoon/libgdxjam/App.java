@@ -23,6 +23,7 @@ public class App extends Game {
 	public static TextureAtlas TEXTURES;
 
 	private static Map<Class<? extends Screen>, ? extends Screen> SCREENS = new HashMap<Class<? extends Screen>, Screen>();
+	public static AudioController audioController;
 
 
 	@Override
@@ -34,6 +35,8 @@ public class App extends Game {
 		MULTIPLEXER = new InputMultiplexer();
 		MULTIPLEXER.addProcessor(new InputController());
 		Gdx.input.setInputProcessor(MULTIPLEXER);
+
+		audioController = new AudioController();
 
 
 

@@ -43,6 +43,7 @@ import com.nukethemoon.libgdxjam.screens.planet.helper.SphereTextureProvider;
 import com.nukethemoon.libgdxjam.ui.GameOverTable;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
 import com.nukethemoon.libgdxjam.ui.ToastTable;
+import com.nukethemoon.libgdxjam.ui.animation.FadeTableAnimation;
 import com.nukethemoon.tools.ani.Ani;
 import com.nukethemoon.tools.ani.AnimationFinishedListener;
 import com.nukethemoon.tools.ani.BaseAnimation;
@@ -72,7 +73,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private Stage stage;
 
 	private final FreeCameraInput freeCameraInput;
-	private ParticleEffect effect;
+
+	private ParticleEffect effectThrust;
+	private ParticleEffect effectExplosion;
 
 	private boolean gameOver = false;
 	private boolean pause = false;
@@ -138,14 +141,16 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		ParticleEffectLoader loader = new ParticleEffectLoader(new InternalFileHandleResolver());
 		assetManager.setLoader(ParticleEffect.class, loader);
 		assetManager.load("particles/rocket_thruster.pfx", ParticleEffect.class, loadParam);
+		assetManager.load("particles/rocket_explosion.pfx", ParticleEffect.class, loadParam);
 		assetManager.finishLoading();
 
-		ParticleEffect originalEffect = assetManager.get("particles/rocket_thruster.pfx");
-		// we cannot use the originalEffect, we must make a copy each time we create new particle effect
-		effect = originalEffect.copy();
-		effect.init();
-		effect.start();  // optional: particle will begin playing immediately
-		particleSystem.add(effect);
+		effectThrust = ((ParticleEffect) assetManager.get("particles/rocket_thruster.pfx")).copy();
+		effectExplosion = ((ParticleEffect) assetManager.get("particles/rocket_explosion.pfx")).copy();
+		effectThrust.init();
+		effectExplosion.init();
+		effectThrust.start();
+
+		particleSystem.add(effectThrust);
 	}
 
 	@Override
@@ -260,7 +265,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		}
 
 		modelBatch.begin(camera);
-		rocket.drawModel(modelBatch, environment, effect);
+		rocket.drawModel(modelBatch, environment, effectThrust, effectExplosion);
 		worldController.render(modelBatch, environment);
 
 		environmentSphere.transform.idt();
@@ -354,7 +359,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		assetManager.dispose();
 		//sphereModel.dispose();
 		//shapeRenderer.dispose();
-		effect.dispose();
+		effectThrust.dispose();
+		effectExplosion.dispose();
 	}
 
 
@@ -416,13 +422,23 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private void onGameOver() {
 		gameOver = true;
-		GameOverTable gameOverTable = new GameOverTable(uiSkin);
+		GameOverTable gameOverTable = new GameOverTable(uiSkin, new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				renderEnabled = false;
+				dispose();
+				App.onGameOver();
+			}
+		});
+		gameOverTable.setColor(1, 1, 1, 0);
 		stage.addActor(gameOverTable);
+		ani.add(2500, new FadeTableAnimation(gameOverTable));
 	}
 
 	@Override
 	public void onRocketLanded() {
 		showToast("Rocked landed");
+		App.audioController.playSound("hit_deep.mp3");
 	}
 
 	@Override
@@ -432,16 +448,17 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRocketDisabledThrust() {
-		particleSystem.remove(effect);
+		particleSystem.remove(effectThrust);
 	}
 
 	@Override
 	public void onRocketEnabledThrust() {
-		particleSystem.add(effect);
+		particleSystem.add(effectThrust);
 	}
 
 	@Override
 	public void onRocketDamage() {
+		App.audioController.playSound("hit_high.mp3");
 		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
 	}
 
@@ -452,6 +469,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRocketExploded() {
+		App.audioController.playSound("explosion.mp3");
+		particleSystem.remove(effectThrust);
+		effectExplosion.start();
+		particleSystem.add(effectExplosion);
 		onGameOver();
 	}
 }
