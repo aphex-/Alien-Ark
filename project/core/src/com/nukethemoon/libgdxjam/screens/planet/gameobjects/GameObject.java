@@ -7,12 +7,16 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class GameObject{
 
-	public btRigidBody rigidBody;
-	private static Vector3 localInertia = new Vector3();
 
-	protected void initRigidBody(btCollisionShape shape, float mass, float friction, int userValue, Matrix4 transform) {
+	public List<btRigidBody> rigidBodyList = new ArrayList<btRigidBody>();
+
+	protected void addRigidBody(btCollisionShape shape, float mass, float friction, int userValue, Matrix4 transform) {
+		Vector3 localInertia = new Vector3();
 		if (mass > 0f) {
 			shape.calculateLocalInertia(mass, localInertia);
 		} else {
@@ -21,16 +25,15 @@ public abstract class GameObject{
 		btRigidBody.btRigidBodyConstructionInfo constructionInfo = new btRigidBody.btRigidBodyConstructionInfo(
 				mass, null, shape, localInertia);
 		constructionInfo.setFriction(friction);
-		rigidBody = new btRigidBody(constructionInfo);
+
+		btRigidBody rigidBody = new btRigidBody(constructionInfo);
 		rigidBody.setUserValue(userValue);
 		rigidBody.setMotionState(new MotionState(transform));
 		rigidBody.setCollisionFlags(rigidBody.getCollisionFlags()
 				| btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
 		constructionInfo.dispose();
-	}
 
-	public btRigidBody getRigidBody() {
-		return rigidBody;
+		rigidBodyList.add(rigidBody);
 	}
 
 	static class MotionState extends btMotionState {

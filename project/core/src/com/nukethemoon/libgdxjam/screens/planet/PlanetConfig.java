@@ -27,8 +27,7 @@ public class PlanetConfig {
 
 	public class LandscapeLayerConfig {
 		public String name;
-		public boolean water = false;
-		public int userValue;
+		public String collisionType;
 		public transient Material material;
 		public GsonMaterial serializedMaterial;
 	}

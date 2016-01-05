@@ -56,9 +56,8 @@
   ],
   "layerConfigs": [
     {
-      "userValue" : 1,
+      "collisionType" : "water",
       "name" : "Water",
-      "water" : "true",
       "serializedMaterial" : {
         "id": "mtl5",
         "colorAttributes": [
@@ -97,7 +96,7 @@
     },
 
     {
-      "userValue" : 1,
+      "collisionType" : "ground",
       "name" : "Beach",
       "serializedMaterial" : {
         "id": "mtl9502",
@@ -117,7 +116,7 @@
     },
 
     {
-      "userValue" : 1,
+      "collisionType" : "ground",
       "name" : "Grass",
       "serializedMaterial" : {
         "id": "mtl9532",

@@ -82,10 +82,10 @@ public class Rocket extends GameObject implements Disposable {
 		modelInstance.transform.setToTranslation(START_POSITION);
 
 		float mass = 1;
-		initRigidBody(shape, mass, friction, USER_VALUE, modelInstance.transform);
-		rigidBody.setActivationState(4); // disable deactivation
+		addRigidBody(shape, mass, friction, USER_VALUE, modelInstance.transform);
+		rigidBodyList.get(0).setActivationState(4); // disable deactivation
 
-		rigidBody.setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(speed));
+		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(speed));
 	}
 
 	public void setListener(RocketListener listener) {
@@ -128,7 +128,7 @@ public class Rocket extends GameObject implements Disposable {
 		rotationMatrix.rotate(Vector3.Y, drill);
 		modelInstance.transform.mul(rotationMatrix);
 
-		if (rigidBody.getLinearVelocity().len() < 0.1) {
+		if (rigidBodyList.get(0).getLinearVelocity().len() < 0.1 && !thrusting) {
 			if (moving) {
 				onLanded();
 			}
@@ -141,7 +141,7 @@ public class Rocket extends GameObject implements Disposable {
 			return;
 		}
 		tmpMovement.set(getDirection()).nor().scl(speed);
-		rigidBody.applyCentralForce(tmpMovement);
+		rigidBodyList.get(0).applyCentralForce(tmpMovement);
 	}
 
 	private void onLaunch() {
@@ -149,7 +149,7 @@ public class Rocket extends GameObject implements Disposable {
 			return;
 		}
 		ticksSinceLastLaunch = 0;
-		rigidBody.applyCentralImpulse(LAUNCH_IMPULSE);
+		rigidBodyList.get(0).applyCentralImpulse(LAUNCH_IMPULSE);
 		moving = true;
 
 		if (listener != null) {
@@ -207,7 +207,7 @@ public class Rocket extends GameObject implements Disposable {
 
 
 	public Vector3 getPosition() {
-		return rigidBody.getWorldTransform().getTranslation(tmpPosition);
+		return rigidBodyList.get(0).getWorldTransform().getTranslation(tmpPosition);
 	}
 
 	public void reduceThirdPersonOffsetY() {
@@ -286,11 +286,11 @@ public class Rocket extends GameObject implements Disposable {
 			}
 
 			// cap the peed
-			Vector3 linearVelocity = rigidBody.getLinearVelocity();
+			Vector3 linearVelocity = rigidBodyList.get(0).getLinearVelocity();
 			float tickSpeed = linearVelocity.len();
 			if (tickSpeed > speed) {
 				linearVelocity.scl(speed / tickSpeed);
-				rigidBody.setLinearVelocity(tmpMovement);
+				rigidBodyList.get(0).setLinearVelocity(tmpMovement);
 			}
 		}
 	}

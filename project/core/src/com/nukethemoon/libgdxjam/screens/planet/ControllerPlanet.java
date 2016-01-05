@@ -3,6 +3,7 @@ package com.nukethemoon.libgdxjam.screens.planet;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPart;
@@ -165,7 +166,9 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		for (Map.Entry<Point, PlanetPart> entry : chunkGraphicBuffer.entrySet()) {
 			if (!currentVisibleChunkPositions.contains(entry.getKey())) {
 				PlanetPart c = entry.getValue();
-				controllerPhysic.removeRigidBody(c.getRigidBody());
+				for (btRigidBody body : c.rigidBodyList) {
+					controllerPhysic.removeRigidBody(body);
+				}
 				c.dispose();
 				tmpRemoveList.add(entry.getKey());
 			}
@@ -193,9 +196,10 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		if (chunkGraphicBuffer.get(point) == null) {
 			PlanetPart chunkMesh = new PlanetPart(chunk, tileGraphicSize, planetConfig,
 					toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter()));
-
-			controllerPhysic.addRigidBody(chunkMesh.getRigidBody(),
-					ControllerPhysic.CollideType.GROUND, ControllerPhysic.CollideType.ROCKET);
+			for (btRigidBody body : chunkMesh.rigidBodyList) {
+				controllerPhysic.addRigidBody(body,
+						ControllerPhysic.CollideType.GROUND, ControllerPhysic.CollideType.ROCKET);
+			}
 			chunkGraphicBuffer.put(point, chunkMesh);
 		} else {
 			Log.d(getClass(), "Created a chunk that already exists. x " + x + " y " + y);
