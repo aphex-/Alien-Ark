@@ -21,7 +21,7 @@ import com.nukethemoon.libgdxjam.screens.planet.CollisionTypes;
 public class Rocket extends GameObject implements Disposable {
 
 
-	private static final float THIRD_PERSON_OFFSET_Z = 10;
+	private static final float THIRD_PERSON_OFFSET_Z = 6;
 	private static final Vector3 START_POSITION = new Vector3(0, 50, 30);
 
 	private static final Vector3 LAUNCH_IMPULSE = new Vector3(0, 0, 55);
@@ -234,9 +234,9 @@ public class Rocket extends GameObject implements Disposable {
 		tmpCamPosition.z += THIRD_PERSON_OFFSET_Z;
 
 		// creating a delay for the camera
-		//tmpCamPosition.x = lastCamPosition.x + (tmpCamPosition.x - lastCamPosition.x) / 20f;
-		//tmpCamPosition.y = lastCamPosition.y + (tmpCamPosition.y - lastCamPosition.y) / 20f;
-		//tmpCamPosition.z = lastCamPosition.z + (tmpCamPosition.z - lastCamPosition.z) / 20f;
+		tmpCamPosition.x = lastCamPosition.x + (tmpCamPosition.x - lastCamPosition.x) / 20f;
+		tmpCamPosition.y = lastCamPosition.y + (tmpCamPosition.y - lastCamPosition.y) / 20f;
+		tmpCamPosition.z = lastCamPosition.z + (tmpCamPosition.z - lastCamPosition.z) / 20f;
 
 		tmpCamPosition.z = Math.max(tmpCamPosition.z, 1);
 
