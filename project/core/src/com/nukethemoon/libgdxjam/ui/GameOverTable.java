@@ -8,7 +8,6 @@ import com.nukethemoon.libgdxjam.Styles;
 
 public class GameOverTable extends CenteredTable {
 
-
 	public GameOverTable(Skin skin, final ClickListener clickListener) {
 		setBackground(Styles.NINE_PATCH_POPUP_BG_01);
 		add(new Label("GAME OVER", Styles.LABEL_01));
@@ -19,6 +18,5 @@ public class GameOverTable extends CenteredTable {
 		pad(20);
 		pack();
 	}
-
 
 }
