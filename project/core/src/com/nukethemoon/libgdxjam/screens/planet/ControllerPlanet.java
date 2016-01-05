@@ -27,7 +27,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private static final String WORLD_NAME = "entities/planets/planet01/opusConfig.json";
 
 
-	private float tileGraphicSize = 5f;
+	private float tileGraphicSize = 3f;
 
 	private int requestRadiusInTiles = 150;
 	private int lastRequestCenterTileX = 0;
