@@ -46,12 +46,12 @@ public class App extends Game {
 		// load game entities
 
 		// openScreen(SplashScreen.class);
-		//openPlanetScreen(1);
+		openPlanetScreen(1);
 		SpaceShipProperties.properties.testInit();
 		//openArkScreen();
 
 
-		openSolarScreen();
+		//openSolarScreen();
 	}
 
 
