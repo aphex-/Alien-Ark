@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btBroadphaseInterface;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionConfiguration;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btDbvtBroadphase;
 import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
 import com.badlogic.gdx.physics.bullet.collision.btDispatcher;
@@ -17,23 +18,13 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.nukethemoon.libgdxjam.Config;
+import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 
 public class ControllerPhysic extends ContactListener {
 
 	private final TickCallback tickCallback;
 	private Rocket rocket;
-
-
-	public enum CollideType {
-		GROUND((short) (1<<8)),
-		ROCKET((short) (1<<9)),
-		ALL((short)-1);
-		public short mask;
-		CollideType(short mask) {
-			this.mask = mask;
-		}
-	}
 
 
 	private btCollisionConfiguration collisionConfig;
@@ -90,37 +81,40 @@ public class ControllerPhysic extends ContactListener {
 
 	@Override
 	public boolean onContactAdded (int userValue0, int partId0, int index0, int userValue1, int partId1, int index1) {
-		if (userValue0 == Rocket.USER_VALUE) {
+		if (userValue0 == CollisionTypes.ROCKET.mask) {
 			rocket.collidedWith(userValue1);
-		} else if (userValue1 == Rocket.USER_VALUE) {
+		} else if (userValue1 == CollisionTypes.ROCKET.mask) {
 			rocket.collidedWith(userValue0);
 		}
 		return true;
 	}
 
-	public void addRigidBody(btRigidBody object, CollideType type, CollideType... collidesTo) {
-		if (object == null) {
+	public void addRigidBody(btRigidBody object, CollisionTypes type) {
+		if (object == null || type == null) {
+			Log.e(ControllerPhysic.class, "Tried to ad an invalid rigid body");
 			return;
 		}
-		short collidesToMask = 0;
-		for (CollideType c : collidesTo) {
-			collidesToMask = (short) (collidesToMask | c.mask);
-		}
-		dynamicsWorld.addRigidBody(object, type.mask, collidesToMask);
+		dynamicsWorld.addRigidBody(object, type.mask, CollisionTypes.toMask(CollisionTypes.getColliders(type)));
 	}
 
-	public void addRigidBody(btRigidBody object, CollideType type) {
-		if (object == null) {
-			return;
-		}
-		dynamicsWorld.addRigidBody(object, type.mask, CollideType.ALL.mask);
+	public void addCollisionObject(btCollisionObject object) {
+		dynamicsWorld.addCollisionObject(object, CollisionTypes.WATER.mask, CollisionTypes.ROCKET.mask);
 	}
+
 
 	public void removeRigidBody(btRigidBody object) {
 		if (object == null) {
 			return;
 		}
 		dynamicsWorld.removeRigidBody(object);
+		object.dispose();
+	}
+
+	public void removeCollisionObject(btCollisionObject object) {
+		if (object == null) {
+			return;
+		}
+		dynamicsWorld.removeCollisionObject(object);
 		object.dispose();
 	}
 
@@ -131,14 +125,12 @@ public class ControllerPhysic extends ContactListener {
 		dynamicsWorld.stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
 	}
 
-
 	public void debugRender(Camera camera) {
 		if (Config.DEBUG_BULLET) {
 			debugDrawer.begin(camera);
 			dynamicsWorld.debugDrawWorld();
 			debugDrawer.end();
 		}
-
 	}
 
 	@Override
