@@ -15,29 +15,16 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.nukethemoon.libgdxjam.screens.planet.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
 import com.nukethemoon.tools.opusproto.interpreter.TypeInterpreter;
 import com.nukethemoon.tools.opusproto.region.Chunk;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class PlanetPart extends GameObject {
 
-	public static final int 	GROUND_USER_VALUE = 92011;
-	public static final String 	GROUND_NAME = "ground";
-
-	public static final int WATER_USER_VALUE = 1234;
-	public static final String 	WATER_NAME = "water";
-
-	public static final Map<String, Integer> USER_VALUE_NAME_TO_INT = new HashMap<String, Integer>();
-
-	static {
-		USER_VALUE_NAME_TO_INT.put(GROUND_NAME, GROUND_USER_VALUE);
-		USER_VALUE_NAME_TO_INT.put(WATER_NAME, WATER_USER_VALUE);
-	}
 
 	private static final float LANDSCAPE_MAX_HEIGHT = 20;
 
@@ -87,7 +74,7 @@ public class PlanetPart extends GameObject {
 		createLandscapePart(chunk);
 		for (int i = 0; i < pPlanetConfig.layerConfigs.size(); i++) {
 			PlanetConfig.LandscapeLayerConfig layerConfig = pPlanetConfig.layerConfigs.get(i);
-			if (layerConfig.collisionType.equals(WATER_NAME)) {
+			if (CollisionTypes.byName(layerConfig.collisionType) == CollisionTypes.WATER) {
 				createWaterPart(chunk, i);
 			}
 		}
@@ -108,8 +95,8 @@ public class PlanetPart extends GameObject {
 				float mass = 0;
 				float friction = 1;
 				PlanetConfig.LandscapeLayerConfig layerConfig = planetConfig.layerConfigs.get(landscapeLayerIndex);
-
-				addRigidBody(collisionShape, mass, friction, GROUND_USER_VALUE, modelInstance.transform);
+				int userValue = CollisionTypes.byName(layerConfig.collisionType).mask;
+				addRigidBody(collisionShape, mass, friction, userValue, modelInstance.transform);
 			}
 		}
 	}
@@ -128,7 +115,7 @@ public class PlanetPart extends GameObject {
 
 		// begin with all mesh builders for the landscape (except the water layer)
 		for (int landscapeLayerIndex = 0; landscapeLayerIndex < meshBuilders.size(); landscapeLayerIndex++) {
-			if (!planetConfig.layerConfigs.get(landscapeLayerIndex).collisionType.equals(WATER_NAME)) {
+			if (CollisionTypes.byName(planetConfig.layerConfigs.get(landscapeLayerIndex).collisionType) != CollisionTypes.WATER)  {
 				MeshBuilder meshBuilder = meshBuilders.get(landscapeLayerIndex);
 				meshBuilder.begin(VERTEX_ATTRIBUTES, GL20.GL_TRIANGLES);
 			}
@@ -154,7 +141,8 @@ public class PlanetPart extends GameObject {
 
 
 		for (int landscapeLayerIndex = 0; landscapeLayerIndex < meshBuilders.size(); landscapeLayerIndex++) {
-			if (!planetConfig.layerConfigs.get(landscapeLayerIndex).collisionType.equals(WATER_NAME)) {
+			String collisionType = planetConfig.layerConfigs.get(landscapeLayerIndex).collisionType;
+			if (CollisionTypes.byName(collisionType) != CollisionTypes.WATER) {
 
 				modelBuilder.node().id = LANDSCAPE_NODE_NAME + landscapeLayerIndex;
 
@@ -169,10 +157,10 @@ public class PlanetPart extends GameObject {
 	}
 
 	private boolean areAllHeightsWater(float height0, float height1, float height2, float height3) {
-		return planetConfig.layerConfigs.get(interpreter.getType(height0)).collisionType.equals(WATER_NAME)
-				&& planetConfig.layerConfigs.get(interpreter.getType(height1)).collisionType.equals(WATER_NAME)
-					&& planetConfig.layerConfigs.get(interpreter.getType(height2)).collisionType.equals(WATER_NAME)
-						&& planetConfig.layerConfigs.get(interpreter.getType(height3)).collisionType.equals(WATER_NAME);
+		return CollisionTypes.byName(planetConfig.layerConfigs.get(interpreter.getType(height0)).collisionType) == CollisionTypes.WATER
+				&& CollisionTypes.byName(planetConfig.layerConfigs.get(interpreter.getType(height0)).collisionType) == CollisionTypes.WATER
+					&& CollisionTypes.byName(planetConfig.layerConfigs.get(interpreter.getType(height0)).collisionType) == CollisionTypes.WATER
+						&& CollisionTypes.byName(planetConfig.layerConfigs.get(interpreter.getType(height0)).collisionType) == CollisionTypes.WATER;
 
 	}
 
@@ -242,7 +230,8 @@ public class PlanetPart extends GameObject {
 
 	private int getNonWaterLayerIndex(float heightValue) {
 		int layerIndex = interpreter.getType(heightValue);
-		if (planetConfig.layerConfigs.get(layerIndex).collisionType.equals(WATER_NAME)) {
+		String collisionType = planetConfig.layerConfigs.get(layerIndex).collisionType;
+		if (CollisionTypes.byName(collisionType) == CollisionTypes.WATER) {
 			return layerIndex + 1;
 		}
 		return layerIndex;

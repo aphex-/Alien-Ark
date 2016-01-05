@@ -25,17 +25,6 @@ public class ControllerPhysic extends ContactListener {
 	private Rocket rocket;
 
 
-	public enum CollideType {
-		GROUND((short) (1<<8)),
-		ROCKET((short) (1<<9)),
-		ALL((short)-1);
-		public short mask;
-		CollideType(short mask) {
-			this.mask = mask;
-		}
-	}
-
-
 	private btCollisionConfiguration collisionConfig;
 	private btDispatcher dispatcher;
 	private final btSequentialImpulseConstraintSolver constraintSolver;
@@ -98,22 +87,22 @@ public class ControllerPhysic extends ContactListener {
 		return true;
 	}
 
-	public void addRigidBody(btRigidBody object, CollideType type, CollideType... collidesTo) {
+	public void addRigidBody(btRigidBody object, CollisionTypes type, CollisionTypes... collidesTo) {
 		if (object == null) {
 			return;
 		}
 		short collidesToMask = 0;
-		for (CollideType c : collidesTo) {
+		for (CollisionTypes c : collidesTo) {
 			collidesToMask = (short) (collidesToMask | c.mask);
 		}
 		dynamicsWorld.addRigidBody(object, type.mask, collidesToMask);
 	}
 
-	public void addRigidBody(btRigidBody object, CollideType type) {
+	public void addRigidBody(btRigidBody object, CollisionTypes type) {
 		if (object == null) {
 			return;
 		}
-		dynamicsWorld.addRigidBody(object, type.mask, CollideType.ALL.mask);
+		dynamicsWorld.addRigidBody(object, type.mask, CollisionTypes.ALL.mask);
 	}
 
 	public void removeRigidBody(btRigidBody object) {

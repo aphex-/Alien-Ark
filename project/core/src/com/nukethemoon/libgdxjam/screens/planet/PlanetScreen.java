@@ -114,7 +114,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		collisionController = new ControllerPhysic(planetConfig.gravity, rocket);
 		worldController = new ControllerPlanet(worldIndex, planetConfig, collisionController);
 		collisionController.addRigidBody(rocket.rigidBodyList.get(0),
-				ControllerPhysic.CollideType.ROCKET, ControllerPhysic.CollideType.ALL);
+				CollisionTypes.ROCKET, CollisionTypes.ALL);
 
 		multiplexer.addProcessor(this);
 		freeCameraInput = new FreeCameraInput(camera);

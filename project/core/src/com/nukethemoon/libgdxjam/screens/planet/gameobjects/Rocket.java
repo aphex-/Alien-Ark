@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.utils.Disposable;
+import com.nukethemoon.libgdxjam.screens.planet.CollisionTypes;
 
 public class Rocket extends GameObject implements Disposable {
 
@@ -308,7 +309,7 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	public void collidedWith(int userValue1) {
-		if (userValue1 == PlanetPart.GROUND_USER_VALUE && thrusting) {
+		if (userValue1 == CollisionTypes.GROUND.mask && thrusting) {
 			dealDamage();
 		}
 	}
