@@ -3,6 +3,7 @@ package com.nukethemoon.libgdxjam.screens.planet;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.Log;
@@ -169,6 +170,9 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 				for (btRigidBody body : c.rigidBodyList) {
 					controllerPhysic.removeRigidBody(body);
 				}
+				for (btCollisionObject object : c.collisionList) {
+					controllerPhysic.removeCollisionObject(object);
+				}
 				c.dispose();
 				tmpRemoveList.add(entry.getKey());
 			}
@@ -200,6 +204,10 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 				controllerPhysic.addRigidBody(body,
 						CollisionTypes.byMask((short) body.getUserValue()));
 			}
+			for (btCollisionObject object : chunkMesh.collisionList) {
+				controllerPhysic.addCollisionObject(object);
+			}
+
 			chunkGraphicBuffer.put(point, chunkMesh);
 		} else {
 			Log.d(getClass(), "Created a chunk that already exists. x " + x + " y " + y);

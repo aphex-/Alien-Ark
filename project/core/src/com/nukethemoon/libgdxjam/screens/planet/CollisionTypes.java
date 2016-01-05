@@ -14,9 +14,9 @@ public enum CollisionTypes {
 	public static Map<CollisionTypes, CollisionTypes[]> TYPE_TO_COLLISIONS = new HashMap<CollisionTypes, CollisionTypes[]>();
 
 	static {
-		TYPE_TO_COLLISIONS.put(ROCKET, new CollisionTypes[] {GROUND});
+		TYPE_TO_COLLISIONS.put(ROCKET, new CollisionTypes[] {GROUND, WATER});
 		TYPE_TO_COLLISIONS.put(GROUND, new CollisionTypes[] {ROCKET});
-		TYPE_TO_COLLISIONS.put(WATER, new CollisionTypes[] {NOTHING});
+		TYPE_TO_COLLISIONS.put(WATER, new CollisionTypes[] {ROCKET});
 	}
 
 	public short mask;

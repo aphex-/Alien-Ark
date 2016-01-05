@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.nukethemoon.libgdxjam.screens.planet.CollisionTypes;
@@ -88,15 +89,27 @@ public class PlanetPart extends GameObject {
 				0);
 
 		for (int landscapeLayerIndex = 0; landscapeLayerIndex < planetConfig.layerConfigs.size(); landscapeLayerIndex++) {
+
 			String partName = LANDSCAPE_NODE_NAME + landscapeLayerIndex;
 			Node landscapeNode = model.getNode(partName);
+			CollisionTypes landscapeType = CollisionTypes.byName(planetConfig.layerConfigs.get(landscapeLayerIndex).collisionType);
+
 			if (areAllPartsValid(landscapeNode)) {
 				btCollisionShape collisionShape = Bullet.obtainStaticNodeShape(landscapeNode, false);
-				float mass = 0;
-				float friction = 1;
-				PlanetConfig.LandscapeLayerConfig layerConfig = planetConfig.layerConfigs.get(landscapeLayerIndex);
-				int userValue = CollisionTypes.byName(layerConfig.collisionType).mask;
-				addRigidBody(collisionShape, mass, friction, userValue, modelInstance.transform);
+
+				if (landscapeType != CollisionTypes.WATER) {
+					float mass = 0;
+					float friction = 1;
+					PlanetConfig.LandscapeLayerConfig layerConfig = planetConfig.layerConfigs.get(landscapeLayerIndex);
+					int userValue = CollisionTypes.byName(layerConfig.collisionType).mask;
+					addRigidBody(collisionShape, mass, friction, userValue, modelInstance.transform);
+				} else {
+					btCollisionObject object = new btCollisionObject();
+					object.setCollisionShape(collisionShape);
+					object.setWorldTransform(modelInstance.transform);
+					object.setUserValue(CollisionTypes.WATER.mask);
+					addCollisionObject(object);
+				}
 			}
 		}
 	}

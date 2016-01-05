@@ -19,7 +19,6 @@ import com.nukethemoon.libgdxjam.screens.planet.CollisionTypes;
 
 public class Rocket extends GameObject implements Disposable {
 
-	public static final int USER_VALUE = 1337;
 
 	private static final float THIRD_PERSON_OFFSET_Z = 10;
 	private static final Vector3 START_POSITION = new Vector3(0, 50, 30);
@@ -83,7 +82,7 @@ public class Rocket extends GameObject implements Disposable {
 		modelInstance.transform.setToTranslation(START_POSITION);
 
 		float mass = 1;
-		addRigidBody(shape, mass, friction, USER_VALUE, modelInstance.transform);
+		addRigidBody(shape, mass, friction, CollisionTypes.ROCKET.mask, modelInstance.transform);
 		rigidBodyList.get(0).setActivationState(4); // disable deactivation
 
 		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(speed));
@@ -311,6 +310,10 @@ public class Rocket extends GameObject implements Disposable {
 	public void collidedWith(int userValue1) {
 		if (userValue1 == CollisionTypes.GROUND.mask && thrusting) {
 			dealDamage();
+		}
+
+		if (userValue1 == CollisionTypes.WATER.mask) {
+			onExplode();
 		}
 	}
 

@@ -14,6 +14,7 @@ public abstract class GameObject{
 
 
 	public List<btRigidBody> rigidBodyList = new ArrayList<btRigidBody>();
+	public List<btCollisionObject> collisionList = new ArrayList<btCollisionObject>();
 
 	protected void addRigidBody(btCollisionShape shape, float mass, float friction, int userValue, Matrix4 transform) {
 		Vector3 localInertia = new Vector3();
@@ -34,6 +35,10 @@ public abstract class GameObject{
 		constructionInfo.dispose();
 
 		rigidBodyList.add(rigidBody);
+	}
+
+	protected void addCollisionObject(btCollisionObject object) {
+		collisionList.add(object);
 	}
 
 	static class MotionState extends btMotionState {
