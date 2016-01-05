@@ -54,56 +54,86 @@
       }
     }
   ],
-  "serializedMaterials": {
-    "Water01": {
-      "id": "mtl5",
-      "colorAttributes": [
-        {
-          "color": {
-            "r": 0.72,
-            "g": 0.42,
-            "b": 0.0,
-            "a": 1.0
+  "layerConfigs": [
+    {
+      "userValue" : 1,
+      "name" : "Water",
+      "water" : "true",
+      "serializedMaterial" : {
+        "id": "mtl5",
+        "colorAttributes": [
+          {
+            "color": {
+              "r": 0.72,
+              "g": 0.42,
+              "b": 0.0,
+              "a": 1.0
+            },
+            "type": 16,
+            "typeBit": 4
           },
-          "type": 16,
-          "typeBit": 4
-        },
-        {
-          "color": {
-            "r": 0.03,
-            "g": 0.48,
-            "b": 1.0,
-            "a": 1.0
+          {
+            "color": {
+              "r": 0.03,
+              "g": 0.48,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "type": 2,
+            "typeBit": 1
           },
-          "type": 2,
-          "typeBit": 1
-        },
-        {
-          "color": {
-            "r": 0.0,
-            "g": 0.16,
-            "b": 1.0,
-            "a": 1.0
-          },
-          "type": 1,
-          "typeBit": 0
-        }
-      ]
+          {
+            "color": {
+              "r": 0.0,
+              "g": 0.16,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "type": 1,
+            "typeBit": 0
+          }
+        ]
+      }
     },
-    "Landscape01": {
-      "id": "mtl9502",
-      "colorAttributes": [
-        {
-          "color": {
-            "r": 0.7490196,
-            "g": 0.7490196,
-            "b": 0.7490196,
-            "a": 1.0
-          },
-          "type": 1,
-          "typeBit": 0
-        }
-      ]
+
+    {
+      "userValue" : 1,
+      "name" : "Beach",
+      "serializedMaterial" : {
+        "id": "mtl9502",
+        "colorAttributes": [
+          {
+            "color": {
+              "r": 0.70,
+              "g": 0.2490196,
+              "b": 0.2,
+              "a": 1.0
+            },
+            "type": 1,
+            "typeBit": 0
+          }
+        ]
+      }
+    },
+
+    {
+      "userValue" : 1,
+      "name" : "Grass",
+      "serializedMaterial" : {
+        "id": "mtl9532",
+        "colorAttributes": [
+          {
+            "color": {
+              "r": 0.0,
+              "g": 0.7490196,
+              "b": 0.0,
+              "a": 1.0
+            },
+            "type": 1,
+            "typeBit": 0
+          }
+        ]
+      }
     }
-  }
+  ]
 }

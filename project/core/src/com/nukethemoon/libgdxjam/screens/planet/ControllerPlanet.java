@@ -8,6 +8,8 @@ import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPart;
 import com.nukethemoon.tools.opusproto.generator.ChunkListener;
 import com.nukethemoon.tools.opusproto.generator.Opus;
+import com.nukethemoon.tools.opusproto.interpreter.ColorInterpreter;
+import com.nukethemoon.tools.opusproto.interpreter.TypeInterpreter;
 import com.nukethemoon.tools.opusproto.loader.json.OpusLoaderJson;
 import com.nukethemoon.tools.opusproto.region.Chunk;
 
@@ -23,9 +25,9 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private static final String WORLD_NAME = "entities/planets/planet01/opusConfig.json";
 
 
-	private float tileGraphicSize = 2f;
+	private float tileGraphicSize = 5f;
 
-	private int requestRadiusInTiles = 200;
+	private int requestRadiusInTiles = 150;
 	private int lastRequestCenterTileX = 0;
 	private int lastRequestCenterTileY = 0;
 	private long requestCount = 0;
@@ -189,7 +191,8 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	public void onChunkCreated(int x, int y, Chunk chunk) {
 		Point point = new Point(x, y);
 		if (chunkGraphicBuffer.get(point) == null) {
-			PlanetPart chunkMesh = new PlanetPart(chunk, tileGraphicSize, planetConfig);
+			PlanetPart chunkMesh = new PlanetPart(chunk, tileGraphicSize, planetConfig,
+					toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter()));
 
 			controllerPhysic.addRigidBody(chunkMesh.getRigidBody(),
 					ControllerPhysic.CollideType.GROUND, ControllerPhysic.CollideType.ROCKET);
@@ -212,6 +215,20 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		for (PlanetPart g : chunkGraphicBuffer.values()) {
 			g.dispose();
 		}
+	}
+
+	/**
+	 * This is a hack because of an issue in opus.
+	 */
+	private TypeInterpreter toTypeInterpreter(ColorInterpreter colorInterpreter) {
+		TypeInterpreter typeInterpreter = new TypeInterpreter("someId");
+		for (ColorInterpreter.InterpreterItem item : colorInterpreter.items) {
+			TypeInterpreter.InterpreterItem interpreterItem = new TypeInterpreter.InterpreterItem();
+			interpreterItem.startValue = item.startValue;
+			interpreterItem.endValue = item.endValue;
+			typeInterpreter.it.add(interpreterItem);
+		}
+		return typeInterpreter;
 	}
 
 }

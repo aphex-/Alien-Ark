@@ -1,13 +1,9 @@
 package com.nukethemoon.libgdxjam.screens.planet.devtools.windows;
 
-import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
-import com.nukethemoon.libgdxjam.screens.planet.devtools.forms.MaterialForm;
-
-import java.util.Map;
 
 public class MaterialsWindow extends ClosableWindow {
 
@@ -22,7 +18,7 @@ public class MaterialsWindow extends ClosableWindow {
 	}
 
 	public void load(PlanetConfig config) {
-		content.clear();
+		/*content.clear();
 		for (Map.Entry<String, Material> entry : config.materials.entrySet()) {
 			Material material = entry.getValue();
 			String materialId = entry.getKey();
@@ -39,6 +35,6 @@ public class MaterialsWindow extends ClosableWindow {
 			content.row();
 		}
 		content.pack();
-		pack();
+		pack();*/
 	}
 }

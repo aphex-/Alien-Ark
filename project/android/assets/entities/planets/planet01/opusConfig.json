@@ -22,7 +22,7 @@
         "smoothEdge": false,
         "id": "Continent",
         "worldSeedModifier": 0.0,
-        "scale": 15.0,
+        "scale": 5.0,
         "modifiers": []
       }
     },
@@ -114,7 +114,7 @@
         "smoothEdge": false,
         "id": "Hills",
         "worldSeedModifier": 0.0,
-        "scale": 35.0,
+        "scale": 15.0,
         "modifiers": [
           {
             "type": "Invert",
@@ -155,7 +155,7 @@
           "endColorG": 0.0,
           "endColorB": 0.8862745,
           "startValue": 0.0,
-          "endValue": 0.1
+          "endValue": 0.001
         },
         {
           "starColorR": 0.8235294,
@@ -164,8 +164,8 @@
           "endColorR": 0.91764706,
           "endColorG": 0.73333335,
           "endColorB": 0.58431375,
-          "startValue": 0.1,
-          "endValue": 0.18
+          "startValue": 0.001,
+          "endValue": 0.1
         },
         {
           "starColorR": 0.09803922,
@@ -174,7 +174,7 @@
           "endColorR": 0.0,
           "endColorG": 1.0,
           "endColorB": 0.0,
-          "startValue": 0.18,
+          "startValue": 0.1,
           "endValue": 1.0
         }
       ],
