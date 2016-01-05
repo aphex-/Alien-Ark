@@ -158,9 +158,9 @@ public class PlanetPart extends GameObject {
 
 	private boolean areAllHeightsWater(float height0, float height1, float height2, float height3) {
 		return CollisionTypes.byName(planetConfig.layerConfigs.get(interpreter.getType(height0)).collisionType) == CollisionTypes.WATER
-				&& CollisionTypes.byName(planetConfig.layerConfigs.get(interpreter.getType(height0)).collisionType) == CollisionTypes.WATER
-					&& CollisionTypes.byName(planetConfig.layerConfigs.get(interpreter.getType(height0)).collisionType) == CollisionTypes.WATER
-						&& CollisionTypes.byName(planetConfig.layerConfigs.get(interpreter.getType(height0)).collisionType) == CollisionTypes.WATER;
+				&& CollisionTypes.byName(planetConfig.layerConfigs.get(interpreter.getType(height1)).collisionType) == CollisionTypes.WATER
+					&& CollisionTypes.byName(planetConfig.layerConfigs.get(interpreter.getType(height2)).collisionType) == CollisionTypes.WATER
+						&& CollisionTypes.byName(planetConfig.layerConfigs.get(interpreter.getType(height3)).collisionType) == CollisionTypes.WATER;
 
 	}
 
