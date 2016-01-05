@@ -153,7 +153,6 @@ public class PlanetPart extends GameObject {
 
 			}
 		}
-
 	}
 
 	private boolean areAllHeightsWater(float height0, float height1, float height2, float height3) {

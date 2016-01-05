@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.nukethemoon.libgdxjam.Config;
+import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 
 public class ControllerPhysic extends ContactListener {
@@ -87,23 +88,14 @@ public class ControllerPhysic extends ContactListener {
 		return true;
 	}
 
-	public void addRigidBody(btRigidBody object, CollisionTypes type, CollisionTypes... collidesTo) {
-		if (object == null) {
+	public void addRigidBody(btRigidBody object, CollisionTypes type) {
+		if (object == null || type == null) {
+			Log.e(ControllerPhysic.class, "Tried to ad an invalid rigid body");
 			return;
 		}
-		short collidesToMask = 0;
-		for (CollisionTypes c : collidesTo) {
-			collidesToMask = (short) (collidesToMask | c.mask);
-		}
-		dynamicsWorld.addRigidBody(object, type.mask, collidesToMask);
+		dynamicsWorld.addRigidBody(object, type.mask, CollisionTypes.toMask(CollisionTypes.getColliders(type)));
 	}
 
-	public void addRigidBody(btRigidBody object, CollisionTypes type) {
-		if (object == null) {
-			return;
-		}
-		dynamicsWorld.addRigidBody(object, type.mask, CollisionTypes.ALL.mask);
-	}
 
 	public void removeRigidBody(btRigidBody object) {
 		if (object == null) {

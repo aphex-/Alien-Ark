@@ -198,7 +198,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 					toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter()));
 			for (btRigidBody body : chunkMesh.rigidBodyList) {
 				controllerPhysic.addRigidBody(body,
-						CollisionTypes.GROUND, CollisionTypes.ROCKET);
+						CollisionTypes.byMask((short) body.getUserValue()));
 			}
 			chunkGraphicBuffer.put(point, chunkMesh);
 		} else {
