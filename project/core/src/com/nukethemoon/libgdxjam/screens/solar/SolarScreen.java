@@ -7,43 +7,39 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
+import com.nukethemoon.libgdxjam.ui.RocketMainTable;
 import com.nukethemoon.tools.opusproto.gemoetry.PointList;
 import com.nukethemoon.tools.opusproto.gemoetry.scatterer.massspring.SimplePositionConfig;
 import com.nukethemoon.tools.opusproto.gemoetry.scatterer.massspring.SimplePositionScattering;
 import com.nukethemoon.tools.opusproto.noise.Algorithms;
 
-import java.security.SecureRandom;
 import java.util.Random;
 
-import box2dLight.DirectionalLight;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
-public class SolarScreen implements Screen {
+public class SolarScreen implements Screen, RocketListener {
 
 	//TODO:
 	/*
-	//- wir machen den solarscreen größer so dass wir ein bisschen in alle richtungen scrollen können
-	//wenn der sichtbare bereich verlassen wird wird der screen automatisch mit allen objekten gescrollt
 	- in die mitte kommt eine fette sonne, wenn du da rein fliegst, explodiert das schiff und sind alle aliens tot
 	- apply attributes to solarscreen
-	- show fuel/stats
 	- planeten müssen entdeckt werden per radar */
 
 	private static final int NUMBER_OF_PLANETS = 12;
@@ -69,8 +65,6 @@ public class SolarScreen implements Screen {
 	private int currentSpeedLevel = 0;
 
 
-
-
 	private static final int INITIAL_ARK_POSITION_Y = 10;
 	private static final int INITIAL_ARK_POSITION_X = 10;
 
@@ -86,11 +80,11 @@ public class SolarScreen implements Screen {
 
 	float arkHeight;
 	float arkWidth;
-	private boolean showExhaust = false;
 
 	private Stage stage;
-	private Table contentTable;
 	private Sprite sunSprite;
+	private RocketMainTable mainUI;
+	private Rocket rocket;
 
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
@@ -104,12 +98,16 @@ public class SolarScreen implements Screen {
 		rayHandler.setShadows(true);
 
 		//new DirectionalLight(rayHandler, RAYS_NUM, new Color(1, 0.6f, 0.9f, 0.6f), 45);
-
 		setupSpaceship();
 		setupArkButton(uiSkin, multiplexer);
+
+
 	}
 
 	private void setupSpaceship() {
+		rocket = new Rocket();
+		rocket.setListener(this);
+
 		arkSprite.setPosition(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
 		arkWidth = arkSprite.getWidth();
 		arkHeight = arkSprite.getHeight();
@@ -131,9 +129,6 @@ public class SolarScreen implements Screen {
 		planetSprites[10] = new Sprite(App.TEXTURES.findRegion("planet_2_placeholder"));
 		planetSprites[11] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));
 
-
-
-
 		sunSprite = new Sprite(App.TEXTURES.findRegion("sun_placeholder"));
 		sunSprite.setPosition(600, 600);
 
@@ -142,7 +137,6 @@ public class SolarScreen implements Screen {
 		SimplePositionScattering scattering = new SimplePositionScattering(positionConfig, 2323.34523, algorithms, null);
 		PointList pointList = (PointList) scattering.createGeometries(150, 150, 5000, 5000, 994234.234234);
 		for (int i = 0; i < NUMBER_OF_PLANETS; i++) {
-
 			float[] points = pointList.getPoints();
 			Vector2 planetPosition = calculateSuitablePlanetPosition(points, i);
 			planetSprites[i].setPosition(planetPosition.x, planetPosition.y);
@@ -180,11 +174,13 @@ public class SolarScreen implements Screen {
 	}
 
 	private void setupArkButton(Skin uiSkin, InputMultiplexer multiplexer) {
+
 		stage = new Stage(new ScreenViewport());
 		multiplexer.addProcessor(stage);
 
-		contentTable = new Table(uiSkin).debug();
-		contentTable.setPosition(1200, 600);
+		mainUI = new RocketMainTable(uiSkin);
+		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
+		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
 
 		TextButton arkScreenButton = new TextButton("open Ark", uiSkin);
 		arkScreenButton.addListener(new ClickListener() {
@@ -193,8 +189,8 @@ public class SolarScreen implements Screen {
 				openArkScreen();
 			}
 		});
-		contentTable.add(arkScreenButton);
-		stage.addActor(contentTable);
+		mainUI.add(arkScreenButton);
+		stage.addActor(mainUI);
 	}
 
 	@Override
@@ -211,9 +207,10 @@ public class SolarScreen implements Screen {
 		renderArc();
 		handleAppNavigation();
 
-
 		rayHandler.setCombinedMatrix(camera);
 		rayHandler.updateAndRender();
+
+		rocket.onBulletTick();
 
 		camera.position.set(arkSprite.getX(), arkSprite.getY(), 0);
 		camera.update();
@@ -227,7 +224,7 @@ public class SolarScreen implements Screen {
 		batch.begin();
 		moveArcPosition();
 		adjustRotationIfNeccessary();
-		if (showExhaust) {
+		if (rocket.isThrusting()) {
 			exhaustSprite.draw(batch);
 		}
 		arkSprite.draw(batch);
@@ -277,11 +274,13 @@ public class SolarScreen implements Screen {
 			currentSpeedLevel -= 1;
 		}
 
+
 		if (Gdx.app.getInput().isKeyPressed(19)) {
-			currentSpeedLevel += 1;
-			showExhaust = true;
+			currentSpeedLevel+=1;
+			rocket.setThrust(true);
+
 		} else {
-			showExhaust = false;
+			rocket.setThrust(false);
 		}
 
 		if (Gdx.app.getInput().isKeyPressed(20)) {
@@ -322,6 +321,7 @@ public class SolarScreen implements Screen {
 
 	@Override
 	public void dispose() {
+		rocket.dispose();
 		rayHandler.dispose();
 	}
 
@@ -410,5 +410,41 @@ public class SolarScreen implements Screen {
 		if (isArcSelected()) {
 			openArkScreen();
 		}
+	}
+
+	@Override
+	public void onRocketLanded() {
+
+	}
+
+	@Override
+	public void onRocketLaunched() {
+
+	}
+
+	@Override
+	public void onRocketDisabledThrust() {
+
+	}
+
+	@Override
+	public void onRocketEnabledThrust() {
+
+	}
+
+	@Override
+	public void onRocketDamage() {
+		App.audioController.playSound("hit_high.mp3");
+		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
+	}
+
+	@Override
+	public void onRocketFuelConsumed() {
+		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
+	}
+
+	@Override
+	public void onRocketExploded() {
+		App.audioController.playSound("explosion.mp3");
 	}
 }

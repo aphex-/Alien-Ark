@@ -4,6 +4,7 @@ import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.game.artifacts.AttributeArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.OperatorArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.ValueArtifact;
+import com.nukethemoon.libgdxjam.game.attributes.Attribute;
 import com.nukethemoon.libgdxjam.game.attributes.Speed;
 
 public class Alien {
@@ -22,6 +23,10 @@ public class Alien {
 	public void modifySpeed(Speed speed) {
 		Log.l(SpaceShipProperties.class, "Combining speed " + speed.getCurrentValue() + " with Operator " + operator.getClass().getSimpleName() + " and Value " + value.getValue());
 		attribute.apply(speed,operator, value);
+	}
+
+	public void modifyAttribute(Attribute attributeToModify) {
+		attribute.apply(attributeToModify, operator, value);
 	}
 
 	public static Alien createAlien(Artifact... artifacts){
@@ -50,4 +55,5 @@ public class Alien {
 	private static ValueArtifact findValue(Artifact[] artifacts){
 		return find(artifacts, ValueArtifact.class);
 	}
+
 }

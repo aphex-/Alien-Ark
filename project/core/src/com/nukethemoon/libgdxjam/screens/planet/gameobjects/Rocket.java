@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.utils.Disposable;
+import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 
 public class Rocket extends GameObject implements Disposable {
 
@@ -36,7 +37,6 @@ public class Rocket extends GameObject implements Disposable {
 	private int shield = 100;
 	private int maxShield = 1000;
 	private int fuel = 100;
-	private int maxFuel = 1000;
 
 
 	float drill = 0;
@@ -63,6 +63,8 @@ public class Rocket extends GameObject implements Disposable {
 
 	private float tickFuelCount = 1;
 
+	private float fuelConsuption = SpaceShipProperties.properties.computeFuelConsumption();
+	private int maxFuel = SpaceShipProperties.properties.computeMaxFuel();
 
 
 	public Rocket() {
@@ -247,8 +249,6 @@ public class Rocket extends GameObject implements Disposable {
 		lastCamPosition.set(camera.position);
 	}
 
-
-
 	public void drawModel(ModelBatch modelBatch, Environment environment, ParticleEffect thrustEffect,
 						  ParticleEffect effectExplosion) {
 
@@ -276,10 +276,10 @@ public class Rocket extends GameObject implements Disposable {
 		}
 
 		if (thrusting) {
-			tickFuelCount = tickFuelCount - 0.01f;
+			tickFuelCount = tickFuelCount - fuelConsuption;
 			if (tickFuelCount <= 0) {
 				tickFuelCount = 1;
-				fuel = fuel -1;
+				SpaceShipProperties.properties.currentFuel--;
 				if (listener != null) {
 					listener.onRocketFuelConsumed();
 				}
@@ -322,7 +322,26 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	public int getFuel() {
-		return fuel;
+		return SpaceShipProperties.properties.getCurrentFuel();
+	}
+
+
+	public boolean isThrusting() {
+		return thrusting;
+	}
+
+	public void setThrust(boolean thrusting) {
+		this.thrusting = thrusting;
+		if (!thrusting) {
+			onThrustDisabled();
+		} else {
+			onThrustEnabled();
+		}
+	}
+
+
+	public void setFuelConsumption(float fuelConsumption) {
+		this.fuelConsuption = fuelConsumption;
 	}
 
 	public int getMaxFuel() {
