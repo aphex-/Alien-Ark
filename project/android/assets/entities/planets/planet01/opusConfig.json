@@ -165,7 +165,7 @@
           "endColorG": 0.73333335,
           "endColorB": 0.58431375,
           "startValue": 0.001,
-          "endValue": 0.1
+          "endValue": 0.05
         },
         {
           "starColorR": 0.09803922,
@@ -174,7 +174,7 @@
           "endColorR": 0.0,
           "endColorG": 1.0,
           "endColorB": 0.0,
-          "startValue": 0.1,
+          "startValue": 0.05,
           "endValue": 1.0
         }
       ],
