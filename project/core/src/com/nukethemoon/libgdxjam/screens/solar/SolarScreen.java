@@ -20,7 +20,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.nukethemoon.libgdxjam.App;
-import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
@@ -74,6 +73,8 @@ public class SolarScreen implements Screen, RocketListener {
 	private Sprite exhaustSprite;
 
 	private final Sprite[] planetSprites = new Sprite[NUMBER_OF_PLANETS];
+
+	private boolean[] isPlanetVisible = new boolean[NUMBER_OF_PLANETS];
 
 	private int screenHeight;
 	private int screenWidth;
@@ -137,6 +138,7 @@ public class SolarScreen implements Screen, RocketListener {
 		SimplePositionScattering scattering = new SimplePositionScattering(positionConfig, 2323.34523, algorithms, null);
 		PointList pointList = (PointList) scattering.createGeometries(150, 150, 5000, 5000, 994234.234234);
 		for (int i = 0; i < NUMBER_OF_PLANETS; i++) {
+			isPlanetVisible[i] = false;
 			float[] points = pointList.getPoints();
 			Vector2 planetPosition = calculateSuitablePlanetPosition(points, i);
 			planetSprites[i].setPosition(planetPosition.x, planetPosition.y);
@@ -251,8 +253,10 @@ public class SolarScreen implements Screen, RocketListener {
 	private void renderPlanets() {
 		batch.begin();
 		sunSprite.draw(batch);
-		for (Sprite planetSprite : planetSprites) {
-			planetSprite.draw(batch);
+		for (int i = 0; i < planetSprites.length; i++) {
+			if (isPlanetVisible[i]) {
+				planetSprites[i].draw(batch);
+			}
 		}
 		batch.end();
 	}
@@ -349,9 +353,13 @@ public class SolarScreen implements Screen, RocketListener {
 		for (int i = 0; i < planetSprites.length; i++) {
 			Sprite planetSprite = planetSprites[i];
 			Rectangle planetBounds = planetSprite.getBoundingRectangle();
-
+			if (Intersector.overlaps(arkSprite.getBoundingRectangle(), planetBounds)) {
+				isPlanetVisible[i] = true;
+			}
 			if (planetBounds.contains(shipPosition.x, shipPosition.y)) {
+				isPlanetVisible[i] = true;
 				return i;
+
 			}
 		}
 		return -1;
