@@ -1,5 +1,7 @@
 package com.nukethemoon.libgdxjam.screens.solar;
 
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -31,9 +33,6 @@ import com.nukethemoon.tools.opusproto.gemoetry.scatterer.massspring.SimplePosit
 import com.nukethemoon.tools.opusproto.noise.Algorithms;
 
 import java.util.Random;
-
-import box2dLight.PointLight;
-import box2dLight.RayHandler;
 
 import static com.nukethemoon.libgdxjam.game.SolarSystem.SUN_POSITION;
 
