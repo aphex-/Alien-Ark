@@ -26,8 +26,6 @@ public class SpaceShipProperties {
 	private Vector2 position;
 	private Vector2 movementVector;
 
-	public boolean[] isPlanetVisible = new boolean[SolarSystem.NUMBER_OF_PLANETS];
-
 	private List<Artifact> artifacts = new ArrayList<Artifact>();
 	private List<Alien> aliens = new ArrayList<Alien>();
 
@@ -35,11 +33,7 @@ public class SpaceShipProperties {
 
 	private SpaceShipProperties() {
 		currentFuel = computeMaxFuel();
-		for (int i = 0; i < SolarSystem.NUMBER_OF_PLANETS; i++) {
-			isPlanetVisible[i] = false;
-		}
 	}
-
 
 	public void testInit() {
 		AttributeArtifact a = new AttributeArtifact(Speed.class);
@@ -117,13 +111,5 @@ public class SpaceShipProperties {
 
 	public int getCurrentFuel() {
 		return currentFuel;
-	}
-
-	public boolean isPlanetVisible(int index) {
-		return isPlanetVisible[index];
-	}
-
-	public void setPlanetVisible(int index) {
-		this.isPlanetVisible[index]  = true;
 	}
 }
