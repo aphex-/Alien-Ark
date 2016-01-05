@@ -105,7 +105,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		shapeRenderer.setAutoShapeType(true);
 
 		camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		camera.near = 0.01f;
+		camera.near = 1f;
 		camera.far = 30000f;
 
 		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/planet01/sceneConfig.json");
