@@ -275,7 +275,7 @@ public class SolarScreen implements Screen, RocketListener {
 		}
 
 
-		if (Gdx.app.getInput().isKeyPressed(19)) {
+		if (Gdx.app.getInput().isKeyPressed(19) && !rocket.isOutOfFuel()) {
 			currentSpeedLevel+=1;
 			rocket.setThrust(true);
 

@@ -36,8 +36,6 @@ public class Rocket extends GameObject implements Disposable {
 	private float friction = 0.5f;
 	private int shield = 100;
 	private int maxShield = 1000;
-	private int fuel = 100;
-
 
 	float drill = 0;
 	float xRotation = 0;
@@ -139,7 +137,7 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	private void thrust() {
-		if (fuel <= 0) {
+		if (isOutOfFuel()) {
 			return;
 		}
 		tmpMovement.set(getDirection()).nor().scl(speed);
@@ -147,7 +145,7 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	private void onLaunch() {
-		if (fuel <= 0) {
+		if (isOutOfFuel()) {
 			return;
 		}
 		ticksSinceLastLaunch = 0;
@@ -166,7 +164,7 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	private void onThrustEnabled() {
-		if (fuel <= 0) {
+		if (isOutOfFuel()) {
 			return;
 		}
 		if (!moving) {
@@ -265,7 +263,7 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	public void onBulletTick() {
-		if (fuel <= 0) {
+		if (isOutOfFuel()) {
 			if (thrusting) {
 				onThrustDisabled();
 			}
@@ -350,5 +348,9 @@ public class Rocket extends GameObject implements Disposable {
 
 	public int getMaxFuel() {
 		return maxFuel;
+	}
+
+	public boolean isOutOfFuel() {
+		return SpaceShipProperties.properties.currentFuel <= 0;
 	}
 }

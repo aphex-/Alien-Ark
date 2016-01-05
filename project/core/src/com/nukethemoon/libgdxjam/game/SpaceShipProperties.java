@@ -54,7 +54,7 @@ public class SpaceShipProperties {
 		aliens.add(alien);
 
 		a = new AttributeArtifact(MaxFuel.class);
-		v = new ValueArtifact(200);
+		v = new ValueArtifact(100);
 		o = new Decrease();
 		alien = Alien.createAlien(a, o, v);
 		aliens.add(alien);
@@ -64,6 +64,10 @@ public class SpaceShipProperties {
 		o = new Increase();
 		alien = Alien.createAlien(a, o, v);
 		aliens.add(alien);
+
+		computeMaxFuel();
+		computeFuelConsumption();
+		computeSpeedPerUnit();
 	}
 
 
@@ -92,6 +96,8 @@ public class SpaceShipProperties {
 		for (Alien alien : aliens) {
 			alien.modifyAttribute(max);
 		}
+
+		currentFuel = (int) Math.min(currentFuel, max.getCurrentValue());
 		return (int) max.getCurrentValue();
 	}
 

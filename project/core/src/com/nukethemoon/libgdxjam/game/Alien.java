@@ -19,7 +19,7 @@ public class Alien {
 		this.value = value;
 	}
 
-
+	//delete this?
 	public void modifySpeed(Speed speed) {
 		Log.l(SpaceShipProperties.class, "Combining speed " + speed.getCurrentValue() + " with Operator " + operator.getClass().getSimpleName() + " and Value " + value.getValue());
 		attribute.apply(speed,operator, value);
@@ -29,7 +29,7 @@ public class Alien {
 		attribute.apply(attributeToModify, operator, value);
 	}
 
-	public static Alien createAlien(Artifact... artifacts){
+	public static Alien createAlien(Artifact... artifacts) {
 		//TODO check valid conditions and return "Useless fool" if invalid
 
 		return new Alien(findAttribute(artifacts), findOperator(artifacts), findValue(artifacts));
