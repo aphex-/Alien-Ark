@@ -56,6 +56,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		try {
 			// load opus by a json file
 			opus = loader.load(worldName);
+			;
 			com.nukethemoon.tools.opusproto.log.Log.logLevel = com.nukethemoon.tools.opusproto.log.Log.LogType.Error;
 
 			chunkBufferSize = (requestRadiusInTiles / opus.getConfig().chunkSize) * 2;
