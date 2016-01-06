@@ -1,6 +1,5 @@
 package com.nukethemoon.libgdxjam.screens.planet.gameobjects;
 
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
@@ -16,7 +15,9 @@ public abstract class GameObject{
 	public List<btRigidBody> rigidBodyList = new ArrayList<btRigidBody>();
 	public List<btCollisionObject> collisionList = new ArrayList<btCollisionObject>();
 
-	protected void addRigidBody(btCollisionShape shape, float mass, float friction, int userValue, Matrix4 transform) {
+	protected void addRigidBody(btCollisionShape shape, float mass, float friction, int userValue,
+								btMotionState motionState) {
+
 		Vector3 localInertia = new Vector3();
 		if (mass > 0f) {
 			shape.calculateLocalInertia(mass, localInertia);
@@ -29,7 +30,7 @@ public abstract class GameObject{
 
 		btRigidBody rigidBody = new btRigidBody(constructionInfo);
 		rigidBody.setUserValue(userValue);
-		rigidBody.setMotionState(new MotionState(transform));
+		rigidBody.setMotionState(motionState);
 		rigidBody.setCollisionFlags(rigidBody.getCollisionFlags()
 				| btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
 		constructionInfo.dispose();
@@ -41,23 +42,4 @@ public abstract class GameObject{
 		collisionList.add(object);
 	}
 
-	static class MotionState extends btMotionState {
-		private Matrix4 transform;
-
-		private Vector3 tmpVector = new Vector3();
-
-		public MotionState(Matrix4 transform) {
-			this.transform = transform;
-		}
-		@Override
-		public void getWorldTransform (Matrix4 worldTrans) {
-			worldTrans.set(transform);
-		}
-		@Override
-		public void setWorldTransform (Matrix4 worldTrans) {
-			// ignore rotation
-			transform.idt();
-			transform.trn(worldTrans.getTranslation(tmpVector));
-		}
-	}
 }

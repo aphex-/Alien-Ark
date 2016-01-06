@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
@@ -84,7 +85,9 @@ public class Rocket extends GameObject implements Disposable {
 		modelInstance.transform.setToTranslation(START_POSITION);
 
 		float mass = 1;
-		addRigidBody(shape, mass, friction, CollisionTypes.ROCKET.mask, modelInstance.transform);
+		addRigidBody(shape, mass, friction, CollisionTypes.ROCKET.mask,
+				new RocketMotionState(modelInstance.transform));
+
 		rigidBodyList.get(0).setActivationState(4); // disable deactivation
 
 		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(speed));
@@ -354,5 +357,26 @@ public class Rocket extends GameObject implements Disposable {
 
 	public boolean isOutOfFuel() {
 		return SpaceShipProperties.properties.currentFuel <= 0;
+	}
+
+
+	static class RocketMotionState extends btMotionState {
+		private Matrix4 transform;
+
+		private Vector3 tmpVector = new Vector3();
+
+		public RocketMotionState(Matrix4 transform) {
+			this.transform = transform;
+		}
+		@Override
+		public void getWorldTransform (Matrix4 worldTrans) {
+			worldTrans.set(transform);
+		}
+		@Override
+		public void setWorldTransform (Matrix4 worldTrans) {
+			// ignore rotation
+			transform.idt();
+			transform.trn(worldTrans.getTranslation(tmpVector));
+		}
 	}
 }

@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.nukethemoon.libgdxjam.screens.planet.helper.StandardMotionState;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
 import com.nukethemoon.tools.opusproto.interpreter.TypeInterpreter;
@@ -60,6 +61,8 @@ public class PlanetPart extends GameObject {
 
 	private List<MeshBuilder> meshBuilders = new ArrayList<MeshBuilder>();
 
+	private List<Collectible> collectibles = new ArrayList<Collectible>();
+
 	public PlanetPart(Chunk chunk, float tileSize, PlanetConfig pPlanetConfig, TypeInterpreter interpreter) {
 		this.tileSize = tileSize;
 		this.planetConfig = pPlanetConfig;
@@ -102,7 +105,8 @@ public class PlanetPart extends GameObject {
 					float friction = 1;
 					PlanetConfig.LandscapeLayerConfig layerConfig = planetConfig.layerConfigs.get(landscapeLayerIndex);
 					int userValue = CollisionTypes.byName(layerConfig.collisionType).mask;
-					addRigidBody(collisionShape, mass, friction, userValue, modelInstance.transform);
+					addRigidBody(collisionShape, mass, friction, userValue,
+							new StandardMotionState(modelInstance.transform));
 				} else {
 					btCollisionObject object = new btCollisionObject();
 					object.setCollisionShape(collisionShape);
