@@ -3,6 +3,7 @@ package com.nukethemoon.libgdxjam.screens.planet;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
@@ -102,11 +103,16 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 	}
 
+	Vector2 tmpVec1 = new Vector2();
+	Vector2 tmpVec2 = new Vector2();
 
+	public void updateRequestCenter(Vector3 position, Vector3 direction) {
+		tmpVec1.set((float) (Math.floor(position.x) / tileGraphicSize), (float) (Math.floor(position.y) / tileGraphicSize));
+		tmpVec2.set(direction.x, direction.y).nor().scl(-1).scl(requestRadiusInTiles * 0.7f);
+		tmpVec1.sub(tmpVec2);
 
-	public void updateRequestCenter(float graphicX, float graphicY) {
-		int requestCenterTileX = (int) (Math.floor(graphicX) / tileGraphicSize);
-		int requestCenterTileY = (int) (Math.floor(graphicY) / tileGraphicSize);
+		int requestCenterTileX = (int) tmpVec1.x;
+		int requestCenterTileY = (int) tmpVec1.y;
 
 		if (lastRequestCenterTileX == requestCenterTileX && lastRequestCenterTileY == requestCenterTileY && requestCount < 0) {
 			// return if requested the same tile again

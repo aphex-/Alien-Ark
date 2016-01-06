@@ -232,7 +232,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 
 		if (!pause) {
-			worldController.updateRequestCenter(rocket.getPosition().x, rocket.getPosition().y);
+			worldController.updateRequestCenter(rocket.getPosition(), rocket.getDirection());
 		}
 
 		if (!freeCameraInput.isEnabled()) {
