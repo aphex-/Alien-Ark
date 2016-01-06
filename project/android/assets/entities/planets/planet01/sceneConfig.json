@@ -6,6 +6,10 @@
   "fuelChanceGain" : -0.001,
   "fuelChanceMin" : 0.008,
 
+  "shieldChance" : 0.05,
+  "shieldChanceGain" : -0.001,
+  "shieldChanceMin" : 0.008,
+
   "environmentColorAttributes": [
     {
       "color": {

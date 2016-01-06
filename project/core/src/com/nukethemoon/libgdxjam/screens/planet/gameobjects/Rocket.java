@@ -25,9 +25,10 @@ public class Rocket extends GameObject implements Disposable {
 
 	private static final float THIRD_PERSON_OFFSET_Z = 6;
 	private static final Vector3 START_POSITION = new Vector3(0, 50, 30);
-
 	private static final Vector3 LAUNCH_IMPULSE = new Vector3(0, 0, 55);
-	private static final int LAUNCH_INDESTRUCTIBLE_TICKS = 100;
+	private static final int LAUNCH_INDESTRUCTIBLE_TICKS = 30;
+	private static final float FUEL_CONSUMPTION = 0.1f;
+
 	private long ticksSinceLastLaunch = 0;
 
 	private final ModelInstance modelInstance;
@@ -37,7 +38,6 @@ public class Rocket extends GameObject implements Disposable {
 	private float maneuverability = 0.75f; // min 0.75f max 3.0f
 	private float friction = 0.2f; // min 0.2f max 3.0f;
 
-	private int shield = 100;
 	private int maxShield = 1000;
 
 	float drill = 0;
@@ -64,7 +64,7 @@ public class Rocket extends GameObject implements Disposable {
 
 	private float tickFuelCount = 1;
 
-	private float fuelConsuption = SpaceShipProperties.properties.computeFuelConsumption();
+
 	private int maxFuel = SpaceShipProperties.properties.computeMaxFuel();
 
 
@@ -89,8 +89,10 @@ public class Rocket extends GameObject implements Disposable {
 				new RocketMotionState(modelInstance.transform));
 
 		rigidBodyList.get(0).setActivationState(4); // disable deactivation
-
 		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(speed));
+
+		SpaceShipProperties.properties.currentFuel = SpaceShipProperties.INITIAL_MAX_FUEL;
+		SpaceShipProperties.properties.currentShield = SpaceShipProperties.INITIAL_MAX_SHIELD;
 	}
 
 	public void setListener(RocketListener listener) {
@@ -279,7 +281,7 @@ public class Rocket extends GameObject implements Disposable {
 		}
 
 		if (thrusting) {
-			tickFuelCount = tickFuelCount - fuelConsuption;
+			tickFuelCount = tickFuelCount - FUEL_CONSUMPTION;
 			if (tickFuelCount <= 0) {
 				tickFuelCount = 1;
 				SpaceShipProperties.properties.currentFuel--;
@@ -300,12 +302,12 @@ public class Rocket extends GameObject implements Disposable {
 
 	private void dealDamage() {
 		if (ticksSinceLastLaunch > LAUNCH_INDESTRUCTIBLE_TICKS) {
-			shield--;
+			SpaceShipProperties.properties.currentShield--;
 			if (listener != null) {
 				listener.onRocketDamage();
 			}
 		}
-		if (shield == 0) {
+		if (SpaceShipProperties.properties.currentShield == 0) {
 			onExplode();
 		}
 	}
@@ -323,10 +325,15 @@ public class Rocket extends GameObject implements Disposable {
 			SpaceShipProperties.properties.currentFuel = SpaceShipProperties.properties.currentFuel + Balancing.FUEL_BONUS;
 			listener.onRocketFuelBonus();
 		}
+
+		if (type == CollisionTypes.SHIELD) {
+			SpaceShipProperties.properties.currentShield = SpaceShipProperties.properties.currentShield + Balancing.SHIELD_BONUS;
+			listener.onRocketShieldBonus();
+		}
 	}
 
 	public int getShield() {
-		return shield;
+		return SpaceShipProperties.properties.getCurrentShield();
 	}
 
 	public int getMaxShield() {

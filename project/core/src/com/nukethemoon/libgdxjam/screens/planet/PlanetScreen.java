@@ -489,13 +489,20 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
 	}
 
+	@Override
+	public void onRocketShieldBonus() {
+		showToast("Shield +" + Balancing.SHIELD_BONUS);
+		App.audioController.playSound("bonus.mp3");
+		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
+	}
+
 	// === physic events ===
 
 	@Override
 	public void onRocketCollided(CollisionTypes type, btCollisionObject collisionObject) {
 		rocket.handleCollision(type);
 
-		if (type == CollisionTypes.FUEL) {
+		if (type == CollisionTypes.FUEL || type == CollisionTypes.SHIELD) {
 			Collectible collectible = worldController.getCollectible(collisionObject);
 			worldController.removeCollectible(collectible);
 		}

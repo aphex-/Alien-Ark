@@ -18,6 +18,10 @@ public class PlanetConfig {
 	public float fuelChanceGain = -0.001f; // modifies the chance by the chunks distance to position 0,0
 	public float fuelChanceMin = 0.0001f;
 
+	public float shieldChance = 0.05f;
+	public float shieldChanceGain = -0.001f;
+	public float shieldChanceMin = 0.0001f;
+
 	public List<ColorAttribute> environmentColorAttributes = new ArrayList<ColorAttribute>();
 	public List<DirectionalLight> environmentDirectionalLights = new ArrayList<DirectionalLight>();
 

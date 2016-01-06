@@ -15,6 +15,9 @@ public class Models implements Disposable {
 	public static Model FUEL;
 	public static btCollisionShape FUEL_SHAPE;
 
+	public static Model SHIELD;
+	public static btCollisionShape SHIELD_SHAPE;
+
 	public static void init() {
 		ModelLoader loader = new ObjLoader();
 		BoundingBox boundingBox = new BoundingBox();
@@ -22,6 +25,10 @@ public class Models implements Disposable {
 		FUEL = loader.loadModel(Gdx.files.internal("models/fuel.obj"));
 		FUEL.calculateBoundingBox(boundingBox);
 		FUEL_SHAPE = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.65f));
+
+		SHIELD = loader.loadModel(Gdx.files.internal("models/shield.obj"));
+		SHIELD.calculateBoundingBox(boundingBox);
+		SHIELD_SHAPE = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.65f));
 	}
 
 

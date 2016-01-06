@@ -408,4 +408,9 @@ public class SolarScreen implements Screen, RocketListener {
 	public void onRocketFuelBonus() {
 
 	}
+
+	@Override
+	public void onRocketShieldBonus() {
+
+	}
 }

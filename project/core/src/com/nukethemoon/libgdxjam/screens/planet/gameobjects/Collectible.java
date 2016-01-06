@@ -33,8 +33,8 @@ public class Collectible {
 			modelInstance = new ModelInstance(Models.FUEL);
 			collisionObject.setCollisionShape(Models.FUEL_SHAPE);
 		} else {
-			modelInstance = new ModelInstance(Models.FUEL);
-			collisionObject.setCollisionShape(Models.FUEL_SHAPE);
+			modelInstance = new ModelInstance(Models.SHIELD);
+			collisionObject.setCollisionShape(Models.SHIELD_SHAPE);
 		}
 
 		modelInstance.transform.set(transform);

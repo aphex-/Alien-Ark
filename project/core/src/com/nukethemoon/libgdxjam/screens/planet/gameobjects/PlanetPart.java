@@ -149,23 +149,29 @@ public class PlanetPart extends GameObject {
 	}
 
 	private void initCollectibles(Chunk chunk) {
-
-		Vector2 chunkDistanceToZero = new Vector2(chunk.getChunkX(), chunk.getChunkY());
-		float currentChance = planetConfig.fuelChance + (chunkDistanceToZero.len() * planetConfig.fuelChanceGain);
-		currentChance = Math.min(currentChance, 1);
-		currentChance = Math.max(currentChance, planetConfig.fuelChanceMin);
-
-		if (Math.random() < currentChance) {
-
-
-			int randomTileX = (int) (Math.random() * chunk.getWidth());
-			int randomTileY = (int) (Math.random() * chunk.getHeight());
-			float graphicZ = chunk.getRelative(randomTileX, randomTileY, 0) * LANDSCAPE_MAX_HEIGHT + COLLECTIBLE_GROUND_OFFSET;
-			float graphicX = getGraphicOffsetX(chunk) + (randomTileX * tileSize);
-			float graphicY = getGraphicOffsetY(chunk) + (randomTileY * tileSize);
-			Vector3 position = new Vector3(graphicX, graphicY, graphicZ);
-			collectibles.add(new Collectible(CollisionTypes.FUEL, position, new Point(chunk.getChunkX(), chunk.getChunkY())));
+		if (Math.random() < calculateChance(chunk, planetConfig.fuelChance, planetConfig.fuelChanceGain, planetConfig.fuelChanceMin)) {
+			addCollectible(CollisionTypes.FUEL, chunk);
 		}
+		if (Math.random() < calculateChance(chunk, planetConfig.shieldChance, planetConfig.shieldChanceGain, planetConfig.shieldChanceMin)) {
+			addCollectible(CollisionTypes.SHIELD, chunk);
+		}
+	}
+
+	private float calculateChance(Chunk chunk, float base, float gain, float min) {
+		Vector2 chunkDistanceToZero = new Vector2(chunk.getChunkX(), chunk.getChunkY());
+		float currentChance = base + (chunkDistanceToZero.len() * gain);
+		currentChance = Math.min(currentChance, 1);
+		return Math.max(currentChance, min);
+	}
+
+	private void addCollectible(CollisionTypes type, Chunk chunk) {
+		int randomTileX = (int) (Math.random() * chunk.getWidth());
+		int randomTileY = (int) (Math.random() * chunk.getHeight());
+		float graphicZ = chunk.getRelative(randomTileX, randomTileY, 0) * LANDSCAPE_MAX_HEIGHT + COLLECTIBLE_GROUND_OFFSET;
+		float graphicX = getGraphicOffsetX(chunk) + (randomTileX * tileSize);
+		float graphicY = getGraphicOffsetY(chunk) + (randomTileY * tileSize);
+		Vector3 position = new Vector3(graphicX, graphicY, graphicZ);
+		collectibles.add(new Collectible(type, position, new Point(chunk.getChunkX(), chunk.getChunkY())));
 	}
 
 	private void createLandscapePart(Chunk chunk) {
