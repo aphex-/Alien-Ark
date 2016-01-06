@@ -498,7 +498,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		if (type == CollisionTypes.FUEL) {
 			Collectible collectible = worldController.getCollectible(collisionObject);
 			worldController.removeCollectible(collectible);
-			physicsController.removeCollisionObject(collectible.getCollisionObject());
 		}
 	}
 

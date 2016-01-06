@@ -81,9 +81,8 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 
 		Collectible collectible = new Collectible(CollisionTypes.FUEL);
-		controllerPhysic.addCollisionObject(collectible.getCollisionObject());
-		currentVisibleCollectibles.add(collectible);
-		ani.add(collectible.createScaleAnimation());
+		addCollectible(collectible);
+
 	}
 
 
@@ -251,8 +250,15 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		return null;
 	}
 
+	public void addCollectible(Collectible c) {
+		controllerPhysic.addCollisionObject(c.getCollisionObject());
+		currentVisibleCollectibles.add(c);
+		ani.add(c.createScaleAnimation());
+	}
+
 	public void removeCollectible(Collectible c) {
 		currentVisibleCollectibles.remove(c);
+		controllerPhysic.removeCollisionObject(c.getCollisionObject());
 		c.dispose(ani);
 	}
 
