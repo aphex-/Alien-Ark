@@ -1,4 +1,4 @@
-package com.nukethemoon.libgdxjam.screens.planet;
+package com.nukethemoon.libgdxjam.screens.planet.physics;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
@@ -19,13 +19,10 @@ import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSol
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.Log;
-import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 
 public class ControllerPhysic extends ContactListener {
 
 	private final TickCallback tickCallback;
-	private Rocket rocket;
-
 
 	private btCollisionConfiguration collisionConfig;
 	private btDispatcher dispatcher;
@@ -35,8 +32,10 @@ public class ControllerPhysic extends ContactListener {
 	private btDynamicsWorld dynamicsWorld;
 	private DebugDrawer debugDrawer;
 
-	public ControllerPhysic(float gravity, Rocket rocket) {
-		this.rocket = rocket;
+	private PhysicsListener listener;
+
+	public ControllerPhysic(float gravity, PhysicsListener listener) {
+		this.listener = listener;
 		collisionConfig = new btDefaultCollisionConfiguration();
 		dispatcher = new btCollisionDispatcher(collisionConfig);
 		broadphase = new btDbvtBroadphase();
@@ -50,41 +49,16 @@ public class ControllerPhysic extends ContactListener {
 			dynamicsWorld.setDebugDrawer(debugDrawer);
 		}
 
-		tickCallback = new TickCallback(dynamicsWorld, rocket);
+		tickCallback = new TickCallback(dynamicsWorld, listener);
 
 	}
-
-	/*@Override
-	public boolean onContactAdded(btManifoldPoint cp, btCollisionObjectWrapper colObj0Wrap, int partId0, int index0,
-								   btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
-
-		int objectId1 = colObj0Wrap.getCollisionObject().getUserValue();
-		int objectId2 = colObj1Wrap.getCollisionObject().getUserValue();
-
-		Log.e(ControllerPhysic.class, "Collision " + objectId1 + " " + objectId2);
-
-
-
-
-		Log.e(ControllerPhysic.class, "impact");
-
-		return true;
-	}*/
-
-	/*@Override
-	public boolean onContactAdded (btCollisionObject colObj0, int partId0, int index0, btCollisionObject colObj1, int partId1,
-								   int index1) {
-
-
-		return true;
-	}*/
 
 	@Override
 	public boolean onContactAdded (int userValue0, int partId0, int index0, int userValue1, int partId1, int index1) {
 		if (userValue0 == CollisionTypes.ROCKET.mask) {
-			rocket.collidedWith(userValue1);
+			listener.onRocketCollided(CollisionTypes.byMask((short) userValue1));
 		} else if (userValue1 == CollisionTypes.ROCKET.mask) {
-			rocket.collidedWith(userValue0);
+			listener.onRocketCollided(CollisionTypes.byMask((short) userValue0));
 		}
 		return true;
 	}
@@ -144,19 +118,22 @@ public class ControllerPhysic extends ContactListener {
 		super.dispose();
 	}
 
+	public interface PhysicsListener {
+		void onRocketCollided(CollisionTypes type);
+		void onInternalTick();
+	}
+
 	public static class TickCallback extends InternalTickCallback {
-
-		private Rocket rocket;
-
-		public TickCallback (btDynamicsWorld dynamicsWorld, Rocket rocket) {
+		private PhysicsListener listener;
+		public TickCallback (btDynamicsWorld dynamicsWorld, PhysicsListener listener) {
 			super(dynamicsWorld, true);
-			this.rocket = rocket;
+			this.listener = listener;
 		}
-
 		@Override
 		public void onInternalTick (btDynamicsWorld dynamicsWorld, float timeStep) {
-			rocket.onBulletTick();
+			listener.onInternalTick();
 		}
-
 	}
+
+
 }

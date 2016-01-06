@@ -1,4 +1,4 @@
-package com.nukethemoon.libgdxjam.screens.planet;
+package com.nukethemoon.libgdxjam.screens.planet.physics;
 
 
 import java.util.HashMap;
@@ -9,14 +9,17 @@ public enum CollisionTypes {
 	GROUND((short) (1<<8)),
 	ROCKET((short) (1<<9)),
 	WATER((short) (1<<10)),
+	FUEL((short) (1<<11)),
 	NOTHING((short) 0);
 
 	public static Map<CollisionTypes, CollisionTypes[]> TYPE_TO_COLLISIONS = new HashMap<CollisionTypes, CollisionTypes[]>();
 
+	// collision filtering
 	static {
-		TYPE_TO_COLLISIONS.put(ROCKET, new CollisionTypes[] {GROUND, WATER});
-		TYPE_TO_COLLISIONS.put(GROUND, new CollisionTypes[] {ROCKET});
-		TYPE_TO_COLLISIONS.put(WATER, new CollisionTypes[] {ROCKET});
+		TYPE_TO_COLLISIONS.put(ROCKET, 		new CollisionTypes[] {GROUND, WATER, FUEL});
+		TYPE_TO_COLLISIONS.put(GROUND,	 	new CollisionTypes[] {ROCKET});
+		TYPE_TO_COLLISIONS.put(WATER, 		new CollisionTypes[] {ROCKET});
+		TYPE_TO_COLLISIONS.put(FUEL, 		new CollisionTypes[] {ROCKET});
 	}
 
 	public short mask;

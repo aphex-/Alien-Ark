@@ -16,7 +16,7 @@ import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
-import com.nukethemoon.libgdxjam.screens.planet.CollisionTypes;
+import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 
 public class Rocket extends GameObject implements Disposable {
 
@@ -263,7 +263,7 @@ public class Rocket extends GameObject implements Disposable {
 		//model.dispose();
 	}
 
-	public void onBulletTick() {
+	public void handlePhysicTick() {
 		if (isOutOfFuel()) {
 			if (thrusting) {
 				onThrustDisabled();
@@ -306,12 +306,12 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
-	public void collidedWith(int userValue1) {
-		if (userValue1 == CollisionTypes.GROUND.mask && thrusting) {
+	public void handleCollision(CollisionTypes type) {
+		if (type == CollisionTypes.GROUND && thrusting) {
 			dealDamage();
 		}
 
-		if (userValue1 == CollisionTypes.WATER.mask) {
+		if (type == CollisionTypes.WATER) {
 			onExplode();
 		}
 	}

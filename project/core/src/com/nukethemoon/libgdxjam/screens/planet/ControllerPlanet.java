@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPart;
+import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.tools.opusproto.generator.ChunkListener;
 import com.nukethemoon.tools.opusproto.generator.Opus;
 import com.nukethemoon.tools.opusproto.interpreter.ColorInterpreter;
@@ -30,7 +31,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	private float tileGraphicSize = 3f;
 
-	private int requestRadiusInTiles = 150;
+	private int requestRadiusInTiles = 100;
 	private int lastRequestCenterTileX = 0;
 	private int lastRequestCenterTileY = 0;
 	private long requestCount = 0;
@@ -50,7 +51,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	private int chunkBufferSize;
 	private PlanetConfig planetConfig;
-	private ControllerPhysic controllerPhysic;
+	private com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic controllerPhysic;
 
 	public ControllerPlanet(int worldIndex, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic) {
 		this.planetConfig = pPlanetConfig;
@@ -208,7 +209,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 					toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter()));
 			for (btRigidBody body : chunkMesh.rigidBodyList) {
 				controllerPhysic.addRigidBody(body,
-						CollisionTypes.byMask((short) body.getUserValue()));
+						com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes.byMask((short) body.getUserValue()));
 			}
 			for (btCollisionObject object : chunkMesh.collisionList) {
 				controllerPhysic.addCollisionObject(object);
