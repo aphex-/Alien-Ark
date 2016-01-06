@@ -22,6 +22,7 @@ import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
 import com.nukethemoon.libgdxjam.screens.planet.helper.StandardMotionState;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.tools.opusproto.interpreter.TypeInterpreter;
+import com.nukethemoon.tools.opusproto.noise.algorithms.SimplexNoise;
 import com.nukethemoon.tools.opusproto.region.Chunk;
 
 import java.awt.*;
@@ -66,9 +67,10 @@ public class PlanetPart extends GameObject {
 	private List<Collectible> collectibles = new ArrayList<Collectible>();
 
 	private List<btCollisionShape> shapes = new ArrayList<btCollisionShape>();
+	private static SimplexNoise simplexNoise = new SimplexNoise();
 
 	public PlanetPart(Chunk chunk, float tileSize, PlanetConfig pPlanetConfig, TypeInterpreter interpreter,
-					  CollectedItemCache collectedItemCache) {
+					  CollectedItemCache collectedItemCache, double seed) {
 
 		this.tileSize = tileSize;
 		this.planetConfig = pPlanetConfig;
@@ -93,7 +95,7 @@ public class PlanetPart extends GameObject {
 		modelInstance.transform.translate(getGraphicOffsetX(chunk), getGraphicOffsetY(chunk), 0);
 
 		initPhysics();
-		initCollectibles(chunk, collectedItemCache);
+		initCollectibles(chunk, collectedItemCache, seed);
 	}
 
 	private float getGraphicOffsetX(Chunk chunk) {
@@ -151,20 +153,24 @@ public class PlanetPart extends GameObject {
 		return true;
 	}
 
-	private void initCollectibles(Chunk chunk, CollectedItemCache collectedItemCache) {
+	private void initCollectibles(Chunk chunk, CollectedItemCache collectedItemCache, double seed) {
+		double noise01 = simplexNoise.noise(chunk.getChunkX(), chunk.getChunkY(), seed / 2d);
+		double noise02 = simplexNoise.noise(chunk.getChunkX(), chunk.getChunkY(), seed / 3d);
+
+
 		if (!collectedItemCache.isFuelCollected(chunk.getChunkX(), chunk.getChunkY())) {
-			if (Math.random() < calculateChance(chunk, planetConfig.fuelChance, planetConfig.fuelChanceGain,
+			if (noise01 < calculateChance(chunk, planetConfig.fuelChance, planetConfig.fuelChanceGain,
 					planetConfig.fuelChanceMin)) {
-				addCollectible(CollisionTypes.FUEL, chunk);
+				addCollectible(CollisionTypes.FUEL, chunk, seed / 2d);
 			} else {
 				collectedItemCache.registerCollected(chunk.getChunkX(), chunk.getChunkY(), CollisionTypes.FUEL);
 			}
 		}
 
 		if (!collectedItemCache.isShieldCollected(chunk.getChunkX(), chunk.getChunkY())) {
-			if (Math.random() < calculateChance(chunk, planetConfig.shieldChance, planetConfig.shieldChanceGain,
+			if (noise02 < calculateChance(chunk, planetConfig.shieldChance, planetConfig.shieldChanceGain,
 					planetConfig.shieldChanceMin)) {
-				addCollectible(CollisionTypes.SHIELD, chunk);
+				addCollectible(CollisionTypes.SHIELD, chunk, seed);
 			} else {
 				collectedItemCache.registerCollected(chunk.getChunkX(), chunk.getChunkY(), CollisionTypes.SHIELD);
 			}
@@ -178,9 +184,12 @@ public class PlanetPart extends GameObject {
 		return Math.max(currentChance, min);
 	}
 
-	private void addCollectible(CollisionTypes type, Chunk chunk) {
-		int randomTileX = (int) (Math.random() * chunk.getWidth());
-		int randomTileY = (int) (Math.random() * chunk.getHeight());
+	private void addCollectible(CollisionTypes type, Chunk chunk, double seed) {
+		double noise01 = simplexNoise.noise(chunk.getChunkX(), chunk.getChunkY(), seed / 4d);
+		double noise02 = simplexNoise.noise(-chunk.getChunkX(), -chunk.getChunkY(), seed / 5d);
+
+		int randomTileX = (int) (noise01 * chunk.getWidth());
+		int randomTileY = (int) (noise02 * chunk.getHeight());
 		float graphicZ = chunk.getRelative(randomTileX, randomTileY, 0) * LANDSCAPE_MAX_HEIGHT + COLLECTIBLE_GROUND_OFFSET;
 		float graphicX = getGraphicOffsetX(chunk) + (randomTileX * tileSize);
 		float graphicY = getGraphicOffsetY(chunk) + (randomTileY * tileSize);

@@ -30,6 +30,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	private static final String WORLD_NAME = "entities/planets/planet01/opusConfig.json";
 
+
 	private float tileGraphicSize = 3f;
 
 	private Opus opus;
@@ -40,6 +41,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private List<Point> currentVisibleChunkPositions = new ArrayList<Point>();
 	private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
 	private Map<Point, PlanetPart> chunkGraphicBuffer = new HashMap<Point, PlanetPart>();
+	private final TypeInterpreter typeInterpreter;
 
 	private CollectedItemCache collectedItemCache = new CollectedItemCache();
 
@@ -82,6 +84,8 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		typeInterpreter = toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter());
 	}
 
 
@@ -225,8 +229,11 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		Point point = new Point(x, y);
 		if (chunkGraphicBuffer.get(point) == null) {
 
+
+
+
 			PlanetPart planetPart = new PlanetPart(chunk, tileGraphicSize, planetConfig,
-					toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter()), collectedItemCache);
+					typeInterpreter, collectedItemCache, opus.getConfig().seed);
 
 			for (btRigidBody body : planetPart.rigidBodyList) {
 				controllerPhysic.addRigidBody(body,
