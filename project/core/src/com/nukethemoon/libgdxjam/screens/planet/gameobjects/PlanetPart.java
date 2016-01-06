@@ -11,14 +11,15 @@ import com.badlogic.gdx.graphics.g3d.model.NodePart;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
 import com.nukethemoon.libgdxjam.screens.planet.helper.StandardMotionState;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
-import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
 import com.nukethemoon.tools.opusproto.interpreter.TypeInterpreter;
 import com.nukethemoon.tools.opusproto.region.Chunk;
 
@@ -85,8 +86,6 @@ public class PlanetPart extends GameObject {
 			}
 		}
 		model = modelBuilder.end();
-
-
 		modelInstance = new ModelInstance(model);
 		modelInstance.transform.translate(getGraphicOffsetX(chunk), getGraphicOffsetY(chunk), 0);
 
@@ -150,13 +149,23 @@ public class PlanetPart extends GameObject {
 	}
 
 	private void initCollectibles(Chunk chunk) {
-		int randomTileX = (int) (Math.random() * chunk.getWidth());
-		int randomTileY = (int) (Math.random() * chunk.getHeight());
-		float graphicZ = chunk.getRelative(randomTileX, randomTileY, 0) * LANDSCAPE_MAX_HEIGHT + COLLECTIBLE_GROUND_OFFSET;
-		float graphicX = getGraphicOffsetX(chunk) + (randomTileX * tileSize);
-		float graphicY = getGraphicOffsetY(chunk) + (randomTileY * tileSize);
-		Vector3 position = new Vector3(graphicX, graphicY, graphicZ);
-		collectibles.add(new Collectible(CollisionTypes.FUEL, position, new Point(chunk.getChunkX(), chunk.getChunkY())));
+
+		Vector2 chunkDistanceToZero = new Vector2(chunk.getChunkX(), chunk.getChunkY());
+		float currentChance = planetConfig.fuelChance + (chunkDistanceToZero.len() * planetConfig.fuelChanceGain);
+		currentChance = Math.min(currentChance, 1);
+		currentChance = Math.max(currentChance, planetConfig.fuelChanceMin);
+
+		if (Math.random() < currentChance) {
+
+
+			int randomTileX = (int) (Math.random() * chunk.getWidth());
+			int randomTileY = (int) (Math.random() * chunk.getHeight());
+			float graphicZ = chunk.getRelative(randomTileX, randomTileY, 0) * LANDSCAPE_MAX_HEIGHT + COLLECTIBLE_GROUND_OFFSET;
+			float graphicX = getGraphicOffsetX(chunk) + (randomTileX * tileSize);
+			float graphicY = getGraphicOffsetY(chunk) + (randomTileY * tileSize);
+			Vector3 position = new Vector3(graphicX, graphicY, graphicZ);
+			collectibles.add(new Collectible(CollisionTypes.FUEL, position, new Point(chunk.getChunkX(), chunk.getChunkY())));
+		}
 	}
 
 	private void createLandscapePart(Chunk chunk) {

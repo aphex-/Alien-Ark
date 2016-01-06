@@ -1,6 +1,11 @@
 {
   "id": "planet01",
   "gravity" : -25,
+
+  "fuelChance" : 0.08,
+  "fuelChanceGain" : -0.001,
+  "fuelChanceMin" : 0.008,
+
   "environmentColorAttributes": [
     {
       "color": {

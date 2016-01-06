@@ -33,7 +33,7 @@ public class Rocket extends GameObject implements Disposable {
 	private final ModelInstance modelInstance;
 	private final Model model;
 
-	private float speed = 20f; // min 20f max 100f
+	private float speed = 50f; // min 20f max 100f
 	private float maneuverability = 0.75f; // min 0.75f max 3.0f
 	private float friction = 0.2f; // min 0.2f max 3.0f;
 

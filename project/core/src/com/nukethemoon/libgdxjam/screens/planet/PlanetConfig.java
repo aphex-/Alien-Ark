@@ -14,6 +14,10 @@ public class PlanetConfig {
 
 	public float gravity = -10;
 
+	public float fuelChance = 0.2f; // chance to find fuel per chunk
+	public float fuelChanceGain = -0.001f; // modifies the chance by the chunks distance to position 0,0
+	public float fuelChanceMin = 0.0001f;
+
 	public List<ColorAttribute> environmentColorAttributes = new ArrayList<ColorAttribute>();
 	public List<DirectionalLight> environmentDirectionalLights = new ArrayList<DirectionalLight>();
 
