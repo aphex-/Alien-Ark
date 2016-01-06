@@ -29,7 +29,8 @@ import java.util.List;
 public class PlanetPart extends GameObject {
 
 
-	private static final float LANDSCAPE_MAX_HEIGHT = 20;
+	private static final float LANDSCAPE_MAX_HEIGHT = 25;
+	private static final float COLLECTIBLE_GROUND_OFFSET = 5;
 
 	private final int VERTEX_ATTRIBUTES = VertexAttributes.Usage.Position
 			| VertexAttributes.Usage.ColorUnpacked
@@ -149,9 +150,12 @@ public class PlanetPart extends GameObject {
 	}
 
 	private void initCollectibles(Chunk chunk) {
-		Vector3 position = new Vector3(chunk.getChunkX() * chunk.getWidth() * tileSize,
-				chunk.getChunkY() * chunk.getHeight() * tileSize,
-				10);
+		int randomTileX = (int) (Math.random() * chunk.getWidth());
+		int randomTileY = (int) (Math.random() * chunk.getHeight());
+		float graphicZ = chunk.getRelative(randomTileX, randomTileY, 0) * LANDSCAPE_MAX_HEIGHT + COLLECTIBLE_GROUND_OFFSET;
+		float graphicX = getGraphicOffsetX(chunk) + (randomTileX * tileSize);
+		float graphicY = getGraphicOffsetY(chunk) + (randomTileY * tileSize);
+		Vector3 position = new Vector3(graphicX, graphicY, graphicZ);
 		collectibles.add(new Collectible(CollisionTypes.FUEL, position, new Point(chunk.getChunkX(), chunk.getChunkY())));
 	}
 
