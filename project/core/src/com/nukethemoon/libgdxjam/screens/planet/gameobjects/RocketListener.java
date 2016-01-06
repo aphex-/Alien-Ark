@@ -9,5 +9,6 @@ public interface RocketListener {
 	void onRocketDamage();
 	void onRocketFuelConsumed();
 	void onRocketExploded();
+	void onRocketFuelBonus();
 
 }

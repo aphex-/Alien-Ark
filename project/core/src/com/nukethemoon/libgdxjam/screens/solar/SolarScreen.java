@@ -403,4 +403,9 @@ public class SolarScreen implements Screen, RocketListener {
 	public void onRocketExploded() {
 		App.audioController.playSound("explosion.mp3");
 	}
+
+	@Override
+	public void onRocketFuelBonus() {
+
+	}
 }

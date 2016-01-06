@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.utils.Disposable;
+import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 
@@ -314,6 +315,11 @@ public class Rocket extends GameObject implements Disposable {
 		if (type == CollisionTypes.WATER) {
 			onExplode();
 		}
+
+		if (type == CollisionTypes.FUEL) {
+			SpaceShipProperties.properties.currentFuel = SpaceShipProperties.properties.currentFuel + Balancing.FUEL_BONUS;
+			listener.onRocketFuelBonus();
+		}
 	}
 
 	public int getShield() {
@@ -340,11 +346,6 @@ public class Rocket extends GameObject implements Disposable {
 		} else {
 			onThrustEnabled();
 		}
-	}
-
-
-	public void setFuelConsumption(float fuelConsumption) {
-		this.fuelConsuption = fuelConsumption;
 	}
 
 	public int getMaxFuel() {

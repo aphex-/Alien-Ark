@@ -8,8 +8,11 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.Log;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPart;
+import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
+import com.nukethemoon.tools.ani.Ani;
 import com.nukethemoon.tools.opusproto.generator.ChunkListener;
 import com.nukethemoon.tools.opusproto.generator.Opus;
 import com.nukethemoon.tools.opusproto.interpreter.ColorInterpreter;
@@ -28,34 +31,37 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	private static final String WORLD_NAME = "entities/planets/planet01/opusConfig.json";
 
-
 	private float tileGraphicSize = 3f;
 
-	private int requestRadiusInTiles = 100;
+	private Opus opus;
+	private PlanetConfig planetConfig;
+	private ControllerPhysic controllerPhysic;
+	private Ani ani;
+
+	private List<Point> currentVisibleChunkPositions = new ArrayList<Point>();
+	private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
+
+	private Map<Point, PlanetPart> chunkGraphicBuffer = new HashMap<Point, PlanetPart>();
+	private List<Point> tmpRequestList = new ArrayList<Point>();
+
+	private int requestRadiusInTiles = 130;
 	private int lastRequestCenterTileX = 0;
 	private int lastRequestCenterTileY = 0;
 	private long requestCount = 0;
+	private int chunkBufferSize;
 
-	private Opus opus;
-
-	private List<Point> tmpRequestList = new ArrayList<Point>();
 	private List<Point> tmpRemoveList = new ArrayList<Point>();
-
-	private List<Point> currentVisibleChunkPositions = new ArrayList<Point>();
-
-	private Map<Point, PlanetPart> chunkGraphicBuffer = new HashMap<Point, PlanetPart>();
-
-
+	private Vector2 tmpVec1 = new Vector2();
+	private Vector2 tmpVec2 = new Vector2();
 	private Vector2 tmpVector1 = new Vector2();
 	private Vector2 tmpVector2 = new Vector2();
 
-	private int chunkBufferSize;
-	private PlanetConfig planetConfig;
-	private com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic controllerPhysic;
 
-	public ControllerPlanet(int worldIndex, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic) {
+
+	public ControllerPlanet(int worldIndex, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
 		this.planetConfig = pPlanetConfig;
 		this.controllerPhysic = controllerPhysic;
+		this.ani = ani;
 		String worldName = String.format(WORLD_NAME, worldIndex);
 
 		OpusLoaderJson loader = new OpusLoaderJson();
@@ -73,6 +79,11 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		Collectible collectible = new Collectible(CollisionTypes.FUEL);
+		controllerPhysic.addCollisionObject(collectible.getCollisionObject());
+		currentVisibleCollectibles.add(collectible);
+		ani.add(collectible.createScaleAnimation());
 	}
 
 
@@ -103,9 +114,6 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		}
 	}
-
-	Vector2 tmpVec1 = new Vector2();
-	Vector2 tmpVec2 = new Vector2();
 
 	public void updateRequestCenter(Vector3 position, Vector3 direction) {
 		tmpVec1.set((float) (Math.floor(position.x) / tileGraphicSize), (float) (Math.floor(position.y) / tileGraphicSize));
@@ -227,8 +235,26 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 			PlanetPart mesh = entry.getValue();
 			batch.render(mesh.getModelInstance(), environment);
 		}
+
+		for (Collectible c : currentVisibleCollectibles) {
+			batch.render(c.getModelInstance(), environment);
+		}
 	}
 
+
+	public Collectible getCollectible(btCollisionObject collisionObject) {
+		for (Collectible c : currentVisibleCollectibles) {
+			if (c.getCollisionObject() == collisionObject) {
+				return c;
+			}
+		}
+		return null;
+	}
+
+	public void removeCollectible(Collectible c) {
+		currentVisibleCollectibles.remove(c);
+		c.dispose(ani);
+	}
 
 	public void dispose() {
 		for (PlanetPart g : chunkGraphicBuffer.values()) {

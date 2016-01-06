@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.bullet.collision.btBroadphaseInterface;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionConfiguration;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObjectWrapper;
 import com.badlogic.gdx.physics.bullet.collision.btDbvtBroadphase;
 import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
 import com.badlogic.gdx.physics.bullet.collision.btDispatcher;
@@ -54,14 +55,22 @@ public class ControllerPhysic extends ContactListener {
 	}
 
 	@Override
-	public boolean onContactAdded (int userValue0, int partId0, int index0, int userValue1, int partId1, int index1) {
+	public boolean onContactAdded (btCollisionObjectWrapper colObj0Wrap, int partId0, int index0,
+								   btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
+
+		int userValue0 = colObj0Wrap.getCollisionObject().getUserValue();
+		int userValue1 = colObj1Wrap.getCollisionObject().getUserValue();
+
 		if (userValue0 == CollisionTypes.ROCKET.mask) {
-			listener.onRocketCollided(CollisionTypes.byMask((short) userValue1));
+			listener.onRocketCollided(CollisionTypes.byMask((short) userValue1), colObj1Wrap.getCollisionObject());
 		} else if (userValue1 == CollisionTypes.ROCKET.mask) {
-			listener.onRocketCollided(CollisionTypes.byMask((short) userValue0));
+			listener.onRocketCollided(CollisionTypes.byMask((short) userValue0), colObj0Wrap.getCollisionObject());
 		}
+
 		return true;
 	}
+
+
 
 	public void addRigidBody(btRigidBody object, CollisionTypes type) {
 		if (object == null || type == null) {
@@ -119,7 +128,7 @@ public class ControllerPhysic extends ContactListener {
 	}
 
 	public interface PhysicsListener {
-		void onRocketCollided(CollisionTypes type);
+		void onRocketCollided(CollisionTypes type, btCollisionObject collisionObject);
 		void onInternalTick();
 	}
 

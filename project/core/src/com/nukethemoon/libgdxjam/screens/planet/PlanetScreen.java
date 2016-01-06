@@ -24,6 +24,7 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BufferedParticleBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -33,6 +34,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
@@ -54,7 +56,6 @@ import com.nukethemoon.tools.ani.BaseAnimation;
 public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener, RocketListener, ControllerPhysic.PhysicsListener  {
 
 
-	private final Collectible collectible;
 	private ModelInstance environmentSphere;
 	private ModelBatch modelBatch;
 	private Environment environment;
@@ -72,7 +73,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private final int worldIndex;
 
 	private ControllerPlanet worldController;
-	private com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic collisionController;
+	private com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic physicsController;
 
 	private Stage stage;
 
@@ -115,9 +116,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
 		planetConfig.deserialize();
 
-		collisionController = new ControllerPhysic(planetConfig.gravity, this);
-		worldController = new ControllerPlanet(worldIndex, planetConfig, collisionController);
-		collisionController.addRigidBody(
+		physicsController = new ControllerPhysic(planetConfig.gravity, this);
+		worldController = new ControllerPlanet(worldIndex, planetConfig, physicsController, ani);
+		physicsController.addRigidBody(
 				rocket.rigidBodyList.get(0),
 				com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes.ROCKET);
 
@@ -131,11 +132,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		onReloadScene(planetConfig);
 		initParticles();
 		initStage(planetConfig);
-
-
-
-		collectible = new Collectible(CollisionTypes.FUEL);
-		ani.add(collectible.createScaleAnimation());
 	}
 
 	private void initParticles() {
@@ -278,8 +274,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		rocket.drawModel(modelBatch, environment, effectThrust, effectExplosion);
 		worldController.render(modelBatch, environment);
 
-		modelBatch.render(collectible.getModelInstance(), environment);
-
 		environmentSphere.transform.idt();
 		environmentSphere.transform.setToTranslation(rocket.getPosition().x, rocket.getPosition().y, 0);
 		environmentSphere.transform.scl(1000);
@@ -303,10 +297,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			stage.draw();
 		}
 
-		collisionController.debugRender(camera);
+		physicsController.debugRender(camera);
 
 		if (!gameOver) {
-			collisionController.stepSimulation(delta);
+			physicsController.stepSimulation(delta);
 		}
 
 
@@ -488,11 +482,24 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		onGameOver();
 	}
 
+	@Override
+	public void onRocketFuelBonus() {
+		showToast("Fuel +" + Balancing.FUEL_BONUS);
+		App.audioController.playSound("bonus.mp3");
+		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
+	}
+
 	// === physic events ===
 
 	@Override
-	public void onRocketCollided(CollisionTypes type) {
+	public void onRocketCollided(CollisionTypes type, btCollisionObject collisionObject) {
 		rocket.handleCollision(type);
+
+		if (type == CollisionTypes.FUEL) {
+			Collectible collectible = worldController.getCollectible(collisionObject);
+			worldController.removeCollectible(collectible);
+			physicsController.removeCollisionObject(collectible.getCollisionObject());
+		}
 	}
 
 	@Override
