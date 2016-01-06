@@ -21,7 +21,10 @@ public class Collectible {
 
 	private Point planetPartPosition;
 
+	private CollisionTypes type;
+
 	public Collectible(CollisionTypes type, Vector3 position, Point planetPartPosition) {
+		this.type = type;
 		this.planetPartPosition = planetPartPosition;
 		// graphic
 		Matrix4 transform = new Matrix4();
@@ -67,4 +70,7 @@ public class Collectible {
 		return planetPartPosition;
 	}
 
+	public CollisionTypes getType() {
+		return type;
+	}
 }

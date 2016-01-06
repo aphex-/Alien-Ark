@@ -39,8 +39,10 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	private List<Point> currentVisibleChunkPositions = new ArrayList<Point>();
 	private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
-
 	private Map<Point, PlanetPart> chunkGraphicBuffer = new HashMap<Point, PlanetPart>();
+
+	private CollectedItemCache collectedItemCache = new CollectedItemCache();
+
 	private List<Point> tmpRequestList = new ArrayList<Point>();
 
 	private int requestRadiusInTiles = 130;
@@ -54,7 +56,6 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private List<Point> tmpRemoveList3 = new ArrayList<Point>();
 
 	private Vector2 tmpVec1 = new Vector2();
-	private Vector2 tmpVec2 = new Vector2();
 	private Vector2 tmpVector1 = new Vector2();
 	private Vector2 tmpVector2 = new Vector2();
 
@@ -201,6 +202,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		// request visible chunks
 		if (tmpRequestList.size() > 0) {
+			collectedItemCache.update(chunkBufferCenterX, chunkBufferCenterY);
 			requestChunks(tmpRequestList);
 		}
 	}
@@ -224,7 +226,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		if (chunkGraphicBuffer.get(point) == null) {
 
 			PlanetPart planetPart = new PlanetPart(chunk, tileGraphicSize, planetConfig,
-					toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter()));
+					toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter()), collectedItemCache);
 
 			for (btRigidBody body : planetPart.rigidBodyList) {
 				controllerPhysic.addRigidBody(body,
@@ -301,6 +303,10 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 			typeInterpreter.it.add(interpreterItem);
 		}
 		return typeInterpreter;
+	}
+
+	public CollectedItemCache getCollectedItemCache() {
+		return collectedItemCache;
 	}
 
 }

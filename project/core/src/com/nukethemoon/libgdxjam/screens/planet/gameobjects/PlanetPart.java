@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.nukethemoon.libgdxjam.screens.planet.CollectedItemCache;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
 import com.nukethemoon.libgdxjam.screens.planet.helper.StandardMotionState;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
@@ -66,7 +67,9 @@ public class PlanetPart extends GameObject {
 
 	private List<btCollisionShape> shapes = new ArrayList<btCollisionShape>();
 
-	public PlanetPart(Chunk chunk, float tileSize, PlanetConfig pPlanetConfig, TypeInterpreter interpreter) {
+	public PlanetPart(Chunk chunk, float tileSize, PlanetConfig pPlanetConfig, TypeInterpreter interpreter,
+					  CollectedItemCache collectedItemCache) {
+
 		this.tileSize = tileSize;
 		this.planetConfig = pPlanetConfig;
 		this.interpreter = interpreter;
@@ -90,7 +93,7 @@ public class PlanetPart extends GameObject {
 		modelInstance.transform.translate(getGraphicOffsetX(chunk), getGraphicOffsetY(chunk), 0);
 
 		initPhysics();
-		initCollectibles(chunk);
+		initCollectibles(chunk, collectedItemCache);
 	}
 
 	private float getGraphicOffsetX(Chunk chunk) {
@@ -148,12 +151,23 @@ public class PlanetPart extends GameObject {
 		return true;
 	}
 
-	private void initCollectibles(Chunk chunk) {
-		if (Math.random() < calculateChance(chunk, planetConfig.fuelChance, planetConfig.fuelChanceGain, planetConfig.fuelChanceMin)) {
-			addCollectible(CollisionTypes.FUEL, chunk);
+	private void initCollectibles(Chunk chunk, CollectedItemCache collectedItemCache) {
+		if (!collectedItemCache.isFuelCollected(chunk.getChunkX(), chunk.getChunkY())) {
+			if (Math.random() < calculateChance(chunk, planetConfig.fuelChance, planetConfig.fuelChanceGain,
+					planetConfig.fuelChanceMin)) {
+				addCollectible(CollisionTypes.FUEL, chunk);
+			} else {
+				collectedItemCache.registerCollected(chunk.getChunkX(), chunk.getChunkY(), CollisionTypes.FUEL);
+			}
 		}
-		if (Math.random() < calculateChance(chunk, planetConfig.shieldChance, planetConfig.shieldChanceGain, planetConfig.shieldChanceMin)) {
-			addCollectible(CollisionTypes.SHIELD, chunk);
+
+		if (!collectedItemCache.isShieldCollected(chunk.getChunkX(), chunk.getChunkY())) {
+			if (Math.random() < calculateChance(chunk, planetConfig.shieldChance, planetConfig.shieldChanceGain,
+					planetConfig.shieldChanceMin)) {
+				addCollectible(CollisionTypes.SHIELD, chunk);
+			} else {
+				collectedItemCache.registerCollected(chunk.getChunkX(), chunk.getChunkY(), CollisionTypes.SHIELD);
+			}
 		}
 	}
 

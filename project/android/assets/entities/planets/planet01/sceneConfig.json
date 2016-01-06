@@ -3,11 +3,11 @@
   "gravity" : -25,
 
   "fuelChance" : 0.08,
-  "fuelChanceGain" : -0.001,
+  "fuelChanceGain" : -0.0001,
   "fuelChanceMin" : 0.008,
 
   "shieldChance" : 0.05,
-  "shieldChanceGain" : -0.001,
+  "shieldChanceGain" : -0.0001,
   "shieldChanceMin" : 0.008,
 
   "environmentColorAttributes": [

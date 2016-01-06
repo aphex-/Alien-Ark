@@ -91,4 +91,10 @@ public class App extends Game {
 	public static void onGameOver() {
 		openSolarScreen();
 	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		Models.dispose();
+	}
 }
