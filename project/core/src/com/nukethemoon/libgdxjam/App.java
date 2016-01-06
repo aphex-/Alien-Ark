@@ -33,6 +33,7 @@ public class App extends Game {
 	public void create () {
 		app = this;
 		Bullet.init();
+		Models.init();
 		TEXTURES = new TextureAtlas("textures/game.atlas");
 		Styles.init(TEXTURES);
 		MULTIPLEXER = new InputMultiplexer();

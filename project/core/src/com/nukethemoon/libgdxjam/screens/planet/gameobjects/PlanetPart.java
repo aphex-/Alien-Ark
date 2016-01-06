@@ -22,13 +22,14 @@ import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
 import com.nukethemoon.tools.opusproto.interpreter.TypeInterpreter;
 import com.nukethemoon.tools.opusproto.region.Chunk;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlanetPart extends GameObject {
 
 
-	private static final float LANDSCAPE_MAX_HEIGHT = 16;
+	private static final float LANDSCAPE_MAX_HEIGHT = 20;
 
 	private final int VERTEX_ATTRIBUTES = VertexAttributes.Usage.Position
 			| VertexAttributes.Usage.ColorUnpacked
@@ -39,7 +40,6 @@ public class PlanetPart extends GameObject {
 	private static final String LANDSCAPE_PART_NAME = "LANDSCAPE_PART";
 
 	private final ModelInstance modelInstance;
-
 
 	private final ModelBuilder modelBuilder;
 	private final Model model;
@@ -60,8 +60,9 @@ public class PlanetPart extends GameObject {
 	private TypeInterpreter interpreter;
 
 	private List<MeshBuilder> meshBuilders = new ArrayList<MeshBuilder>();
-
 	private List<Collectible> collectibles = new ArrayList<Collectible>();
+
+	private List<btCollisionShape> shapes = new ArrayList<btCollisionShape>();
 
 	public PlanetPart(Chunk chunk, float tileSize, PlanetConfig pPlanetConfig, TypeInterpreter interpreter) {
 		this.tileSize = tileSize;
@@ -86,11 +87,24 @@ public class PlanetPart extends GameObject {
 
 
 		modelInstance = new ModelInstance(model);
-		modelInstance.transform.translate(
-				chunk.getChunkX() * (chunk.getWidth() - 1) * tileSize,
-				chunk.getChunkY() * (chunk.getHeight() - 1) * tileSize,
-				0);
+		modelInstance.transform.translate(getGraphicOffsetX(chunk), getGraphicOffsetY(chunk), 0);
 
+		initPhysics();
+		initCollectibles(chunk);
+	}
+
+	private float getGraphicOffsetX(Chunk chunk) {
+		return chunk.getChunkX() * (chunk.getWidth() - 1) * tileSize; // -1 because of one overlapping tile
+	}
+
+	private float getGraphicOffsetY(Chunk chunk) {
+		return chunk.getChunkY() * (chunk.getHeight() - 1) * tileSize; // -1 because of one overlapping tile
+	}
+
+	/**
+	 * Creates the collision objects of this planet part.
+	 */
+	private void initPhysics() {
 		for (int landscapeLayerIndex = 0; landscapeLayerIndex < planetConfig.layerConfigs.size(); landscapeLayerIndex++) {
 
 			String partName = LANDSCAPE_NODE_NAME + landscapeLayerIndex;
@@ -99,6 +113,7 @@ public class PlanetPart extends GameObject {
 
 			if (areAllPartsValid(landscapeNode)) {
 				btCollisionShape collisionShape = Bullet.obtainStaticNodeShape(landscapeNode, false);
+				shapes.add(collisionShape);
 
 				if (landscapeType != CollisionTypes.WATER) {
 					float mass = 0;
@@ -118,6 +133,11 @@ public class PlanetPart extends GameObject {
 		}
 	}
 
+	/**
+	 * Returns true if all parts of the assigned node can be used to create collision shapes
+	 * @param node The node to check.
+	 * @return True if the node is valid.
+	 */
 	private boolean areAllPartsValid(Node node) {
 		for (NodePart nodePart : node.parts) {
 			boolean usesTriangles = (nodePart.meshPart.primitiveType == GL20.GL_TRIANGLES);
@@ -126,6 +146,13 @@ public class PlanetPart extends GameObject {
 			}
 		}
 		return true;
+	}
+
+	private void initCollectibles(Chunk chunk) {
+		Vector3 position = new Vector3(chunk.getChunkX() * chunk.getWidth() * tileSize,
+				chunk.getChunkY() * chunk.getHeight() * tileSize,
+				10);
+		collectibles.add(new Collectible(CollisionTypes.FUEL, position, new Point(chunk.getChunkX(), chunk.getChunkY())));
 	}
 
 	private void createLandscapePart(Chunk chunk) {
@@ -288,10 +315,12 @@ public class PlanetPart extends GameObject {
 		float z = WATER_HEIGHT * LANDSCAPE_MAX_HEIGHT;
 		float width = chunk.getWidth() * tileSize;
 		float height = chunk.getHeight() * tileSize;
+
 		Vector3 corner01 = new Vector3(0f, 0f, z);
 		Vector3 corner02 = new Vector3(width, 0f, z);
 		Vector3 corner03 = new Vector3(width, height, z);
 		Vector3 corner04 = new Vector3(0f, height, z);
+
 		builder.rect(corner01, corner02, corner03, corner04, new Vector3(0, 0, 1));
 		Material waterMaterial = planetConfig.layerConfigs.get(landscapeIndex).material;
 		Mesh mesh = builder.end();
@@ -304,10 +333,20 @@ public class PlanetPart extends GameObject {
 		return modelInstance;
 	}
 
+	public List<Collectible> getCollectibles() {
+		return collectibles;
+	}
+
 	public void dispose() {
-		//model.dispose();
 		for (btRigidBody b : rigidBodyList) {
 			b.dispose();
 		}
+		for (btCollisionShape shape : shapes) {
+			shape.dispose();
+		}
+		for (btCollisionObject o : collisionObjectList) {
+			o.dispose();
+		}
+		model.dispose();
 	}
 }

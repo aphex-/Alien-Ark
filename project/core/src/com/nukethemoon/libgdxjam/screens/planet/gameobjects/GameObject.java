@@ -13,7 +13,7 @@ public abstract class GameObject{
 
 
 	public List<btRigidBody> rigidBodyList = new ArrayList<btRigidBody>();
-	public List<btCollisionObject> collisionList = new ArrayList<btCollisionObject>();
+	public List<btCollisionObject> collisionObjectList = new ArrayList<btCollisionObject>();
 
 	protected void addRigidBody(btCollisionShape shape, float mass, float friction, int userValue,
 								btMotionState motionState) {
@@ -39,7 +39,7 @@ public abstract class GameObject{
 	}
 
 	protected void addCollisionObject(btCollisionObject object) {
-		collisionList.add(object);
+		collisionObjectList.add(object);
 	}
 
 }
