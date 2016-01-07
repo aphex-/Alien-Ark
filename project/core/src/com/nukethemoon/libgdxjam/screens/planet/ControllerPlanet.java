@@ -37,7 +37,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	private List<Point> currentVisibleChunkPositions = new ArrayList<Point>();
 	private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
-	private Map<Point, PlanetPart> chunkGraphicBuffer = new HashMap<Point, PlanetPart>();
+	private Map<Point, PlanetPart> planetPartBuffer = new HashMap<Point, PlanetPart>();
 	private final TypeInterpreter typeInterpreter;
 
 	private CollectedItemCache collectedItemCache = new CollectedItemCache();
@@ -57,7 +57,6 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private Vector2 tmpVec1 = new Vector2();
 	private Vector2 tmpVector1 = new Vector2();
 	private Vector2 tmpVector2 = new Vector2();
-
 
 
 	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
@@ -90,7 +89,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		List<Point> requestList = new ArrayList<Point>();
 		for (Point coordinate : chunkCoordinates) {
-			if (chunkGraphicBuffer.get(coordinate) == null) {
+			if (planetPartBuffer.get(coordinate) == null) {
 				requestList.add(coordinate);
 			}
 		}
@@ -134,10 +133,9 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		tmpVector2.set(requestCenterTileX, requestCenterTileY);
 
-		int chunkSize = opus.getConfig().chunkSize - 1;
-		int chunkBufferCenterX = (int) Math.floor(requestCenterTileX / chunkSize);
-		int chunkBufferCenterY = (int) Math.floor(requestCenterTileY / chunkSize);
-
+		int chunkSize = opus.getConfig().chunkSize - 1; // overlapping chunks
+		int chunkBufferCenterX = getChunkX(requestCenterTileX);
+		int chunkBufferCenterY = getChunkY(requestCenterTileY);
 
 		currentVisibleChunkPositions.clear();
 
@@ -178,7 +176,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 
 		// remove non visible chunks
-		for (Map.Entry<Point, PlanetPart> entry : chunkGraphicBuffer.entrySet()) {
+		for (Map.Entry<Point, PlanetPart> entry : planetPartBuffer.entrySet()) {
 			if (!currentVisibleChunkPositions.contains(entry.getKey())) {
 				PlanetPart c = entry.getValue();
 				for (btRigidBody body : c.rigidBodyList) {
@@ -196,7 +194,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		// add chunks that are not already loaded
 		for (Point p : currentVisibleChunkPositions) {
-			if (chunkGraphicBuffer.get(p) == null) {
+			if (planetPartBuffer.get(p) == null) {
 				tmpRequestList.add(p);
 			}
 		}
@@ -208,8 +206,18 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 	}
 
+	private int getChunkX(int tilePositionX) {
+		int chunkSize = opus.getConfig().chunkSize - 1; // overlapping chunks
+		return (int) Math.floor(tilePositionX / chunkSize);
+	}
+
+	private int getChunkY(int tilePositionY) {
+		int chunkSize = opus.getConfig().chunkSize - 1; // overlapping chunks
+		return (int) Math.floor(tilePositionY / chunkSize);
+	}
+
 	private void disposePlanetPart(Point position) {
-		PlanetPart planetPart = chunkGraphicBuffer.get(position);
+		PlanetPart planetPart = planetPartBuffer.get(position);
 		tmpRemoveList2.clear();
 		for (Collectible c : planetPart.getCollectibles()) {
 			tmpRemoveList2.add(c);
@@ -218,17 +226,13 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 			removeCollectible(c);
 		}
 		planetPart.dispose();
-		chunkGraphicBuffer.remove(position);
+		planetPartBuffer.remove(position);
 	}
 
 	@Override
 	public void onChunkCreated(int x, int y, Chunk chunk) {
 		Point point = new Point(x, y);
-		if (chunkGraphicBuffer.get(point) == null) {
-
-
-
-
+		if (planetPartBuffer.get(point) == null) {
 			PlanetPart planetPart = new PlanetPart(chunk, TILE_GRAPHIC_SIZE, planetConfig,
 					typeInterpreter, collectedItemCache, opus.getConfig().seed);
 
@@ -244,7 +248,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 				addCollectible(c);
 			}
 
-			chunkGraphicBuffer.put(point, planetPart);
+			planetPartBuffer.put(point, planetPart);
 		} else {
 			Log.d(getClass(), "Created a chunk that already exists. x " + x + " y " + y);
 		}
@@ -252,7 +256,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 
 	public void render(ModelBatch batch, Environment environment) {
-		for (Map.Entry<Point, PlanetPart> entry : chunkGraphicBuffer.entrySet()) {
+		for (Map.Entry<Point, PlanetPart> entry : planetPartBuffer.entrySet()) {
 			PlanetPart mesh = entry.getValue();
 			batch.render(mesh.getModelInstance(), environment);
 		}
@@ -282,12 +286,12 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		currentVisibleCollectibles.remove(c);
 		controllerPhysic.removeCollisionObject(c.getCollisionObject());
 		c.dispose(ani);
-		chunkGraphicBuffer.get(c.getPlanetPartPosition()).getCollectibles().remove(c);
+		planetPartBuffer.get(c.getPlanetPartPosition()).getCollectibles().remove(c);
 	}
 
 	public void dispose() {
 		tmpRemoveList3.clear();
-		for (Point p : chunkGraphicBuffer.keySet()) {
+		for (Point p : planetPartBuffer.keySet()) {
 			tmpRemoveList3.add(p);
 		}
 		for (Point p : tmpRemoveList3) {

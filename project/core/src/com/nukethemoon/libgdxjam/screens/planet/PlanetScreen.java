@@ -24,6 +24,7 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BufferedParticleBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -311,10 +312,18 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		physicsController.debugRender(camera);
 
+
+		/*Vector3 vector3 = physicsController.calculateGroundIntersection(rocket.getPosition(), intersectionTmp);
+		shapeRenderer.begin();
+		if (vector3 != null) {
+			shapeRenderer.line(vector3, rocket.getPosition());
+		}
+		shapeRenderer.end();*/
+
+
 		if (!gameOver) {
 			physicsController.stepSimulation(delta);
 		}
-
 
 		ani.update();
 	}
@@ -507,6 +516,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		App.audioController.playSound("bonus.mp3");
 		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
 	}
+
+	Vector3 intersectionTmp = new Vector3();
 
 	@Override
 	public void onRocketChangedTilePosition() {
