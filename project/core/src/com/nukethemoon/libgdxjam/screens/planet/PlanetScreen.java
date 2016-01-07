@@ -98,6 +98,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private Ani ani;
 
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
+		if (pPlanetIndex > 0) {
+			pPlanetIndex = 0;
+		}
+
 		ani = new Ani();
 		uiSkin = pUISkin;
 		planetIndex = pPlanetIndex;
