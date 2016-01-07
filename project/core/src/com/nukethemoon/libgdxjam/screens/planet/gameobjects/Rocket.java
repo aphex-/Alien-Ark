@@ -18,7 +18,10 @@ import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
+import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
+
+import java.awt.*;
 
 public class Rocket extends GameObject implements Disposable {
 
@@ -44,6 +47,7 @@ public class Rocket extends GameObject implements Disposable {
 	float xRotation = 0;
 	float zRotation = 0;
 
+	private Point lastTilePosition = null;
 	private float thirdPersonOffsetY = 10;
 
 	private Vector3 lastCamPosition = new Vector3();
@@ -141,6 +145,31 @@ public class Rocket extends GameObject implements Disposable {
 			}
 			moving = false;
 		}
+
+		if (lastTilePosition == null) {
+			lastTilePosition = new Point();
+			updateTilePosition();
+			listener.onRocketChangedTilePosition();
+		} else {
+			int lastX = lastTilePosition.x;
+			int lastY = lastTilePosition.y;
+			updateTilePosition();
+			if (lastX != lastTilePosition.x || lastY != lastTilePosition.y) {
+				listener.onRocketChangedTilePosition();
+			}
+		}
+	}
+
+	public Point getTilePosition() {
+		updateTilePosition();
+		return lastTilePosition;
+	}
+
+	private void updateTilePosition() {
+		Vector3 position = getPosition();
+		int x = (int) (Math.floor(position.x) / ControllerPlanet.TILE_GRAPHIC_SIZE);
+		int y = (int) (Math.floor(position.y) / ControllerPlanet.TILE_GRAPHIC_SIZE);
+		lastTilePosition.setLocation(x, y);
 	}
 
 	private void thrust() {

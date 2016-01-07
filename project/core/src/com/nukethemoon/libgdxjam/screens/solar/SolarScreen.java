@@ -413,4 +413,9 @@ public class SolarScreen implements Screen, RocketListener {
 	public void onRocketShieldBonus() {
 
 	}
+
+	@Override
+	public void onRocketChangedTilePosition() {
+
+	}
 }

@@ -28,7 +28,7 @@ import java.util.concurrent.ExecutionException;
 
 public class ControllerPlanet implements ChunkListener, Disposable {
 
-	private float tileGraphicSize = 3f;
+	public static float TILE_GRAPHIC_SIZE = 3f;
 
 	private Opus opus;
 	private PlanetConfig planetConfig;
@@ -115,7 +115,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	}
 
 	public void updateRequestCenter(Vector3 position, Vector3 direction) {
-		tmpVec1.set((float) (Math.floor(position.x) / tileGraphicSize), (float) (Math.floor(position.y) / tileGraphicSize));
+		tmpVec1.set((float) (Math.floor(position.x) / TILE_GRAPHIC_SIZE), (float) (Math.floor(position.y) / TILE_GRAPHIC_SIZE));
 		//tmpVec2.set(direction.x, direction.y).nor().scl(-1).scl(requestRadiusInTiles * 0.7f);
 		//tmpVec1.sub(tmpVec2);
 
@@ -229,7 +229,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 
 
-			PlanetPart planetPart = new PlanetPart(chunk, tileGraphicSize, planetConfig,
+			PlanetPart planetPart = new PlanetPart(chunk, TILE_GRAPHIC_SIZE, planetConfig,
 					typeInterpreter, collectedItemCache, opus.getConfig().seed);
 
 			for (btRigidBody body : planetPart.rigidBodyList) {

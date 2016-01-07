@@ -49,9 +49,12 @@ import com.nukethemoon.libgdxjam.ui.GameOverTable;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
 import com.nukethemoon.libgdxjam.ui.ToastTable;
 import com.nukethemoon.libgdxjam.ui.animation.FadeTableAnimation;
+import com.nukethemoon.libgdxjam.ui.hud.PositionTable;
 import com.nukethemoon.tools.ani.Ani;
 import com.nukethemoon.tools.ani.AnimationFinishedListener;
 import com.nukethemoon.tools.ani.BaseAnimation;
+
+import java.awt.*;
 
 public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener, RocketListener, ControllerPhysic.PhysicsListener  {
 
@@ -66,6 +69,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private Rocket rocket;
 
 	private RocketMainTable mainUI;
+	private PositionTable positionTable;
 
 	private final ShapeRenderer shapeRenderer;
 	private final InputMultiplexer multiplexer;
@@ -73,7 +77,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private final int planetIndex;
 
 	private ControllerPlanet planetController;
-	private com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic physicsController;
+	private ControllerPhysic physicsController;
 
 	private Stage stage;
 
@@ -212,6 +216,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
 		stage.addActor(mainUI);
 
+		positionTable = new PositionTable(uiSkin);
+		stage.addActor(positionTable);
+
 		final TextButton leaveButton = new TextButton("Leave Planet", uiSkin);
 		leaveButton.addListener(new ClickListener() {
 			@Override
@@ -243,10 +250,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-
-		if (!pause) {
-			planetController.updateRequestCenter(rocket.getPosition(), rocket.getDirection());
-		}
 
 		if (!freeCameraInput.isEnabled()) {
 			if (!pause) {
@@ -503,6 +506,15 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		showToast("Shield +" + Balancing.SHIELD_BONUS);
 		App.audioController.playSound("bonus.mp3");
 		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
+	}
+
+	@Override
+	public void onRocketChangedTilePosition() {
+		Point tilePosition = rocket.getTilePosition();
+		positionTable.setTilePosition(tilePosition.x, tilePosition.y);
+		if (!pause) {
+			planetController.updateRequestCenter(rocket.getPosition(), rocket.getDirection());
+		}
 	}
 
 	// === physic events ===

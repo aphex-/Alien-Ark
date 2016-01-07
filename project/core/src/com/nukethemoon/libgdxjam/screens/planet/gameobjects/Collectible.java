@@ -26,10 +26,8 @@ public class Collectible {
 	public Collectible(CollisionTypes type, Vector3 position, Point planetPartPosition) {
 		this.type = type;
 		this.planetPartPosition = planetPartPosition;
-		// graphic
 		Matrix4 transform = new Matrix4();
 		transform.setToTranslation(position.x, position.y, position.z);
-
 		collisionObject = new btCollisionObject();
 
 		if (type == CollisionTypes.FUEL) {

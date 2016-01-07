@@ -24,18 +24,23 @@ public class Styles {
 	public static BitmapFont FONT_DOSIS_SMALL;
 	public static BitmapFont FONT_DOSIS_MEDIUM_BORDER;
 
+	public static BitmapFont FONT_ENTSANS_SMALL_BORDER;
+
 	public static Label.LabelStyle LABEL_01;
 	public static Label.LabelStyle LABEL_02;
+
+	public static Label.LabelStyle LABEL_HUD_NUMBERS;
 
 	public static Skin UI_SKIN;
 
 	public static void init(TextureAtlas atlas) {
 		UI_SKIN = new Skin();
 
-		FONT_DOSIS_SMALL = createFont("fonts/Dosis-Medium.ttf", 20, Color.WHITE, null, 0);
-		loadDefaultSkin(FONT_DOSIS_SMALL);
+		FONT_DOSIS_SMALL = 			createFont("fonts/Dosis-Medium.ttf", 	20, Color.WHITE, null, 			0);
+		FONT_DOSIS_MEDIUM_BORDER = 	createFont("fonts/Dosis-Medium.ttf", 	26, Color.WHITE, Color.BLACK, 	2);
+		FONT_ENTSANS_SMALL_BORDER = createFont("fonts/entsans.ttf", 		16, Color.WHITE, Color.BLACK, 	1);
 
-		FONT_DOSIS_MEDIUM_BORDER = createFont("fonts/Dosis-Medium.ttf", 26, Color.WHITE, Color.BLACK, 2);
+		loadDefaultSkin(FONT_DOSIS_SMALL);
 
 
 		NINE_PATCH_POPUP_BG_01 = new NinePatchDrawable(new NinePatch(atlas.findRegion("popupbg01"),16, 16, 16, 16));
@@ -54,6 +59,9 @@ public class Styles {
 
 		LABEL_02 = new Label.LabelStyle(standardLabelStyle);
 		LABEL_02.font = FONT_DOSIS_MEDIUM_BORDER;
+
+		LABEL_HUD_NUMBERS = new Label.LabelStyle(standardLabelStyle);
+		LABEL_HUD_NUMBERS.font = FONT_ENTSANS_SMALL_BORDER;
 
 	}
 
