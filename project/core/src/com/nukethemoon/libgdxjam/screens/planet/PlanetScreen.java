@@ -70,9 +70,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private final ShapeRenderer shapeRenderer;
 	private final InputMultiplexer multiplexer;
 	private final Skin uiSkin;
-	private final int worldIndex;
+	private final int planetIndex;
 
-	private ControllerPlanet worldController;
+	private ControllerPlanet planetController;
 	private com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic physicsController;
 
 	private Stage stage;
@@ -90,12 +90,17 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private AssetManager assetManager;
 	private Model sphereModel;
 
+	private static String[] KNOWN_PLANETS = new String[] {
+		"planet01",
+		"planet02"
+	};
+
 	private Ani ani;
 
-	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pWorldIndex) {
+	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
 		ani = new Ani();
 		uiSkin = pUISkin;
-		worldIndex = pWorldIndex;
+		planetIndex = pPlanetIndex;
 		multiplexer = pMultiplexer;
 
 		rocket = new Rocket();
@@ -112,12 +117,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		camera.near = 1f;
 		camera.far = 30000f;
 
-		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/planet01/sceneConfig.json");
+		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/" + KNOWN_PLANETS[planetIndex] + "/sceneConfig.json");
 		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
 		planetConfig.deserialize();
 
 		physicsController = new ControllerPhysic(planetConfig.gravity, this);
-		worldController = new ControllerPlanet(worldIndex, planetConfig, physicsController, ani);
+		planetController = new ControllerPlanet(KNOWN_PLANETS[planetIndex], planetConfig, physicsController, ani);
 		physicsController.addRigidBody(
 				rocket.rigidBodyList.get(0),
 				com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes.ROCKET);
@@ -236,7 +241,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 
 		if (!pause) {
-			worldController.updateRequestCenter(rocket.getPosition(), rocket.getDirection());
+			planetController.updateRequestCenter(rocket.getPosition(), rocket.getDirection());
 		}
 
 		if (!freeCameraInput.isEnabled()) {
@@ -272,7 +277,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		modelBatch.begin(camera);
 		rocket.drawModel(modelBatch, environment, effectThrust, effectExplosion);
-		worldController.render(modelBatch, environment);
+		planetController.render(modelBatch, environment);
 
 		environmentSphere.transform.idt();
 		environmentSphere.transform.setToTranslation(rocket.getPosition().x, rocket.getPosition().y, 0);
@@ -359,7 +364,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		particleSystem.removeAll();
 		particleSystem.getBatches().clear();
 
-		worldController.dispose();
+		planetController.dispose();
 		modelBatch.dispose();
 		rocket.dispose();
 		assetManager.dispose();
@@ -503,9 +508,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		rocket.handleCollision(type);
 
 		if (type == CollisionTypes.FUEL || type == CollisionTypes.SHIELD) {
-			Collectible collectible = worldController.getCollectible(collisionObject);
-			worldController.removeCollectible(collectible);
-			worldController.getCollectedItemCache().registerCollected(
+			Collectible collectible = planetController.getCollectible(collisionObject);
+			planetController.removeCollectible(collectible);
+			planetController.getCollectedItemCache().registerCollected(
 					collectible.getPlanetPartPosition().x,
 					collectible.getPlanetPartPosition().y,
 					collectible.getType());

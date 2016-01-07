@@ -360,7 +360,7 @@ public class SolarScreen implements Screen, RocketListener {
 	private void handleAppNavigation() {
 		int planetIndex = determinePlanetCollison();
 		if (planetIndex != -1) {
-			openPlanetScreen(planetIndex + 1);
+			openPlanetScreen(planetIndex);
 		}
 
 		if (isArcSelected()) {

@@ -32,13 +32,10 @@ public class Models {
 		SHIELD.calculateBoundingBox(boundingBox);
 		SHIELD_SHAPE = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.65f));
 
-
 		ARTIFACT = loader.loadModel(Gdx.files.internal("models/artifact.obj"));
 		ARTIFACT.calculateBoundingBox(boundingBox);
 		ARTIFACT_SHAPE = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.65f));
 	}
-
-
 
 	public static void dispose() {
 		FUEL.dispose();

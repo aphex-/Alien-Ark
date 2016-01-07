@@ -28,9 +28,6 @@ import java.util.concurrent.ExecutionException;
 
 public class ControllerPlanet implements ChunkListener, Disposable {
 
-	private static final String WORLD_NAME = "entities/planets/planet01/opusConfig.json";
-
-
 	private float tileGraphicSize = 3f;
 
 	private Opus opus;
@@ -63,16 +60,16 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 
 
-	public ControllerPlanet(int worldIndex, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
+	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
 		this.planetConfig = pPlanetConfig;
 		this.controllerPhysic = controllerPhysic;
 		this.ani = ani;
-		String worldName = String.format(WORLD_NAME, worldIndex);
+
 
 		OpusLoaderJson loader = new OpusLoaderJson();
 		try {
 			// load opus by a json file
-			opus = loader.load(worldName);
+			opus = loader.load("entities/planets/" + planetName + "/opusConfig.json");
 			;
 			com.nukethemoon.tools.opusproto.log.Log.logLevel = com.nukethemoon.tools.opusproto.log.Log.LogType.Error;
 
