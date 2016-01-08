@@ -12,7 +12,7 @@ public class ArtifactObject {
 
 	public ArtifactObject(PointWithId artifactDefinition) {
 		this.definition = artifactDefinition;
-		modelInstance = new ModelInstance(Models.ARTIFACT_E);
+		modelInstance = new ModelInstance(Models.ARTIFACT_F);
 		adjust(0);
 	}
 
