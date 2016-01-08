@@ -1,7 +1,5 @@
 package com.nukethemoon.libgdxjam.screens.planet;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -10,12 +8,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
-import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPart;
-import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.tools.ani.Ani;
 import com.nukethemoon.tools.opusproto.generator.ChunkListener;
@@ -68,12 +64,6 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private Vector2 tmpVector2 = new Vector2();
 	private Vector3 tmpVec3 = new Vector3();
 	private Vector3 tmpVec4 = new Vector3();
-	private Vector3 tmpVec5 = new Vector3();
-
-	private TextureRegion shieldIcon;
-	private TextureRegion fuelIcon;
-	private TextureRegion artifactIcon;
-
 
 	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
 		this.planetConfig = pPlanetConfig;
@@ -98,10 +88,6 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 
 		typeInterpreter = toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter());
-
-		shieldIcon = 	App.TEXTURES.findRegion("minimap_shield");
-		fuelIcon =		App.TEXTURES.findRegion("minimap_fuel");
-		artifactIcon = 	App.TEXTURES.findRegion("minimap_artifact");
 	}
 
 	public void requestChunks(List<Point> chunkCoordinates) {
@@ -308,43 +294,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 	}
 
-	public void drawMiniMap(SpriteBatch miniMapBatch, float upRotation) {
 
-		for (Collectible c : currentVisibleCollectibles) {
-			TextureRegion textureRegion = null;
-			if (c.getType() == CollisionTypes.FUEL) {
-				textureRegion = fuelIcon;
-			}
-			if (c.getType() == CollisionTypes.SHIELD) {
-				textureRegion = shieldIcon;
-			}
-			if (textureRegion != null) {
-				Vector3 position = c.getPosition();
-				drawMiniMapIcon(miniMapBatch, textureRegion, position, upRotation);
-			}
-		}
-
-		for(PointWithId p : planetConfig.artifacts) {
-			tmpVec5.set(
-					PlanetPart.getTileGraphicX(p.x),
-					PlanetPart.getTileGraphicY(p.y), 0);
-
-			drawMiniMapIcon(miniMapBatch, artifactIcon, tmpVec5, upRotation);
-		}
-	}
-
-	private void drawMiniMapIcon(SpriteBatch batch, TextureRegion textureRegion, Vector3 position, float upRotation) {
-		batch.draw(textureRegion,
-				position.x - textureRegion.getRegionWidth() / 2f,
-				position.y - textureRegion.getRegionHeight() / 2f,
-				textureRegion.getRegionWidth() / 2f,
-				textureRegion.getRegionHeight() / 2f,
-				textureRegion.getRegionWidth(),
-				textureRegion.getRegionHeight(),
-				1.5f, 1.5f, upRotation);
-
-		//Styles.FONT_ENTSANS_SMALL_BORDER.draw(batch, "100", position.x, position.y);
-	}
 
 	public Collectible getCollectible(btCollisionObject collisionObject) {
 		for (Collectible c : currentVisibleCollectibles) {
@@ -405,4 +355,11 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		return collectedItemCache;
 	}
 
+	public PlanetConfig getPlanetConfig() {
+		return planetConfig;
+	}
+
+	public List<Collectible> getCurrentVisibleCollectibles() {
+		return currentVisibleCollectibles;
+	}
 }
