@@ -3,6 +3,7 @@ package com.nukethemoon.libgdxjam.screens.planet.physics;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
+import com.badlogic.gdx.physics.bullet.collision.ClosestRayResultCallback;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btBroadphaseInterface;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionConfiguration;
@@ -32,6 +33,10 @@ public class ControllerPhysic extends ContactListener {
 	private btBroadphaseInterface broadphase;
 	private btDynamicsWorld dynamicsWorld;
 	private DebugDrawer debugDrawer;
+
+	private static final Vector3 rayFrom = new Vector3();
+	private static final Vector3 rayTo = new Vector3();
+	private static final ClosestRayResultCallback callback = new ClosestRayResultCallback(Vector3.Zero, Vector3.Z);
 
 	private PhysicsListener listener;
 
@@ -124,12 +129,32 @@ public class ControllerPhysic extends ContactListener {
 		broadphase.dispose();
 		constraintSolver.dispose();
 		tickCallback.dispose();
+		callback.dispose();
 		super.dispose();
 	}
 
 	public interface PhysicsListener {
 		void onRocketCollided(CollisionTypes type, btCollisionObject collisionObject);
 		void onInternalTick();
+	}
+
+
+
+	public Vector3 calculateGroundIntersection(Vector3 position, Vector3 intersection) {
+		rayFrom.set(position);
+		rayTo.set(position.x, position.y, -500);
+		callback.setCollisionObject(null);
+		callback.setClosestHitFraction(1f);
+		callback.setRayFromWorld(rayFrom);
+		callback.setRayToWorld(rayTo);
+		callback.setCollisionFilterMask((short) -1);
+		callback.setCollisionFilterGroup((short) -1);
+		dynamicsWorld.rayTest(rayFrom, rayTo, callback);
+		if (callback.hasHit()) {
+			callback.getHitPointWorld(intersection);
+			return intersection;
+		}
+		return null;
 	}
 
 	public static class TickCallback extends InternalTickCallback {

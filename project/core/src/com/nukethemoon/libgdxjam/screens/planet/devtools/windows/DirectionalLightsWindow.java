@@ -29,13 +29,13 @@ public class DirectionalLightsWindow extends ClosableWindow {
 		add(saveButton);
 	}
 
-	public void load(PlanetConfig pPlanetConfig) {
+	public void load(final PlanetConfig pPlanetConfig) {
 		this.planetConfig = pPlanetConfig;
 		directionalLightsForm.load(pPlanetConfig);
 		saveButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				DevelopmentWindow.savePlanetConfig(planetConfig);
+				PlanetConfig.savePlanetConfig(pPlanetConfig);
 			}
 		});
 		pack();

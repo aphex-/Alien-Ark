@@ -27,7 +27,7 @@ public class Rocket extends GameObject implements Disposable {
 
 
 	private static final float THIRD_PERSON_OFFSET_Z = 6;
-	private static final Vector3 START_POSITION = new Vector3(0, 50, 30);
+	private static final Vector3 START_POSITION = new Vector3(0, 0, 30);
 	private static final Vector3 LAUNCH_IMPULSE = new Vector3(0, 0, 55);
 	private static final int LAUNCH_INDESTRUCTIBLE_TICKS = 30;
 	private static final float FUEL_CONSUMPTION = 0.1f;
@@ -414,5 +414,9 @@ public class Rocket extends GameObject implements Disposable {
 			transform.idt();
 			transform.trn(worldTrans.getTranslation(tmpVector));
 		}
+	}
+
+	public float getGroundZRotation() {
+		return zRotation;
 	}
 }

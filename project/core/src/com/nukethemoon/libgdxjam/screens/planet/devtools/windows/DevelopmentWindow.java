@@ -79,19 +79,5 @@ public class DevelopmentWindow extends ClosableWindow {
 		pack();
 	}
 
-	public static void savePlanetConfig(PlanetConfig planetConfig) {
-		/*planetConfig.serializedMaterials.clear();
-		for (Map.Entry<String, Material> entity : planetConfig.materials.entrySet()) {
-			planetConfig.serializedMaterials.put(entity.getKey(), new GsonMaterial(entity.getValue()));
-		}
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		String str = gson.toJson(planetConfig);
-
-
-
-		FileHandle fileHandle = new FileHandle(
-				"entities/planets/"+ planetConfig.id +"/sceneConfig.json");
-		fileHandle.writeString(str, false);*/
-	}
 }

@@ -17,23 +17,24 @@ public class Models {
 	public static Model SHIELD;
 	public static btCollisionShape SHIELD_SHAPE;
 
-	public static Model ARTIFACT;
+	public static Model ARTIFACT_E;
 	public static btCollisionShape ARTIFACT_SHAPE;
 
 	public static void init() {
 		ModelLoader loader = new ObjLoader();
 		BoundingBox boundingBox = new BoundingBox();
+		ObjLoader.ObjLoaderParameters param = new ObjLoader.ObjLoaderParameters(true);
 
-		FUEL = loader.loadModel(Gdx.files.internal("models/fuel.obj"));
+		FUEL = loader.loadModel(Gdx.files.internal("models/fuel.obj"), param);
 		FUEL.calculateBoundingBox(boundingBox);
 		FUEL_SHAPE = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.65f));
 
-		SHIELD = loader.loadModel(Gdx.files.internal("models/shield.obj"));
+		SHIELD = loader.loadModel(Gdx.files.internal("models/shield.obj"), param);
 		SHIELD.calculateBoundingBox(boundingBox);
 		SHIELD_SHAPE = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.65f));
 
-		ARTIFACT = loader.loadModel(Gdx.files.internal("models/artifact.obj"));
-		ARTIFACT.calculateBoundingBox(boundingBox);
+		ARTIFACT_E = loader.loadModel(Gdx.files.internal("models/artifact_e.obj"), param);
+		ARTIFACT_E.calculateBoundingBox(boundingBox);
 		ARTIFACT_SHAPE = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.65f));
 	}
 
@@ -42,7 +43,7 @@ public class Models {
 		FUEL_SHAPE.dispose();
 		SHIELD.dispose();
 		SHIELD_SHAPE.dispose();
-		ARTIFACT.dispose();
+		ARTIFACT_E.dispose();
 		ARTIFACT_SHAPE.dispose();
 	}
 }

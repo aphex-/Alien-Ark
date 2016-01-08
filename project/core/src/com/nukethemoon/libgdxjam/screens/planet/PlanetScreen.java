@@ -10,7 +10,10 @@ import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -24,6 +27,7 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BufferedParticleBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -59,10 +63,14 @@ import java.awt.*;
 public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener, RocketListener, ControllerPhysic.PhysicsListener  {
 
 
+	private static final int MINI_MAP_SIZE = 250;
 	private ModelInstance environmentSphere;
 	private ModelBatch modelBatch;
 	private Environment environment;
+
 	private PerspectiveCamera camera;
+	private OrthographicCamera minimapCamera;
+
 	private ParticleSystem particleSystem;
 	private BufferedParticleBatch particleSpriteBatch;
 
@@ -72,6 +80,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private PositionTable positionTable;
 
 	private final ShapeRenderer shapeRenderer;
+	private SpriteBatch minimapBatch;
+
 	private final InputMultiplexer multiplexer;
 	private final Skin uiSkin;
 	private final int planetIndex;
@@ -93,6 +103,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public static Gson gson;
 	private AssetManager assetManager;
 	private Model sphereModel;
+
+	private TextureRegion rocketArrow;
 
 	private static String[] KNOWN_PLANETS = new String[] {
 		"planet01",
@@ -120,10 +132,15 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		shapeRenderer = new ShapeRenderer();
 		shapeRenderer.setAutoShapeType(true);
+		minimapBatch = new SpriteBatch();
 
 		camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera.near = 1f;
 		camera.far = 30000f;
+
+		minimapCamera = new OrthographicCamera(MINI_MAP_SIZE, MINI_MAP_SIZE);
+		minimapCamera.near = 1f;
+		minimapCamera.far = 300f;
 
 		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/" + KNOWN_PLANETS[planetIndex] + "/sceneConfig.json");
 		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
@@ -140,6 +157,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		freeCameraInput.setEnabled(false);
 		multiplexer.addProcessor(freeCameraInput);
 
+
+		rocketArrow = App.TEXTURES.findRegion("rocket_arrow");
 
 		loadSphere(planetConfig.id);
 		onReloadScene(planetConfig);
@@ -284,7 +303,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		modelBatch.begin(camera);
 		rocket.drawModel(modelBatch, environment, effectThrust, effectExplosion);
-		planetController.render(modelBatch, environment);
+		planetController.render(modelBatch, environment, false);
 
 		environmentSphere.transform.idt();
 		environmentSphere.transform.setToTranslation(rocket.getPosition().x, rocket.getPosition().y, 0);
@@ -311,13 +330,52 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		physicsController.debugRender(camera);
 
+
+		/*Vector3 vector3 = physicsController.calculateGroundIntersection(rocket.getPosition(), intersectionTmp);
+		shapeRenderer.begin();
+		if (vector3 != null) {
+			shapeRenderer.line(vector3, rocket.getPosition());
+		}
+		shapeRenderer.end();*/
+
+
 		if (!gameOver) {
 			physicsController.stepSimulation(delta);
 		}
 
-
 		ani.update();
+
+		drawMiniMap();
 	}
+
+
+	private void drawMiniMap() {
+		Gdx.gl.glViewport(Gdx.graphics.getWidth() - MINI_MAP_SIZE, 0, MINI_MAP_SIZE, MINI_MAP_SIZE);
+		minimapCamera.up.set(rocket.getDirection());
+		minimapCamera.position.set(rocket.getPosition());
+		minimapCamera.position.z = 100;
+		minimapCamera.update();
+
+		modelBatch.begin(minimapCamera);
+		planetController.render(modelBatch, null, true);
+		modelBatch.end();
+
+		minimapBatch.setProjectionMatrix(minimapCamera.combined);
+		minimapBatch.begin();
+		minimapBatch.draw(rocketArrow,
+				rocket.getPosition().x - rocketArrow.getRegionWidth() / 2f,
+				rocket.getPosition().y - rocketArrow.getRegionHeight() / 2f,
+				rocketArrow.getRegionWidth() / 2f,
+				rocketArrow.getRegionHeight() / 2f,
+				rocketArrow.getRegionWidth(),
+				rocketArrow.getRegionHeight(),
+				1, 1, rocket.getGroundZRotation());
+
+		planetController.drawMiniMap(minimapBatch, rocket.getGroundZRotation());
+
+		minimapBatch.end();
+	}
+
 
 	private void showToast(String text) {
 		final ToastTable t = new ToastTable(uiSkin);
@@ -507,6 +565,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		App.audioController.playSound("bonus.mp3");
 		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
 	}
+
+	Vector3 intersectionTmp = new Vector3();
 
 	@Override
 	public void onRocketChangedTilePosition() {
