@@ -19,6 +19,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.nukethemoon.libgdxjam.screens.planet.CollectedItemCache;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
+import com.nukethemoon.libgdxjam.screens.planet.PointWithId;
 import com.nukethemoon.libgdxjam.screens.planet.helper.StandardMotionState;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.tools.opusproto.interpreter.TypeInterpreter;
@@ -66,6 +67,8 @@ public class PlanetPart extends GameObject {
 	private List<MeshBuilder> meshBuilders = new ArrayList<MeshBuilder>();
 	private List<Collectible> collectibles = new ArrayList<Collectible>();
 
+	private List<ArtifactObject> artifactObjects = new ArrayList<ArtifactObject>();
+
 	private List<btCollisionShape> shapes = new ArrayList<btCollisionShape>();
 	private static SimplexNoise simplexNoise = new SimplexNoise();
 
@@ -96,14 +99,38 @@ public class PlanetPart extends GameObject {
 
 		initPhysics();
 		initCollectibles(chunk, collectedItemCache, seed);
+		initArtifacts(chunk);
+	}
+
+	private void initArtifacts(Chunk chunk) {
+		for (PointWithId p : planetConfig.artifacts) {
+			if (isTileOnPlanetPart(p.x, p.y, chunk)) {
+				artifactObjects.add(new ArtifactObject(p));
+			}
+		}
+	}
+
+	private boolean isTileOnPlanetPart(int tileX, int tileY, Chunk chunk) {
+		return getChunkX(chunk) <= tileX
+				&& getChunkY(chunk) <= tileY
+				&& tileX < getChunkX(chunk) + (chunk.getWidth() - 2)
+				&& tileY < getChunkY(chunk) + (chunk.getHeight() - 2);
+	}
+
+	private int getChunkX(Chunk chunk) {
+		return chunk.getChunkX() * (chunk.getWidth() - 1);// -1 because of one overlapping tile
+	}
+
+	private int getChunkY(Chunk chunk) {
+		return chunk.getChunkY() * (chunk.getHeight() - 1);// -1 because of one overlapping tile
 	}
 
 	private float getGraphicOffsetX(Chunk chunk) {
-		return chunk.getChunkX() * (chunk.getWidth() - 1) * tileSize; // -1 because of one overlapping tile
+		return getChunkX(chunk) * tileSize;
 	}
 
 	private float getGraphicOffsetY(Chunk chunk) {
-		return chunk.getChunkY() * (chunk.getHeight() - 1) * tileSize; // -1 because of one overlapping tile
+		return getChunkY(chunk) * tileSize;
 	}
 
 	/**
@@ -195,6 +222,10 @@ public class PlanetPart extends GameObject {
 		float graphicY = getGraphicOffsetY(chunk) + (randomTileY * tileSize);
 		Vector3 position = new Vector3(graphicX, graphicY, graphicZ);
 		collectibles.add(new Collectible(type, position, new Point(chunk.getChunkX(), chunk.getChunkY())));
+	}
+
+	public List<ArtifactObject> getArtifactObjects() {
+		return artifactObjects;
 	}
 
 	private void createLandscapePart(Chunk chunk) {

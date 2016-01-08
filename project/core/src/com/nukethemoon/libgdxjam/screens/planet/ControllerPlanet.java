@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.Log;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPart;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
@@ -35,8 +36,11 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private ControllerPhysic controllerPhysic;
 	private Ani ani;
 
-	private List<Point> currentVisibleChunkPositions = new ArrayList<Point>();
+	private List<Point> currentVisiblePlanetParts = new ArrayList<Point>();
+
 	private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
+	private List<ArtifactObject> currentVisibleArtifacts = new ArrayList<ArtifactObject>();
+
 	private Map<Point, PlanetPart> planetPartBuffer = new HashMap<Point, PlanetPart>();
 	private final TypeInterpreter typeInterpreter;
 
@@ -137,7 +141,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		int chunkBufferCenterX = getChunkX(requestCenterTileX);
 		int chunkBufferCenterY = getChunkY(requestCenterTileY);
 
-		currentVisibleChunkPositions.clear();
+		currentVisiblePlanetParts.clear();
 
 		// find chunks that are in the view radius
 		for (int chunkIndexX = 0; chunkIndexX < chunkBufferSize; chunkIndexX++) {
@@ -166,7 +170,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 					isInRadius = true;
 				}
 				if (isInRadius) {
-					currentVisibleChunkPositions.add(new Point(currentChunkX, currentChunkY));
+					currentVisiblePlanetParts.add(new Point(currentChunkX, currentChunkY));
 				}
 			}
 		}
@@ -177,7 +181,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		// remove non visible chunks
 		for (Map.Entry<Point, PlanetPart> entry : planetPartBuffer.entrySet()) {
-			if (!currentVisibleChunkPositions.contains(entry.getKey())) {
+			if (!currentVisiblePlanetParts.contains(entry.getKey())) {
 				PlanetPart c = entry.getValue();
 				for (btRigidBody body : c.rigidBodyList) {
 					controllerPhysic.removeRigidBody(body);
@@ -193,7 +197,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 
 		// add chunks that are not already loaded
-		for (Point p : currentVisibleChunkPositions) {
+		for (Point p : currentVisiblePlanetParts) {
 			if (planetPartBuffer.get(p) == null) {
 				tmpRequestList.add(p);
 			}
@@ -248,12 +252,15 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 				addCollectible(c);
 			}
 
+			for (ArtifactObject o : planetPart.getArtifactObjects()) {
+				addArtifact(o);
+			}
+
 			planetPartBuffer.put(point, planetPart);
 		} else {
 			Log.d(getClass(), "Created a chunk that already exists. x " + x + " y " + y);
 		}
 	}
-
 
 	public void render(ModelBatch batch, Environment environment) {
 		for (Map.Entry<Point, PlanetPart> entry : planetPartBuffer.entrySet()) {
@@ -264,8 +271,19 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		for (Collectible c : currentVisibleCollectibles) {
 			batch.render(c.getModelInstance(), environment);
 		}
+
+		for (ArtifactObject o : currentVisibleArtifacts) {
+			batch.render(o.getModelInstance(), environment);
+			tmpVec3.set(o.getDefinition().x * TILE_GRAPHIC_SIZE,
+					o.getDefinition().y * TILE_GRAPHIC_SIZE, 100);
+			controllerPhysic.calculateGroundIntersection(tmpVec3, tmpVec4);
+			o.adjust(tmpVec4.z);
+		}
+
 	}
 
+	private Vector3 tmpVec3 = new Vector3();
+	private Vector3 tmpVec4 = new Vector3();
 
 	public Collectible getCollectible(btCollisionObject collisionObject) {
 		for (Collectible c : currentVisibleCollectibles) {
@@ -282,11 +300,20 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		ani.add(c.createScaleAnimation());
 	}
 
+	private void addArtifact(ArtifactObject o) {
+		currentVisibleArtifacts.add(o);
+	}
+
 	public void removeCollectible(Collectible c) {
 		currentVisibleCollectibles.remove(c);
 		controllerPhysic.removeCollisionObject(c.getCollisionObject());
 		c.dispose(ani);
 		planetPartBuffer.get(c.getPlanetPartPosition()).getCollectibles().remove(c);
+	}
+
+	public void removeArtifact(ArtifactObject o) {
+		currentVisibleArtifacts.remove(o);
+		o.dispose();
 	}
 
 	public void dispose() {
