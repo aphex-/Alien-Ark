@@ -52,7 +52,7 @@ public class SolarSystem implements Disposable {
 
 	}
 
-	private Vector2 getPosition(int radius, float radians) {
+	public Vector2 getPosition(int radius, float radians) {
 		int x = (int) (Math.cos(radians) * radius);
 		int y = (int) (Math.sin(radians) * radius);
 		return new Vector2(x, y);
@@ -67,6 +67,11 @@ public class SolarSystem implements Disposable {
 	public Vector2 getPlanetPosition(int index) {
 		return getPosition(planets[index].radius, planets[index].radians);
 	}
+
+	public Vector2 getPlanetLightPosition(int index, int offset) {
+		return getPosition(planets[index].radius - offset, planets[index].radians);
+	}
+
 
 	@Override
 	public void dispose() {
