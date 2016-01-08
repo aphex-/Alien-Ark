@@ -2,6 +2,7 @@ package com.nukethemoon.libgdxjam.ui;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.tools.ani.AnimationFinishedListener;
 import com.nukethemoon.tools.ani.BaseAnimation;
 
@@ -11,7 +12,7 @@ public class ToastTable extends CenteredTable {
 
 	public ToastTable(Skin uiSkin) {
 		setSkin(uiSkin);
-		label = new Label("", uiSkin);
+		label = new Label("", Styles.LABEL_02);
 		add(label);
 		pack();
 	}

@@ -11,6 +11,7 @@ import com.nukethemoon.libgdxjam.input.InputController;
 import com.nukethemoon.libgdxjam.screens.MenuScreen;
 import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.solar.SolarScreen;
 
 import java.util.HashMap;
@@ -26,11 +27,13 @@ public class App extends Game {
 	private static Map<Class<? extends Screen>, ? extends Screen> SCREENS = new HashMap<Class<? extends Screen>, Screen>();
 	public static AudioController audioController;
 
+	public static SolarSystem solarSystem = new SolarSystem();
 
 	@Override
 	public void create () {
 		app = this;
 		Bullet.init();
+		Models.init();
 		TEXTURES = new TextureAtlas("textures/game.atlas");
 		Styles.init(TEXTURES);
 		MULTIPLEXER = new InputMultiplexer();
@@ -38,8 +41,8 @@ public class App extends Game {
 		Gdx.input.setInputProcessor(MULTIPLEXER);
 
 		audioController = new AudioController();
-
-
+		solarSystem = new SolarSystem();
+		solarSystem.calculatePlanetPositions();
 
 
 		// instance space ship
@@ -87,5 +90,11 @@ public class App extends Game {
 
 	public static void onGameOver() {
 		openSolarScreen();
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		Models.dispose();
 	}
 }

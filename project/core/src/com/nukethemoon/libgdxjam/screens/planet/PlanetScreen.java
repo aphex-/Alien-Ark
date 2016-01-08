@@ -24,6 +24,8 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BufferedParticleBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -33,23 +35,29 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.Config;
-import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWindow;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.helper.SphereTextureProvider;
+import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
+import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.libgdxjam.ui.GameOverTable;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
 import com.nukethemoon.libgdxjam.ui.ToastTable;
 import com.nukethemoon.libgdxjam.ui.animation.FadeTableAnimation;
+import com.nukethemoon.libgdxjam.ui.hud.PositionTable;
 import com.nukethemoon.tools.ani.Ani;
 import com.nukethemoon.tools.ani.AnimationFinishedListener;
 import com.nukethemoon.tools.ani.BaseAnimation;
 
-public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener, RocketListener {
+import java.awt.*;
+
+public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener, RocketListener, ControllerPhysic.PhysicsListener  {
 
 
 	private ModelInstance environmentSphere;
@@ -62,14 +70,15 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private Rocket rocket;
 
 	private RocketMainTable mainUI;
+	private PositionTable positionTable;
 
 	private final ShapeRenderer shapeRenderer;
 	private final InputMultiplexer multiplexer;
 	private final Skin uiSkin;
-	private final int worldIndex;
+	private final int planetIndex;
 
-	private ControllerPlanet worldController;
-	private ControllerPhysic collisionController;
+	private ControllerPlanet planetController;
+	private ControllerPhysic physicsController;
 
 	private Stage stage;
 
@@ -86,12 +95,21 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private AssetManager assetManager;
 	private Model sphereModel;
 
+	private static String[] KNOWN_PLANETS = new String[] {
+		"planet01",
+		"planet02"
+	};
+
 	private Ani ani;
 
-	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pWorldIndex) {
+	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
+		if (pPlanetIndex > 0) {
+			pPlanetIndex = 0;
+		}
+
 		ani = new Ani();
 		uiSkin = pUISkin;
-		worldIndex = pWorldIndex;
+		planetIndex = pPlanetIndex;
 		multiplexer = pMultiplexer;
 
 		rocket = new Rocket();
@@ -108,15 +126,15 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		camera.near = 1f;
 		camera.far = 30000f;
 
-		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/planet01/sceneConfig.json");
+		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/" + KNOWN_PLANETS[planetIndex] + "/sceneConfig.json");
 		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
 		planetConfig.deserialize();
 
-		collisionController = new ControllerPhysic(planetConfig.gravity, rocket);
-		worldController = new ControllerPlanet(worldIndex, planetConfig, collisionController);
-		collisionController.addRigidBody(
+		physicsController = new ControllerPhysic(planetConfig.gravity, this);
+		planetController = new ControllerPlanet(KNOWN_PLANETS[planetIndex], planetConfig, physicsController, ani);
+		physicsController.addRigidBody(
 				rocket.rigidBodyList.get(0),
-				CollisionTypes.ROCKET);
+				com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes.ROCKET);
 
 		multiplexer.addProcessor(this);
 		freeCameraInput = new FreeCameraInput(camera);
@@ -199,6 +217,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
 		stage.addActor(mainUI);
 
+		positionTable = new PositionTable(uiSkin);
+		stage.addActor(positionTable);
+
 		final TextButton leaveButton = new TextButton("Leave Planet", uiSkin);
 		leaveButton.addListener(new ClickListener() {
 			@Override
@@ -230,10 +251,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-
-		if (!pause) {
-			worldController.updateRequestCenter(rocket.getPosition().x, rocket.getPosition().y);
-		}
 
 		if (!freeCameraInput.isEnabled()) {
 			if (!pause) {
@@ -268,7 +285,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		modelBatch.begin(camera);
 		rocket.drawModel(modelBatch, environment, effectThrust, effectExplosion);
-		worldController.render(modelBatch, environment);
+		planetController.render(modelBatch, environment);
 
 		environmentSphere.transform.idt();
 		environmentSphere.transform.setToTranslation(rocket.getPosition().x, rocket.getPosition().y, 0);
@@ -293,12 +310,20 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			stage.draw();
 		}
 
-		collisionController.debugRender(camera);
+		physicsController.debugRender(camera);
+
+
+		/*Vector3 vector3 = physicsController.calculateGroundIntersection(rocket.getPosition(), intersectionTmp);
+		shapeRenderer.begin();
+		if (vector3 != null) {
+			shapeRenderer.line(vector3, rocket.getPosition());
+		}
+		shapeRenderer.end();*/
+
 
 		if (!gameOver) {
-			collisionController.stepSimulation(delta);
+			physicsController.stepSimulation(delta);
 		}
-
 
 		ani.update();
 	}
@@ -355,7 +380,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		particleSystem.removeAll();
 		particleSystem.getBatches().clear();
 
-		worldController.dispose();
+		planetController.dispose();
 		modelBatch.dispose();
 		rocket.dispose();
 		assetManager.dispose();
@@ -476,5 +501,51 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		effectExplosion.start();
 		particleSystem.add(effectExplosion);
 		onGameOver();
+	}
+
+	@Override
+	public void onRocketFuelBonus() {
+		showToast("Fuel +" + Balancing.FUEL_BONUS);
+		App.audioController.playSound("bonus.mp3");
+		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
+	}
+
+	@Override
+	public void onRocketShieldBonus() {
+		showToast("Shield +" + Balancing.SHIELD_BONUS);
+		App.audioController.playSound("bonus.mp3");
+		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
+	}
+
+	Vector3 intersectionTmp = new Vector3();
+
+	@Override
+	public void onRocketChangedTilePosition() {
+		Point tilePosition = rocket.getTilePosition();
+		positionTable.setTilePosition(tilePosition.x, tilePosition.y);
+		if (!pause) {
+			planetController.updateRequestCenter(rocket.getPosition(), rocket.getDirection());
+		}
+	}
+
+	// === physic events ===
+
+	@Override
+	public void onRocketCollided(CollisionTypes type, btCollisionObject collisionObject) {
+		rocket.handleCollision(type);
+
+		if (type == CollisionTypes.FUEL || type == CollisionTypes.SHIELD) {
+			Collectible collectible = planetController.getCollectible(collisionObject);
+			planetController.removeCollectible(collectible);
+			planetController.getCollectedItemCache().registerCollected(
+					collectible.getPlanetPartPosition().x,
+					collectible.getPlanetPartPosition().y,
+					collectible.getType());
+		}
+	}
+
+	@Override
+	public void onInternalTick() {
+		rocket.handlePhysicTick();
 	}
 }

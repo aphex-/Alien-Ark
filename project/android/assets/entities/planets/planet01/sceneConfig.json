@@ -1,6 +1,12 @@
 {
   "id": "planet01",
-  "gravity" : -25,
+  "gravity": -25.0,
+  "fuelChance": 0.08,
+  "fuelChanceGain": -1.0E-4,
+  "fuelChanceMin": 0.008,
+  "shieldChance": 0.05,
+  "shieldChanceGain": -1.0E-4,
+  "shieldChanceMin": 0.008,
   "environmentColorAttributes": [
     {
       "color": {
@@ -54,11 +60,18 @@
       }
     }
   ],
+  "artifacts": [
+    {
+      "x": 110,
+      "y": 80,
+      "id": "myArtifactId"
+    }
+  ],
   "layerConfigs": [
     {
-      "collisionType" : "water",
-      "name" : "Water",
-      "serializedMaterial" : {
+      "name": "Water",
+      "collisionType": "water",
+      "serializedMaterial": {
         "id": "mtl5",
         "colorAttributes": [
           {
@@ -94,11 +107,10 @@
         ]
       }
     },
-
     {
-      "collisionType" : "ground",
-      "name" : "Beach",
-      "serializedMaterial" : {
+      "name": "Beach",
+      "collisionType": "ground",
+      "serializedMaterial": {
         "id": "mtl9502",
         "colorAttributes": [
           {
@@ -114,11 +126,10 @@
         ]
       }
     },
-
     {
-      "collisionType" : "ground",
-      "name" : "Grass",
-      "serializedMaterial" : {
+      "name": "Grass",
+      "collisionType": "ground",
+      "serializedMaterial": {
         "id": "mtl9532",
         "colorAttributes": [
           {

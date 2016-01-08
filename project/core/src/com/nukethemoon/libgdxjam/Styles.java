@@ -22,15 +22,24 @@ public class Styles {
 	public static Color COLOR_01 = new Color(28f / 255f, 25f / 255f, 18f / 255f, 1);
 
 	public static BitmapFont FONT_DOSIS_SMALL;
+	public static BitmapFont FONT_DOSIS_MEDIUM_BORDER;
+
+	public static BitmapFont FONT_ENTSANS_SMALL_BORDER;
 
 	public static Label.LabelStyle LABEL_01;
+	public static Label.LabelStyle LABEL_02;
+
+	public static Label.LabelStyle LABEL_HUD_NUMBERS;
 
 	public static Skin UI_SKIN;
 
 	public static void init(TextureAtlas atlas) {
 		UI_SKIN = new Skin();
 
-		FONT_DOSIS_SMALL = createFont("fonts/Dosis-Medium.ttf", 20, Color.WHITE);
+		FONT_DOSIS_SMALL = 			createFont("fonts/Dosis-Medium.ttf", 	20, Color.WHITE, null, 			0);
+		FONT_DOSIS_MEDIUM_BORDER = 	createFont("fonts/Dosis-Medium.ttf", 	26, Color.WHITE, Color.BLACK, 	2);
+		FONT_ENTSANS_SMALL_BORDER = createFont("fonts/entsans.ttf", 		16, Color.WHITE, Color.BLACK, 	1);
+
 		loadDefaultSkin(FONT_DOSIS_SMALL);
 
 
@@ -48,13 +57,23 @@ public class Styles {
 		LABEL_01 = new Label.LabelStyle(standardLabelStyle);
 		LABEL_01.font = FONT_DOSIS_SMALL;
 
+		LABEL_02 = new Label.LabelStyle(standardLabelStyle);
+		LABEL_02.font = FONT_DOSIS_MEDIUM_BORDER;
+
+		LABEL_HUD_NUMBERS = new Label.LabelStyle(standardLabelStyle);
+		LABEL_HUD_NUMBERS.font = FONT_ENTSANS_SMALL_BORDER;
+
 	}
 
-	private static BitmapFont createFont(String path, int size, Color color) {
+	private static BitmapFont createFont(String path, int size, Color color, Color borderColor, float borderWidth) {
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(path));
 		FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 		parameter.size = size;
 		parameter.color = color;
+		if (borderColor != null) {
+			parameter.borderColor = borderColor;
+			parameter.borderWidth = borderWidth;
+		}
 		BitmapFont font = generator.generateFont(parameter);
 		generator.dispose();
 		return font;

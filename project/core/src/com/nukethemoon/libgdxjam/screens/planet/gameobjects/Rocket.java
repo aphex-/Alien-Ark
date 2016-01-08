@@ -14,33 +14,40 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 import com.badlogic.gdx.utils.Disposable;
+import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
-import com.nukethemoon.libgdxjam.screens.planet.CollisionTypes;
+import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
+import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
+
+import java.awt.*;
 
 public class Rocket extends GameObject implements Disposable {
 
 
 	private static final float THIRD_PERSON_OFFSET_Z = 6;
-	private static final Vector3 START_POSITION = new Vector3(0, 50, 30);
-
+	private static final Vector3 START_POSITION = new Vector3(0, 0, 30);
 	private static final Vector3 LAUNCH_IMPULSE = new Vector3(0, 0, 55);
-	private static final int LAUNCH_INDESTRUCTIBLE_TICKS = 100;
+	private static final int LAUNCH_INDESTRUCTIBLE_TICKS = 30;
+	private static final float FUEL_CONSUMPTION = 0.1f;
+
 	private long ticksSinceLastLaunch = 0;
 
 	private final ModelInstance modelInstance;
 	private final Model model;
 
-	private float speed = 100f; // min 20f max 100f
-	private float maneuverability = 3f; // min 0.75f max 3.0f
-	private float friction = 10f; // min 0.2f max 3.0f;
-	private int shield = 100;
+	private float speed = 30f; // min 20f max 100f
+	private float maneuverability = 2.75f; // min 0.75f max 3.0f
+	private float friction = 0.2f; // min 0.2f max 3.0f;
+
 	private int maxShield = 1000;
 
 	float drill = 0;
 	float xRotation = 0;
 	float zRotation = 0;
 
+	private Point lastTilePosition = null;
 	private float thirdPersonOffsetY = 10;
 
 	private Vector3 lastCamPosition = new Vector3();
@@ -61,7 +68,7 @@ public class Rocket extends GameObject implements Disposable {
 
 	private float tickFuelCount = 1;
 
-	private float fuelConsuption = SpaceShipProperties.properties.computeFuelConsumption();
+
 	private int maxFuel = SpaceShipProperties.properties.computeMaxFuel();
 
 
@@ -82,10 +89,14 @@ public class Rocket extends GameObject implements Disposable {
 		modelInstance.transform.setToTranslation(START_POSITION);
 
 		float mass = 1;
-		addRigidBody(shape, mass, friction, CollisionTypes.ROCKET.mask, modelInstance.transform);
-		rigidBodyList.get(0).setActivationState(4); // disable deactivation
+		addRigidBody(shape, mass, friction, CollisionTypes.ROCKET.mask,
+				new RocketMotionState(modelInstance.transform));
 
+		rigidBodyList.get(0).setActivationState(4); // disable deactivation
 		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(speed));
+
+		SpaceShipProperties.properties.currentFuel = SpaceShipProperties.INITIAL_MAX_FUEL;
+		SpaceShipProperties.properties.currentShield = SpaceShipProperties.INITIAL_MAX_SHIELD;
 	}
 
 	public void setListener(RocketListener listener) {
@@ -134,6 +145,31 @@ public class Rocket extends GameObject implements Disposable {
 			}
 			moving = false;
 		}
+
+		if (lastTilePosition == null) {
+			lastTilePosition = new Point();
+			updateTilePosition();
+			listener.onRocketChangedTilePosition();
+		} else {
+			int lastX = lastTilePosition.x;
+			int lastY = lastTilePosition.y;
+			updateTilePosition();
+			if (lastX != lastTilePosition.x || lastY != lastTilePosition.y) {
+				listener.onRocketChangedTilePosition();
+			}
+		}
+	}
+
+	public Point getTilePosition() {
+		updateTilePosition();
+		return lastTilePosition;
+	}
+
+	private void updateTilePosition() {
+		Vector3 position = getPosition();
+		int x = (int) (Math.floor(position.x) / ControllerPlanet.TILE_GRAPHIC_SIZE);
+		int y = (int) (Math.floor(position.y) / ControllerPlanet.TILE_GRAPHIC_SIZE);
+		lastTilePosition.setLocation(x, y);
 	}
 
 	private void thrust() {
@@ -262,7 +298,7 @@ public class Rocket extends GameObject implements Disposable {
 		//model.dispose();
 	}
 
-	public void onBulletTick() {
+	public void handlePhysicTick() {
 		if (isOutOfFuel()) {
 			if (thrusting) {
 				onThrustDisabled();
@@ -274,7 +310,7 @@ public class Rocket extends GameObject implements Disposable {
 		}
 
 		if (thrusting) {
-			tickFuelCount = tickFuelCount - fuelConsuption;
+			tickFuelCount = tickFuelCount - FUEL_CONSUMPTION;
 			if (tickFuelCount <= 0) {
 				tickFuelCount = 1;
 				SpaceShipProperties.properties.currentFuel--;
@@ -295,28 +331,38 @@ public class Rocket extends GameObject implements Disposable {
 
 	private void dealDamage() {
 		if (ticksSinceLastLaunch > LAUNCH_INDESTRUCTIBLE_TICKS) {
-			shield--;
+			SpaceShipProperties.properties.currentShield--;
 			if (listener != null) {
 				listener.onRocketDamage();
 			}
 		}
-		if (shield == 0) {
+		if (SpaceShipProperties.properties.currentShield == 0) {
 			onExplode();
 		}
 	}
 
-	public void collidedWith(int userValue1) {
-		if (userValue1 == CollisionTypes.GROUND.mask && thrusting) {
+	public void handleCollision(CollisionTypes type) {
+		if (type == CollisionTypes.GROUND && thrusting) {
 			dealDamage();
 		}
 
-		if (userValue1 == CollisionTypes.WATER.mask) {
+		if (type == CollisionTypes.WATER) {
 			onExplode();
+		}
+
+		if (type == CollisionTypes.FUEL) {
+			SpaceShipProperties.properties.currentFuel = SpaceShipProperties.properties.currentFuel + Balancing.FUEL_BONUS;
+			listener.onRocketFuelBonus();
+		}
+
+		if (type == CollisionTypes.SHIELD) {
+			SpaceShipProperties.properties.currentShield = SpaceShipProperties.properties.currentShield + Balancing.SHIELD_BONUS;
+			listener.onRocketShieldBonus();
 		}
 	}
 
 	public int getShield() {
-		return shield;
+		return SpaceShipProperties.properties.getCurrentShield();
 	}
 
 	public int getMaxShield() {
@@ -341,16 +387,32 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
-
-	public void setFuelConsumption(float fuelConsumption) {
-		this.fuelConsuption = fuelConsumption;
-	}
-
 	public int getMaxFuel() {
 		return maxFuel;
 	}
 
 	public boolean isOutOfFuel() {
 		return SpaceShipProperties.properties.currentFuel <= 0;
+	}
+
+
+	static class RocketMotionState extends btMotionState {
+		private Matrix4 transform;
+
+		private Vector3 tmpVector = new Vector3();
+
+		public RocketMotionState(Matrix4 transform) {
+			this.transform = transform;
+		}
+		@Override
+		public void getWorldTransform (Matrix4 worldTrans) {
+			worldTrans.set(transform);
+		}
+		@Override
+		public void setWorldTransform (Matrix4 worldTrans) {
+			// ignore rotation
+			transform.idt();
+			transform.trn(worldTrans.getTranslation(tmpVector));
+		}
 	}
 }
