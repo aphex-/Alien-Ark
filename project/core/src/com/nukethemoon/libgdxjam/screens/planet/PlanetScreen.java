@@ -67,7 +67,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private static final int MINI_MAP_SIZE = 250;
 	private static final float MINI_ZOOM = 1.5f;
-	private final ShaderProgram shaderProgram;
+
 
 	private ModelInstance environmentSphere;
 	private ModelBatch modelBatch;
@@ -146,9 +146,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		modelBatch = new ModelBatch();
 		miniMapModelBatch = new ModelBatch();
 
-		shaderProgram = new ShaderProgram(
-				Gdx.files.internal("shaders/default.vertex.glsl"),
-				Gdx.files.internal("shaders/default.fragment.glsl"));
+
 
 		environment = new Environment();
 
