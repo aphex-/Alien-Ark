@@ -1,220 +1,184 @@
 package com.nukethemoon.libgdxjam.screens.ark;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Log;
-import com.nukethemoon.libgdxjam.game.Alien;
+import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.game.Artifact;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
-import com.nukethemoon.libgdxjam.input.SpriteDragAndDropProcessor;
+import com.nukethemoon.libgdxjam.game.artifacts.ValueArtifact;
+import com.nukethemoon.libgdxjam.ui.CenteredTable;
 
-import java.util.ArrayList;
 import java.util.List;
 
-//TODO slots for "inventory"/artifacts
-//TODO slots for 12 finished aliens
-//TODO slot occupied -> switch both artifacts
-//TODO center artifacts after lock-in
-public class ArkScreen implements Screen, SpriteDragAndDropProcessor.OnDroppedListener {
+public class ArkScreen implements Screen {
 
-	private Rectangle workbenchArea;
-	private WorkbenchSlot workbenchSpot1;
-	private WorkbenchSlot workbenchSpot2;
-	private WorkbenchSlot workbenchSpot3;
+	private WorkbenchSlot workbenchSlot1;
+	private WorkbenchSlot workbenchSlot2;
+	private WorkbenchSlot workbenchSlot3;
+
+	private Actor resultArea;
 
 	private SpriteBatch spriteBatch;
-	private ShapeRenderer workBenchRender;
-	private SpriteDragAndDropProcessor dragAndDropProcessor;
-	private InputProcessor bigRedButtonProcessor;
-	private InputMultiplexer multiplexer;
-	private Sprite bigRedButton;
 
-	private List<Sprite> artifactSprites = new ArrayList<Sprite>();
-	private List<Sprite> alienSprites = new ArrayList<Sprite>();
+	private Skin skin;
+	private InputMultiplexer multiplexer;
+	private Texture background;
+
+	private Stage stage;
+	private DragAndDrop dragAndDrop;
 
 	public ArkScreen(Skin uiSkin, InputMultiplexer multiplexer) {
+		skin = uiSkin;
 		this.multiplexer = multiplexer;
 
 		spriteBatch = new SpriteBatch();
-		dragAndDropProcessor = new SpriteDragAndDropProcessor(this);
-		dragAndDropProcessor.setAllMovableSprites(artifactSprites);
 
-		bigRedButtonProcessor = new InputAdapter(){
-			@Override
-			public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-				if(bigRedButton.getBoundingRectangle().contains(screenX, invertYAxis(screenY))){
-					createAlien();
-
-					return true;
-				}
-
-				return false;
-			}
-		};
-
-	}
-
-	private void createAlien() {
-		if(workbenchSpot1.isOccupied() && workbenchSpot2.isOccupied() && workbenchSpot3.isOccupied()){
-			Alien alien = Alien.createAlien(
-					workbenchSpot1.insertedArtifact,
-					workbenchSpot2.insertedArtifact,
-					workbenchSpot3.insertedArtifact);
-
-			SpaceShipProperties.properties.getAliens().add(alien);
-			SpaceShipProperties.properties.getArtifacts().remove(workbenchSpot1.insertedArtifact);
-			SpaceShipProperties.properties.getArtifacts().remove(workbenchSpot2.insertedArtifact);
-			SpaceShipProperties.properties.getArtifacts().remove(workbenchSpot3.insertedArtifact);
-
-			updateArtifacts();
-			updateAliens();
-		}
+		stage = new Stage();
+		dragAndDrop = new DragAndDrop();
 	}
 
 	@Override
 	public void show() {
-		Rectangle rect1 = new Rectangle(0, 0, 135, 135);
-		rect1.setX(Gdx.graphics.getWidth() / 2 - 232);
-		rect1.setY(Gdx.graphics.getHeight() / 3);
+		workbenchSlot1 = new WorkbenchSlot();
+		workbenchSlot1.setBounds(400, 435, 75, 75);
 
-		workbenchSpot1 = new WorkbenchSlot(rect1);
 
-		Rectangle rect2 = new Rectangle(0, 0, 135, 135);
-		rect2.setX((rect1.x + rect1.width) + 10);
-		rect2.setY(Gdx.graphics.getHeight() / 3);
-		workbenchSpot2 = new WorkbenchSlot(rect2);
+		workbenchSlot2 = new WorkbenchSlot();
+		workbenchSlot2.setBounds(527, 435, 75, 75);
 
-		Rectangle rect3 = new Rectangle(0, 0, 135, 135);
-		rect3.setX((rect2.x + rect2.width) + 10);
-		rect3.setY(Gdx.graphics.getHeight() / 3);
-		workbenchSpot3 = new WorkbenchSlot(rect3);
+		workbenchSlot3 = new WorkbenchSlot();
+		workbenchSlot3.setBounds(652, 435, 75, 75);
 
-		workbenchArea = new Rectangle(rect1.x - 20, rect1.y - 20, (rect3.x + rect3.width) - rect1.x + 40, rect1.height + 40);
+		resultArea = new Actor();
+		resultArea.setBounds(777, 435, 75, 75);
 
-		workBenchRender = new ShapeRenderer();
-		bigRedButton = new Sprite(App.TEXTURES.findRegion("button"));
+		background = new Texture("textures/background02.png");
 
-		bigRedButton.setX(rect3.x + rect3.width + 10);
-		bigRedButton.setY(Gdx.graphics.getHeight() / 3);
+		final Table artifactsTable = new Table();
+		artifactsTable.setWidth(245);
+		artifactsTable.pad(3);
+		artifactsTable.top();
+		final List<Artifact> artifacts = SpaceShipProperties.properties.getArtifacts();
+		for (int i = 0; i < artifacts.size(); ++i) {
+			final Artifact artifact = artifacts.get(i);
+			final Image img = new Image(artifact.getTexture());
 
-		updateArtifacts();
-		updateAliens();
+			artifactsTable.add(img).space(5).width(75).height(75);
 
-		multiplexer.addProcessor(dragAndDropProcessor);
-		multiplexer.addProcessor(bigRedButtonProcessor);
-	}
+			dragAndDrop.addSource(new DragAndDrop.Source(img) {
 
-	private void updateArtifacts() {
-		artifactSprites.clear();
-		List<Artifact> artifacts = SpaceShipProperties.properties.getArtifacts();
+				@Override
+				public DragAndDrop.Payload dragStart(InputEvent event, float x, float y, int pointer) {
 
-		int yOffset = Gdx.graphics.getHeight();
-		for (int i = 0; i < artifacts.size(); i++) {
-			Artifact a = artifacts.get(i);
-			ArtifactSprite sprite = new ArtifactSprite(a);
+					img.setVisible(false);
 
-			sprite.setCenterX(100);
-			sprite.setCenterY(yOffset - 110);
+					DragAndDrop.Payload payload = new DragAndDrop.Payload();
 
-			artifactSprites.add(sprite);
+					dragAndDrop.setDragActorPosition(-x, -y + 75);
+					payload.setObject(artifact);
 
-			yOffset -= sprite.getHeight() + 10;
+					payload.setDragActor(new Image(img.getDrawable()));
+
+					payload.setValidDragActor(new Image(img.getDrawable()));
+
+					payload.setInvalidDragActor(new Image(img.getDrawable()));
+
+					return payload;
+				}
+
+				@Override
+				public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Payload payload, DragAndDrop.Target target) {
+					if(target != null) {
+						artifactsTable.removeActor(getActor());
+						artifacts.remove(payload.getObject());
+					} else {
+						img.setVisible(true);
+					}
+				}
+			});
+			if ((i + 1) % 3 == 0)
+				artifactsTable.row();
 		}
+
+		addDropTarget(workbenchSlot1);
+		addDropTarget(workbenchSlot2);
+		addDropTarget(workbenchSlot3);
+
+		ScrollPane scrollPane = new ScrollPane(artifactsTable);
+
+		scrollPane.setX(75);
+		scrollPane.setY(200);
+		scrollPane.setWidth(245);
+		scrollPane.setHeight(355);
+		scrollPane.setScrollingDisabled(true, false);
+
+		stage.addActor(scrollPane);
+		multiplexer.addProcessor(stage);
+
+
 	}
 
-	private void updateAliens() {
-		alienSprites.clear();
-		List<Alien> aliens = SpaceShipProperties.properties.getAliens();
+	private void addDropTarget(final WorkbenchSlot slot) {
+		dragAndDrop.addTarget(new DragAndDrop.Target(slot) {
+			@Override
+			public boolean drag(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
+				//TODO
+				return true;
+			}
 
-		int yOffset = Gdx.graphics.getHeight();
-		for (int i = 0; i < aliens.size(); i++) {
-			Alien a = aliens.get(i);
-			Sprite sprite = new Sprite(App.TEXTURES.findRegion("placeholder_alien"));
+			@Override
+			public void reset(DragAndDrop.Source source, DragAndDrop.Payload payload) {
 
-			sprite.setCenterX(Gdx.graphics.getWidth() - 120);
-			sprite.setCenterY(yOffset - 110);
+			}
 
-			alienSprites.add(sprite);
+			@Override
+			public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
+				slot.insertArtifact((Artifact) payload.getObject());
+				slot.setDrawable(((Image)source.getActor()).getDrawable());
+				dragAndDrop.removeTarget(this);
 
-			yOffset -= sprite.getHeight() + 10;
-		}
+			}
+		});
+		stage.addActor(slot);
 	}
+
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(0.5f, 0.8f, 1, 1);
+		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		renderWorkbench();
-
 		spriteBatch.begin();
-		{
-			for (Sprite s : artifactSprites) {
-				s.draw(spriteBatch);
-			}
-
-			for (Sprite s : alienSprites) {
-				s.draw(spriteBatch);
-			}
-
-			bigRedButton.draw(spriteBatch);
-		}
+		spriteBatch.draw(background, 0, 0);
 		spriteBatch.end();
 
-
-	}
-
-	private void renderWorkbench() {
-		workBenchRender.begin(ShapeRenderer.ShapeType.Line);
-		{
-			workBenchRender.setColor(Color.BLACK);
-			workBenchRender.rect(workbenchArea.x, workbenchArea.y, workbenchArea.width, workbenchArea.height);
-		}
-		workBenchRender.end();
-
-		workbenchSpot1.draw(workBenchRender);
-		workbenchSpot2.draw(workBenchRender);
-		workbenchSpot3.draw(workBenchRender);
-
-
-	}
-
-	@Override
-	public void OnDrop(Sprite droppedSprite, int x, int y) {
-		WorkbenchSlot slot = null;
-		if (workbenchSpot1.contains(x, invertYAxis(y))) {
-			slot = workbenchSpot1;
-		} else if (workbenchSpot2.contains(x, invertYAxis(y))) {
-			slot = workbenchSpot2;
-		} else if (workbenchSpot3.contains(x, invertYAxis(y))) {
-			slot = workbenchSpot3;
-		}
-
-		if (slot != null) {
-			if (slot.isOccupied()) {
-				Log.l(ArkScreen.class, "Slot is already occupied");
-			} else {
-				slot.insertArtifact(((ArtifactSprite) droppedSprite).getArtifact());
-				dragAndDropProcessor.lock(droppedSprite);
-				Log.l(ArkScreen.class, "inserting artifact into slot");
-			}
-		}
+		//x=75 y=height-145 scroll pane left
+		stage.act(delta);
+		stage.draw();
 	}
 
 	@Override
 	public void resize(int width, int height) {
-
+		stage.getViewport().update(width, height, true);
 	}
 
 	@Override
@@ -229,8 +193,7 @@ public class ArkScreen implements Screen, SpriteDragAndDropProcessor.OnDroppedLi
 
 	@Override
 	public void hide() {
-		multiplexer.removeProcessor(dragAndDropProcessor);
-		multiplexer.removeProcessor(bigRedButtonProcessor);
+
 	}
 
 	@Override
@@ -242,32 +205,23 @@ public class ArkScreen implements Screen, SpriteDragAndDropProcessor.OnDroppedLi
 		return Gdx.graphics.getHeight() - yValue;
 	}
 
-	private class WorkbenchSlot {
-		private final Rectangle bounds;
+	private class WorkbenchSlot extends Image {
 		private Artifact insertedArtifact;
 
-
-		public WorkbenchSlot(Rectangle bounds) {
-			this.bounds = bounds;
-		}
-
-		public boolean contains(float positionX, float positionY) {
-			return bounds.contains(positionX, positionY);
+		public WorkbenchSlot(){
+			super(App.TEXTURES.findRegion("slotDrop"));
 		}
 
 		public void insertArtifact(Artifact artifact) {
 			this.insertedArtifact = artifact;
+			setDrawable(new TextureRegionDrawable(App.TEXTURES.findRegion("slot01")));
 		}
 
 		public boolean isOccupied() {
 			return insertedArtifact != null;
 		}
 
-		public void draw(ShapeRenderer renderer) {
-			workBenchRender.begin(isOccupied() ? ShapeRenderer.ShapeType.Filled : ShapeRenderer.ShapeType.Line);
-			workBenchRender.setColor(Color.GOLDENROD);
-			workBenchRender.rect(bounds.x, bounds.y, bounds.width, bounds.height);
-			workBenchRender.end();
-		}
+
 	}
+
 }
