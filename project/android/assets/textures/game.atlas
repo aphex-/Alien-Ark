@@ -18,6 +18,13 @@ exhaust_placeholder
   orig: 40, 105
   offset: 0, 0
   index: -1
+minimap_artifact
+  rotate: false
+  xy: 318, 62
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
 minimap_fuel
   rotate: false
   xy: 1003, 481

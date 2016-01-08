@@ -66,9 +66,13 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private Vector2 tmpVec1 = new Vector2();
 	private Vector2 tmpVector1 = new Vector2();
 	private Vector2 tmpVector2 = new Vector2();
+	private Vector3 tmpVec3 = new Vector3();
+	private Vector3 tmpVec4 = new Vector3();
+	private Vector3 tmpVec5 = new Vector3();
 
 	private TextureRegion shieldIcon;
 	private TextureRegion fuelIcon;
+	private TextureRegion artifactIcon;
 
 
 	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
@@ -95,10 +99,10 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		typeInterpreter = toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter());
 
-		shieldIcon = App.TEXTURES.findRegion("minimap_shield");
-		fuelIcon = App.TEXTURES.findRegion("minimap_fuel");
+		shieldIcon = 	App.TEXTURES.findRegion("minimap_shield");
+		fuelIcon =		App.TEXTURES.findRegion("minimap_fuel");
+		artifactIcon = 	App.TEXTURES.findRegion("minimap_artifact");
 	}
-
 
 	public void requestChunks(List<Point> chunkCoordinates) {
 
@@ -316,23 +320,31 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 			}
 			if (textureRegion != null) {
 				Vector3 position = c.getPosition();
-
-				miniMapBatch.draw(textureRegion,
-						position.x - textureRegion.getRegionWidth() / 2f,
-						position.y - textureRegion.getRegionHeight() / 2f,
-						textureRegion.getRegionWidth() / 2f,
-						textureRegion.getRegionHeight() / 2f,
-						textureRegion.getRegionWidth(),
-						textureRegion.getRegionHeight(),
-						1, 1, upRotation);
-
-
+				drawMiniMapIcon(miniMapBatch, textureRegion, position, upRotation);
 			}
+		}
+
+		for(PointWithId p : planetConfig.artifacts) {
+			tmpVec5.set(
+					PlanetPart.getTileGraphicX(p.x),
+					PlanetPart.getTileGraphicY(p.y), 0);
+
+			drawMiniMapIcon(miniMapBatch, artifactIcon, tmpVec5, upRotation);
 		}
 	}
 
-	private Vector3 tmpVec3 = new Vector3();
-	private Vector3 tmpVec4 = new Vector3();
+	private void drawMiniMapIcon(SpriteBatch batch, TextureRegion textureRegion, Vector3 position, float upRotation) {
+		batch.draw(textureRegion,
+				position.x - textureRegion.getRegionWidth() / 2f,
+				position.y - textureRegion.getRegionHeight() / 2f,
+				textureRegion.getRegionWidth() / 2f,
+				textureRegion.getRegionHeight() / 2f,
+				textureRegion.getRegionWidth(),
+				textureRegion.getRegionHeight(),
+				1.5f, 1.5f, upRotation);
+
+		//Styles.FONT_ENTSANS_SMALL_BORDER.draw(batch, "100", position.x, position.y);
+	}
 
 	public Collectible getCollectible(btCollisionObject collisionObject) {
 		for (Collectible c : currentVisibleCollectibles) {

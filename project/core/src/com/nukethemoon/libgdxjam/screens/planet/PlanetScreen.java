@@ -138,7 +138,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		camera.near = 1f;
 		camera.far = 30000f;
 
-		minimapCamera = new OrthographicCamera(MINI_MAP_SIZE, MINI_MAP_SIZE);
+		minimapCamera = new OrthographicCamera(MINI_MAP_SIZE * 1.5f, MINI_MAP_SIZE * 1.5f);
 		minimapCamera.near = 1f;
 		minimapCamera.far = 300f;
 
@@ -369,7 +369,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				rocketArrow.getRegionHeight() / 2f,
 				rocketArrow.getRegionWidth(),
 				rocketArrow.getRegionHeight(),
-				1, 1, rocket.getGroundZRotation());
+				1.5f, 1.5f, rocket.getGroundZRotation());
 
 		planetController.drawMiniMap(minimapBatch, rocket.getGroundZRotation());
 
