@@ -1,16 +1,21 @@
 package com.nukethemoon.libgdxjam.screens.planet;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
+import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPart;
+import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.tools.ani.Ani;
 import com.nukethemoon.tools.opusproto.generator.ChunkListener;
@@ -62,6 +67,9 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private Vector2 tmpVector1 = new Vector2();
 	private Vector2 tmpVector2 = new Vector2();
 
+	private TextureRegion shieldIcon;
+	private TextureRegion fuelIcon;
+
 
 	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
 		this.planetConfig = pPlanetConfig;
@@ -86,6 +94,9 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 
 		typeInterpreter = toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter());
+
+		shieldIcon = App.TEXTURES.findRegion("minimap_shield");
+		fuelIcon = App.TEXTURES.findRegion("minimap_fuel");
 	}
 
 
@@ -262,24 +273,62 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 	}
 
-	public void render(ModelBatch batch, Environment environment) {
+	public void render(ModelBatch batch, Environment environment, boolean planetOnly) {
 		for (Map.Entry<Point, PlanetPart> entry : planetPartBuffer.entrySet()) {
-			PlanetPart mesh = entry.getValue();
-			batch.render(mesh.getModelInstance(), environment);
+			PlanetPart planetPart = entry.getValue();
+			renderEnv(planetPart.getModelInstance(), batch, environment);
+		}
+
+		if (planetOnly) {
+			return;
 		}
 
 		for (Collectible c : currentVisibleCollectibles) {
-			batch.render(c.getModelInstance(), environment);
-		}
+			renderEnv(c.getModelInstance(), batch, environment);
+	}
 
 		for (ArtifactObject o : currentVisibleArtifacts) {
-			batch.render(o.getModelInstance(), environment);
+			renderEnv(o.getModelInstance(), batch, environment);
 			tmpVec3.set(o.getDefinition().x * TILE_GRAPHIC_SIZE,
 					o.getDefinition().y * TILE_GRAPHIC_SIZE, 100);
 			controllerPhysic.calculateGroundIntersection(tmpVec3, tmpVec4);
 			o.adjust(tmpVec4.z);
 		}
+	}
 
+	private void renderEnv(ModelInstance model, ModelBatch batch, Environment environment) {
+		if (environment != null) {
+			batch.render(model, environment);
+		} else {
+			batch.render(model);
+		}
+	}
+
+	public void drawMiniMap(SpriteBatch miniMapBatch, float upRotation) {
+
+		for (Collectible c : currentVisibleCollectibles) {
+			TextureRegion textureRegion = null;
+			if (c.getType() == CollisionTypes.FUEL) {
+				textureRegion = fuelIcon;
+			}
+			if (c.getType() == CollisionTypes.SHIELD) {
+				textureRegion = shieldIcon;
+			}
+			if (textureRegion != null) {
+				Vector3 position = c.getPosition();
+
+				miniMapBatch.draw(textureRegion,
+						position.x - textureRegion.getRegionWidth() / 2f,
+						position.y - textureRegion.getRegionHeight() / 2f,
+						textureRegion.getRegionWidth() / 2f,
+						textureRegion.getRegionHeight() / 2f,
+						textureRegion.getRegionWidth(),
+						textureRegion.getRegionHeight(),
+						1, 1, upRotation);
+
+
+			}
+		}
 	}
 
 	private Vector3 tmpVec3 = new Vector3();

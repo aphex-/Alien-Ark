@@ -22,6 +22,7 @@ public class Collectible {
 	private Point planetPartPosition;
 
 	private CollisionTypes type;
+	private Vector3 tmpPosition = new Vector3();
 
 	public Collectible(CollisionTypes type, Vector3 position, Point planetPartPosition) {
 		this.type = type;
@@ -48,6 +49,10 @@ public class Collectible {
 	public BaseAnimation createScaleAnimation() {
 		collectibleStandardAnimation = new CollectibleStandardAnimation(modelInstance);
 		return collectibleStandardAnimation;
+	}
+
+	public Vector3 getPosition() {
+		return modelInstance.transform.getTranslation(tmpPosition);
 	}
 
 	public ModelInstance getModelInstance() {

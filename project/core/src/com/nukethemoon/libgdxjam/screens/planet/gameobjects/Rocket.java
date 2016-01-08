@@ -415,4 +415,8 @@ public class Rocket extends GameObject implements Disposable {
 			transform.trn(worldTrans.getTranslation(tmpVector));
 		}
 	}
+
+	public float getGroundZRotation() {
+		return zRotation;
+	}
 }
