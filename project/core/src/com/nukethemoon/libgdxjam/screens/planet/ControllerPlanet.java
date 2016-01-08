@@ -275,7 +275,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		for (Collectible c : currentVisibleCollectibles) {
 			renderEnv(c.getModelInstance(), batch, environment);
-	}
+		}
 
 		for (ArtifactObject o : currentVisibleArtifacts) {
 			renderEnv(o.getModelInstance(), batch, environment);

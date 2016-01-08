@@ -6,168 +6,175 @@ filter: Nearest,Nearest
 repeat: none
 buttonbg01
   rotate: false
-  xy: 417, 391
+  xy: 669, 390
   size: 92, 100
   orig: 92, 100
   offset: 0, 0
   index: -1
 exhaust_placeholder
   rotate: false
-  xy: 257, 84
+  xy: 257, 83
   size: 40, 105
   orig: 40, 105
   offset: 0, 0
   index: -1
 minimap_artifact
   rotate: false
-  xy: 318, 62
+  xy: 299, 54
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 minimap_fuel
   rotate: false
-  xy: 1003, 481
+  xy: 1009, 480
   size: 10, 10
   orig: 10, 10
   offset: 0, 0
   index: -1
 minimap_shield
   rotate: false
-  xy: 386, 271
+  xy: 556, 270
   size: 10, 10
   orig: 10, 10
   offset: 0, 0
   index: -1
 ntm_logo
   rotate: false
-  xy: 2, 39
+  xy: 2, 38
   size: 150, 150
   orig: 150, 150
   offset: 0, 0
   index: -1
 placeholder_alien
   rotate: false
-  xy: 304, 283
+  xy: 556, 282
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 planet_1_placeholder
   rotate: false
-  xy: 304, 385
+  xy: 556, 384
   size: 111, 106
   orig: 111, 106
   offset: 0, 0
   index: -1
 planet_2_placeholder
   rotate: false
-  xy: 341, 56
+  xy: 232, 16
   size: 65, 65
   orig: 65, 65
   offset: 0, 0
   index: -1
 planet_3_placeholder
   rotate: false
-  xy: 154, 88
+  xy: 154, 87
   size: 101, 101
   orig: 101, 101
   offset: 0, 0
   index: -1
 popupbg01
   rotate: false
-  xy: 2, 3
+  xy: 2, 2
   size: 34, 34
   orig: 34, 34
   offset: 0, 0
   index: -1
 rocket_arrow
   rotate: false
-  xy: 511, 393
+  xy: 763, 392
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 ship_placeholder
   rotate: false
-  xy: 299, 84
+  xy: 658, 277
   size: 40, 105
   orig: 40, 105
   offset: 0, 0
   index: -1
 slot01
   rotate: false
-  xy: 304, 201
+  xy: 763, 410
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot02
   rotate: false
-  xy: 511, 411
+  xy: 845, 410
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot03
   rotate: false
-  xy: 593, 411
+  xy: 927, 410
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot04
   rotate: false
-  xy: 675, 411
+  xy: 304, 158
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot05
   rotate: false
-  xy: 757, 411
+  xy: 386, 158
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot06
   rotate: false
-  xy: 839, 411
+  xy: 468, 158
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot07
   rotate: false
-  xy: 921, 411
+  xy: 299, 76
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot08
   rotate: false
-  xy: 154, 6
+  xy: 381, 76
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot09
   rotate: false
-  xy: 236, 2
+  xy: 463, 76
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotDrop
   rotate: false
-  xy: 341, 123
+  xy: 154, 9
   size: 76, 76
   orig: 76, 76
   offset: 0, 0
   index: -1
+stencilMiniMap
+  rotate: false
+  xy: 304, 240
+  size: 250, 250
+  orig: 250, 250
+  offset: 0, 0
+  index: -1
 sun_placeholder
   rotate: false
-  xy: 2, 191
+  xy: 2, 190
   size: 300, 300
   orig: 300, 300
   offset: 0, 0

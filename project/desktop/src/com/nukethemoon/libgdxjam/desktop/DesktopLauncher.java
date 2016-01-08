@@ -10,6 +10,7 @@ public class DesktopLauncher {
 		config.width = 1280;
 		config.height = 697;
 		config.samples = 8;
+		config.stencil = 8;
 		new LwjglApplication(new App(), config);
 	}
 }

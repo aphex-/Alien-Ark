@@ -26,6 +26,7 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BufferedParticleBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
@@ -65,12 +66,15 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 
 	private static final int MINI_MAP_SIZE = 250;
+	private static final float MINI_ZOOM = 1.5f;
+	private final ShaderProgram shaderProgram;
+
 	private ModelInstance environmentSphere;
 	private ModelBatch modelBatch;
 	private Environment environment;
 
 	private PerspectiveCamera camera;
-	private OrthographicCamera minimapCamera;
+	private OrthographicCamera miniMapCamera;
 
 	private ParticleSystem particleSystem;
 	private BufferedParticleBatch particleSpriteBatch;
@@ -81,7 +85,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private PositionTable positionTable;
 
 	private final ShapeRenderer shapeRenderer;
-	private SpriteBatch minimapBatch;
+	private final ShapeRenderer depthShape;
+
+	private SpriteBatch miniMapBatch;
+	private ModelBatch miniMapModelBatch;
 
 	private final InputMultiplexer multiplexer;
 	private final Skin uiSkin;
@@ -106,6 +113,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private TextureRegion shieldIcon;
 	private TextureRegion fuelIcon;
 	private TextureRegion artifactIcon;
+	private TextureRegion stencilMiniMap;
 
 	public static Gson gson;
 	private AssetManager assetManager;
@@ -119,6 +127,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	};
 
 	private Ani ani;
+	private ShaderProgram program;
 
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
 		if (pPlanetIndex > 0) {
@@ -135,19 +144,26 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		gson = new GsonBuilder().setPrettyPrinting().create();
 
 		modelBatch = new ModelBatch();
+		miniMapModelBatch = new ModelBatch();
+
+		shaderProgram = new ShaderProgram(
+				Gdx.files.internal("shaders/default.vertex.glsl"),
+				Gdx.files.internal("shaders/default.fragment.glsl"));
+
 		environment = new Environment();
 
 		shapeRenderer = new ShapeRenderer();
+		depthShape = new ShapeRenderer();
 		shapeRenderer.setAutoShapeType(true);
-		minimapBatch = new SpriteBatch();
+		miniMapBatch = new SpriteBatch();
 
 		camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera.near = 1f;
 		camera.far = 30000f;
 
-		minimapCamera = new OrthographicCamera(MINI_MAP_SIZE * 1.5f, MINI_MAP_SIZE * 1.5f);
-		minimapCamera.near = 1f;
-		minimapCamera.far = 300f;
+		miniMapCamera = new OrthographicCamera(MINI_MAP_SIZE * MINI_ZOOM, MINI_MAP_SIZE * MINI_ZOOM);
+		miniMapCamera.near = 1f;
+		miniMapCamera.far = 300f;
 
 		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/" + KNOWN_PLANETS[planetIndex] + "/sceneConfig.json");
 		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
@@ -170,6 +186,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		shieldIcon = 	App.TEXTURES.findRegion("minimap_shield");
 		fuelIcon =		App.TEXTURES.findRegion("minimap_fuel");
 		artifactIcon = 	App.TEXTURES.findRegion("minimap_artifact");
+		stencilMiniMap = App.TEXTURES.findRegion("stencilMiniMap");
 
 		loadSphere(planetConfig.id);
 		onReloadScene(planetConfig);
@@ -351,30 +368,47 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 
 	private void drawMiniMap() {
-		Gdx.gl.glViewport(Gdx.graphics.getWidth() - MINI_MAP_SIZE, 0, MINI_MAP_SIZE, MINI_MAP_SIZE);
-		minimapCamera.up.set(rocket.getDirection());
-		minimapCamera.position.set(rocket.getPosition());
-		minimapCamera.position.z = 100;
-		minimapCamera.update();
+		Gdx.gl.glViewport(Gdx.graphics.getWidth() - MINI_MAP_SIZE - 10, 10, MINI_MAP_SIZE, MINI_MAP_SIZE);
 
-		modelBatch.begin(minimapCamera);
-		planetController.render(modelBatch, null, true);
-		modelBatch.end();
+		miniMapCamera.up.set(rocket.getDirection());
+		miniMapCamera.position.set(rocket.getPosition());
+		miniMapCamera.position.z = 100;
+		miniMapCamera.update();
 
-		minimapBatch.setProjectionMatrix(minimapCamera.combined);
-		minimapBatch.begin();
-		minimapBatch.draw(rocketArrow,
+		// draw landscape
+
+		miniMapModelBatch.begin(miniMapCamera);
+		planetController.render(miniMapModelBatch, null, true);
+		miniMapModelBatch.end();
+
+
+		miniMapBatch.setProjectionMatrix(miniMapCamera.combined);
+		miniMapBatch.begin();
+
+			// draw mini map items
+		drawMiniMapItems(miniMapBatch, rocket.getGroundZRotation());
+
+		// draw rocket arrow
+		miniMapBatch.draw(rocketArrow,
 				rocket.getPosition().x - rocketArrow.getRegionWidth() / 2f,
 				rocket.getPosition().y - rocketArrow.getRegionHeight() / 2f,
 				rocketArrow.getRegionWidth() / 2f,
 				rocketArrow.getRegionHeight() / 2f,
 				rocketArrow.getRegionWidth(),
 				rocketArrow.getRegionHeight(),
-				1.5f, 1.5f, rocket.getGroundZRotation());
+				MINI_ZOOM, MINI_ZOOM, rocket.getGroundZRotation());
 
-		drawMiniMapItems(minimapBatch, rocket.getGroundZRotation());
+		miniMapBatch.end();
 
-		minimapBatch.end();
+
+		/*shapeRenderer.begin();
+		shapeRenderer.setProjectionMatrix(miniMapCamera.combined);
+		shapeRenderer.line(
+				rocket.getPosition().x + (MINI_MAP_SIZE / 2) * MINI_ZOOM - 1,
+				rocket.getPosition().y + (MINI_MAP_SIZE / 2) * MINI_ZOOM - 1,
+				rocket.getPosition().x - (MINI_MAP_SIZE / 2) * MINI_ZOOM + 1,
+				rocket.getPosition().y - (MINI_MAP_SIZE / 2) * MINI_ZOOM + 1);
+		shapeRenderer.end();*/
 	}
 
 	public void drawMiniMapItems(SpriteBatch miniMapBatch, float upRotation) {
@@ -409,7 +443,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				textureRegion.getRegionHeight() / 2f,
 				textureRegion.getRegionWidth(),
 				textureRegion.getRegionHeight(),
-				1.5f, 1.5f, upRotation);
+				MINI_ZOOM, MINI_ZOOM, upRotation);
 
 		//Styles.FONT_ENTSANS_SMALL_BORDER.draw(batch, "100", position.x, position.y);
 	}
