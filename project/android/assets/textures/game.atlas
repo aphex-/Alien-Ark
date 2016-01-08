@@ -18,6 +18,20 @@ exhaust_placeholder
   orig: 40, 105
   offset: 0, 0
   index: -1
+minimap_fuel
+  rotate: false
+  xy: 1003, 481
+  size: 10, 10
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
+minimap_shield
+  rotate: false
+  xy: 386, 271
+  size: 10, 10
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
 ntm_logo
   rotate: false
   xy: 2, 39
@@ -58,6 +72,13 @@ popupbg01
   xy: 2, 3
   size: 34, 34
   orig: 34, 34
+  offset: 0, 0
+  index: -1
+rocket_arrow
+  rotate: false
+  xy: 511, 393
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ship_placeholder
