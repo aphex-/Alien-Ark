@@ -93,7 +93,7 @@ attribute vec2 a_boneWeight7;
 #endif //boneWeight7Flag
 
 #if defined(numBones) && defined(boneWeightsFlag)
-#if (numBones > 0)
+#if (numBones > 0) 
 #define skinningFlag
 #endif
 #endif
@@ -131,7 +131,7 @@ uniform vec3 u_ambientLight;
 
 #ifdef ambientCubemapFlag
 uniform vec3 u_ambientCubemap[6];
-#endif // ambientCubemapFlag
+#endif // ambientCubemapFlag 
 
 #ifdef sphericalHarmonicsFlag
 uniform vec3 u_sphericalHarmonics[9];
@@ -188,31 +188,31 @@ void main() {
 	#ifdef diffuseTextureFlag
 		v_diffuseUV = u_diffuseUVTransform.xy + a_texCoord0 * u_diffuseUVTransform.zw;
 	#endif //diffuseTextureFlag
-
+	
 	#ifdef specularTextureFlag
 		v_specularUV = u_specularUVTransform.xy + a_texCoord0 * u_specularUVTransform.zw;
 	#endif //specularTextureFlag
-
+	
 	#if defined(colorFlag)
 		v_color = a_color;
 	#endif // colorFlag
-
+		
 	#ifdef blendedFlag
 		v_opacity = u_opacity;
 		#ifdef alphaTestFlag
 			v_alphaTest = u_alphaTest;
 		#endif //alphaTestFlag
 	#endif // blendedFlag
-
+	
 	#ifdef skinningFlag
 		mat4 skinning = mat4(0.0);
 		#ifdef boneWeight0Flag
 			skinning += (a_boneWeight0.y) * u_bones[int(a_boneWeight0.x)];
 		#endif //boneWeight0Flag
-		#ifdef boneWeight1Flag
+		#ifdef boneWeight1Flag				
 			skinning += (a_boneWeight1.y) * u_bones[int(a_boneWeight1.x)];
 		#endif //boneWeight1Flag
-		#ifdef boneWeight2Flag
+		#ifdef boneWeight2Flag		
 			skinning += (a_boneWeight2.y) * u_bones[int(a_boneWeight2.x)];
 		#endif //boneWeight2Flag
 		#ifdef boneWeight3Flag
@@ -237,15 +237,15 @@ void main() {
 	#else
 		vec4 pos = u_worldTrans * vec4(a_position, 1.0);
 	#endif
-
+		
 	gl_Position = u_projViewTrans * pos;
-
+		
 	#ifdef shadowMapFlag
 		vec4 spos = u_shadowMapProjViewTrans * pos;
 		v_shadowMapUv.xy = (spos.xy / spos.w) * 0.5 + 0.5;
 		v_shadowMapUv.z = min(spos.z * 0.5 + 0.5, 0.998);
 	#endif //shadowMapFlag
-
+	
 	#if defined(normalFlag)
 		#if defined(skinningFlag)
 			vec3 normal = normalize((u_worldTrans * skinning * vec4(a_normal, 0.0)).xyz);
@@ -267,8 +267,8 @@ void main() {
 		#elif defined(ambientFlag)
         	vec3 ambientLight = vec3(0.0);
 		#endif
-
-		#ifdef ambientCubemapFlag
+			
+		#ifdef ambientCubemapFlag 		
 			vec3 squaredNormal = normal * normal;
 			vec3 isPositive  = step(0.0, normal);
 			ambientLight += squaredNormal.x * mix(u_ambientCubemap[0], u_ambientCubemap[1], isPositive.x) +
@@ -285,7 +285,7 @@ void main() {
 			ambientLight += u_sphericalHarmonics[5] * (normal.z * normal.y);
 			ambientLight += u_sphericalHarmonics[6] * (normal.y * normal.x);
 			ambientLight += u_sphericalHarmonics[7] * (3.0 * normal.z * normal.z - 1.0);
-			ambientLight += u_sphericalHarmonics[8] * (normal.x * normal.x - normal.y * normal.y);
+			ambientLight += u_sphericalHarmonics[8] * (normal.x * normal.x - normal.y * normal.y);			
 		#endif // sphericalHarmonicsFlag
 
 		#ifdef ambientFlag
@@ -299,12 +299,12 @@ void main() {
 	        v_lightDiffuse = vec3(0.0);
 		#endif //ambientFlag
 
-
+			
 		#ifdef specularFlag
 			v_lightSpecular = vec3(0.0);
 			vec3 viewVec = normalize(u_cameraPosition.xyz - pos.xyz);
 		#endif // specularFlag
-
+			
 		#if defined(numDirectionalLights) && (numDirectionalLights > 0) && defined(normalFlag)
 			for (int i = 0; i < numDirectionalLights; i++) {
 				vec3 lightDir = -u_dirLights[i].direction;
