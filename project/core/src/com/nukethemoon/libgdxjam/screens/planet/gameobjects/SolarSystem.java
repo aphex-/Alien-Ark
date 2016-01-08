@@ -68,7 +68,7 @@ public class SolarSystem implements Disposable {
 		return getPosition(planets[index].radius, planets[index].radians);
 	}
 
-	public Vector2 getPlanetLightPosition(int index, int offset) {
+	public Vector2 getPlanetShadowPosition(int index, int offset) {
 		return getPosition(planets[index].radius - offset, planets[index].radians);
 	}
 
