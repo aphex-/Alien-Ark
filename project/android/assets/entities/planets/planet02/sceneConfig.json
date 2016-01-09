@@ -22,40 +22,14 @@
   "environmentDirectionalLights": [
     {
       "direction": {
-        "x": 1.0,
-        "y": 0.82,
-        "z": -0.14
-      },
-      "color": {
-        "r": 0.48,
-        "g": 0.7,
-        "b": 0.39,
-        "a": 1.0
-      }
-    },
-    {
-      "direction": {
-        "x": 0.58,
-        "y": 0.62,
-        "z": -0.15
-      },
-      "color": {
-        "r": 0.93,
-        "g": 0.91,
-        "b": 0.83,
-        "a": 1.0
-      }
-    },
-    {
-      "direction": {
-        "x": 1.0,
-        "y": 0.58,
-        "z": 0.79
+        "x": 0.57,
+        "y": -0.35,
+        "z": 0.26
       },
       "color": {
         "r": 0.53,
-        "g": 0.53,
-        "b": 0.52,
+        "g": 0.32,
+        "b": 0.78,
         "a": 1.0
       }
     }
@@ -69,7 +43,7 @@
   ],
   "layerConfigs": [
     {
-      "name": "Water",
+      "name": "Lava",
       "collisionType": "water",
       "serializedMaterial": {
         "id": "mtl5",
@@ -96,9 +70,9 @@
           },
           {
             "color": {
-              "r": 0.0,
+              "r": 0.93,
               "g": 0.16,
-              "b": 0.94,
+              "b": 0.34,
               "a": 1.0
             },
             "type": 1,
@@ -106,9 +80,9 @@
           },
           {
             "color": {
-              "r": 0.29,
-              "g": 0.14,
-              "b": 0.08,
+              "r": 0.65,
+              "g": 0.21,
+              "b": 0.29,
               "a": 1.0
             },
             "type": 32,
@@ -118,16 +92,16 @@
       }
     },
     {
-      "name": "Beach",
+      "name": "LowLandscape",
       "collisionType": "ground",
       "serializedMaterial": {
         "id": "mtl9502",
         "colorAttributes": [
           {
             "color": {
-              "r": 0.823,
-              "g": 0.635,
-              "b": 0.478,
+              "r": 0.32,
+              "g": 0.17,
+              "b": 0.24,
               "a": 1.0
             },
             "type": 1,
@@ -137,16 +111,16 @@
       }
     },
     {
-      "name": "Grass",
+      "name": "HighLandscape",
       "collisionType": "ground",
       "serializedMaterial": {
         "id": "mtl9532",
         "colorAttributes": [
           {
             "color": {
-              "r": 0.0,
-              "g": 0.7490196,
-              "b": 0.0,
+              "r": 0.78,
+              "g": 0.83,
+              "b": 0.97,
               "a": 1.0
             },
             "type": 1,
