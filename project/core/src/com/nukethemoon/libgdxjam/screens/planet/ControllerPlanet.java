@@ -49,7 +49,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	private List<Point> tmpRequestList = new ArrayList<Point>();
 
-	private int requestRadiusInTiles = 130;
+	private int requestRadiusInTiles = 100;
 	private int lastRequestCenterTileX = 0;
 	private int lastRequestCenterTileY = 0;
 	private long requestCount = 0;
