@@ -30,7 +30,7 @@ public class DevelopmentWindow extends ClosableWindow {
 		directionalLightsWindow.setVisible(false);
 		stage.addActor(directionalLightsWindow);
 
-		final MaterialsWindow materialsWindow = new MaterialsWindow(skin, reloadSceneListener);
+		final MaterialsWindow materialsWindow = new MaterialsWindow(stage, skin, reloadSceneListener);
 		materialsWindow.setVisible(false);
 		stage.addActor(materialsWindow);
 

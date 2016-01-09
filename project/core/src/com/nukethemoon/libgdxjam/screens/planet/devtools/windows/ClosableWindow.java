@@ -14,8 +14,13 @@ public class ClosableWindow extends Window {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				ClosableWindow.this.setVisible(false);
+				onClose();
 			}
 		});
 		getTitleTable().add(closeButton).height(18);
+	}
+
+	public void onClose() {
+
 	}
 }
