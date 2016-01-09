@@ -132,22 +132,6 @@
     {
       "items": [
         {
-          "starColorR": 0.0,
-          "starColorG": 0.0,
-          "starColorB": 0.0,
-          "endColorR": 1.0,
-          "endColorG": 1.0,
-          "endColorB": 1.0,
-          "startValue": 0.0,
-          "endValue": 1.0
-        }
-      ],
-      "id": "EditorDefaultInterpreter",
-      "it": []
-    },
-    {
-      "items": [
-        {
           "starColorR": 0.12941177,
           "starColorG": 0.05882353,
           "starColorB": 0.40392157,

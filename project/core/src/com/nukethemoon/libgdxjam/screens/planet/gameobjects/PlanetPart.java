@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.screens.planet.CollectedItemCache;
 import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
@@ -79,6 +80,12 @@ public class PlanetPart extends GameObject {
 		this.tileSize = tileSize;
 		this.planetConfig = pPlanetConfig;
 		this.interpreter = interpreter;
+
+		if (pPlanetConfig.layerConfigs.size() != interpreter.it.size()) {
+			Log.e(PlanetPart.class, "Interpreter items count " + interpreter.it.size()
+					+ " (opusConfig.json) and layer config count " + pPlanetConfig.layerConfigs.size()
+					+ " (sceneConfig.json) not equal.");
+		}
 
 		// create MeshBuilder for every landscape layer
 		for (int i = 0; i < interpreter.it.size(); i++) {

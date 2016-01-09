@@ -1,5 +1,12 @@
 {
   "id": "planet02",
+  "gravity": -25.0,
+  "fuelChance": 0.08,
+  "fuelChanceGain": -1.0E-4,
+  "fuelChanceMin": 0.008,
+  "shieldChance": 0.05,
+  "shieldChanceGain": -1.0E-4,
+  "shieldChanceMin": 0.008,
   "environmentColorAttributes": [
     {
       "color": {
@@ -53,56 +60,100 @@
       }
     }
   ],
-  "serializedMaterials": {
-    "Water01": {
-      "id": "mtl5",
-      "colorAttributes": [
-        {
-          "color": {
-            "r": 0.72,
-            "g": 0.42,
-            "b": 0.0,
-            "a": 1.0
-          },
-          "type": 16,
-          "typeBit": 4
-        },
-        {
-          "color": {
-            "r": 0.03,
-            "g": 0.48,
-            "b": 1.0,
-            "a": 1.0
-          },
-          "type": 2,
-          "typeBit": 1
-        },
-        {
-          "color": {
-            "r": 0.0,
-            "g": 0.16,
-            "b": 1.0,
-            "a": 1.0
-          },
-          "type": 1,
-          "typeBit": 0
-        }
-      ]
-    },
-    "Landscape01": {
-      "id": "mtl9502",
-      "colorAttributes": [
-        {
-          "color": {
-            "r": 0.7490196,
-            "g": 0.7490196,
-            "b": 0.7490196,
-            "a": 1.0
-          },
-          "type": 1,
-          "typeBit": 0
-        }
-      ]
+  "artifacts": [
+    {
+      "x": 110,
+      "y": 80,
+      "id": "myArtifactId"
     }
-  }
+  ],
+  "layerConfigs": [
+    {
+      "name": "Water",
+      "collisionType": "water",
+      "serializedMaterial": {
+        "id": "mtl5",
+        "colorAttributes": [
+          {
+            "color": {
+              "r": 0.72,
+              "g": 0.42,
+              "b": 0.0,
+              "a": 1.0
+            },
+            "type": 16,
+            "typeBit": 4
+          },
+          {
+            "color": {
+              "r": 0.03,
+              "g": 0.48,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "type": 2,
+            "typeBit": 1
+          },
+          {
+            "color": {
+              "r": 0.0,
+              "g": 0.16,
+              "b": 0.94,
+              "a": 1.0
+            },
+            "type": 1,
+            "typeBit": 0
+          },
+          {
+            "color": {
+              "r": 0.29,
+              "g": 0.14,
+              "b": 0.08,
+              "a": 1.0
+            },
+            "type": 32,
+            "typeBit": 5
+          }
+        ]
+      }
+    },
+    {
+      "name": "Beach",
+      "collisionType": "ground",
+      "serializedMaterial": {
+        "id": "mtl9502",
+        "colorAttributes": [
+          {
+            "color": {
+              "r": 0.823,
+              "g": 0.635,
+              "b": 0.478,
+              "a": 1.0
+            },
+            "type": 1,
+            "typeBit": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "Grass",
+      "collisionType": "ground",
+      "serializedMaterial": {
+        "id": "mtl9532",
+        "colorAttributes": [
+          {
+            "color": {
+              "r": 0.0,
+              "g": 0.7490196,
+              "b": 0.0,
+              "a": 1.0
+            },
+            "type": 1,
+            "typeBit": 0
+          }
+        ]
+      }
+    }
+  ]
 }
