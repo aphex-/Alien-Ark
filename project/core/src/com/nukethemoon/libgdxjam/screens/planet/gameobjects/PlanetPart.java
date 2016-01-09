@@ -18,6 +18,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.nukethemoon.libgdxjam.screens.planet.CollectedItemCache;
+import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
 import com.nukethemoon.libgdxjam.screens.planet.PointWithId;
 import com.nukethemoon.libgdxjam.screens.planet.helper.StandardMotionState;
@@ -131,6 +132,14 @@ public class PlanetPart extends GameObject {
 
 	private float getGraphicOffsetY(Chunk chunk) {
 		return getChunkY(chunk) * tileSize;
+	}
+
+	public static float getTileGraphicX(int tileX) {
+		return tileX * ControllerPlanet.TILE_GRAPHIC_SIZE;
+	}
+
+	public static float getTileGraphicY(int tileY) {
+		return tileY * ControllerPlanet.TILE_GRAPHIC_SIZE;
 	}
 
 	/**

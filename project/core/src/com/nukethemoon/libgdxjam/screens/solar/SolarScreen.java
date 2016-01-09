@@ -2,6 +2,7 @@ package com.nukethemoon.libgdxjam.screens.solar;
 
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -13,7 +14,12 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -21,13 +27,19 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
+import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
+import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class SolarScreen implements Screen, RocketListener {
+
+public class SolarScreen implements Screen, RocketListener, ControllerPhysic.PhysicsListener {
 
 	//TODO:
 	/*
@@ -36,6 +48,7 @@ public class SolarScreen implements Screen, RocketListener {
 	- planeten müssen entdeckt werden per radar */
 
 	private static final int RAYS_NUM = 333;
+	private final World world;
 
 	private Vector2 shipPosition = new Vector2(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
 	private final RayHandler rayHandler;
@@ -75,6 +88,9 @@ public class SolarScreen implements Screen, RocketListener {
 	private Sprite sunSprite;
 	private RocketMainTable mainUI;
 	private Rocket rocket;
+	private List<Body> bodies;
+	private PointLight[] pointLight;
+	private float counter = 0f;
 
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
@@ -82,15 +98,23 @@ public class SolarScreen implements Screen, RocketListener {
 		arkSprite = new Sprite(App.TEXTURES.findRegion("ship_placeholder"));
 		exhaustSprite = new Sprite(App.TEXTURES.findRegion("exhaust_placeholder"));
 
-		World world = new World(new Vector2(0, 0), true);
+		world = new World(new Vector2(0, 0), true);
 
-		rayHandler = new RayHandler(world);
-		rayHandler.setShadows(true);
 
 		//new DirectionalLight(rayHandler, RAYS_NUM, new Color(1, 0.6f, 0.9f, 0.6f), 45);
 		setupSpaceship();
 		setupArkButton(uiSkin, multiplexer);
 		setupPlanets();
+
+		rayHandler = createRayHandler(world);
+		createPointLights();
+		updateShadowBodies(world);
+
+	}
+
+	private void createPointLights() {
+
+		new PointLight(rayHandler, RAYS_NUM, new Color(1, 0.8f, 0.8f, 1f), 2000, 0, 0);
 	}
 
 	private void setupSpaceship() {
@@ -109,18 +133,12 @@ public class SolarScreen implements Screen, RocketListener {
 		planetSprites[1] = new Sprite(App.TEXTURES.findRegion("planet_2_placeholder"));
 		planetSprites[2] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));
 		planetSprites[3] = new Sprite(App.TEXTURES.findRegion("planet_1_placeholder"));
-		/*planetSprites[4] = new Sprite(App.TEXTURES.findRegion("planet_2_placeholder"));
-		planetSprites[5] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));
-		planetSprites[6] = new Sprite(App.TEXTURES.findRegion("planet_1_placeholder"));
-		planetSprites[7] = new Sprite(App.TEXTURES.findRegion("planet_2_placeholder"));
-		planetSprites[8] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));
-		planetSprites[9] = new Sprite(App.TEXTURES.findRegion("planet_1_placeholder"));
-		planetSprites[10] = new Sprite(App.TEXTURES.findRegion("planet_2_placeholder"));
-		planetSprites[11] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));*/
+
 
 		sunSprite = new Sprite(App.TEXTURES.findRegion("sun_placeholder"));
 		sunSprite.setPosition(SolarSystem.SUN_POSITION.x, SolarSystem.SUN_POSITION.y);
 
+		pointLight = new PointLight[SolarSystem.NUMBER_OF_PLANETS];
 		for (int i = 0; i < SolarSystem.NUMBER_OF_PLANETS; i++) {
 			Vector2 position = App.solarSystem.getPlanetPosition(i);
 			planetSprites[i].setPosition(position.x, position.y);
@@ -147,6 +165,43 @@ public class SolarScreen implements Screen, RocketListener {
 		stage.addActor(mainUI);
 	}
 
+	private RayHandler createRayHandler(World world) {
+		bodies = new ArrayList<Body>();
+		RayHandler.setGammaCorrection(true);
+		RayHandler.useDiffuseLight(true);
+		RayHandler rayHandler = new RayHandler(world);
+		rayHandler.setAmbientLight(0.2f, 0.2f, 0.2f, 0.1f);
+		rayHandler.setCulling(true);
+		rayHandler.pointAtLight(0, 0);
+		rayHandler.setBlurNum(100);
+		return rayHandler;
+	}
+
+	private void updateShadowBodies(World world) {
+		for (Body body : bodies) {
+			world.destroyBody(body);
+		}
+		bodies.clear();
+
+		CircleShape shape = new CircleShape();
+		for (int i = 0; i < planetSprites.length; i++) {
+			Vector2 pos = App.solarSystem.getPlanetShadowPosition(i, (int) (-1 * planetSprites[i].getWidth()));
+
+			shape.setRadius((int) planetSprites[i].getWidth() / 2);
+			FixtureDef def = new FixtureDef();
+			def.shape = shape;
+
+			BodyDef body = new BodyDef();
+			body.type = BodyDef.BodyType.DynamicBody;
+			body.position.x = planetSprites[i].getX()/*pos.x*/ + planetSprites[i].getWidth() / 2f;
+			body.position.y = planetSprites[i].getY() + planetSprites[i].getHeight() / 2f;
+
+			Body box = world.createBody(body);
+			box.createFixture(def);
+			bodies.add(box);
+		}
+	}
+
 	@Override
 	public void show() {
 		batch = new SpriteBatch();
@@ -157,16 +212,20 @@ public class SolarScreen implements Screen, RocketListener {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		handleArkMovementInput(delta);
-		App.solarSystem.rotate((Math.PI / 32), delta);
-		renderPlanets();
-		renderArc();
 		handleAppNavigation();
 
+		camera.update();
+		batch.setProjectionMatrix(camera.combined);
+		batch.disableBlending();
+		renderPlanets();
+		renderArc();
 
-		rayHandler.setCombinedMatrix(camera);
+		rotatePlanets(delta);
+
+
+		//rayHandler.setCombinedMatrix(camera);
+		rayHandler.setCombinedMatrix(camera.combined);
 		rayHandler.updateAndRender();
-
-		rocket.handlePhysicTick();
 
 		camera.position.set(arkSprite.getX(), arkSprite.getY(), 0);
 		camera.update();
@@ -208,8 +267,6 @@ public class SolarScreen implements Screen, RocketListener {
 		batch.begin();
 		sunSprite.draw(batch);
 		for (int i = 0; i < planetSprites.length; i++) {
-			Vector2 position = App.solarSystem.getPlanetPosition(i);
-			planetSprites[i].setPosition(position.x, position.y);
 			planetSprites[i].draw(batch);
 		}
 		batch.end();
@@ -234,7 +291,7 @@ public class SolarScreen implements Screen, RocketListener {
 
 
 		if (Gdx.app.getInput().isKeyPressed(19) && !rocket.isOutOfFuel()) {
-			currentSpeedLevel+=1;
+			currentSpeedLevel += 1;
 			rocket.setThrust(true);
 
 		} else {
@@ -291,9 +348,6 @@ public class SolarScreen implements Screen, RocketListener {
 		camera = new OrthographicCamera(screenWidth, screenHeight);
 		camera.position.set(0, screenWidth / 2f, 0);
 		camera.update();
-
-		new PointLight(rayHandler, RAYS_NUM, new Color(1, 0.8f, 0.8f, 0.60f), 2000, 0, 0);
-
 	}
 
 	@Override
@@ -368,6 +422,30 @@ public class SolarScreen implements Screen, RocketListener {
 		}
 	}
 
+	private void rotatePlanets(float delta) {
+		float limit = 0.1f;
+		if (counter < limit) {
+//			s(SolarScreen.class, "" + counter);
+			counter += delta;
+			return;
+		} else {
+			counter = 0;
+
+		}
+		App.solarSystem.rotate((Math.PI / 256), 0.5f);
+		updateShadowBodies(world);
+		updatePlanets();
+		rocket.handlePhysicTick();
+	}
+
+	private void updatePlanets() {
+		for (int i = 0; i < planetSprites.length; i++) {
+			Vector2 position = App.solarSystem.getPlanetPosition(i);
+			planetSprites[i].setPosition(position.x, position.y);
+			planetSprites[i].rotate((float) (5f * Math.PI));
+		}
+	}
+
 	@Override
 	public void onRocketLanded() {
 
@@ -416,6 +494,16 @@ public class SolarScreen implements Screen, RocketListener {
 
 	@Override
 	public void onRocketChangedTilePosition() {
+
+	}
+
+	@Override
+	public void onRocketCollided(CollisionTypes type, btCollisionObject collisionObject) {
+
+	}
+
+	@Override
+	public void onInternalTick() {
 
 	}
 }

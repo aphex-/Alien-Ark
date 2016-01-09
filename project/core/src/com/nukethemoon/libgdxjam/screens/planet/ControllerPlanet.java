@@ -2,6 +2,7 @@ package com.nukethemoon.libgdxjam.screens.planet;
 
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
@@ -61,7 +62,8 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private Vector2 tmpVec1 = new Vector2();
 	private Vector2 tmpVector1 = new Vector2();
 	private Vector2 tmpVector2 = new Vector2();
-
+	private Vector3 tmpVec3 = new Vector3();
+	private Vector3 tmpVec4 = new Vector3();
 
 	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
 		this.planetConfig = pPlanetConfig;
@@ -87,7 +89,6 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		typeInterpreter = toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter());
 	}
-
 
 	public void requestChunks(List<Point> chunkCoordinates) {
 
@@ -262,28 +263,38 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 	}
 
-	public void render(ModelBatch batch, Environment environment) {
+	public void render(ModelBatch batch, Environment environment, boolean planetOnly) {
 		for (Map.Entry<Point, PlanetPart> entry : planetPartBuffer.entrySet()) {
-			PlanetPart mesh = entry.getValue();
-			batch.render(mesh.getModelInstance(), environment);
+			PlanetPart planetPart = entry.getValue();
+			renderEnv(planetPart.getModelInstance(), batch, environment);
+		}
+
+		if (planetOnly) {
+			return;
 		}
 
 		for (Collectible c : currentVisibleCollectibles) {
-			batch.render(c.getModelInstance(), environment);
+			renderEnv(c.getModelInstance(), batch, environment);
 		}
 
 		for (ArtifactObject o : currentVisibleArtifacts) {
-			batch.render(o.getModelInstance(), environment);
+			renderEnv(o.getModelInstance(), batch, environment);
 			tmpVec3.set(o.getDefinition().x * TILE_GRAPHIC_SIZE,
 					o.getDefinition().y * TILE_GRAPHIC_SIZE, 100);
 			controllerPhysic.calculateGroundIntersection(tmpVec3, tmpVec4);
 			o.adjust(tmpVec4.z);
 		}
-
 	}
 
-	private Vector3 tmpVec3 = new Vector3();
-	private Vector3 tmpVec4 = new Vector3();
+	private void renderEnv(ModelInstance model, ModelBatch batch, Environment environment) {
+		if (environment != null) {
+			batch.render(model, environment);
+		} else {
+			batch.render(model);
+		}
+	}
+
+
 
 	public Collectible getCollectible(btCollisionObject collisionObject) {
 		for (Collectible c : currentVisibleCollectibles) {
@@ -344,4 +355,11 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		return collectedItemCache;
 	}
 
+	public PlanetConfig getPlanetConfig() {
+		return planetConfig;
+	}
+
+	public List<Collectible> getCurrentVisibleCollectibles() {
+		return currentVisibleCollectibles;
+	}
 }

@@ -18,7 +18,9 @@ public class Models {
 	public static btCollisionShape SHIELD_SHAPE;
 
 	public static Model ARTIFACT_E;
-	public static btCollisionShape ARTIFACT_SHAPE;
+	public static Model ARTIFACT_W;
+	public static Model ARTIFACT_F;
+
 
 	public static void init() {
 		ModelLoader loader = new ObjLoader();
@@ -34,8 +36,8 @@ public class Models {
 		SHIELD_SHAPE = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.65f));
 
 		ARTIFACT_E = loader.loadModel(Gdx.files.internal("models/artifact_e.obj"), param);
-		ARTIFACT_E.calculateBoundingBox(boundingBox);
-		ARTIFACT_SHAPE = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.65f));
+		ARTIFACT_W = loader.loadModel(Gdx.files.internal("models/artifact_w.obj"), param);
+		ARTIFACT_F = loader.loadModel(Gdx.files.internal("models/artifact_f.obj"), param);
 	}
 
 	public static void dispose() {
@@ -44,6 +46,5 @@ public class Models {
 		SHIELD.dispose();
 		SHIELD_SHAPE.dispose();
 		ARTIFACT_E.dispose();
-		ARTIFACT_SHAPE.dispose();
 	}
 }

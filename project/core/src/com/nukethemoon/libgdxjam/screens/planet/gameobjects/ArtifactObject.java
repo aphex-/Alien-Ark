@@ -2,7 +2,6 @@ package com.nukethemoon.libgdxjam.screens.planet.gameobjects;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.nukethemoon.libgdxjam.Models;
-import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
 import com.nukethemoon.libgdxjam.screens.planet.PointWithId;
 
 public class ArtifactObject {
@@ -13,14 +12,14 @@ public class ArtifactObject {
 
 	public ArtifactObject(PointWithId artifactDefinition) {
 		this.definition = artifactDefinition;
-		modelInstance = new ModelInstance(Models.ARTIFACT_E);
+		modelInstance = new ModelInstance(Models.ARTIFACT_F);
 		adjust(0);
 	}
 
 	public void adjust(float height) {
 		modelInstance.transform.setToTranslation(
-				definition.x * ControllerPlanet.TILE_GRAPHIC_SIZE,
-				definition.y * ControllerPlanet.TILE_GRAPHIC_SIZE,
+				PlanetPart.getTileGraphicX(definition.x),
+				PlanetPart.getTileGraphicY(definition.y),
 				height);
 	}
 
