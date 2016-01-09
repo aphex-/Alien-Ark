@@ -26,7 +26,6 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BufferedParticleBatch;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
@@ -123,14 +122,15 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private static String[] KNOWN_PLANETS = new String[] {
 		"planet01",
-		"planet02"
+		"planet02",
+		"planet03"
 	};
 
 	private Ani ani;
-	private ShaderProgram program;
 
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
 		pPlanetIndex = pPlanetIndex % KNOWN_PLANETS.length;
+		//pPlanetIndex = 2;
 
 		ani = new Ani();
 		uiSkin = pUISkin;
@@ -143,8 +143,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		modelBatch = new ModelBatch();
 		miniMapModelBatch = new ModelBatch();
-
-
 
 		environment = new Environment();
 

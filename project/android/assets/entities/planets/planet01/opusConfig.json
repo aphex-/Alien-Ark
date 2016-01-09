@@ -189,7 +189,7 @@
     "seedString": "3824352.234789",
     "chunkSize": 15,
     "chunkOverlap": 1,
-    "name": "world01",
+    "name": "planet01",
     "layerIds": [
       "EditorDefaultLayer"
     ]
