@@ -130,10 +130,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private ShaderProgram program;
 
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
-		if (pPlanetIndex > 0) {
-			pPlanetIndex = 0;
-		}
-		pPlanetIndex = 0;
+		pPlanetIndex = pPlanetIndex % KNOWN_PLANETS.length;
 
 		ani = new Ani();
 		uiSkin = pUISkin;
