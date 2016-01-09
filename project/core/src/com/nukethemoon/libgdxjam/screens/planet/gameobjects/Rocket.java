@@ -3,12 +3,17 @@ package com.nukethemoon.libgdxjam.screens.planet.gameobjects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -27,14 +32,18 @@ public class Rocket extends GameObject implements Disposable {
 
 
 	private static final float THIRD_PERSON_OFFSET_Z = 6;
+	private static final int MIN_DAMAGE_DELAY_MILLIS = 100;
 	private static final Vector3 START_POSITION = new Vector3(0, 0, 30);
 	private static final Vector3 LAUNCH_IMPULSE = new Vector3(0, 0, 55);
 	private static final int LAUNCH_INDESTRUCTIBLE_TICKS = 30;
 	private static final float FUEL_CONSUMPTION = 0.1f;
 
 	private long ticksSinceLastLaunch = 0;
+	private long lastDamageTime = -1;
 
-	private final ModelInstance modelInstance;
+	private final ModelInstance rocketModelInstance;
+	private final ModelInstance shieldModelInstance;
+	private final ModelInstance tractorBeamModelInstance;
 	private final Model model;
 
 	private float speed = 30f; // min 20f max 100f
@@ -60,6 +69,8 @@ public class Rocket extends GameObject implements Disposable {
 	private Vector3 tmpPosition = new Vector3();
 	private Vector3 tmpMovement = new Vector3();
 
+	private Vector3 tmpVec0 = new Vector3();
+
 	private boolean thrusting = true;
 	private boolean moving = true;
 	private boolean exploded = false;
@@ -68,7 +79,6 @@ public class Rocket extends GameObject implements Disposable {
 
 	private float tickFuelCount = 1;
 
-
 	private int maxFuel = SpaceShipProperties.properties.computeMaxFuel();
 
 
@@ -76,25 +86,40 @@ public class Rocket extends GameObject implements Disposable {
 		// init graphic
 		ModelLoader loader = new ObjLoader();
 		model = loader.loadModel(Gdx.files.internal("models/rocket.obj"));
-		modelInstance = new ModelInstance(model);
+		rocketModelInstance = new ModelInstance(model);
+
+
+		ModelBuilder modelBuilder = new ModelBuilder();
+		final long attributes = VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal;
+
+		// damage shield
+		Material shieldMaterial = new Material();
+		shieldMaterial.set(ColorAttribute.createDiffuse(0, 0.3f, 1, 0.5f));
+		shieldMaterial.set(ColorAttribute.createSpecular(1, 1, 1, 1f));
+		shieldMaterial.set(new BlendingAttribute(1f));
+		Model shieldModel = modelBuilder.createSphere(4, 4, 4, 32, 32, shieldMaterial, attributes);
+		shieldModelInstance = new ModelInstance(shieldModel);
+
+		Material tractorBeamMaterial = new Material();
+		tractorBeamMaterial.set(ColorAttribute.createDiffuse(0, 0, 1, 1));
+		tractorBeamMaterial.set(ColorAttribute.createSpecular(1, 1, 1, 1f));
+		tractorBeamMaterial.set(new BlendingAttribute(0.1f));
+		Model tractorBeamModel = modelBuilder.createSphere(5, 5, 5, 32, 32, tractorBeamMaterial, attributes);
+		tractorBeamModelInstance = new ModelInstance(tractorBeamModel);
+
 
 		// init physic
-
 		BoundingBox boundingBox = new BoundingBox();
 		model.calculateBoundingBox(boundingBox);
 		btCollisionShape shape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.5f));
-
-		//btCollisionShape shape = new btSphereShape(1);
-
-		modelInstance.transform.setToTranslation(START_POSITION);
-
+		rocketModelInstance.transform.setToTranslation(START_POSITION);
 		float mass = 1;
 		addRigidBody(shape, mass, friction, CollisionTypes.ROCKET.mask,
-				new RocketMotionState(modelInstance.transform));
-
+				new RocketMotionState(rocketModelInstance.transform));
 		rigidBodyList.get(0).setActivationState(4); // disable deactivation
 		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(speed));
 
+		// init properties
 		SpaceShipProperties.properties.currentFuel = SpaceShipProperties.INITIAL_MAX_FUEL;
 		SpaceShipProperties.properties.currentShield = SpaceShipProperties.INITIAL_MAX_SHIELD;
 	}
@@ -137,7 +162,12 @@ public class Rocket extends GameObject implements Disposable {
 		rotationMatrix.setToRotation(Vector3.Z, zRotation);
 		rotationMatrix.rotate(Vector3.X, xRotation);
 		rotationMatrix.rotate(Vector3.Y, drill);
-		modelInstance.transform.mul(rotationMatrix);
+		rocketModelInstance.transform.mul(rotationMatrix);
+		shieldModelInstance.transform.set(rocketModelInstance.transform);
+		tmpVec0.set(getDirection()).scl(1.5f);
+		shieldModelInstance.transform.trn(tmpVec0);
+		tractorBeamModelInstance.transform.set(rocketModelInstance.transform);
+		tractorBeamModelInstance.transform.trn(tmpVec0);
 
 		if (rigidBodyList.get(0).getLinearVelocity().len() < 0.1 && !thrusting) {
 			if (moving) {
@@ -287,10 +317,21 @@ public class Rocket extends GameObject implements Disposable {
 						  ParticleEffect effectExplosion) {
 
 		if (!exploded) {
-			modelBatch.render(modelInstance, environment);
+			modelBatch.render(rocketModelInstance, environment);
+
+			long damageDelay = System.currentTimeMillis() - lastDamageTime;
+			if (damageDelay < MIN_DAMAGE_DELAY_MILLIS) {
+				float opacity = (float) damageDelay / (float) (MIN_DAMAGE_DELAY_MILLIS);
+				((BlendingAttribute) shieldModelInstance.materials.get(0).get(BlendingAttribute.Type)).opacity = opacity;
+				modelBatch.render(shieldModelInstance, environment);
+			}
+
+			if (!moving && !thrusting) {
+				modelBatch.render(tractorBeamModelInstance, environment);
+			}
 		}
-		thrustEffect.setTransform(modelInstance.transform);
-		effectExplosion.setTransform(modelInstance.transform);
+		thrustEffect.setTransform(rocketModelInstance.transform);
+		effectExplosion.setTransform(rocketModelInstance.transform);
 	}
 
 	@Override
@@ -329,9 +370,14 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
-	private void dealDamage() {
+	private void dealDamage(int damage) {
+		if (System.currentTimeMillis() - lastDamageTime < MIN_DAMAGE_DELAY_MILLIS) {
+			return;
+		}
+		lastDamageTime = System.currentTimeMillis();
+
 		if (ticksSinceLastLaunch > LAUNCH_INDESTRUCTIBLE_TICKS) {
-			SpaceShipProperties.properties.currentShield--;
+			SpaceShipProperties.properties.currentShield -= damage;
 			if (listener != null) {
 				listener.onRocketDamage();
 			}
@@ -343,11 +389,11 @@ public class Rocket extends GameObject implements Disposable {
 
 	public void handleCollision(CollisionTypes type) {
 		if (type == CollisionTypes.GROUND && thrusting) {
-			dealDamage();
+			dealDamage(1);
 		}
 
 		if (type == CollisionTypes.WATER) {
-			onExplode();
+			dealDamage(2);
 		}
 
 		if (type == CollisionTypes.FUEL) {

@@ -28,7 +28,8 @@ public class AudioController {
 			"hit_deep.mp3",
 			"hit_high.mp3",
 			"explosion.mp3",
-			"bonus.mp3"
+			"bonus.mp3",
+			"energy_shield.mp3"
 	};
 
 

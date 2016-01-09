@@ -600,7 +600,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRocketDamage() {
-		App.audioController.playSound("hit_high.mp3");
+		App.audioController.playSound("energy_shield.mp3");
 		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
 	}
 
