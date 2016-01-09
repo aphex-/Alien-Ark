@@ -41,6 +41,7 @@ import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
+import com.nukethemoon.libgdxjam.screens.planet.animations.TractorBeamAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWindow;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
@@ -632,7 +633,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
 	}
 
-	Vector3 intersectionTmp = new Vector3();
 
 	@Override
 	public void onRocketChangedTilePosition() {
@@ -641,6 +641,23 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		if (!pause) {
 			planetController.updateRequestCenter(rocket.getPosition(), rocket.getDirection());
 		}
+	}
+
+	private TractorBeamAnimation beamAnimation;
+
+	@Override
+	public void onRocketScanStart() {
+		showToast("Scan started!");
+		rocket.setTractorBeamVisibility(true);
+		beamAnimation = new TractorBeamAnimation(rocket.getTractorBeamModelInstance(), 4);
+		ani.add(beamAnimation);
+	}
+
+	@Override
+	public void onRocketScanEnd() {
+		showToast("Scan canceled!");
+		rocket.setTractorBeamVisibility(false);
+		ani.forceStop(beamAnimation);
 	}
 
 	// === physic events ===

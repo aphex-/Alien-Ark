@@ -32,14 +32,17 @@ public class Rocket extends GameObject implements Disposable {
 
 
 	private static final float THIRD_PERSON_OFFSET_Z = 6;
-	private static final int MIN_DAMAGE_DELAY_MILLIS = 100;
+	private static final int MIN_DAMAGE_DELAY_MILLIS = 200;
 	private static final Vector3 START_POSITION = new Vector3(0, 0, 30);
 	private static final Vector3 LAUNCH_IMPULSE = new Vector3(0, 0, 55);
 	private static final int LAUNCH_INDESTRUCTIBLE_TICKS = 30;
 	private static final float FUEL_CONSUMPTION = 0.1f;
+	private static final int SCAN_DELAY = 50;
 
 	private long ticksSinceLastLaunch = 0;
 	private long lastDamageTime = -1;
+
+	private int currentScanDelay = SCAN_DELAY;
 
 	private final ModelInstance rocketModelInstance;
 	private final ModelInstance shieldModelInstance;
@@ -74,6 +77,8 @@ public class Rocket extends GameObject implements Disposable {
 	private boolean thrusting = true;
 	private boolean moving = true;
 	private boolean exploded = false;
+
+	private boolean tractorBeamVisible = false;
 
 	private RocketListener listener;
 
@@ -163,11 +168,15 @@ public class Rocket extends GameObject implements Disposable {
 		rotationMatrix.rotate(Vector3.X, xRotation);
 		rotationMatrix.rotate(Vector3.Y, drill);
 		rocketModelInstance.transform.mul(rotationMatrix);
-		shieldModelInstance.transform.set(rocketModelInstance.transform);
-		tmpVec0.set(getDirection()).scl(1.5f);
-		shieldModelInstance.transform.trn(tmpVec0);
-		tractorBeamModelInstance.transform.set(rocketModelInstance.transform);
-		tractorBeamModelInstance.transform.trn(tmpVec0);
+
+		if (moving) {
+			shieldModelInstance.transform.set(rocketModelInstance.transform);
+			tmpVec0.set(getDirection()).scl(1.5f);
+			shieldModelInstance.transform.trn(tmpVec0);
+			tractorBeamModelInstance.transform.set(rocketModelInstance.transform);
+			tractorBeamModelInstance.transform.trn(tmpVec0);
+		}
+
 
 		if (rigidBodyList.get(0).getLinearVelocity().len() < 0.1 && !thrusting) {
 			if (moving) {
@@ -214,6 +223,10 @@ public class Rocket extends GameObject implements Disposable {
 		if (isOutOfFuel()) {
 			return;
 		}
+		if (currentScanDelay <= 0) {
+			listener.onRocketScanEnd();
+		}
+		currentScanDelay = SCAN_DELAY;
 		ticksSinceLastLaunch = 0;
 		rigidBodyList.get(0).applyCentralImpulse(LAUNCH_IMPULSE);
 		moving = true;
@@ -326,7 +339,7 @@ public class Rocket extends GameObject implements Disposable {
 				modelBatch.render(shieldModelInstance, environment);
 			}
 
-			if (!moving && !thrusting) {
+			if (tractorBeamVisible) {
 				modelBatch.render(tractorBeamModelInstance, environment);
 			}
 		}
@@ -348,6 +361,15 @@ public class Rocket extends GameObject implements Disposable {
 		}
 		if (moving) {
 			ticksSinceLastLaunch++;
+		}
+
+		if (!moving && !thrusting) {
+			if (currentScanDelay > 0) {
+				currentScanDelay--;
+				if (currentScanDelay == 0) {
+					listener.onRocketScanStart();
+				}
+			}
 		}
 
 		if (thrusting) {
@@ -389,11 +411,11 @@ public class Rocket extends GameObject implements Disposable {
 
 	public void handleCollision(CollisionTypes type) {
 		if (type == CollisionTypes.GROUND && thrusting) {
-			dealDamage(1);
+			dealDamage(10);
 		}
 
 		if (type == CollisionTypes.WATER) {
-			dealDamage(2);
+			dealDamage(20);
 		}
 
 		if (type == CollisionTypes.FUEL) {
@@ -464,5 +486,13 @@ public class Rocket extends GameObject implements Disposable {
 
 	public float getGroundZRotation() {
 		return zRotation;
+	}
+
+	public void setTractorBeamVisibility(boolean visible) {
+		tractorBeamVisible = visible;
+	}
+
+	public ModelInstance getTractorBeamModelInstance() {
+		return tractorBeamModelInstance;
 	}
 }
