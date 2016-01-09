@@ -13,7 +13,7 @@ public class SingleMaterialWindow extends ClosableWindow {
 		MaterialForm form = new MaterialForm(skin, material, id, new MaterialForm.MaterialChangeListener() {
 			@Override
 			public void onMaterialChange(Material material) {
-
+				pack();
 			}
 		});
 

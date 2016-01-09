@@ -29,6 +29,8 @@ public class Styles {
 	public static Label.LabelStyle LABEL_01;
 	public static Label.LabelStyle LABEL_02;
 
+	public static Label.LabelStyle LABEL_DEV;
+
 	public static Label.LabelStyle LABEL_HUD_NUMBERS;
 
 	public static Skin UI_SKIN;
@@ -59,6 +61,9 @@ public class Styles {
 
 		LABEL_02 = new Label.LabelStyle(standardLabelStyle);
 		LABEL_02.font = FONT_DOSIS_MEDIUM_BORDER;
+
+		LABEL_DEV = new Label.LabelStyle(standardLabelStyle);
+		LABEL_DEV.font = FONT_ENTSANS_SMALL_BORDER;
 
 		LABEL_HUD_NUMBERS = new Label.LabelStyle(standardLabelStyle);
 		LABEL_HUD_NUMBERS.font = FONT_ENTSANS_SMALL_BORDER;

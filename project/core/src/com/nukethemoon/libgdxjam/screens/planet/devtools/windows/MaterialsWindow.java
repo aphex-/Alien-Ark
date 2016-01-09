@@ -18,15 +18,15 @@ public class MaterialsWindow extends ClosableWindow {
 		super("Materials", skin);
 		this.stage = stage;
 		add(content);
-
 		pack();
 	}
 
-	public void load(PlanetConfig config) {
+	public void load(final PlanetConfig config) {
 		content.clear();
 		int i = 0;
 		for (final PlanetConfig.LandscapeLayerConfig layerConfig : config.layerConfigs) {
 			TextButton button = new TextButton(i + " " + layerConfig.name, getSkin());
+			button.pad(3);
 			button.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
@@ -38,7 +38,19 @@ public class MaterialsWindow extends ClosableWindow {
 			content.row();
 			i++;
 		}
+
+		TextButton saveButton = new TextButton("save", getSkin());
+		saveButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				PlanetConfig.savePlanetConfig(config);
+			}
+		});
+		content.add(saveButton);
+
 		content.pack();
+
+
 		pack();
 	}
 }

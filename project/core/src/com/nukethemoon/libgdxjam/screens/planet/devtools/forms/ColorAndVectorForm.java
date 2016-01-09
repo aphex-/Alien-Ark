@@ -14,13 +14,13 @@ public class ColorAndVectorForm extends Table {
 
 	public ColorAndVectorForm(Skin skin, String title, final Color color, final Vector3 vector3, final ColorAndVectorChangeListener listener) {
 
-		ColorForm colorForm = new ColorForm(skin, color, new ColorForm.ColorChangeListener() {
+		ColorForm colorForm = new ColorForm(skin, title, color, new ColorForm.ColorChangeListener() {
 			@Override
 			public void onColorChange(float r, float g, float b) {
 				color.set(r, g, b, 1);
 				listener.onChange(color, vector3);
 			}
-		});
+		}, null);
 
 		VectorForm vectorForm = new VectorForm(skin, vector3, new VectorForm.VectorChangeListener() {
 			@Override

@@ -11,8 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 public class ColorAttributeForm extends ColorForm {
 
 
-	public ColorAttributeForm(Skin skin, final ColorAttribute colorAttribute, final ColorAttributeChangeListener listener) {
-		super(skin, colorAttribute.color, new ColorChangeListener() {
+	public ColorAttributeForm(Skin skin, String title, final ColorAttribute colorAttribute, final ColorAttributeChangeListener listener) {
+		super(skin, title, colorAttribute.color, new ColorChangeListener() {
 			@Override
 			public void onColorChange(float r, float g, float b) {
 				colorAttribute.color.r = r;
@@ -20,7 +20,7 @@ public class ColorAttributeForm extends ColorForm {
 				colorAttribute.color.b = b;
 				listener.onColorAttributeChange(colorAttribute);
 			}
-		});
+		}, null);
 
 		row();
 		add(new Label("Attribute", skin));
