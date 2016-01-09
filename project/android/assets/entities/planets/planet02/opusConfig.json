@@ -75,7 +75,12 @@
 		"id": "continentcombi01",
 		"worldSeedModifier": 0.0,
 		"scale": 1.0,
-		"modifiers": []
+		"modifiers": [
+		  {
+			"type": "Limit",
+			"value": 0.0
+		  }
+		]
 	  }
 	},
 	{
@@ -93,7 +98,7 @@
 		"modifiers": [
 		  {
 			"type": "Multiply",
-			"value": 0.8
+			"value": 0.6
 		  }
 		]
 	  }
@@ -113,7 +118,7 @@
 		"modifiers": [
 		  {
 			"type": "Multiply",
-			"value": 0.6
+			"value": 0.5
 		  }
 		]
 	  }
@@ -135,7 +140,12 @@
 		"id": "landscapecombi",
 		"worldSeedModifier": 0.0,
 		"scale": 1.0,
-		"modifiers": []
+		"modifiers": [
+		  {
+			"type": "Limit",
+			"value": 0.0
+		  }
+		]
 	  }
 	},
 	{
@@ -151,10 +161,10 @@
 	{
 	  "type": "AContinentConfig",
 	  "data": {
-		"size": 0.8,
+		"size": 0.7,
 		"edge": 0.05,
 		"iterations": 2,
-		"growth": 3.0,
+		"growth": 2.0,
 		"noiseAlgorithmName": "SimplexNoise",
 		"smoothEdge": false,
 		"id": "continent03",

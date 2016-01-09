@@ -35,7 +35,7 @@ import java.util.List;
 public class PlanetPart extends GameObject {
 
 
-	private static final float LANDSCAPE_MAX_HEIGHT = 25;
+	private static final float LANDSCAPE_MAX_HEIGHT = 40;
 	private static final float COLLECTIBLE_GROUND_OFFSET = 5;
 
 	private final int VERTEX_ATTRIBUTES = VertexAttributes.Usage.Position
