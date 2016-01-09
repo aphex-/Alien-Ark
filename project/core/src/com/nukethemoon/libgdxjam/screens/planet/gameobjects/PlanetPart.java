@@ -35,7 +35,6 @@ import java.util.List;
 public class PlanetPart extends GameObject {
 
 
-	private static final float LANDSCAPE_MAX_HEIGHT = 40;
 	private static final float COLLECTIBLE_GROUND_OFFSET = 5;
 
 	private final int VERTEX_ATTRIBUTES = VertexAttributes.Usage.Position
@@ -233,7 +232,7 @@ public class PlanetPart extends GameObject {
 
 		int randomTileX = (int) (noise01 * chunk.getWidth());
 		int randomTileY = (int) (noise02 * chunk.getHeight());
-		float graphicZ = chunk.getRelative(randomTileX, randomTileY, 0) * LANDSCAPE_MAX_HEIGHT + COLLECTIBLE_GROUND_OFFSET;
+		float graphicZ = chunk.getRelative(randomTileX, randomTileY, 0) * planetConfig.landscapeHeight + COLLECTIBLE_GROUND_OFFSET;
 		float graphicX = getGraphicOffsetX(chunk) + (randomTileX * tileSize);
 		float graphicY = getGraphicOffsetY(chunk) + (randomTileY * tileSize);
 		Vector3 position = new Vector3(graphicX, graphicY, graphicZ);
@@ -299,10 +298,10 @@ public class PlanetPart extends GameObject {
 
 	private void createTile(float offsetX, float offsetY, float height0, float height1, float height2, float height3) {
 
-		tmpCorner0.set(offsetX, offsetY, height0 * LANDSCAPE_MAX_HEIGHT);
-		tmpCorner1.set(offsetX, offsetY + tileSize, height1 * LANDSCAPE_MAX_HEIGHT);
-		tmpCorner2.set(offsetX + tileSize, offsetY + tileSize, height2 * LANDSCAPE_MAX_HEIGHT);
-		tmpCorner3.set(offsetX + tileSize, offsetY, height3 * LANDSCAPE_MAX_HEIGHT);
+		tmpCorner0.set(offsetX, offsetY, height0 * planetConfig.landscapeHeight);
+		tmpCorner1.set(offsetX, offsetY + tileSize, height1 * planetConfig.landscapeHeight);
+		tmpCorner2.set(offsetX + tileSize, offsetY + tileSize, height2 * planetConfig.landscapeHeight);
+		tmpCorner3.set(offsetX + tileSize, offsetY, height3 * planetConfig.landscapeHeight);
 
 		int topologyIndex = getTopologyIndex(height0, height1, height2, height3);
 
@@ -401,7 +400,7 @@ public class PlanetPart extends GameObject {
 		MeshBuilder builder = meshBuilders.get(landscapeIndex);
 		float WATER_HEIGHT = interpreter.it.get(landscapeIndex).endValue;
 		builder.begin(VERTEX_ATTRIBUTES, GL20.GL_TRIANGLES);
-		float z = WATER_HEIGHT * LANDSCAPE_MAX_HEIGHT;
+		float z = WATER_HEIGHT * planetConfig.landscapeHeight;
 		float width = chunk.getWidth() * tileSize;
 		float height = chunk.getHeight() * tileSize;
 

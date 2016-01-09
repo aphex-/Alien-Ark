@@ -133,7 +133,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		if (pPlanetIndex > 0) {
 			pPlanetIndex = 0;
 		}
-		pPlanetIndex = 1;
+		pPlanetIndex = 0;
 
 		ani = new Ani();
 		uiSkin = pUISkin;
