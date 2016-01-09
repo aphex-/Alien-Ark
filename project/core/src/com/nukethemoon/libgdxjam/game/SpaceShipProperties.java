@@ -5,7 +5,9 @@ import com.nukethemoon.libgdxjam.game.artifacts.AttributeArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.OperatorArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.ValueArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Decrease;
+import com.nukethemoon.libgdxjam.game.artifacts.operators.Divide;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Increase;
+import com.nukethemoon.libgdxjam.game.artifacts.operators.Multiply;
 import com.nukethemoon.libgdxjam.game.attributes.FuelConsumption;
 import com.nukethemoon.libgdxjam.game.attributes.MaxFuel;
 import com.nukethemoon.libgdxjam.game.attributes.Speed;
@@ -44,6 +46,9 @@ public class SpaceShipProperties {
 		artifacts.add(a);
 		artifacts.add(v);
 		artifacts.add(o);
+
+		artifacts.add(new Divide());
+		artifacts.add(new Multiply());
 
 		Alien alien = Alien.createAlien(a, o, v);
 		aliens.add(alien);

@@ -1,6 +1,7 @@
 package com.nukethemoon.libgdxjam.game.artifacts;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.game.Artifact;
 import com.nukethemoon.libgdxjam.game.attributes.Speed;
@@ -19,6 +20,6 @@ public class ValueArtifact extends Artifact {
 
 	@Override
 	public TextureRegion getTexture() {
-		return App.TEXTURES.findRegion("slot02");
+		return App.TEXTURES.findRegion("slot00");
 	}
 }

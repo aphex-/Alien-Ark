@@ -1,145 +1,250 @@
 
 game.png
-size: 1024,512
+size: 1024,1024
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 buttonbg01
   rotate: false
-  xy: 417, 391
+  xy: 105, 521
   size: 92, 100
   orig: 92, 100
   offset: 0, 0
   index: -1
 exhaust_placeholder
   rotate: false
-  xy: 257, 84
+  xy: 959, 760
   size: 40, 105
   orig: 40, 105
   offset: 0, 0
   index: -1
 ntm_logo
   rotate: false
-  xy: 2, 39
+  xy: 846, 867
   size: 150, 150
   orig: 150, 150
   offset: 0, 0
   index: -1
 placeholder_alien
   rotate: false
-  xy: 304, 283
+  xy: 2, 418
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 planet_1_placeholder
   rotate: false
-  xy: 304, 385
+  xy: 846, 759
   size: 111, 106
   orig: 111, 106
   offset: 0, 0
   index: -1
 planet_2_placeholder
   rotate: false
-  xy: 341, 56
+  xy: 84, 2
   size: 65, 65
   orig: 65, 65
   offset: 0, 0
   index: -1
 planet_3_placeholder
   rotate: false
-  xy: 154, 88
+  xy: 2, 520
   size: 101, 101
   orig: 101, 101
   offset: 0, 0
   index: -1
 popupbg01
   rotate: false
-  xy: 2, 3
+  xy: 846, 723
   size: 34, 34
   orig: 34, 34
   offset: 0, 0
   index: -1
+row01
+  rotate: false
+  xy: 304, 975
+  size: 540, 42
+  orig: 540, 42
+  offset: 0, 0
+  index: -1
+row02
+  rotate: false
+  xy: 304, 931
+  size: 540, 42
+  orig: 540, 42
+  offset: 0, 0
+  index: -1
+row03
+  rotate: false
+  xy: 304, 887
+  size: 540, 42
+  orig: 540, 42
+  offset: 0, 0
+  index: -1
+row04
+  rotate: false
+  xy: 304, 843
+  size: 540, 42
+  orig: 540, 42
+  offset: 0, 0
+  index: -1
+row05
+  rotate: false
+  xy: 304, 799
+  size: 540, 42
+  orig: 540, 42
+  offset: 0, 0
+  index: -1
+row06
+  rotate: false
+  xy: 304, 755
+  size: 540, 42
+  orig: 540, 42
+  offset: 0, 0
+  index: -1
+row07
+  rotate: false
+  xy: 304, 711
+  size: 540, 42
+  orig: 540, 42
+  offset: 0, 0
+  index: -1
+row08
+  rotate: false
+  xy: 2, 667
+  size: 540, 42
+  orig: 540, 42
+  offset: 0, 0
+  index: -1
+row09
+  rotate: false
+  xy: 2, 623
+  size: 540, 42
+  orig: 540, 42
+  offset: 0, 0
+  index: -1
 ship_placeholder
   rotate: false
-  xy: 299, 84
+  xy: 84, 311
   size: 40, 105
   orig: 40, 105
   offset: 0, 0
   index: -1
+slot00
+  rotate: false
+  xy: 544, 629
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
 slot01
   rotate: false
-  xy: 304, 201
+  xy: 2, 336
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot02
   rotate: false
-  xy: 511, 411
+  xy: 199, 541
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot03
   rotate: false
-  xy: 593, 411
+  xy: 626, 629
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot04
   rotate: false
-  xy: 675, 411
+  xy: 2, 254
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot05
   rotate: false
-  xy: 757, 411
+  xy: 281, 541
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot06
   rotate: false
-  xy: 839, 411
+  xy: 708, 629
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot07
   rotate: false
-  xy: 921, 411
+  xy: 2, 172
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot08
   rotate: false
-  xy: 154, 6
+  xy: 363, 541
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot09
   rotate: false
-  xy: 236, 2
+  xy: 2, 90
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotDrop
   rotate: false
-  xy: 341, 123
+  xy: 84, 69
   size: 76, 76
   orig: 76, 76
   offset: 0, 0
   index: -1
+slotOK
+  rotate: false
+  xy: 445, 541
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+slotOperatorDivide
+  rotate: false
+  xy: 2, 8
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+slotOperatorMinus
+  rotate: false
+  xy: 790, 629
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+slotOperatorMultiply
+  rotate: false
+  xy: 84, 229
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+slotOperatorPlus
+  rotate: false
+  xy: 84, 147
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
 sun_placeholder
   rotate: false
-  xy: 2, 191
+  xy: 2, 717
   size: 300, 300
   orig: 300, 300
   offset: 0, 0

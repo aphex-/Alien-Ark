@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -21,6 +22,21 @@ import com.nukethemoon.libgdxjam.game.Artifact;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 
 import java.util.List;
+
+//TODO Add properties list (am besten nicht-scrollend)
+//TODO merge von Artifatcs
+//TODO cancel von Artifatcs merges
+//TODO Korrekte Attributartifact texturen
+//TODO Korrekte Valueartifact zahl
+//TODO Korrekte Alien texturen
+//TODO Alien hint text
+//TODO Artifact hint text, wenn Attr. noch unbekannt ("???")
+//TODO Artifact hint text, wenn Attr. bekannt ("Speed")
+//TODO close button
+//TODO anzahl aliens/artifacts
+//TODO Scroll shadow
+//TODO (optional) anzahl aliens beschränken
+//TODO (optional) delete crew memeber
 
 public class ArkScreen implements Screen {
 
@@ -83,7 +99,20 @@ public class ArkScreen implements Screen {
 		addDropTarget(workbenchSlot3);
 
 
-		multiplexer.addProcessor(stage);
+		Table propertiesTable = new Table();
+		Label label = new Label("SPEED", skin);
+
+		label.getStyle().background = new TextureRegionDrawable(App.TEXTURES.findRegion("row03"));
+
+		propertiesTable.add(label).width(540);
+		propertiesTable.setX(400);
+		propertiesTable.setY(250);
+
+
+		propertiesTable.setWidth(540);
+		stage.addActor(propertiesTable);
+
+				multiplexer.addProcessor(stage);
 
 	}
 
@@ -171,7 +200,7 @@ public class ArkScreen implements Screen {
 
 		for (int i = 0; i < aliens.size(); ++i) {
 			final Alien alien = aliens.get(i);
-			final Image img = new Image(App.TEXTURES.findRegion("placeholder_alien"));
+			final Image img = new Image(alien.getTexture());
 
 			alienTable.add(img).space(5).width(75).height(75);
 
