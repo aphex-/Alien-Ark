@@ -29,7 +29,9 @@ public class AudioController {
 			"hit_high.mp3",
 			"explosion.mp3",
 			"bonus.mp3",
-			"energy_shield.mp3"
+			"energy_shield.mp3",
+			"match_highlight.mp3",
+			"thrust.wav"
 	};
 
 
@@ -52,6 +54,9 @@ public class AudioController {
 		}
 	}
 
+	public Sound getSound(String name) {
+		return soundMap.get(name);
+	}
 
 	public void playSound(String pSoundName) {
 		playSound(pSoundName, 1f);

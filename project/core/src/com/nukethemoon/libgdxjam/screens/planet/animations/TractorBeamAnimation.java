@@ -2,6 +2,7 @@ package com.nukethemoon.libgdxjam.screens.planet.animations;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
+import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.tools.ani.BaseAnimation;
 
 public class TractorBeamAnimation extends BaseAnimation {
@@ -18,6 +19,7 @@ public class TractorBeamAnimation extends BaseAnimation {
 		modelInstance.transform.getScale(baseScale);
 		modelInstance.transform.getTranslation(baseTranslation);
 		loopInfinite();
+		App.audioController.playSound("match_highlight.mp3");
 	}
 
 	@Override
@@ -26,5 +28,10 @@ public class TractorBeamAnimation extends BaseAnimation {
 		modelInstance.transform.setToTranslationAndScaling(
 				baseTranslation.x, baseTranslation.y, baseTranslation.z,
 				baseScale.x + scale, baseScale.y + scale, baseScale.z + scale);
+	}
+
+	@Override
+	protected void onLoopStart(int pLoopIndex) {
+		App.audioController.playSound("match_highlight.mp3");
 	}
 }

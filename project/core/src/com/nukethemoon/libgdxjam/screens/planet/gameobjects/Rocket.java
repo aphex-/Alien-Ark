@@ -2,6 +2,7 @@ package com.nukethemoon.libgdxjam.screens.planet.gameobjects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -21,6 +22,7 @@ import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 import com.badlogic.gdx.utils.Disposable;
+import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
@@ -38,6 +40,7 @@ public class Rocket extends GameObject implements Disposable {
 	private static final int LAUNCH_INDESTRUCTIBLE_TICKS = 30;
 	private static final float FUEL_CONSUMPTION = 0.1f;
 	private static final int SCAN_DELAY = 50;
+	private final Sound thrustSound;
 
 	private long ticksSinceLastLaunch = 0;
 	private long lastDamageTime = -1;
@@ -127,6 +130,8 @@ public class Rocket extends GameObject implements Disposable {
 		// init properties
 		SpaceShipProperties.properties.currentFuel = SpaceShipProperties.INITIAL_MAX_FUEL;
 		SpaceShipProperties.properties.currentShield = SpaceShipProperties.INITIAL_MAX_SHIELD;
+
+		thrustSound = App.audioController.getSound("thrust.wav");
 	}
 
 	public void setListener(RocketListener listener) {
@@ -246,6 +251,10 @@ public class Rocket extends GameObject implements Disposable {
 		if (isOutOfFuel()) {
 			return;
 		}
+
+		thrustSound.loop();
+		thrustSound.play();
+
 		if (!moving) {
 			onLaunch();
 		}
@@ -256,6 +265,7 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	private void onThrustDisabled() {
+		thrustSound.stop();
 		if (listener != null) {
 			listener.onRocketDisabledThrust();
 		}
@@ -494,5 +504,9 @@ public class Rocket extends GameObject implements Disposable {
 
 	public ModelInstance getTractorBeamModelInstance() {
 		return tractorBeamModelInstance;
+	}
+
+	public float getScanRadus() {
+		return 5f;
 	}
 }

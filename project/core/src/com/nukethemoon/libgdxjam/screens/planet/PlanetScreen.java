@@ -591,6 +591,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRocketDisabledThrust() {
+		showToast("Landing procedure...");
 		particleSystem.remove(effectThrust);
 	}
 
