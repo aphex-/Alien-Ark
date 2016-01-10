@@ -40,6 +40,7 @@ public class Rocket extends GameObject implements Disposable {
 	private static final int LAUNCH_INDESTRUCTIBLE_TICKS = 30;
 	private static final float FUEL_CONSUMPTION = 0.1f;
 	private static final int SCAN_DELAY = 50;
+	private static final int THRUST_START_FUEL_COST = 15;
 	private final Sound thrustSound;
 
 	private long ticksSinceLastLaunch = 0;
@@ -248,6 +249,7 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	private void onThrustEnabled() {
+		SpaceShipProperties.properties.currentFuel -= THRUST_START_FUEL_COST;
 		if (isOutOfFuel()) {
 			return;
 		}

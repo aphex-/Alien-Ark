@@ -426,6 +426,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		miniMapBatch.begin();
 		drawMiniMapDistanceText(planetController.getNearestArtifactPosition(), rocketPosition, groundZRotation);
 		drawMiniMapDistanceText(tmpVec5.set(0, 0), rocketPosition, groundZRotation);
+		if (Config.DEBUG) {
+			int tileX = (int) (rocketPosition.x / ControllerPlanet.TILE_GRAPHIC_SIZE);
+			int tileY = (int) (rocketPosition.y / ControllerPlanet.TILE_GRAPHIC_SIZE);
+
+			Styles.FONT_LIBERATION_SMALL_BORDER.draw(miniMapBatch, "x " + tileX  + " y " + tileY, 0, 20);
+		}
 		miniMapBatch.end();
 	}
 
