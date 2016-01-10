@@ -34,14 +34,14 @@ minimap_artifact
   index: -1
 minimap_fuel
   rotate: false
-  xy: 921, 642
+  xy: 248, 250
   size: 10, 10
   orig: 10, 10
   offset: 0, 0
   index: -1
 minimap_shield
   rotate: false
-  xy: 248, 250
+  xy: 115, 180
   size: 10, 10
   orig: 10, 10
   offset: 0, 0
@@ -58,6 +58,13 @@ placeholder_alien
   xy: 921, 818
   size: 100, 100
   orig: 100, 100
+  offset: 0, 0
+  index: -1
+planetPortal
+  rotate: false
+  xy: 921, 632
+  size: 20, 20
+  orig: 20, 20
   offset: 0, 0
   index: -1
 planet_1_placeholder
