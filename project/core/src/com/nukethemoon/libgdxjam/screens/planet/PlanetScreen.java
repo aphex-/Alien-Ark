@@ -720,6 +720,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 						showToast("Scan result: NULL!");
 					} else {
 						showToast("Artifact collected!");
+						App.audioController.playSound("bonus_stream.mp3");
 
 						ArtifactCollectAnimation artifactCollectAnimation = new ArtifactCollectAnimation(artifactObject, rocket.getPosition(), new AnimationFinishedListener() {
 							@Override

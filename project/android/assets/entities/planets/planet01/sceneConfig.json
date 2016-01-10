@@ -65,7 +65,17 @@
     {
       "x": 110,
       "y": 80,
-      "id": "myArtifactId"
+      "id": "art0001_planet01"
+    },
+    {
+      "x": 500,
+      "y": 1080,
+      "id": "art0002_planet01"
+    },
+    {
+      "x": 1500,
+      "y": 3080,
+      "id": "art0003_planet01"
     }
   ],
   "layerConfigs": [

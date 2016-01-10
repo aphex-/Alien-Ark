@@ -1,7 +1,7 @@
 package com.nukethemoon.libgdxjam.screens.planet.gameobjects;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.nukethemoon.libgdxjam.Models;
+import com.nukethemoon.libgdxjam.ArtifactDefitnitions;
 import com.nukethemoon.libgdxjam.screens.planet.PointWithId;
 
 public class ArtifactObject {
@@ -12,7 +12,7 @@ public class ArtifactObject {
 
 	public ArtifactObject(PointWithId artifactDefinition) {
 		this.definition = artifactDefinition;
-		modelInstance = new ModelInstance(Models.ARTIFACT_F);
+		modelInstance = new ModelInstance(ArtifactDefitnitions.getModelOfArtifact(artifactDefinition.id));
 		adjust(0);
 	}
 
