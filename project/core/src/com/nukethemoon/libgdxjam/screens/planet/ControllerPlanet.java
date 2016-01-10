@@ -59,11 +59,18 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private List<Collectible> tmpRemoveList2 = new ArrayList<Collectible>();
 	private List<Point> tmpRemoveList3 = new ArrayList<Point>();
 
+
+	private Vector2 nearestArtifactPosition = new Vector2();
+
 	private Vector2 tmpVec1 = new Vector2();
 	private Vector2 tmpVector1 = new Vector2();
 	private Vector2 tmpVector2 = new Vector2();
 	private Vector3 tmpVec3 = new Vector3();
 	private Vector3 tmpVec4 = new Vector3();
+
+	private Vector2 tmpVec5 = new Vector2();
+	private Vector2 tmpVec6 = new Vector2();
+
 
 	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
 		this.planetConfig = pPlanetConfig;
@@ -88,6 +95,8 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 
 		typeInterpreter = toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter());
+
+		updateNearestArtifact(0, 0);
 	}
 
 	public void requestChunks(List<Point> chunkCoordinates) {
@@ -116,6 +125,24 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 			}
 
 		}
+	}
+
+	public void updateNearestArtifact(float rocketX, float rocketY) {
+		float shortestDistance = -1;
+		nearestArtifactPosition = null;
+		for(PointWithId p : getPlanetConfig().artifacts) {
+			float artifactX = PlanetPart.getTileGraphicX(p.x);
+			float artifactY = PlanetPart.getTileGraphicY(p.y);
+			float distance = tmpVec6.set(artifactX - rocketX, artifactY - rocketY).len();
+			if (distance < shortestDistance || shortestDistance == -1) {
+				shortestDistance = distance;
+				nearestArtifactPosition = tmpVec5.set(artifactX, artifactY);
+			}
+		}
+	}
+
+	public Vector2 getNearestArtifactPosition() {
+		return nearestArtifactPosition;
 	}
 
 	public void updateRequestCenter(Vector3 position, Vector3 direction) {

@@ -27,6 +27,8 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BufferedParticleBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -40,6 +42,7 @@ import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.Config;
+import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.screens.planet.animations.TractorBeamAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
@@ -108,16 +111,21 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private boolean pause = false;
 	private boolean renderEnabled = true;
 
-	private Vector3 tmpVec5 = new Vector3();
+	private Vector2 tmpVec5 = new Vector2();
+	private Vector2 tmpV3 = new Vector2();
+	private Vector2 tmpV2 = new Vector2();
+	private Vector2 tmpVec6 = new Vector2();
 
 	private TextureRegion shieldIcon;
 	private TextureRegion fuelIcon;
 	private TextureRegion artifactIcon;
-	private TextureRegion stencilMiniMap;
+	private TextureRegion minimapBorder;
 
 	public static Gson gson;
 	private AssetManager assetManager;
 	private Model sphereModel;
+
+	private Matrix4 tmpMatrix = new Matrix4();
 
 	private TextureRegion rocketArrow;
 
@@ -131,7 +139,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
 		pPlanetIndex = pPlanetIndex % KNOWN_PLANETS.length;
-		//pPlanetIndex = 2;
+		pPlanetIndex = 0;
 
 		ani = new Ani();
 		uiSkin = pUISkin;
@@ -181,7 +189,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		shieldIcon = 	App.TEXTURES.findRegion("minimap_shield");
 		fuelIcon =		App.TEXTURES.findRegion("minimap_fuel");
 		artifactIcon = 	App.TEXTURES.findRegion("minimap_artifact");
-		stencilMiniMap = App.TEXTURES.findRegion("stencilMiniMap");
+		minimapBorder = App.TEXTURES.findRegion("minimapBorder");
 
 		loadSphere(planetConfig.id);
 		onReloadScene(planetConfig);
@@ -292,6 +300,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
+		planetController.updateNearestArtifact(rocket.getPosition().x, rocket.getPosition().y);
 
 		if (!freeCameraInput.isEnabled()) {
 			if (!pause) {
@@ -364,6 +373,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private void drawMiniMap() {
 		Gdx.gl.glViewport(Gdx.graphics.getWidth() - MINI_MAP_SIZE - 10, 10, MINI_MAP_SIZE, MINI_MAP_SIZE);
+		Vector3 rocketPosition = rocket.getPosition();
 
 		miniMapCamera.up.set(rocket.getDirection());
 		miniMapCamera.position.set(rocket.getPosition());
@@ -381,7 +391,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		miniMapBatch.begin();
 
 			// draw mini map items
-		drawMiniMapItems(miniMapBatch, rocket.getGroundZRotation());
+		float groundZRotation = rocket.getGroundZRotation();
+
 
 		// draw rocket arrow
 		miniMapBatch.draw(rocketArrow,
@@ -393,7 +404,49 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				rocketArrow.getRegionHeight(),
 				MINI_ZOOM, MINI_ZOOM, rocket.getGroundZRotation());
 
+		/*tmpMatrix.set(miniMapCamera.combined);
+		tmpMatrix.rotate(0, 0, 1, groundZRotation);
+
+		miniMapBatch.setProjectionMatrix(tmpMatrix);*/
+		drawMiniMapItems(miniMapBatch, groundZRotation);
+
+		Vector2 nearestArtifactPosition = planetController.getNearestArtifactPosition();
+		if (nearestArtifactPosition != null) {
+			int distanceToArtifact = (int) tmpVec6.set(rocketPosition.x, rocketPosition.y).sub(nearestArtifactPosition).len();
+			Styles.FONT_LIBERATION_SMALL_BORDER.draw(miniMapBatch, distanceToArtifact + " m",
+					nearestArtifactPosition.x, nearestArtifactPosition.y);
+		}
 		miniMapBatch.end();
+
+
+		tmpMatrix.setToOrtho2D(0, 0, MINI_MAP_SIZE * MINI_ZOOM, MINI_MAP_SIZE * MINI_ZOOM);
+		miniMapBatch.setProjectionMatrix(tmpMatrix);
+		miniMapBatch.begin();
+		miniMapBatch.draw(minimapBorder, 0, 0);
+		miniMapBatch.end();
+
+		miniMapBatch.setProjectionMatrix(miniMapCamera.combined);
+		miniMapBatch.begin();
+		drawMiniMapExtensions(groundZRotation);
+		miniMapBatch.end();
+
+
+		shapeRenderer.setProjectionMatrix(miniMapCamera.combined);
+		shapeRenderer.begin();
+
+
+		if (nearestArtifactPosition != null) {
+			shapeRenderer.setColor(1, 1, 1, 1);
+			tmpV2.set(nearestArtifactPosition.x - rocketPosition.x, nearestArtifactPosition.y - rocketPosition.y);
+			tmpV2.nor().scl(150);
+			tmpV2.add(rocketPosition.x, rocketPosition.y);
+			shapeRenderer.line(rocketPosition.x, rocketPosition.y, tmpV2.x, tmpV2.y);
+		}
+		shapeRenderer.setColor(0, 0, 1, 1);
+		shapeRenderer.line(rocketPosition.x, rocketPosition.y, 0, 0);
+		shapeRenderer.end();
+
+
 
 
 		/*shapeRenderer.begin();
@@ -406,6 +459,17 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		shapeRenderer.end();*/
 	}
 
+	private Vector2 getPositionInsideMiniMap(Vector3 centerPosition, Vector2 itemPosition, float width, float height) {
+		tmpV2.set(itemPosition.x - centerPosition.x, itemPosition.y - centerPosition.y);
+		if (tmpV2.len() > 170) {
+			tmpV2.nor().scl(170);
+		}
+		tmpV2.add(centerPosition.x, centerPosition.y);
+		return tmpV2;
+	}
+
+
+
 	public void drawMiniMapItems(SpriteBatch miniMapBatch, float upRotation) {
 		for (Collectible c : planetController.getCurrentVisibleCollectibles()) {
 			TextureRegion textureRegion = null;
@@ -416,21 +480,25 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				textureRegion = shieldIcon;
 			}
 			if (textureRegion != null) {
-				Vector3 position = c.getPosition();
+				Vector2 position = tmpV3.set(c.getPosition().x, c.getPosition().y);
 				drawMiniMapItem(miniMapBatch, textureRegion, position, upRotation);
 			}
 		}
+	}
 
+	public void drawMiniMapExtensions(float upRotation) {
 		for(PointWithId p : planetController.getPlanetConfig().artifacts) {
 			tmpVec5.set(
 					PlanetPart.getTileGraphicX(p.x),
-					PlanetPart.getTileGraphicY(p.y), 0);
+					PlanetPart.getTileGraphicY(p.y));
+
+			tmpVec5 = getPositionInsideMiniMap(rocket.getPosition(), tmpVec5, 0, 0);
 
 			drawMiniMapItem(miniMapBatch, artifactIcon, tmpVec5, upRotation);
 		}
 	}
 
-	private void drawMiniMapItem(SpriteBatch batch, TextureRegion textureRegion, Vector3 position, float upRotation) {
+	private void drawMiniMapItem(SpriteBatch batch, TextureRegion textureRegion, Vector2 position, float upRotation) {
 		batch.draw(textureRegion,
 				position.x - textureRegion.getRegionWidth() / 2f,
 				position.y - textureRegion.getRegionHeight() / 2f,
@@ -440,7 +508,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				textureRegion.getRegionHeight(),
 				MINI_ZOOM, MINI_ZOOM, upRotation);
 
-		//Styles.FONT_ENTSANS_SMALL_BORDER.draw(batch, "100", position.x, position.y);
 	}
 
 

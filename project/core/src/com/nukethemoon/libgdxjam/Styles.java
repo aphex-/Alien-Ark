@@ -26,6 +26,8 @@ public class Styles {
 
 	public static BitmapFont FONT_ENTSANS_SMALL_BORDER;
 
+	public static BitmapFont FONT_LIBERATION_SMALL_BORDER;
+
 	public static Label.LabelStyle LABEL_01;
 	public static Label.LabelStyle LABEL_02;
 
@@ -41,6 +43,8 @@ public class Styles {
 		FONT_DOSIS_SMALL = 			createFont("fonts/Dosis-Medium.ttf", 	20, Color.WHITE, null, 			0);
 		FONT_DOSIS_MEDIUM_BORDER = 	createFont("fonts/Dosis-Medium.ttf", 	26, Color.WHITE, Color.BLACK, 	2);
 		FONT_ENTSANS_SMALL_BORDER = createFont("fonts/entsans.ttf", 		16, Color.WHITE, Color.BLACK, 	1);
+
+		FONT_LIBERATION_SMALL_BORDER = 	createFont("fonts/LiberationMono-Regular.ttf",	18, Color.WHITE, Color.BLACK, 2);
 
 		loadDefaultSkin(FONT_DOSIS_SMALL);
 
