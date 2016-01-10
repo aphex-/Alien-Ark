@@ -13,14 +13,14 @@ button02
   index: -1
 buttonControlCenter
   rotate: false
-  xy: 250, 13
+  xy: 351, 95
   size: 66, 62
   orig: 66, 62
   offset: 0, 0
   index: -1
 buttonMenu
   rotate: false
-  xy: 318, 46
+  xy: 319, 46
   size: 29, 29
   orig: 29, 29
   offset: 0, 0
@@ -62,9 +62,16 @@ exhaust_placeholder
   index: -1
 exitImage
   rotate: false
-  xy: 351, 123
+  xy: 44, 23
   size: 34, 34
   orig: 34, 34
+  offset: 0, 0
+  index: -1
+exitImage2
+  rotate: false
+  xy: 250, 13
+  size: 67, 62
+  orig: 67, 62
   offset: 0, 0
   index: -1
 line
@@ -90,14 +97,14 @@ minimap_artifact
   index: -1
 minimap_fuel
   rotate: false
-  xy: 868, 526
+  xy: 723, 722
   size: 10, 10
   orig: 10, 10
   offset: 0, 0
   index: -1
 minimap_shield
   rotate: false
-  xy: 849, 362
+  xy: 735, 722
   size: 10, 10
   orig: 10, 10
   offset: 0, 0
@@ -153,7 +160,7 @@ popupMenu
   index: -1
 popupbg01
   rotate: false
-  xy: 44, 23
+  xy: 723, 734
   size: 34, 34
   orig: 34, 34
   offset: 0, 0

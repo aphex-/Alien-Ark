@@ -58,6 +58,7 @@ import com.nukethemoon.libgdxjam.screens.planet.helper.SphereTextureProvider;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.libgdxjam.ui.GameOverTable;
+import com.nukethemoon.libgdxjam.ui.MenuTable;
 import com.nukethemoon.libgdxjam.ui.PopupTable;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
 import com.nukethemoon.libgdxjam.ui.ToastTable;
@@ -275,6 +276,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		positionTable = new PositionTable(uiSkin);
 		stage.addActor(positionTable);
+
+		MenuTable menuTable = new MenuTable(uiSkin);
+		stage.addActor(menuTable);
 
 		final TextButton leaveButton = new TextButton("Leave Planet", uiSkin);
 		leaveButton.addListener(new ClickListener() {
