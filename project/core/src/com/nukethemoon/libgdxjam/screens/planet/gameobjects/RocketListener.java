@@ -12,5 +12,7 @@ public interface RocketListener {
 	void onRocketFuelBonus();
 	void onRocketShieldBonus();
 	void onRocketChangedTilePosition();
+	void onRocketScanStart();
+	void onRocketScanEnd();
 
 }

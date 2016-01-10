@@ -1,7 +1,7 @@
 {
-  "id": "planet02",
+  "id": "planet03",
   "gravity": -25.0,
-  "landscapeHeight": 50,
+  "landscapeHeight": 100.0,
   "fuelChance": 0.08,
   "fuelChanceGain": -1.0E-4,
   "fuelChanceMin": 0.008,
@@ -23,9 +23,9 @@
   "environmentDirectionalLights": [
     {
       "direction": {
-        "x": 0.57,
-        "y": -0.35,
-        "z": 0.26
+        "x": 0.33,
+        "y": 0.25,
+        "z": -0.54
       },
       "color": {
         "r": 0.53,
@@ -33,27 +33,53 @@
         "b": 0.78,
         "a": 1.0
       }
+    },
+    {
+      "direction": {
+        "x": 0.57,
+        "y": 0.31,
+        "z": -0.58
+      },
+      "color": {
+        "r": 0.71,
+        "g": 0.72,
+        "b": 0.22,
+        "a": 1.0
+      }
+    },
+    {
+      "direction": {
+        "x": -0.71,
+        "y": 0.5,
+        "z": -0.43
+      },
+      "color": {
+        "r": 0.89,
+        "g": 0.76,
+        "b": 0.7,
+        "a": 1.0
+      }
     }
   ],
   "artifacts": [
     {
-      "x": -76,
-      "y": 113,
-      "id": "art0001_planet02"
+      "x": 110,
+      "y": 80,
+      "id": "myArtifactId"
     }
   ],
   "layerConfigs": [
     {
-      "name": "Lava",
+      "name": "Ice",
       "collisionType": "water",
       "serializedMaterial": {
         "id": "mtl5",
         "colorAttributes": [
           {
             "color": {
-              "r": 0.72,
-              "g": 0.42,
-              "b": 0.0,
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
               "a": 1.0
             },
             "type": 16,
@@ -61,8 +87,8 @@
           },
           {
             "color": {
-              "r": 0.03,
-              "g": 0.48,
+              "r": 1.0,
+              "g": 1.0,
               "b": 1.0,
               "a": 1.0
             },
@@ -71,9 +97,9 @@
           },
           {
             "color": {
-              "r": 0.93,
-              "g": 0.16,
-              "b": 0.34,
+              "r": 0.5,
+              "g": 0.52,
+              "b": 0.75,
               "a": 1.0
             },
             "type": 1,
@@ -81,9 +107,9 @@
           },
           {
             "color": {
-              "r": 0.65,
-              "g": 0.21,
-              "b": 0.29,
+              "r": 0.19,
+              "g": 0.11,
+              "b": 0.11,
               "a": 1.0
             },
             "type": 32,
@@ -93,16 +119,16 @@
       }
     },
     {
-      "name": "LowLandscape",
+      "name": "Ground",
       "collisionType": "ground",
       "serializedMaterial": {
         "id": "mtl9502",
         "colorAttributes": [
           {
             "color": {
-              "r": 0.32,
-              "g": 0.17,
-              "b": 0.24,
+              "r": 0.79,
+              "g": 0.79,
+              "b": 0.78,
               "a": 1.0
             },
             "type": 1,
@@ -112,16 +138,35 @@
       }
     },
     {
-      "name": "HighLandscape",
+      "name": "LowGlacier",
+      "collisionType": "ground",
+      "serializedMaterial": {
+        "id": "mtl9502",
+        "colorAttributes": [
+          {
+            "color": {
+              "r": 0.14,
+              "g": 0.19,
+              "b": 0.52,
+              "a": 1.0
+            },
+            "type": 1,
+            "typeBit": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "HighGlacier",
       "collisionType": "ground",
       "serializedMaterial": {
         "id": "mtl9532",
         "colorAttributes": [
           {
             "color": {
-              "r": 0.78,
-              "g": 0.83,
-              "b": 0.97,
+              "r": 0.0,
+              "g": 0.41,
+              "b": 0.61,
               "a": 1.0
             },
             "type": 1,

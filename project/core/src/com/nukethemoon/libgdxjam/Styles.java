@@ -3,6 +3,7 @@ package com.nukethemoon.libgdxjam;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -26,6 +27,8 @@ public class Styles {
 
 	public static BitmapFont FONT_ENTSANS_SMALL_BORDER;
 
+	public static BitmapFont FONT_LIBERATION_SMALL_BORDER;
+
 	public static Label.LabelStyle LABEL_01;
 	public static Label.LabelStyle LABEL_02;
 
@@ -41,6 +44,8 @@ public class Styles {
 		FONT_DOSIS_SMALL = 			createFont("fonts/Dosis-Medium.ttf", 	20, Color.WHITE, null, 			0);
 		FONT_DOSIS_MEDIUM_BORDER = 	createFont("fonts/Dosis-Medium.ttf", 	26, Color.WHITE, Color.BLACK, 	2);
 		FONT_ENTSANS_SMALL_BORDER = createFont("fonts/entsans.ttf", 		16, Color.WHITE, Color.BLACK, 	1);
+
+		FONT_LIBERATION_SMALL_BORDER = 	createFont("fonts/LiberationMono-Bold.ttf",	22, Color.WHITE, Color.BLACK, 2);
 
 		loadDefaultSkin(FONT_DOSIS_SMALL);
 
@@ -75,6 +80,8 @@ public class Styles {
 		FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 		parameter.size = size;
 		parameter.color = color;
+		parameter.minFilter = Texture.TextureFilter.Linear;
+		parameter.magFilter = Texture.TextureFilter.Linear;
 		if (borderColor != null) {
 			parameter.borderColor = borderColor;
 			parameter.borderWidth = borderWidth;

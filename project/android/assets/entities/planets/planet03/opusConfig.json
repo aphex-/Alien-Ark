@@ -16,7 +16,7 @@
 	  "data": {
 		"samplerItems": [
 		  {
-			"samplerReferenceId": "continentcombi01",
+			"samplerReferenceId": "maskcombi01",
 			"operator": "Plus",
 			"invert": false,
 			"active": true,
@@ -25,7 +25,7 @@
 			"multiply": 1.0
 		  },
 		  {
-			"samplerReferenceId": "landscapecombi",
+			"samplerReferenceId": "flat01",
 			"operator": "Plus",
 			"invert": false,
 			"active": true,
@@ -45,7 +45,7 @@
 	  "data": {
 		"samplerItems": [
 		  {
-			"samplerReferenceId": "continent01",
+			"samplerReferenceId": "mazenoise",
 			"operator": "Plus",
 			"invert": false,
 			"active": true,
@@ -54,8 +54,8 @@
 			"multiply": 1.0
 		  },
 		  {
-			"samplerReferenceId": "continent02",
-			"operator": "Or",
+			"samplerReferenceId": "noise01",
+			"operator": "Mix",
 			"invert": false,
 			"active": true,
 			"scaleModifier": 1.0,
@@ -63,8 +63,17 @@
 			"multiply": 1.0
 		  },
 		  {
-			"samplerReferenceId": "continent03",
+			"samplerReferenceId": "noise02",
 			"operator": "Highest",
+			"invert": false,
+			"active": true,
+			"scaleModifier": 1.0,
+			"seedModifier": 0.0,
+			"multiply": 1.0
+		  },
+		  {
+			"samplerReferenceId": "mazenoise02",
+			"operator": "Plus",
 			"invert": false,
 			"active": true,
 			"scaleModifier": 1.0,
@@ -72,7 +81,7 @@
 			"multiply": 1.0
 		  }
 		],
-		"id": "continentcombi01",
+		"id": "maskcombi01",
 		"worldSeedModifier": 0.0,
 		"scale": 1.0,
 		"modifiers": [
@@ -87,63 +96,36 @@
 	  "type": "AContinentConfig",
 	  "data": {
 		"size": 0.5,
-		"edge": 0.6,
-		"iterations": 3,
-		"growth": 5.0,
+		"edge": 0.05,
+		"iterations": 1,
+		"growth": 1.0,
 		"noiseAlgorithmName": "SimplexNoise",
 		"smoothEdge": false,
 		"id": "continent01",
 		"worldSeedModifier": 0.0,
-		"scale": 5.0,
-		"modifiers": [
-		  {
-			"type": "Multiply",
-			"value": 0.6
-		  }
-		]
-	  }
-	},
-	{
-	  "type": "AContinentConfig",
-	  "data": {
-		"size": 0.6,
-		"edge": 0.05,
-		"iterations": 2,
-		"growth": 3.0,
-		"noiseAlgorithmName": "SimplexNoise",
-		"smoothEdge": false,
-		"id": "continent02",
-		"worldSeedModifier": 0.0,
-		"scale": 6.0,
-		"modifiers": [
-		  {
-			"type": "Multiply",
-			"value": 0.5
-		  }
-		]
-	  }
-	},
-	{
-	  "type": "CombinedConfig",
-	  "data": {
-		"samplerItems": [
-		  {
-			"samplerReferenceId": "landscapenoise01",
-			"operator": "Plus",
-			"invert": false,
-			"active": true,
-			"scaleModifier": 1.0,
-			"seedModifier": 0.0,
-			"multiply": 1.0
-		  }
-		],
-		"id": "landscapecombi",
-		"worldSeedModifier": 0.0,
 		"scale": 1.0,
+		"modifiers": []
+	  }
+	},
+	{
+	  "type": "NoiseConfig",
+	  "data": {
+		"noiseAlgorithmName": "SimplexNoise",
+		"id": "noise01",
+		"worldSeedModifier": 0.0,
+		"scale": 20.0,
 		"modifiers": [
+		  {
+			"type": "Add",
+			"value": -0.5
+		  },
 		  {
 			"type": "Limit",
 			"value": 0.0
+		  },
+		  {
+			"type": "Multiply",
+			"value": 0.7
 		  }
 		]
 	  }
@@ -152,25 +134,67 @@
 	  "type": "NoiseConfig",
 	  "data": {
 		"noiseAlgorithmName": "SimplexNoise",
-		"id": "landscapenoise01",
+		"id": "noise02",
+		"worldSeedModifier": 234.456,
+		"scale": 40.0,
+		"modifiers": [
+		  {
+			"type": "Add",
+			"value": -0.5
+		  },
+		  {
+			"type": "Limit",
+			"value": 0.0
+		  },
+		  {
+			"type": "Multiply",
+			"value": 0.7
+		  }
+		]
+	  }
+	},
+	{
+	  "type": "FlatSamplerConfig",
+	  "data": {
+		"value": 1.0,
+		"id": "flat01",
 		"worldSeedModifier": 0.0,
-		"scale": 10.0,
+		"scale": 1.0,
 		"modifiers": []
 	  }
 	},
 	{
-	  "type": "AContinentConfig",
+	  "type": "NoiseConfig",
 	  "data": {
-		"size": 0.7,
-		"edge": 0.05,
-		"iterations": 2,
-		"growth": 2.0,
 		"noiseAlgorithmName": "SimplexNoise",
-		"smoothEdge": false,
-		"id": "continent03",
+		"id": "mazenoise",
 		"worldSeedModifier": 0.0,
-		"scale": 50.0,
-		"modifiers": []
+		"scale": 8.0,
+		"modifiers": [
+		  {
+			"type": "HigherThan",
+			"value": 0.85
+		  },
+		  {
+			"type": "Multiply",
+			"value": 1.5
+		  }
+		]
+	  }
+	},
+	{
+	  "type": "NoiseConfig",
+	  "data": {
+		"noiseAlgorithmName": "SimplexNoise",
+		"id": "mazenoise02",
+		"worldSeedModifier": 0.0,
+		"scale": 100.0,
+		"modifiers": [
+		  {
+			"type": "HigherThan",
+			"value": 0.85
+		  }
+		]
 	  }
 	}
   ],
@@ -195,6 +219,16 @@
 		  "endColorG": 1.0,
 		  "endColorB": 1.0,
 		  "startValue": 0.005,
+		  "endValue": 0.12
+		},
+		{
+		  "starColorR": 0.5,
+		  "starColorG": 0.5,
+		  "starColorB": 0.5,
+		  "endColorR": 1.0,
+		  "endColorG": 1.0,
+		  "endColorB": 1.0,
+		  "startValue": 0.1,
 		  "endValue": 0.5
 		},
 		{
@@ -233,10 +267,10 @@
 	}
   ],
   "worldConfig": {
-	"seedString": "2934759.2342040",
+	"seedString": "0.0",
 	"chunkSize": 15,
 	"chunkOverlap": 1,
-	"name": "planet02",
+	"name": "planet03",
 	"layerIds": [
 	  "EditorDefaultLayer"
 	]

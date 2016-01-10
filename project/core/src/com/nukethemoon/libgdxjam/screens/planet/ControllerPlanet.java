@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.Log;
+import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPart;
@@ -31,6 +32,7 @@ import java.util.concurrent.ExecutionException;
 public class ControllerPlanet implements ChunkListener, Disposable {
 
 	public static float TILE_GRAPHIC_SIZE = 3f;
+	public static float TRACTOR_BEAM_TOLERANCE_RADIUS = 5f;
 
 	private Opus opus;
 	private PlanetConfig planetConfig;
@@ -38,9 +40,9 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private Ani ani;
 
 	private List<Point> currentVisiblePlanetParts = new ArrayList<Point>();
-
 	private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
 	private List<ArtifactObject> currentVisibleArtifacts = new ArrayList<ArtifactObject>();
+	private List<PointWithId> allArtifactsOnPlanet = new ArrayList<PointWithId>();
 
 	private Map<Point, PlanetPart> planetPartBuffer = new HashMap<Point, PlanetPart>();
 	private final TypeInterpreter typeInterpreter;
@@ -49,7 +51,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	private List<Point> tmpRequestList = new ArrayList<Point>();
 
-	private int requestRadiusInTiles = 130;
+	private int requestRadiusInTiles = 100;
 	private int lastRequestCenterTileX = 0;
 	private int lastRequestCenterTileY = 0;
 	private long requestCount = 0;
@@ -59,11 +61,18 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private List<Collectible> tmpRemoveList2 = new ArrayList<Collectible>();
 	private List<Point> tmpRemoveList3 = new ArrayList<Point>();
 
+
+	private Vector2 nearestArtifactPosition = new Vector2();
+
 	private Vector2 tmpVec1 = new Vector2();
 	private Vector2 tmpVector1 = new Vector2();
 	private Vector2 tmpVector2 = new Vector2();
 	private Vector3 tmpVec3 = new Vector3();
 	private Vector3 tmpVec4 = new Vector3();
+	private Vector2 tmpVec5 = new Vector2();
+	private Vector2 tmpVec6 = new Vector2();
+	private Vector3 tmpVec7 = new Vector3();
+
 
 	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
 		this.planetConfig = pPlanetConfig;
@@ -88,6 +97,14 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 
 		typeInterpreter = toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter());
+
+		updateNearestArtifact(0, 0);
+
+		for (PointWithId p : pPlanetConfig.artifacts) {
+			if (!SpaceShipProperties.properties.isCollectedArtifact(p.id)) {
+				allArtifactsOnPlanet.add(p);
+			}
+		}
 	}
 
 	public void requestChunks(List<Point> chunkCoordinates) {
@@ -116,6 +133,24 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 			}
 
 		}
+	}
+
+	public void updateNearestArtifact(float rocketX, float rocketY) {
+		float shortestDistance = -1;
+		nearestArtifactPosition = null;
+		for(PointWithId p : allArtifactsOnPlanet) {
+			float artifactX = PlanetPart.getTileGraphicX(p.x);
+			float artifactY = PlanetPart.getTileGraphicY(p.y);
+			float distance = tmpVec6.set(artifactX - rocketX, artifactY - rocketY).len();
+			if (distance < shortestDistance || shortestDistance == -1) {
+				shortestDistance = distance;
+				nearestArtifactPosition = tmpVec5.set(artifactX, artifactY);
+			}
+		}
+	}
+
+	public Vector2 getNearestArtifactPosition() {
+		return nearestArtifactPosition;
 	}
 
 	public void updateRequestCenter(Vector3 position, Vector3 direction) {
@@ -312,7 +347,9 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	}
 
 	private void addArtifact(ArtifactObject o) {
-		currentVisibleArtifacts.add(o);
+		if (!SpaceShipProperties.properties.isCollectedArtifact(o.getDefinition().id)) {
+			currentVisibleArtifacts.add(o);
+		}
 	}
 
 	public void removeCollectible(Collectible c) {
@@ -322,10 +359,30 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		planetPartBuffer.get(c.getPlanetPartPosition()).getCollectibles().remove(c);
 	}
 
-	public void removeArtifact(ArtifactObject o) {
+	private void removeArtifact(ArtifactObject o) {
 		currentVisibleArtifacts.remove(o);
 		o.dispose();
 	}
+
+	public ArtifactObject tryCollect(Vector3 position, float tractorBeamRadius) {
+		for (ArtifactObject o : currentVisibleArtifacts) {
+			o.getModelInstance().transform.getTranslation(tmpVec7);
+			float distance = tmpVec7.sub(position).len();
+			if (distance < (tractorBeamRadius + TRACTOR_BEAM_TOLERANCE_RADIUS)) {
+				return o;
+			}
+		}
+		return null;
+	}
+
+	public void collectArtifact(ArtifactObject o) {
+		if (!SpaceShipProperties.properties.isCollectedArtifact(o.getDefinition().id)) {
+			removeArtifact(o);
+			allArtifactsOnPlanet.remove(o.getDefinition());
+			SpaceShipProperties.properties.addArtifact(o.getDefinition().id);
+		}
+	}
+
 
 	public void dispose() {
 		tmpRemoveList3.clear();

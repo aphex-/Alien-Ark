@@ -26,10 +26,12 @@ public class SpaceShipProperties {
 
 	public static final SpaceShipProperties properties = new SpaceShipProperties(); //TODO!
 
-	public static final int INITIAL_MAX_FUEL = 1000;
+	public static final int INITIAL_MAX_FUEL = 100000;
 	public static final float INITAL_FUEL_CONSUMPTION = 0.1f;
 
 	public static final int INITIAL_MAX_SHIELD = 1000;
+
+	private List<String> collectedArtifacIds = new ArrayList<String>();
 
 	private Vector2 position;
 	private Vector2 movementVector;
@@ -139,5 +141,13 @@ public class SpaceShipProperties {
 
 	public int getCurrentShield() {
 		return currentShield;
+	}
+
+	public void addArtifact(String id) {
+		collectedArtifacIds.add(id);
+	}
+
+	public boolean isCollectedArtifact(String id) {
+		return collectedArtifacIds.contains(id);
 	}
 }
