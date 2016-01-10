@@ -422,7 +422,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		tmpMatrix.setToOrtho2D(0, 0, MINI_MAP_SIZE * MINI_ZOOM, MINI_MAP_SIZE * MINI_ZOOM);
 		miniMapBatch.setProjectionMatrix(tmpMatrix);
 		miniMapBatch.begin();
-		drawMiniMapDistanceText(rocketPosition, groundZRotation);
+		drawMiniMapDistanceText(planetController.getNearestArtifactPosition(), rocketPosition, groundZRotation);
+		drawMiniMapDistanceText(tmpVec5.set(0, 0), rocketPosition, groundZRotation);
 		miniMapBatch.end();
 
 
@@ -489,12 +490,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		drawMiniMapItem(miniMapBatch, planetPortal, tmpVec5, upRotation);
 	}
 
-	public void drawMiniMapDistanceText(Vector3 rocketPosition, float upRotation) {
-		// artifact distance
+	public void drawMiniMapDistanceText(Vector2 position, Vector3 rocketPosition, float upRotation) {
 		BitmapFont font = Styles.FONT_LIBERATION_SMALL_BORDER;
-		Vector2 artifactPosition = planetController.getNearestArtifactPosition();
-		if (artifactPosition != null) {
-			float distance = tmpVec6.set(rocketPosition.x, rocketPosition.y).sub(artifactPosition).len();
+		if (position != null) {
+			float distance = tmpVec6.set(rocketPosition.x, rocketPosition.y).sub(position).len();
 			if (distance > 170) {
 				float x = (MINI_MAP_SIZE * MINI_ZOOM) / 2f;
 				float y = x;
@@ -502,15 +501,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				layout.setText(font, km + "km");
 				x -= layout.width / 2;
 				//y -= layout.height / 2;
-
-				tmpVec5.set(artifactPosition).sub(rocketPosition.x, rocketPosition.y).nor().scl(150).rotate(-upRotation);
+				tmpVec5.set(position).sub(rocketPosition.x, rocketPosition.y).nor().scl(150).rotate(-upRotation);
 				x += tmpVec5.x;
 				y += tmpVec5.y;
 				font.draw(miniMapBatch, layout, x, y);
 			}
 		}
-
-		// planet portal distance
 	}
 
 	GlyphLayout layout = new GlyphLayout();
