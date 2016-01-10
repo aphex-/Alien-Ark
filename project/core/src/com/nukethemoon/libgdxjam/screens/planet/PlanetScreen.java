@@ -46,9 +46,11 @@ import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
+import com.nukethemoon.libgdxjam.screens.planet.animations.ArtifactCollectAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.animations.TractorBeamAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWindow;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
@@ -425,29 +427,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		drawMiniMapDistanceText(planetController.getNearestArtifactPosition(), rocketPosition, groundZRotation);
 		drawMiniMapDistanceText(tmpVec5.set(0, 0), rocketPosition, groundZRotation);
 		miniMapBatch.end();
-
-
-		/*shapeRenderer.setProjectionMatrix(miniMapCamera.combined);
-		shapeRenderer.begin();
-		if (nearestArtifactPosition != null) {
-			shapeRenderer.setColor(1, 1, 1, 1);
-			tmpV2.set(nearestArtifactPosition.x - rocketPosition.x, nearestArtifactPosition.y - rocketPosition.y);
-			tmpV2.nor().scl(150);
-			tmpV2.add(rocketPosition.x, rocketPosition.y);
-			shapeRenderer.line(rocketPosition.x, rocketPosition.y, tmpV2.x, tmpV2.y);
-		}
-		shapeRenderer.setColor(0, 0, 1, 1);
-		shapeRenderer.line(rocketPosition.x, rocketPosition.y, 0, 0);
-		shapeRenderer.end();*/
-
-		/*shapeRenderer.begin();
-		shapeRenderer.setProjectionMatrix(miniMapCamera.combined);
-		shapeRenderer.line(
-				rocket.getPosition().x + (MINI_MAP_SIZE / 2) * MINI_ZOOM - 1,
-				rocket.getPosition().y + (MINI_MAP_SIZE / 2) * MINI_ZOOM - 1,
-				rocket.getPosition().x - (MINI_MAP_SIZE / 2) * MINI_ZOOM + 1,
-				rocket.getPosition().y - (MINI_MAP_SIZE / 2) * MINI_ZOOM + 1);
-		shapeRenderer.end();*/
 	}
 
 	private Vector2 getPositionInsideMiniMap(Vector3 centerPosition, Vector2 itemPosition, float radiusOffset) {
@@ -730,7 +709,30 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public void onRocketScanStart() {
 		showToast("Scan started!");
 		rocket.setTractorBeamVisibility(true);
-		beamAnimation = new TractorBeamAnimation(rocket.getTractorBeamModelInstance(), 4);
+		beamAnimation = new TractorBeamAnimation(rocket.getTractorBeamModelInstance(), rocket.getScanRadus(),
+				new AnimationFinishedListener() {
+			@Override
+			public void onAnimationFinished(BaseAnimation baseAnimation) {
+				if (baseAnimation.getRemainingLoopCount() == 0) {
+					rocket.setTractorBeamVisibility(false);
+					final ArtifactObject artifactObject = planetController.tryCollect(rocket.getPosition(), rocket.getScanRadus());
+					if (artifactObject == null) {
+						showToast("Scan result: NULL!");
+					} else {
+						showToast("Artifact collected!");
+
+						ArtifactCollectAnimation artifactCollectAnimation = new ArtifactCollectAnimation(artifactObject, rocket.getPosition(), new AnimationFinishedListener() {
+							@Override
+							public void onAnimationFinished(BaseAnimation baseAnimation) {
+								planetController.collectArtifact(artifactObject);
+							}
+						});
+						ani.add(artifactCollectAnimation);
+
+					}
+				}
+			}
+		});
 		ani.add(beamAnimation);
 	}
 
