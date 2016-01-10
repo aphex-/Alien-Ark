@@ -25,7 +25,8 @@ public class PopupTable extends Table {
 		Label titleTable = new Label("INFORMATION", Styles.LABEL_DIALOG_HEADLINE);
 		add(titleTable).left().top().padLeft(15).fill().padTop(12);
 
-		ImageButton imageButton = new ImageButton(new TextureRegionDrawable(App.TEXTURES.findRegion("exitImage")));
+		ImageButton imageButton = new ImageButton(
+				new TextureRegionDrawable(App.TEXTURES.findRegion("exitImage")));
 		imageButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
