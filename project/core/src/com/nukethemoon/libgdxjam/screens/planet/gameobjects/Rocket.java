@@ -152,15 +152,19 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
-	public void rotateUp() {
+	public void rotateDown() {
 		if (thrusting) {
-			xRotation = (xRotation - maneuverability) % 360;
+			if ((xRotation - maneuverability) > -89) {
+				xRotation = (xRotation - maneuverability) % 360;
+			}
 		}
 	}
 
-	public void rotateDown() {
+	public void rotateUp() {
 		if (thrusting) {
-			xRotation = (xRotation + maneuverability) % 360;
+			if((xRotation + maneuverability) < 89) {
+				xRotation = (xRotation + maneuverability) % 360;
+			}
 		}
 	}
 

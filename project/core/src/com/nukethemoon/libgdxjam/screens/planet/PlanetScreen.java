@@ -325,11 +325,11 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		}
 
 		if (Gdx.app.getInput().isKeyPressed(19)) {
-			rocket.rotateDown();
+			rocket.rotateUp();
 		}
 
 		if (Gdx.app.getInput().isKeyPressed(20)) {
-			rocket.rotateUp();
+			rocket.rotateDown();
 		}
 
 		if (!pause) {
