@@ -58,6 +58,7 @@ import com.nukethemoon.libgdxjam.screens.planet.helper.SphereTextureProvider;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.libgdxjam.ui.GameOverTable;
+import com.nukethemoon.libgdxjam.ui.PopupTable;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
 import com.nukethemoon.libgdxjam.ui.ToastTable;
 import com.nukethemoon.libgdxjam.ui.animation.FadeTableAnimation;
@@ -269,6 +270,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
 		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
 		stage.addActor(mainUI);
+
+		stage.addActor(new PopupTable(uiSkin));
 
 		positionTable = new PositionTable(uiSkin);
 		stage.addActor(positionTable);

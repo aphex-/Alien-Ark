@@ -11,11 +11,25 @@ buttonbg01
   orig: 92, 100
   offset: 0, 0
   index: -1
+dialogBg01
+  rotate: false
+  xy: 714, 582
+  size: 89, 65
+  orig: 89, 65
+  offset: 0, 0
+  index: -1
 exhaust_placeholder
   rotate: false
   xy: 105, 80
   size: 40, 105
   orig: 40, 105
+  offset: 0, 0
+  index: -1
+exitImage
+  rotate: false
+  xy: 304, 359
+  size: 34, 34
+  orig: 34, 34
   offset: 0, 0
   index: -1
 minimapBorder
@@ -41,7 +55,7 @@ minimap_fuel
   index: -1
 minimap_shield
   rotate: false
-  xy: 84, 72
+  xy: 714, 570
   size: 10, 10
   orig: 10, 10
   offset: 0, 0
@@ -62,7 +76,7 @@ placeholder_alien
   index: -1
 planetPortal
   rotate: false
-  xy: 714, 627
+  xy: 154, 215
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
@@ -90,7 +104,7 @@ planet_3_placeholder
   index: -1
 popupbg01
   rotate: false
-  xy: 304, 359
+  xy: 805, 613
   size: 34, 34
   orig: 34, 34
   offset: 0, 0
