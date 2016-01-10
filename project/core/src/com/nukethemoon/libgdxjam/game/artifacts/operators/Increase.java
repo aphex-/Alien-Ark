@@ -12,7 +12,7 @@ public class Increase extends OperatorArtifact {
 	}
 
 	@Override
-	public TextureRegion getTexture() {
+	public TextureRegion getBackgroundTexture() {
 		return App.TEXTURES.findRegion("slotOperatorPlus");
 	}
 }

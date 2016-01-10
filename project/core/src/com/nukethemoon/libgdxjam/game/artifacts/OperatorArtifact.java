@@ -15,7 +15,7 @@ public abstract class OperatorArtifact extends Artifact {
 	protected abstract float applyOperator(float base, float value);
 
 	@Override
-	public TextureRegion getTexture() {
+	public TextureRegion getBackgroundTexture() {
 		return App.TEXTURES.findRegion("slot04");
 	}
 }

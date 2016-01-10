@@ -8,8 +8,14 @@ import com.nukethemoon.libgdxjam.game.artifacts.operators.Decrease;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Divide;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Increase;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Multiply;
+import com.nukethemoon.libgdxjam.game.attributes.Attribute;
 import com.nukethemoon.libgdxjam.game.attributes.FuelConsumption;
+import com.nukethemoon.libgdxjam.game.attributes.Inertia;
+import com.nukethemoon.libgdxjam.game.attributes.ItemCollectRadius;
+import com.nukethemoon.libgdxjam.game.attributes.LandingDistance;
+import com.nukethemoon.libgdxjam.game.attributes.Luck;
 import com.nukethemoon.libgdxjam.game.attributes.MaxFuel;
+import com.nukethemoon.libgdxjam.game.attributes.Shield;
 import com.nukethemoon.libgdxjam.game.attributes.Speed;
 
 import java.util.ArrayList;
@@ -33,6 +39,18 @@ public class SpaceShipProperties {
 
 	public int currentFuel;
 	public int currentShield;
+
+	private Speed speed = new Speed(100);
+	private MaxFuel maxFuel = new MaxFuel(INITIAL_MAX_FUEL);
+	private Luck luck = new Luck(.1f);
+	private Shield shield = new Shield(INITIAL_MAX_SHIELD);
+	private LandingDistance landingDistance = new LandingDistance(10);
+	private ItemCollectRadius radius = new ItemCollectRadius(12);
+	private Inertia inertia = new Inertia(.75f);
+
+	public Attribute[] getAttributes(){
+		return new Attribute[]{maxFuel, shield, speed, luck, landingDistance, radius, inertia};
+	}
 
 	private SpaceShipProperties() {
 		currentFuel = computeMaxFuel();
@@ -79,7 +97,6 @@ public class SpaceShipProperties {
 
 	public float computeSpeedPerUnit() {
 
-		Speed speed = new Speed();
 		for (Alien a : aliens) {
 			a.modifyAttribute(speed);
 		}
@@ -98,13 +115,13 @@ public class SpaceShipProperties {
 		if (aliens == null) {
 			aliens = new ArrayList<Alien>();
 		}
-		MaxFuel max = new MaxFuel();
+
 		for (Alien alien : aliens) {
-			alien.modifyAttribute(max);
+			alien.modifyAttribute(maxFuel);
 		}
 
-		currentFuel = (int) Math.min(currentFuel, max.getCurrentValue());
-		return (int) max.getCurrentValue();
+		currentFuel = (int) Math.min(currentFuel, maxFuel.getCurrentValue());
+		return (int) maxFuel.getCurrentValue();
 	}
 
 	public float computeFuelConsumption() {

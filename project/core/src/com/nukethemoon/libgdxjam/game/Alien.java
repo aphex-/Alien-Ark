@@ -1,7 +1,6 @@
 package com.nukethemoon.libgdxjam.game;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.game.artifacts.AttributeArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.OperatorArtifact;
@@ -62,7 +61,7 @@ public class Alien {
 		if(attribute == null)
 			return null;
 
-		return attribute.getTexture();
+		return attribute.getBackgroundTexture();
 	}
 
 }

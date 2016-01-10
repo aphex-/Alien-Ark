@@ -12,7 +12,7 @@ public class Divide extends OperatorArtifact {
 	}
 
 	@Override
-	public TextureRegion getTexture() {
+	public TextureRegion getBackgroundTexture() {
 		return App.TEXTURES.findRegion("slotOperatorDivide");
 	}
 }

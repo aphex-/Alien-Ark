@@ -37,4 +37,26 @@ public abstract class Attribute {
 		}
 		return App.TEXTURES.findRegion(slot);
 	}
+
+	public abstract String name();
+
+	public static TextureRegion getPropertiesTexture(Class<? extends Attribute> clazz){
+		String row = "row00";
+		if(clazz == Speed.class) {
+			row = "row03";
+		} else if(clazz == MaxFuel.class){
+			row = "row01";
+		} else if(clazz == Luck.class){
+			row = "row06";
+		} else if(clazz == Shield.class){
+			row = "row02";
+		} else if(clazz == LandingDistance.class){
+			row = "row04";
+		} else if(clazz == ItemCollectRadius.class){
+			row = "row09";
+		} else if(clazz == Inertia.class){
+			row = "row05";
+		}
+		return App.TEXTURES.findRegion(row);
+	}
 }

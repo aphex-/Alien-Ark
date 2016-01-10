@@ -5,8 +5,12 @@ import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 
 public class MaxFuel extends Attribute {
 
-	public MaxFuel () {
-		setCurrentValue(SpaceShipProperties.INITIAL_MAX_FUEL);
+	public MaxFuel (int maxFuel) {
+		setCurrentValue(maxFuel);
 	}
 
+	@Override
+	public String name() {
+		return "MAX FUEL";
+	}
 }

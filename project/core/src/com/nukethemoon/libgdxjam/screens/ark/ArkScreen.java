@@ -5,8 +5,10 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -14,27 +16,29 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.game.Alien;
 import com.nukethemoon.libgdxjam.game.Artifact;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
+import com.nukethemoon.libgdxjam.game.attributes.Attribute;
 
 import java.util.List;
 
-//TODO Add properties list (am besten nicht-scrollend)
 //TODO merge von Artifatcs
 //TODO cancel von Artifatcs merges
 //TODO Korrekte Attributartifact texturen
-//TODO Korrekte Valueartifact zahl
 //TODO Korrekte Alien texturen
 //TODO Alien hint text
-//TODO Artifact hint text, wenn Attr. noch unbekannt ("???")
+
 //TODO Artifact hint text, wenn Attr. bekannt ("Speed")
-//TODO close button
 //TODO anzahl aliens/artifacts
 //TODO Scroll shadow
+
+//TODO (opional) Artifact hint text, wenn Attr. noch unbekannt ("???")
 //TODO (optional) anzahl aliens beschränken
 //TODO (optional) delete crew memeber
 
@@ -98,28 +102,61 @@ public class ArkScreen implements Screen {
 		addDropTarget(workbenchSlot2);
 		addDropTarget(workbenchSlot3);
 
+		createPropertiesList();
 
+		Actor closeButton = new Actor();
+		closeButton.setX(493);
+		closeButton.setY(32);
+		closeButton.setWidth(290);
+		closeButton.setHeight(44);
+		closeButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				App.openSolarScreen();
+			}
+		});
+
+
+		stage.addActor(closeButton);
+
+		multiplexer.addProcessor(stage);
+
+	}
+
+	private void createPropertiesList() {
 		Table propertiesTable = new Table();
-		Label label = new Label("SPEED", skin);
 
-		label.getStyle().background = new TextureRegionDrawable(App.TEXTURES.findRegion("row03"));
+		for (Attribute a : SpaceShipProperties.properties.getAttributes()) {
+			Table singleProperty = new Table();
+			singleProperty.align(Align.bottomLeft);
+			singleProperty.padLeft(5);
+			singleProperty.setBackground(new TextureRegionDrawable(Attribute.getPropertiesTexture(a.getClass())));
+			Label label = new Label(a.name(), skin);
+			singleProperty.add(label).width(395);
+			Label value = new Label(String.valueOf(a.getCurrentValue()), skin);
+			singleProperty.add(value).width(100);
 
-		propertiesTable.add(label).width(540);
-		propertiesTable.setX(400);
-		propertiesTable.setY(250);
+			propertiesTable.add(singleProperty).width(500).height(39);
+			propertiesTable.row().space(3);
+		}
 
-
-		propertiesTable.setWidth(540);
-		stage.addActor(propertiesTable);
-
-				multiplexer.addProcessor(stage);
-
+		propertiesTable.setWidth(520);
+		ScrollPane pane = new ScrollPane(propertiesTable);
+		pane.setX(390);
+		pane.setY(100);
+		pane.setWidth(500);
+		pane.setHeight(210);
+		stage.addActor(pane);
 	}
 
 	private void createArtifactsInventory() {
 		artifactsTable = new Table();
 		artifactsTable.setWidth(INVENTORY_WIDTH);
-		artifactsTable.pad(3);
+
+		artifactsTable.padTop(6);
+		artifactsTable.padRight(2);
+		artifactsTable.padLeft(2);
+		artifactsTable.padBottom(6);
 		artifactsTable.top();
 		ScrollPane artifactsScrollPane = new ScrollPane(artifactsTable);
 
@@ -135,7 +172,10 @@ public class ArkScreen implements Screen {
 	private void createAlienInventory() {
 		alienTable = new Table();
 		alienTable.setWidth(INVENTORY_WIDTH);
-		alienTable.pad(3);
+		alienTable.padTop(6);
+		alienTable.padRight(2);
+		alienTable.padLeft(2);
+		alienTable.padBottom(6);
 		alienTable.top();
 
 		ScrollPane alienScrollPane = new ScrollPane(alienTable);
@@ -154,27 +194,22 @@ public class ArkScreen implements Screen {
 
 		for (int i = 0; i < artifacts.size(); ++i) {
 			final Artifact artifact = artifacts.get(i);
-			final Image img = new Image(artifact.getTexture());
+			final Actor actor = artifact.createActor();
+			artifactsTable.add(actor).space(5).width(75).height(75);
 
-			artifactsTable.add(img).space(5).width(75).height(75);
-
-			dragAndDrop.addSource(new DragAndDrop.Source(img) {
+			dragAndDrop.addSource(new DragAndDrop.Source(actor) {
 
 				@Override
 				public DragAndDrop.Payload dragStart(InputEvent event, float x, float y, int pointer) {
 
-					img.setVisible(false);
+					actor.setVisible(false);
 
 					DragAndDrop.Payload payload = new DragAndDrop.Payload();
 
-					dragAndDrop.setDragActorPosition(-x, -y + 75);
+					dragAndDrop.setDragActorPosition(-x, -y);
 					payload.setObject(artifact);
 
-					payload.setDragActor(new Image(img.getDrawable()));
-
-					payload.setValidDragActor(new Image(img.getDrawable()));
-
-					payload.setInvalidDragActor(new Image(img.getDrawable()));
+					payload.setDragActor(artifact.createActor());
 
 					return payload;
 				}
@@ -183,9 +218,8 @@ public class ArkScreen implements Screen {
 				public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Payload payload, DragAndDrop.Target target) {
 					if (target != null) {
 						artifactsTable.removeActor(getActor());
-						//artifacts.remove(payload.getObject());
 					} else {
-						img.setVisible(true);
+						actor.setVisible(true);
 					}
 				}
 			});
@@ -225,7 +259,6 @@ public class ArkScreen implements Screen {
 			@Override
 			public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
 				slot.insertArtifact((Artifact) payload.getObject());
-				slot.setDrawable(((Image) source.getActor()).getDrawable());
 				dragAndDrop.removeTarget(this);
 
 			}
@@ -270,23 +303,34 @@ public class ArkScreen implements Screen {
 
 	@Override
 	public void dispose() {
-
+		stage.dispose();
 	}
 
 	private static float invertYAxis(float yValue) {
 		return Gdx.graphics.getHeight() - yValue;
 	}
 
-	private class WorkbenchSlot extends Image {
+	private class WorkbenchSlot extends Actor {
 		private Artifact insertedArtifact;
+		private Actor actor = new Group();
 
 		public WorkbenchSlot() {
-			super(App.TEXTURES.findRegion("slotDrop"));
+
 		}
 
 		public void insertArtifact(Artifact artifact) {
 			this.insertedArtifact = artifact;
-			setDrawable(new TextureRegionDrawable(App.TEXTURES.findRegion("slot01")));
+			actor = artifact.createActor();
+			actor.setX(getX());
+			actor.setY(getY());
+			actor.setWidth(getWidth());
+			actor.setHeight(getHeight());
+		}
+
+		@Override
+		public void draw(Batch batch, float parentAlpha) {
+			super.draw(batch, parentAlpha);
+			actor.draw(batch, parentAlpha);
 		}
 
 		public boolean isOccupied() {

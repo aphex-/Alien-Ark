@@ -1,10 +1,13 @@
 package com.nukethemoon.libgdxjam.game.artifacts;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Align;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.game.Artifact;
-import com.nukethemoon.libgdxjam.game.attributes.Speed;
 
 public class ValueArtifact extends Artifact {
 
@@ -19,7 +22,18 @@ public class ValueArtifact extends Artifact {
 	}
 
 	@Override
-	public TextureRegion getTexture() {
+	protected Actor getForeground() {
+		Label label = new Label("" + value, Styles.UI_SKIN);
+		Label.LabelStyle newStyle = new Label.LabelStyle(label.getStyle());
+		newStyle.fontColor = Color.BLACK;
+		label.setStyle(newStyle);
+		label.setAlignment(Align.center);
+
+		return label;
+	}
+
+	@Override
+	public TextureRegion getBackgroundTexture() {
 		return App.TEXTURES.findRegion("slot00");
 	}
 }

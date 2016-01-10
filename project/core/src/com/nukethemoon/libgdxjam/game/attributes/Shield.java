@@ -1,7 +1,13 @@
 package com.nukethemoon.libgdxjam.game.attributes;
 
-/**
- * Created by lovis on 09.01.16.
- */
+
 public class Shield extends Attribute{
+	public Shield(int shield){
+		setCurrentValue(shield);
+	}
+
+	@Override
+	public String name() {
+		return "SHIELD";
+	}
 }
