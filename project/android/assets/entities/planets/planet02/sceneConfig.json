@@ -37,9 +37,9 @@
   ],
   "artifacts": [
     {
-      "x": 110,
-      "y": 80,
-      "id": "myArtifactId"
+      "x": -76,
+      "y": 113,
+      "id": "art0001_planet02"
     }
   ],
   "layerConfigs": [

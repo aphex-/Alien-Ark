@@ -14,14 +14,12 @@ public class ArtifactObject {
 
 	public ArtifactObject(PointWithId artifactDefinition) {
 		this.definition = artifactDefinition;
-
 		Model modelOfArtifact = ArtifactDefitnitions.getModelOfArtifact(artifactDefinition.id);
 		if (modelOfArtifact != null) {
 			modelInstance = new ModelInstance(modelOfArtifact);
 		} else {
 			modelInstance = new ModelInstance(Models.ARTIFACT_E);
 		}
-
 		adjust(0);
 	}
 
