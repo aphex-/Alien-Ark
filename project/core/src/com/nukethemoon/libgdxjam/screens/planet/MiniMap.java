@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.nukethemoon.libgdxjam.App;
-import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
@@ -113,7 +112,7 @@ public class MiniMap {
 		miniMapBatch.begin();
 		drawMiniMapDistanceText(planetController.getNearestArtifactPosition(), rocketPosition, groundZRotation);
 		drawMiniMapDistanceText(tmpVec5.set(0, 0), rocketPosition, groundZRotation);
-		if (Config.DEBUG) {
+		if (App.config.debugMode) {
 			int tileX = (int) (rocketPosition.x / ControllerPlanet.TILE_GRAPHIC_SIZE);
 			int tileY = (int) (rocketPosition.y / ControllerPlanet.TILE_GRAPHIC_SIZE);
 

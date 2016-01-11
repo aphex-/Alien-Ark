@@ -5,13 +5,13 @@ import com.badlogic.gdx.Gdx;
 public class Log {
 
 	public static void d(Class source, String message) {
-		if (Config.DEBUG) {
-			Gdx.app.debug(source.getSimpleName(), message);
+		if (App.config.debugMode) {
+			Gdx.app.log(source.getSimpleName(), message);
 		}
 	}
 
 	public static void l(Class source, String message) {
-		if (Config.DEBUG) {
+		if (App.config.debugMode) {
 			Gdx.app.log(source.getSimpleName(), message);
 		}
 	}

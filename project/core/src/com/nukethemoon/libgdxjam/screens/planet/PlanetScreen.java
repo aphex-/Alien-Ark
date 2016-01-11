@@ -36,7 +36,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Balancing;
-import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ArtifactCollectAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ScanAnimation;
@@ -62,9 +61,8 @@ import com.nukethemoon.tools.ani.BaseAnimation;
 
 import java.awt.*;
 
-public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener, RocketListener, ControllerPhysic.PhysicsListener  {
-
-
+public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener, RocketListener,
+		ControllerPhysic.PhysicsListener  {
 
 	private ModelInstance environmentSphere;
 	private ModelBatch modelBatch;
@@ -222,7 +220,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		positionTable = new PositionTable(uiSkin);
 		stage.addActor(positionTable);
 
-		if (Config.DEBUG) {
+		if (App.config.debugMode) {
 			developmentWindow = new DevelopmentWindow(uiSkin, stage, planetConfig, this, this);
 			developmentWindow.setVisible(false);
 			stage.addActor(developmentWindow);

@@ -51,7 +51,7 @@ public class TutorialController {
 	private Vector2 tmpVector = new Vector2();
 
 	public TutorialController(Skin skin) {
-		enabled = App.save.showTutorial;
+		enabled = App.config.tutorialEnabled;
 
 		tutorialDialogs.put(TutorialStep.REACH_PLANET, new DialogTable(skin, new String[]{
 				"Hello. This is Tutorianto",
