@@ -32,7 +32,8 @@ public class AudioController {
 			"energy_shield.mp3",
 			"match_highlight.mp3",
 			"thrust.wav",
-			"bonus_stream.mp3"
+			"bonus_stream.mp3",
+			"dialogHighlight.mp3"
 	};
 
 

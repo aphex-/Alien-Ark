@@ -31,7 +31,7 @@ public class App extends Game {
 	public static SolarSystem solarSystem = new SolarSystem();
 
 	private static Gson gson;
-	private static Save save;
+	public static Save save;
 
 	@Override
 	public void create () {

@@ -1,6 +1,7 @@
 package com.nukethemoon.libgdxjam.screens.planet;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
@@ -51,7 +52,6 @@ import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.libgdxjam.ui.GameOverTable;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.MenuTable;
-import com.nukethemoon.libgdxjam.ui.PopupTable;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
 import com.nukethemoon.libgdxjam.ui.ToastTable;
 import com.nukethemoon.libgdxjam.ui.animation.FadeTableAnimation;
@@ -64,7 +64,8 @@ import java.awt.*;
 
 public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener, RocketListener, ControllerPhysic.PhysicsListener  {
 
-;
+	private final TutorialHelper tutorialHelper;
+	;
 	private ModelInstance environmentSphere;
 	private ModelBatch modelBatch;
 	private Environment environment;
@@ -163,6 +164,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		onReloadScene(planetConfig);
 		initParticles();
 		initStage(planetConfig);
+
+		tutorialHelper = new TutorialHelper(stage, uiSkin, ani);
 	}
 
 	private void initParticles() {
@@ -215,7 +218,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
 		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
 		stage.addActor(mainUI);
-		stage.addActor(new PopupTable(uiSkin));
 		positionTable = new PositionTable(uiSkin);
 		stage.addActor(positionTable);
 
@@ -245,7 +247,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				onPauseClicked();
 			}
 		});
-
 		stage.addActor(menuButton);
 	}
 
@@ -294,20 +295,16 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		}
 		camera.update();
 
-		if (Gdx.app.getInput().isKeyPressed(21)) {
+		if (Gdx.app.getInput().isKeyPressed(Input.Keys.LEFT) || Gdx.app.getInput().isKeyPressed(Input.Keys.A)) {
 			rocket.rotateLeft();
-
 		}
-
-		if (Gdx.app.getInput().isKeyPressed(22)) {
+		if (Gdx.app.getInput().isKeyPressed(Input.Keys.RIGHT) || Gdx.app.getInput().isKeyPressed(Input.Keys.D)) {
 			rocket.rotateRight();
 		}
-
-		if (Gdx.app.getInput().isKeyPressed(19)) {
+		if (Gdx.app.getInput().isKeyPressed(Input.Keys.UP) || Gdx.app.getInput().isKeyPressed(Input.Keys.W)) {
 			rocket.rotateUp();
 		}
-
-		if (Gdx.app.getInput().isKeyPressed(20)) {
+		if (Gdx.app.getInput().isKeyPressed(Input.Keys.DOWN) || Gdx.app.getInput().isKeyPressed(Input.Keys.S)) {
 			rocket.rotateDown();
 		}
 
@@ -341,16 +338,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				physicsController.stepSimulation(delta);
 			}
 		}
-
 		if (stage != null) {
 			stage.act(delta);
 			stage.draw();
 		}
 		miniMap.drawMiniMap();
 	}
-
-
-
 
 
 	private void showToast(String text) {
@@ -364,17 +357,13 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			}
 		});
 		ani.add(animation);
-
-
 	}
 
 	private void drawOrigin() {
 		shapeRenderer.setProjectionMatrix(camera.combined);
 		shapeRenderer.begin();
-
 		shapeRenderer.setColor(Color.RED); // x
 		shapeRenderer.line(0, 0, 0, 100, 0, 0);
-
 		shapeRenderer.setColor(Color.YELLOW); // y
 		shapeRenderer.line(0, 0, 0, 0, 100, 0);
 		shapeRenderer.end();
@@ -400,22 +389,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	}
 
-	@Override
-	public void dispose() {
-		particleSystem.removeAll();
-		particleSystem.getBatches().clear();
-
-		planetController.dispose();
-		modelBatch.dispose();
-		rocket.dispose();
-		assetManager.dispose();
-		//sphereModel.dispose();
-		//shapeRenderer.dispose();
-		effectThrust.dispose();
-		effectExplosion.dispose();
-	}
-
-
 
 	@Override
 	public boolean keyDown(int keycode) {
@@ -433,6 +406,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public boolean keyUp(int keycode) {
+		tutorialHelper.onKeyTyped(keycode);
 		return false;
 	}
 
@@ -620,4 +594,19 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public void onInternalTick() {
 		rocket.handlePhysicTick();
 	}
+
+	@Override
+	public void dispose() {
+		particleSystem.removeAll();
+		particleSystem.getBatches().clear();
+		planetController.dispose();
+		modelBatch.dispose();
+		rocket.dispose();
+		assetManager.dispose();
+		//sphereModel.dispose();
+		//shapeRenderer.dispose();
+		effectThrust.dispose();
+		effectExplosion.dispose();
+	}
+
 }
