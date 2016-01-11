@@ -58,7 +58,7 @@ import com.nukethemoon.libgdxjam.screens.planet.helper.SphereTextureProvider;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.libgdxjam.ui.GameOverTable;
-import com.nukethemoon.libgdxjam.ui.MenuTable;
+import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.PopupTable;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
 import com.nukethemoon.libgdxjam.ui.ToastTable;
@@ -105,7 +105,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private ControllerPlanet planetController;
 	private ControllerPhysic physicsController;
 
-	private Stage stage;
+	private final Stage stage;
 
 	private final FreeCameraInput freeCameraInput;
 
@@ -143,9 +143,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private Ani ani;
 
+
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
 		pPlanetIndex = pPlanetIndex % KNOWN_PLANETS.length;
-
+		stage = new Stage(new ScreenViewport());
 
 		ani = new Ani();
 		uiSkin = pUISkin;
@@ -247,7 +248,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	}
 
 	private void initStage(PlanetConfig planetConfig) {
-		stage = new Stage(new ScreenViewport());
 		multiplexer.addProcessor(stage);
 
 		if (Config.DEBUG) {
@@ -255,30 +255,23 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			developmentWindow.setVisible(false);
 			stage.addActor(developmentWindow);
 
-			TextButton devButton = new TextButton("dev", uiSkin);
-			devButton.setPosition(10, Gdx.graphics.getHeight() - devButton.getHeight() - 10);
-			stage.addActor(devButton);
-
+			final TextButton devButton = new TextButton("dev", uiSkin);
 			devButton.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
 					developmentWindow.setVisible(true);
 				}
 			});
+			devButton.setPosition(50, Gdx.graphics.getHeight() - devButton.getHeight() - 10);
+			stage.addActor(devButton);
 		}
-
 		mainUI = new RocketMainTable(uiSkin);
 		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
 		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
 		stage.addActor(mainUI);
-
 		stage.addActor(new PopupTable(uiSkin));
-
 		positionTable = new PositionTable(uiSkin);
 		stage.addActor(positionTable);
-
-		MenuTable menuTable = new MenuTable(uiSkin);
-		stage.addActor(menuTable);
 
 		final TextButton leaveButton = new TextButton("Leave Planet", uiSkin);
 		leaveButton.addListener(new ClickListener() {
@@ -289,6 +282,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		});
 		leaveButton.setPosition(10, 10);
 		stage.addActor(leaveButton);
+
+		final MenuButton menuButton = new MenuButton(uiSkin, stage);
+		stage.addActor(menuButton);
 	}
 
 	private void leavePlanet() {

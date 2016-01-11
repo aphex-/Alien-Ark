@@ -31,6 +31,7 @@ import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
+import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
 
 import java.util.ArrayList;
@@ -161,6 +162,8 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		});
 		mainUI.add(arkScreenButton);
 		stage.addActor(mainUI);
+
+		stage.addActor(new MenuButton(uiSkin, stage));
 	}
 
 	private RayHandler createRayHandler(World world) {

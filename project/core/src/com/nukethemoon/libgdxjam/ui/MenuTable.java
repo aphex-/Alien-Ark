@@ -13,7 +13,7 @@ public class MenuTable extends Table {
 
 	private Table content;
 
-	public MenuTable(Skin skin) {
+	public MenuTable(Skin skin, final CloseListener closeListener) {
 		setBackground(new TextureRegionDrawable(App.TEXTURES.findRegion("popupMenu")));
 		pad(0);
 		content = new Table();
@@ -27,6 +27,7 @@ public class MenuTable extends Table {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				MenuTable.this.remove();
+				closeListener.onClose();
 			}
 		});
 		add(imageButton).top().right();
@@ -37,5 +38,9 @@ public class MenuTable extends Table {
 		setPosition((Gdx.graphics.getWidth() / 2) - this.getWidth() / 2,
 				(Gdx.graphics.getHeight() / 2) - this.getHeight() / 2);
 
+	}
+
+	public interface CloseListener {
+		void onClose();
 	}
 }
