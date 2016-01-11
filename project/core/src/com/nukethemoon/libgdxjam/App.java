@@ -34,13 +34,15 @@ public class App extends Game {
 
 	private static Gson gson;
 	public static Save save;
+	public static Config config;
 
 	@Override
 	public void create () {
 		app = this;
+		gson = new GsonBuilder().setPrettyPrinting().create();
+		loadConfig();
 		Bullet.init();
 		Models.init();
-		gson = new GsonBuilder().setPrettyPrinting().create();
 		loadSaveGame();
 		TEXTURES = new TextureAtlas("textures/game.atlas");
 		Styles.init(TEXTURES);
@@ -99,7 +101,7 @@ public class App extends Game {
 	}
 
 	public static void saveProgress() {
-		FileHandle fileHandle = openSaveFile();
+		FileHandle fileHandle = openFile("save/save.json");
 		if (fileHandle != null) {
 			String jsonString = gson.toJson(save);
 			fileHandle.writeString(jsonString, false);
@@ -107,7 +109,7 @@ public class App extends Game {
 	}
 
 	private static void loadSaveGame() {
-		FileHandle fileHandle = openSaveFile();
+		FileHandle fileHandle = openFile("save/save.json");
 		if (fileHandle != null) {
 			save = gson.fromJson(fileHandle.readString(), Save.class);
 		}
@@ -116,16 +118,27 @@ public class App extends Game {
 		}
 	}
 
-	private static FileHandle openSaveFile() {
-		if (!Gdx.files.local("save/save.json").exists()) {
+
+	private static void loadConfig() {
+		FileHandle fileHandle = openFile("save/config.json");
+		if (fileHandle != null) {
+			config = gson.fromJson(fileHandle.readString(), Config.class);
+		}
+		if (config == null) {
+			config = new Config();
+		}
+	}
+
+	private static FileHandle openFile(String path) {
+		if (!Gdx.files.local(path).exists()) {
 			try {
-				Gdx.files.local("save/save.json").file().createNewFile();
+				Gdx.files.local(path).file().createNewFile();
 			} catch (IOException e) {
-				Log.e(App.class, "Error creating save file");
+				Log.e(App.class, "Error creating file " + path);
 				return null;
 			}
 		}
-		return Gdx.files.local("save/save.json");
+		return Gdx.files.local(path);
 	}
 
 	@Override
