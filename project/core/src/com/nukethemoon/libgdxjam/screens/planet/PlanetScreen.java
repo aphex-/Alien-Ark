@@ -47,7 +47,7 @@ import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ArtifactCollectAnimation;
-import com.nukethemoon.libgdxjam.screens.planet.animations.TractorBeamAnimation;
+import com.nukethemoon.libgdxjam.screens.planet.animations.ScanAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWindow;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
@@ -91,6 +91,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private RocketMainTable mainUI;
 	private PositionTable positionTable;
+	private ScanAnimation scanAnimation;
 
 	private final ShapeRenderer shapeRenderer;
 	private final ShapeRenderer depthShape;
@@ -105,7 +106,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private ControllerPlanet planetController;
 	private ControllerPhysic physicsController;
 
-	private final Stage stage;
+	private Stage stage;
 
 	private final FreeCameraInput freeCameraInput;
 
@@ -142,6 +143,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	};
 
 	private Ani ani;
+	private DevelopmentWindow developmentWindow;
 
 
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
@@ -247,24 +249,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		environmentSphere = new ModelInstance(sphereModel);
 	}
 
-	private void initStage(PlanetConfig planetConfig) {
+	private void initStage(final PlanetConfig planetConfig) {
 		multiplexer.addProcessor(stage);
 
-		if (Config.DEBUG) {
-			final DevelopmentWindow developmentWindow = new DevelopmentWindow(uiSkin, stage, planetConfig, this);
-			developmentWindow.setVisible(false);
-			stage.addActor(developmentWindow);
-
-			final TextButton devButton = new TextButton("dev", uiSkin);
-			devButton.addListener(new ClickListener() {
-				@Override
-				public void clicked(InputEvent event, float x, float y) {
-					developmentWindow.setVisible(true);
-				}
-			});
-			devButton.setPosition(50, Gdx.graphics.getHeight() - devButton.getHeight() - 10);
-			stage.addActor(devButton);
-		}
 		mainUI = new RocketMainTable(uiSkin);
 		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
 		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
@@ -273,22 +260,42 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		positionTable = new PositionTable(uiSkin);
 		stage.addActor(positionTable);
 
-		final TextButton leaveButton = new TextButton("Leave Planet", uiSkin);
-		leaveButton.addListener(new ClickListener() {
+		if (Config.DEBUG) {
+			developmentWindow = new DevelopmentWindow(uiSkin, stage, planetConfig, this, this);
+			developmentWindow.setVisible(false);
+			stage.addActor(developmentWindow);
+
+			final TextButton devButton = new TextButton("dev", uiSkin);
+
+			ClickListener clickListener = new ClickListener() {
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					developmentWindow.pack();
+					developmentWindow.setVisible(true);
+				}
+			};
+			devButton.addListener(clickListener);
+			devButton.setPosition(50, Gdx.graphics.getHeight() - devButton.getHeight() - 10);
+			stage.addActor(devButton);
+		}
+
+		final MenuButton menuButton = new MenuButton(uiSkin);
+		menuButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				leavePlanet();
+				menuButton.openMenu(stage);
 			}
 		});
-		leaveButton.setPosition(10, 10);
-		stage.addActor(leaveButton);
 
-		final MenuButton menuButton = new MenuButton(uiSkin, stage);
+
 		stage.addActor(menuButton);
 	}
 
-	private void leavePlanet() {
+
+
+	public void leavePlanet() {
 		renderEnabled = false;
+		multiplexer.removeProcessor(stage);
 		dispose();
 		App.openSolarScreen();
 	}
@@ -712,45 +719,52 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		}
 	}
 
-	private TractorBeamAnimation beamAnimation;
+
 
 	@Override
 	public void onRocketScanStart() {
 		showToast("Scan started!");
 		rocket.setTractorBeamVisibility(true);
-		beamAnimation = new TractorBeamAnimation(rocket.getTractorBeamModelInstance(), rocket.getScanRadus(),
+		scanAnimation = new ScanAnimation(rocket.getTractorBeamModelInstance(), rocket.getScanRadus(),
 				new AnimationFinishedListener() {
 			@Override
 			public void onAnimationFinished(BaseAnimation baseAnimation) {
-				if (baseAnimation.getRemainingLoopCount() == 0) {
-					rocket.setTractorBeamVisibility(false);
-					final ArtifactObject artifactObject = planetController.tryCollect(rocket.getPosition(), rocket.getScanRadus());
-					if (artifactObject == null) {
-						showToast("Scan result: NULL!");
-					} else {
-						showToast("Artifact collected!");
-						App.audioController.playSound("bonus_stream.mp3");
-
-						ArtifactCollectAnimation artifactCollectAnimation = new ArtifactCollectAnimation(artifactObject, rocket.getPosition(), new AnimationFinishedListener() {
-							@Override
-							public void onAnimationFinished(BaseAnimation baseAnimation) {
-								planetController.collectArtifact(artifactObject);
-							}
-						});
-						ani.add(artifactCollectAnimation);
-
-					}
-				}
+				onScanAnimationFinished(baseAnimation.getRemainingLoopCount() != 0);
 			}
 		});
-		ani.add(beamAnimation);
+		ani.add(scanAnimation);
+	}
+
+	private void onScanAnimationFinished(boolean wasCanceled) {
+		if (!wasCanceled) {
+			rocket.setTractorBeamVisibility(false);
+			final ArtifactObject artifactObject = planetController.tryCollect(rocket.getPosition(), rocket.getScanRadus());
+			if (artifactObject == null) {
+				showToast("Scan result: NULL!");
+			} else {
+				showToast("Artifact collected!");
+				App.audioController.playSound("bonus_stream.mp3");
+				ArtifactCollectAnimation artifactCollectAnimation = new ArtifactCollectAnimation(artifactObject,
+						rocket.getPosition(), new AnimationFinishedListener() {
+					@Override
+					public void onAnimationFinished(BaseAnimation baseAnimation) {
+						onCollectAnimationFinished(artifactObject);
+					}
+				});
+				ani.add(artifactCollectAnimation);
+			}
+		}
+	}
+
+	private void onCollectAnimationFinished(ArtifactObject artifactObject) {
+		planetController.collectArtifact(artifactObject);
 	}
 
 	@Override
 	public void onRocketScanEnd() {
 		showToast("Scan canceled!");
 		rocket.setTractorBeamVisibility(false);
-		ani.forceStop(beamAnimation);
+		ani.forceStop(scanAnimation);
 	}
 
 	// === physic events ===

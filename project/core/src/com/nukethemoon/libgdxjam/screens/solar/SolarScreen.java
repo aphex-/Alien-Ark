@@ -48,6 +48,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	private static final int RAYS_NUM = 333;
 	private final World world;
+	private final InputMultiplexer multiplexer;
 
 	private Vector2 shipPosition = new Vector2(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
 	private final RayHandler rayHandler;
@@ -93,6 +94,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
+		this.multiplexer = multiplexer;
 		batch = new SpriteBatch();
 		arkSprite = new Sprite(App.TEXTURES.findRegion("ship_placeholder"));
 		exhaustSprite = new Sprite(App.TEXTURES.findRegion("exhaust_placeholder"));
@@ -163,7 +165,15 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		mainUI.add(arkScreenButton);
 		stage.addActor(mainUI);
 
-		stage.addActor(new MenuButton(uiSkin, stage));
+		final MenuButton menuButton = new MenuButton(uiSkin);
+		menuButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				menuButton.openMenu(stage);
+			}
+		});
+
+		stage.addActor(menuButton);
 	}
 
 	private RayHandler createRayHandler(World world) {
@@ -373,10 +383,12 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	private void openPlanetScreen(int planetIndex) {
+		multiplexer.removeProcessor(stage);
 		App.openPlanetScreen(planetIndex);
 	}
 
 	private void openArkScreen() {
+		multiplexer.removeProcessor(stage);
 		App.openArkScreen();
 	}
 
