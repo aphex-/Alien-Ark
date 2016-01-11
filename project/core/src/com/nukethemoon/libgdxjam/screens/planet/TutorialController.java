@@ -19,7 +19,7 @@ public class TutorialController {
 
 	private Stage stage;
 	private Ani ani;
-	private boolean enabled;
+
 
 	public enum TutorialStep {
 		NULL,
@@ -51,7 +51,7 @@ public class TutorialController {
 	private Vector2 tmpVector = new Vector2();
 
 	public TutorialController(Skin skin) {
-		enabled = App.config.tutorialEnabled;
+
 
 		tutorialDialogs.put(TutorialStep.REACH_PLANET, new DialogTable(skin, new String[]{
 				"Hello. This is Tutorianto",
@@ -145,7 +145,7 @@ public class TutorialController {
 	}
 
 	private void next() {
-		if (enabled) {
+		if (App.config.tutorialEnabled) {
 			closeCurrent();
 			if (currentStep.ordinal() + 1 < currentStep.values().length) {
 				currentStep = TutorialStep.values()[currentStep.ordinal() + 1];
@@ -154,13 +154,14 @@ public class TutorialController {
 				ani.add(dialogTable.createAnimation());
 			}
 			if (currentStep == TutorialStep.END_TUTORIAL) {
-				enabled = false;
+				App.config.tutorialEnabled = false;
+				App.saveConfig();
 			}
 		}
 	}
 
 	public void nextStepFor(Class<? extends Screen> screenClass) {
-		if (!enabled) {
+		if (!App.config.tutorialEnabled) {
 			return;
 		}
 
@@ -200,7 +201,7 @@ public class TutorialController {
 	}
 
 	public void onKeyTyped(int keyCode) {
-		if (enabled) {
+		if (App.config.tutorialEnabled) {
 			totalKeyEvents++;
 			if (currentStep == TutorialStep.SHIP_CONTROLS) {
 				if (keyCode == Input.Keys.LEFT || keyCode == Input.Keys.A) {
@@ -227,30 +228,38 @@ public class TutorialController {
 	}
 
 	public void applyNearestArtifact(Vector2 nearestArtifactPosition, Vector3 position) {
-		if (currentStep == TutorialStep.REACH_THE_ARTIFACT && nearestArtifactPosition != null) {
-			float len = tmpVector.set(nearestArtifactPosition).sub(position.x, position.y).len();
-			if (len < 170) {
-				next();
+		if (App.config.tutorialEnabled) {
+			if (currentStep == TutorialStep.REACH_THE_ARTIFACT && nearestArtifactPosition != null) {
+				float len = tmpVector.set(nearestArtifactPosition).sub(position.x, position.y).len();
+				if (len < 170) {
+					next();
+				}
 			}
 		}
 	}
 
 	public void onAlienCrafted() {
-		if (currentStep == TutorialStep.CRAFT_AN_ALIEN) {
-			next();
+		if (App.config.tutorialEnabled) {
+			if (currentStep == TutorialStep.CRAFT_AN_ALIEN) {
+				next();
+			}
 		}
 	}
 
 	public void onArtifactCollected() {
-		if (currentStep == TutorialStep.COLLECT_THE_ARTIFACT) {
-			next();
+		if (App.config.tutorialEnabled) {
+			if (currentStep == TutorialStep.COLLECT_THE_ARTIFACT) {
+				next();
+			}
 		}
 	}
 
 	public void onLeavePlanet() {
-		if (currentStep.ordinal() < TutorialStep.LEAVE_THE_PLANET.ordinal()) {
-			currentStep = TutorialStep.LEAVE_THE_PLANET;
-			planetScreenStep = 1;
+		if (App.config.tutorialEnabled) {
+			if (currentStep.ordinal() < TutorialStep.LEAVE_THE_PLANET.ordinal()) {
+				currentStep = TutorialStep.LEAVE_THE_PLANET;
+				planetScreenStep = 1;
+			}
 		}
 	}
 }

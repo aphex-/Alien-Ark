@@ -108,6 +108,14 @@ public class App extends Game {
 		}
 	}
 
+	public static void saveConfig() {
+		FileHandle fileHandle = openFile("save/config.json");
+		if (fileHandle != null) {
+			String jsonString = gson.toJson(config);
+			fileHandle.writeString(jsonString, false);
+		}
+	}
+
 	private static void loadSaveGame() {
 		FileHandle fileHandle = openFile("save/save.json");
 		if (fileHandle != null) {
