@@ -356,7 +356,7 @@ public class ArkScreen implements Screen {
 
 	@Override
 	public void hide() {
-
+		multiplexer.removeProcessor(stage);
 	}
 
 	@Override
