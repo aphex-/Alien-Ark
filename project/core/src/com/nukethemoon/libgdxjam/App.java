@@ -35,6 +35,7 @@ public class App extends Game {
 	private static Gson gson;
 	public static Save save;
 	public static Config config;
+	public static int ratioCorrectionXOffset = 1;
 
 	@Override
 	public void create () {
@@ -58,12 +59,12 @@ public class App extends Game {
 		// instance space ship
 		// load game entities
 		// openScreen(SplashScreen.class);
-		openPlanetScreen(0);
+		//openPlanetScreen(0);
 		SpaceShipProperties.properties.testInit();
 		//openArkScreen();
 
 
-		//openSolarScreen();
+		openSolarScreen();
 	}
 
 	public static void openScreen(Class<? extends Screen> screenClass) {

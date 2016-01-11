@@ -52,6 +52,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	private final World world;
 	private final InputMultiplexer multiplexer;
 	private final Ani ani;
+//	private StarsBackground bg;
 
 	private Vector2 shipPosition = new Vector2(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
 	private final RayHandler rayHandler;
@@ -103,6 +104,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		exhaustSprite = new Sprite(App.TEXTURES.findRegion("exhaust_placeholder"));
 		ani = new Ani();
 
+
 		world = new World(new Vector2(0, 0), true);
 
 
@@ -137,6 +139,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	private void setupPlanets() {
+
 		planetSprites[0] = new Sprite(App.TEXTURES.findRegion("planet01"));
 		planetSprites[1] = new Sprite(App.TEXTURES.findRegion("planet02"));
 		planetSprites[2] = new Sprite(App.TEXTURES.findRegion("plantet03"));
@@ -239,8 +242,10 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
-		batch.disableBlending();
+		//batch.disableBlending();
+//		bg.draw(batch);
 		renderPlanets();
+
 		renderArc();
 
 		rotatePlanets(delta);
@@ -373,6 +378,9 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		camera = new OrthographicCamera(screenWidth, screenHeight);
 		camera.position.set(0, screenWidth / 2f, 0);
 		camera.update();
+
+
+//		bg = new StarsBackground(screenWidth, screenHeight);
 	}
 
 	@Override
