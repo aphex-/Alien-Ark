@@ -25,6 +25,7 @@ import com.nukethemoon.libgdxjam.game.Alien;
 import com.nukethemoon.libgdxjam.game.Artifact;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.game.attributes.Attribute;
+import com.nukethemoon.tools.ani.Ani;
 
 import java.util.List;
 
@@ -48,6 +49,7 @@ public class ArkScreen implements Screen {
 	public static final int INVENTORY_OFFSET_X = 75;
 	public static final int INVENTORY_HEIGHT = 355;
 	public static final int INVENTORY_Y = 200;
+	private final Ani ani;
 	private WorkbenchSlot workbenchSlot1;
 	private WorkbenchSlot workbenchSlot2;
 	private WorkbenchSlot workbenchSlot3;
@@ -66,6 +68,7 @@ public class ArkScreen implements Screen {
 	private Table artifactsTable;
 
 	public ArkScreen(Skin uiSkin, InputMultiplexer multiplexer) {
+		ani = new Ani();
 		skin = uiSkin;
 		this.multiplexer = multiplexer;
 
@@ -73,6 +76,9 @@ public class ArkScreen implements Screen {
 
 		stage = new Stage();
 		dragAndDrop = new DragAndDrop();
+
+		App.TUTORIAL_CONTROLLER.register(stage, ani);
+		App.TUTORIAL_CONTROLLER.nextStepFor(this.getClass());
 	}
 
 	@Override
@@ -279,6 +285,7 @@ public class ArkScreen implements Screen {
 		//x=75 y=height-145 scroll pane left
 		stage.act(delta);
 		stage.draw();
+		ani.update();
 	}
 
 	@Override
