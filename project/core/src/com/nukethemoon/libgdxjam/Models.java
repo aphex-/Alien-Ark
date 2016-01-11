@@ -21,6 +21,9 @@ public class Models {
 	public static Model ARTIFACT_W;
 	public static Model ARTIFACT_F;
 
+	public static Model PLANET_PORTAL;
+	public static Model PLANET_PORTAL_TORUS;
+
 
 	public static void init() {
 		ModelLoader loader = new ObjLoader();
@@ -38,6 +41,9 @@ public class Models {
 		ARTIFACT_E = loader.loadModel(Gdx.files.internal("models/artifact_e.obj"), param);
 		ARTIFACT_W = loader.loadModel(Gdx.files.internal("models/artifact_w.obj"), param);
 		ARTIFACT_F = loader.loadModel(Gdx.files.internal("models/artifact_f.obj"), param);
+
+		PLANET_PORTAL = 		loader.loadModel(Gdx.files.internal("models/planetPortal.obj"), param);
+		PLANET_PORTAL_TORUS = 	loader.loadModel(Gdx.files.internal("models/portalTorus.obj"), param);
 	}
 
 	public static void dispose() {

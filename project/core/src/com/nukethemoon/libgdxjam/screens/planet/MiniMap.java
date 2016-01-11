@@ -53,7 +53,7 @@ public class MiniMap {
 		miniMapCamera.near = 1f;
 		miniMapCamera.far = 300f;
 
-		rocketArrow = App.TEXTURES.findRegion("rocket_arrow");
+		rocketArrow = 	App.TEXTURES.findRegion("rocket_arrow");
 		shieldIcon = 	App.TEXTURES.findRegion("minimap_shield");
 		fuelIcon =		App.TEXTURES.findRegion("minimap_fuel");
 		artifactIcon = 	App.TEXTURES.findRegion("minimap_artifact");

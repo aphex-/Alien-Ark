@@ -108,7 +108,7 @@ public class TutorialController {
 				"and start the landing manoeuvre.",
 				"Let the rocket come to a halt",
 				"on solid ground.",
-				"Press SPACE again start the",
+				"Press SPACE again to start the",
 				"engines if you miss the right spot."
 		}));
 

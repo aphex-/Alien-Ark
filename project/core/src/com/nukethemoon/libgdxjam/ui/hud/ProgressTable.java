@@ -8,8 +8,10 @@ import com.nukethemoon.libgdxjam.App;
 public class ProgressTable extends Table {
 
 	private Image[] images;
+	private ShipProgressBar.ProgressType progressType;
 
 	public ProgressTable(ShipProgressBar.ProgressType progressType) {
+		this.progressType = progressType;
 		String texturePrefix;
 		if (progressType == ShipProgressBar.ProgressType.SHIELD) {
 			texturePrefix = "ShieldProgressBar0";
@@ -31,6 +33,8 @@ public class ProgressTable extends Table {
 	public int setValue(int value, int max) {
 		float progress = (float) value / (float) max;
 		int barCount = (int) (progress * 8);
+
+
 		images[5].setVisible(false);
 		return barCount;
 	}
