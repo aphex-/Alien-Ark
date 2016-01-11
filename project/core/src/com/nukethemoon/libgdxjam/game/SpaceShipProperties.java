@@ -30,7 +30,7 @@ public class SpaceShipProperties {
 	transient public static final float INITAL_FUEL_CONSUMPTION = 0.1f;
 	transient public static final int INITIAL_MAX_SHIELD = 1000;
 
-	private List<String> collectedArtifacIds = new ArrayList<String>();
+	private List<String> collectedArtifactIds = new ArrayList<String>();
 
 	private Vector2 position;
 	private Vector2 movementVector;
@@ -143,10 +143,10 @@ public class SpaceShipProperties {
 	}
 
 	public void addArtifact(String id) {
-		collectedArtifacIds.add(id);
+		collectedArtifactIds.add(id);
 	}
 
 	public boolean isCollectedArtifact(String id) {
-		return collectedArtifacIds.contains(id);
+		return collectedArtifactIds.contains(id);
 	}
 }
