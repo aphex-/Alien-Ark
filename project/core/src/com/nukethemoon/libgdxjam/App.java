@@ -14,6 +14,7 @@ import com.nukethemoon.libgdxjam.input.InputController;
 import com.nukethemoon.libgdxjam.screens.MenuScreen;
 import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
+import com.nukethemoon.libgdxjam.screens.planet.TutorialController;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.solar.SolarScreen;
 
@@ -29,6 +30,7 @@ public class App extends Game {
 	public static AudioController audioController;
 
 	public static SolarSystem solarSystem = new SolarSystem();
+	public static TutorialController TUTORIAL_CONTROLLER;
 
 	private static Gson gson;
 	public static Save save;
@@ -42,6 +44,7 @@ public class App extends Game {
 		loadSaveGame();
 		TEXTURES = new TextureAtlas("textures/game.atlas");
 		Styles.init(TEXTURES);
+		TUTORIAL_CONTROLLER = new TutorialController(Styles.UI_SKIN);
 		MULTIPLEXER = new InputMultiplexer();
 		MULTIPLEXER.addProcessor(new InputController());
 		Gdx.input.setInputProcessor(MULTIPLEXER);

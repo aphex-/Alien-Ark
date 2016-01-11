@@ -64,8 +64,8 @@ import java.awt.*;
 
 public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener, RocketListener, ControllerPhysic.PhysicsListener  {
 
-	private final TutorialHelper tutorialHelper;
-	;
+
+
 	private ModelInstance environmentSphere;
 	private ModelBatch modelBatch;
 	private Environment environment;
@@ -165,7 +165,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		initParticles();
 		initStage(planetConfig);
 
-		tutorialHelper = new TutorialHelper(stage, uiSkin, ani);
+		App.TUTORIAL_CONTROLLER.register(stage, ani);
+		App.TUTORIAL_CONTROLLER.nextStepFor(this.getClass());
 	}
 
 	private void initParticles() {
@@ -263,6 +264,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	}
 
 	public void leavePlanet() {
+		App.TUTORIAL_CONTROLLER.onLeavePlanet();
 		renderEnabled = false;
 		multiplexer.removeProcessor(stage);
 		dispose();
@@ -285,6 +287,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
 		planetController.updateNearestArtifact(rocket.getPosition().x, rocket.getPosition().y);
+		App.TUTORIAL_CONTROLLER.applyNearestArtifact(planetController.getNearestArtifactPosition(), rocket.getPosition());
 
 		if (!freeCameraInput.isEnabled()) {
 			if (!pause) {
@@ -406,7 +409,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public boolean keyUp(int keycode) {
-		tutorialHelper.onKeyTyped(keycode);
+		App.TUTORIAL_CONTROLLER.onKeyTyped(keycode);
 		return false;
 	}
 
@@ -547,7 +550,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			rocket.setTractorBeamVisibility(false);
 			final ArtifactObject artifactObject = planetController.tryCollect(rocket.getPosition(), rocket.getScanRadus());
 			if (artifactObject == null) {
-				showToast("Scan result: NULL!");
+				showToast("Not close enough to an Artifact");
 			} else {
 				showToast("Artifact collected!");
 				App.audioController.playSound("bonus_stream.mp3");
@@ -565,6 +568,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private void onCollectAnimationFinished(ArtifactObject artifactObject) {
 		planetController.collectArtifact(artifactObject);
+		App.TUTORIAL_CONTROLLER.onArtifactCollected();
 	}
 
 	@Override

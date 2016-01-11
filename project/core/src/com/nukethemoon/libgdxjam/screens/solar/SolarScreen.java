@@ -34,6 +34,7 @@ import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.MenuTable;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
+import com.nukethemoon.tools.ani.Ani;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +51,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	private static final int RAYS_NUM = 333;
 	private final World world;
 	private final InputMultiplexer multiplexer;
+	private final Ani ani;
 
 	private Vector2 shipPosition = new Vector2(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
 	private final RayHandler rayHandler;
@@ -99,6 +101,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		batch = new SpriteBatch();
 		arkSprite = new Sprite(App.TEXTURES.findRegion("ship_placeholder"));
 		exhaustSprite = new Sprite(App.TEXTURES.findRegion("exhaust_placeholder"));
+		ani = new Ani();
 
 		world = new World(new Vector2(0, 0), true);
 
@@ -111,6 +114,9 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		rayHandler = createRayHandler(world);
 		createPointLights();
 		updateShadowBodies(world);
+
+		App.TUTORIAL_CONTROLLER.register(stage, ani);
+		App.TUTORIAL_CONTROLLER.nextStepFor(this.getClass());
 
 	}
 
@@ -250,6 +256,8 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 		stage.act(delta);
 		stage.draw();
+
+		ani.update();
 	}
 
 	private void renderArc() {

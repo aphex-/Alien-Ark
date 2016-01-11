@@ -1,0 +1,240 @@
+package com.nukethemoon.libgdxjam.screens.planet;
+
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
+import com.nukethemoon.libgdxjam.screens.solar.SolarScreen;
+import com.nukethemoon.libgdxjam.ui.DialogTable;
+import com.nukethemoon.tools.ani.Ani;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class TutorialController {
+
+	private Stage stage;
+	private Ani ani;
+	private boolean enabled;
+
+	public enum TutorialStep {
+		NULL,
+		REACH_PLANET,
+		SHIP_CONTROLS,
+		REACH_THE_ARTIFACT,
+		COLLECT_THE_ARTIFACT,
+		LEAVE_THE_PLANET,
+		OPEN_COMMAND_CENTER,
+		CRAFT_AN_ALIEN
+	}
+
+	private Map<TutorialStep, DialogTable> tutorialDialogs = new HashMap<TutorialStep, DialogTable>();
+
+	private TutorialStep currentStep = TutorialStep.NULL;
+
+	private long totalKeyEvents = 0;
+
+	private int solarScreenStep = 0;
+	private int planetScreenStep = 0;
+	private int arkScreenStep = 0;
+
+	private boolean pressedLeft = false;
+	private boolean pressedTop = false;
+	private boolean pressedRight = false;
+	private boolean pressedDown = false;
+
+	private Vector2 tmpVector = new Vector2();
+
+	public TutorialController(Skin skin) {
+		enabled = App.save.showTutorial;
+
+		tutorialDialogs.put(TutorialStep.REACH_PLANET, new DialogTable(skin, new String[]{
+				"Hello. This is Tutorianto",
+				"speaking... Let me help you",
+				"getting into this LIFE IN SPACE.",
+				"Navigate your ship using the",
+				"CURSOR KEYS or W, A, S and D.",
+				"Travel to a planet and avoid",
+				"to fall into the Star."
+		}));
+
+		tutorialDialogs.put(TutorialStep.SHIP_CONTROLS, new DialogTable(skin, new String[]{
+				"This is your first flight?",
+				"Who gave a rocket to a beginner?",
+				"Anyway.. lets make the best out",
+				"of it. " +
+				"I will show you the basics of",
+				"the modern space flight controls.",
+				"Simply use your CURSOR KEYS or",
+				"W, A, S and D to change",
+				"the direction."
+		}));
+
+		tutorialDialogs.put(TutorialStep.REACH_THE_ARTIFACT, new DialogTable(skin, new String[]{
+				"Take a look at the mini map.",
+				"It shows you the PLANET PORTAL to",
+				"leave the planet and the nearest",
+				"ARTIFACT from your current",
+				"position.",
+				"Fly to this ARTIFACT using your",
+				"new flight skills."
+		}));
+
+		tutorialDialogs.put(TutorialStep.COLLECT_THE_ARTIFACT, new DialogTable(skin, new String[]{
+				"Respect! I underestimated your",
+				"skills. Now try to land your",
+				"ship close to the ARTIFACT to",
+				"collect it.",
+				"Press SPACE to stop the engines",
+				"and start the landing manoeuvre.",
+				"Let the rocket come to a halt",
+				"on solid ground.",
+				"Press SPACE again start the",
+				"engines if you miss the right spot."
+		}));
+
+		tutorialDialogs.put(TutorialStep.COLLECT_THE_ARTIFACT, new DialogTable(skin, new String[]{
+				"Respect! I underestimated your",
+				"skills. Now try to land your",
+				"ship close to the ARTIFACT to",
+				"collect it.",
+				"Press SPACE to stop the engines",
+				"and start the landing manoeuvre.",
+				"Let the rocket come to a halt",
+				"on solid ground.",
+				"Press SPACE again start the",
+				"engines if you miss the right spot."
+		}));
+
+		tutorialDialogs.put(TutorialStep.LEAVE_THE_PLANET, new DialogTable(skin, new String[]{
+				"Perfect! You found an ARTIFACT.",
+				"You can use it to craft new crew",
+				"members and improve your ship.",
+				"Lets leave the planet through",
+				"the PLANET PORTAL.",
+				"Press SPACE to start your engines."
+		}));
+
+
+		tutorialDialogs.put(TutorialStep.OPEN_COMMAND_CENTER, new DialogTable(skin, new String[]{
+				"Alright. Your progress is saved",
+				"and the fuel is filled up now.",
+				"Open the COMMAND CENTER by",
+				"pressing the button called",
+				"'command center button'.",
+		}));
+
+
+		tutorialDialogs.put(TutorialStep.CRAFT_AN_ALIEN, new DialogTable(skin, new String[]{
+				"Craft an ALIEN",
+		}));
+	}
+
+	public void register(Stage stage, Ani ani) {
+		this.stage = stage;
+		this.ani = ani;
+	}
+
+	private void next() {
+		if (enabled) {
+			closeCurrent();
+			if (currentStep.ordinal() + 1 < currentStep.values().length) {
+				currentStep = TutorialStep.values()[currentStep.ordinal() + 1];
+				DialogTable dialogTable = tutorialDialogs.get(currentStep);
+				stage.addActor(dialogTable);
+				ani.add(dialogTable.createAnimation());
+			}
+		}
+	}
+
+	public void nextStepFor(Class<? extends Screen> screenClass) {
+		if (screenClass == PlanetScreen.class) {
+			currentStep = TutorialStep.values()[TutorialStep.SHIP_CONTROLS.ordinal() - 1];
+			next();
+		}
+
+		if (screenClass == SolarScreen.class) {
+			if (solarScreenStep == 0) {
+				currentStep = TutorialStep.values()[TutorialStep.REACH_PLANET.ordinal() - 1];
+				next();
+			}
+			if (solarScreenStep == 1) {
+				currentStep = TutorialStep.values()[TutorialStep.OPEN_COMMAND_CENTER.ordinal() - 1];
+				next();
+			}
+		}
+
+		if (screenClass == ArkScreen.class) {
+			if (arkScreenStep == 0) {
+				currentStep = TutorialStep.values()[TutorialStep.CRAFT_AN_ALIEN.ordinal() - 1];
+				next();
+			}
+		}
+
+
+	}
+
+
+
+	private void closeCurrent() {
+		if (currentStep != TutorialStep.NULL) {
+			DialogTable dialogTable = tutorialDialogs.get(currentStep);
+			if (dialogTable != null) {
+				dialogTable.remove();
+			}
+		}
+	}
+
+
+	public void onKeyTyped(int keyCode) {
+		if (enabled) {
+			totalKeyEvents++;
+			if (currentStep == TutorialStep.SHIP_CONTROLS) {
+				if (keyCode == Input.Keys.LEFT || keyCode == Input.Keys.A) {
+					pressedLeft = true;
+				}
+				if (keyCode == Input.Keys.RIGHT || keyCode == Input.Keys.D) {
+					pressedRight = true;
+				}
+				if (keyCode == Input.Keys.UP || keyCode == Input.Keys.W) {
+					pressedTop = true;
+				}
+				if (keyCode == Input.Keys.DOWN || keyCode == Input.Keys.S) {
+					pressedDown = true;
+				}
+				if (pressedDown && pressedRight && pressedTop && pressedLeft) {
+					closeCurrent();
+					if (totalKeyEvents > 8) {
+						next();
+					}
+				}
+			}
+		}
+
+	}
+
+	public void applyNearestArtifact(Vector2 nearestArtifactPosition, Vector3 position) {
+		if (currentStep == TutorialStep.REACH_THE_ARTIFACT && nearestArtifactPosition != null) {
+			float len = tmpVector.set(nearestArtifactPosition).sub(position.x, position.y).len();
+			if (len < 170) {
+				next();
+			}
+		}
+	}
+
+	public void onArtifactCollected() {
+		if (currentStep == TutorialStep.COLLECT_THE_ARTIFACT) {
+			next();
+		}
+	}
+
+	public void onLeavePlanet() {
+		if (currentStep.ordinal() < TutorialStep.LEAVE_THE_PLANET.ordinal()) {
+			currentStep = TutorialStep.LEAVE_THE_PLANET;
+		}
+	}
+}
