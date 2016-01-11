@@ -35,6 +35,7 @@ public class App extends Game {
 	private static Gson gson;
 	public static Save save;
 	public static Config config;
+	public static int ratioCorrectionXOffset = 1;
 
 	@Override
 	public void create () {
@@ -63,7 +64,7 @@ public class App extends Game {
 		openArkScreen();
 
 
-		//openSolarScreen();
+		openSolarScreen();
 	}
 
 	public static void openScreen(Class<? extends Screen> screenClass) {

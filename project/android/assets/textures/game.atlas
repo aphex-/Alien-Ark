@@ -6,421 +6,490 @@ filter: Nearest,Nearest
 repeat: none
 FuelShieldBackground
   rotate: false
-  xy: 379, 680
+  xy: 478, 36
   size: 403, 40
   orig: 403, 40
   offset: 0, 0
   index: -1
 ShieldProgressBar01
   rotate: false
-  xy: 261, 183
+  xy: 948, 532
   size: 20, 30
   orig: 20, 30
   offset: 0, 0
   index: -1
 ShieldProgressBar02
   rotate: false
-  xy: 759, 737
+  xy: 948, 500
   size: 20, 30
   orig: 20, 30
   offset: 0, 0
   index: -1
 ShieldProgressBar03
   rotate: false
-  xy: 781, 733
+  xy: 948, 468
   size: 20, 30
   orig: 20, 30
   offset: 0, 0
   index: -1
 ShieldProgressBar04
   rotate: false
-  xy: 803, 733
+  xy: 948, 436
   size: 20, 30
   orig: 20, 30
   offset: 0, 0
   index: -1
 button02
   rotate: false
-  xy: 2, 162
+  xy: 171, 25
   size: 257, 51
   orig: 257, 51
   offset: 0, 0
   index: -1
 buttonControlCenter
   rotate: false
-  xy: 868, 299
+  xy: 948, 774
   size: 66, 62
   orig: 66, 62
   offset: 0, 0
   index: -1
 buttonMenu
   rotate: false
-  xy: 80, 23
+  xy: 948, 564
   size: 29, 29
   orig: 29, 29
   offset: 0, 0
   index: -1
-buttonbg01
-  rotate: false
-  xy: 786, 537
-  size: 92, 100
-  orig: 92, 100
-  offset: 0, 0
-  index: -1
 checkbox
   rotate: false
-  xy: 2, 12
+  xy: 883, 36
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 checkboxChecked
   rotate: false
-  xy: 681, 727
+  xy: 925, 36
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 dialogBg01
   rotate: false
-  xy: 193, 13
+  xy: 80, 11
   size: 89, 65
   orig: 89, 65
   offset: 0, 0
   index: -1
 exhaust_placeholder
   rotate: false
-  xy: 784, 765
+  xy: 948, 667
   size: 40, 105
   orig: 40, 105
   offset: 0, 0
   index: -1
 exitImage
   rotate: false
-  xy: 44, 18
+  xy: 948, 631
   size: 34, 34
   orig: 34, 34
   offset: 0, 0
   index: -1
 exitImage2
   rotate: false
-  xy: 935, 878
+  xy: 948, 838
   size: 67, 62
   orig: 67, 62
   offset: 0, 0
   index: -1
 line
   rotate: false
-  xy: 284, 307
+  xy: 478, 32
   size: 490, 2
   orig: 490, 2
   offset: 0, 0
   index: -1
-minimapBorder
-  rotate: false
-  xy: 2, 647
-  size: 375, 375
-  orig: 375, 375
-  offset: 0, 0
-  index: -1
 minimap_artifact
   rotate: false
-  xy: 784, 711
+  xy: 478, 10
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 minimap_fuel
   rotate: false
-  xy: 1004, 930
+  xy: 189, 13
   size: 10, 10
   orig: 10, 10
   offset: 0, 0
   index: -1
 minimap_shield
   rotate: false
-  xy: 261, 171
+  xy: 201, 13
   size: 10, 10
   orig: 10, 10
   offset: 0, 0
   index: -1
-ntm_logo
-  rotate: false
-  xy: 681, 872
-  size: 150, 150
-  orig: 150, 150
-  offset: 0, 0
-  index: -1
-placeholder_alien
-  rotate: false
-  xy: 833, 922
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
 planetPortal
   rotate: false
-  xy: 784, 689
+  xy: 430, 8
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-planet_1_placeholder
+plantet09
   rotate: false
-  xy: 2, 54
-  size: 111, 106
-  orig: 111, 106
+  xy: 2, 2
+  size: 76, 74
+  orig: 76, 74
   offset: 0, 0
   index: -1
-planet_2_placeholder
+plantet10
   rotate: false
-  xy: 868, 363
-  size: 65, 65
-  orig: 65, 65
-  offset: 0, 0
-  index: -1
-planet_3_placeholder
-  rotate: false
-  xy: 681, 769
-  size: 101, 101
-  orig: 101, 101
-  offset: 0, 0
-  index: -1
-popupMenu
-  rotate: false
-  xy: 2, 215
-  size: 280, 430
-  orig: 280, 430
+  xy: 430, 30
+  size: 46, 46
+  orig: 46, 46
   offset: 0, 0
   index: -1
 popupbg01
   rotate: false
-  xy: 723, 733
+  xy: 948, 595
   size: 34, 34
   orig: 34, 34
   offset: 0, 0
   index: -1
 progressBar01
   rotate: false
-  xy: 825, 726
+  xy: 948, 404
   size: 20, 30
   orig: 20, 30
   offset: 0, 0
   index: -1
 progressBar02
   rotate: false
-  xy: 847, 726
+  xy: 948, 372
   size: 20, 30
   orig: 20, 30
   offset: 0, 0
   index: -1
 progressBar03
   rotate: false
-  xy: 869, 726
+  xy: 948, 340
   size: 20, 30
   orig: 20, 30
   offset: 0, 0
   index: -1
 progressBar04
   rotate: false
-  xy: 891, 726
+  xy: 948, 308
   size: 20, 30
   orig: 20, 30
   offset: 0, 0
   index: -1
+rocket
+  rotate: false
+  xy: 948, 902
+  size: 66, 120
+  orig: 66, 120
+  offset: 0, 0
+  index: -1
 rocket_arrow
   rotate: false
-  xy: 915, 904
+  xy: 171, 7
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
+stars
+  rotate: false
+  xy: 2, 78
+  size: 944, 944
+  orig: 944, 944
+  offset: 0, 0
+  index: -1
+sunParticle
+  rotate: false
+  xy: 452, 9
+  size: 19, 19
+  orig: 19, 19
+  offset: 0, 0
+  index: -1
+
+game2.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+buttonbg01
+  rotate: false
+  xy: 826, 599
+  size: 92, 100
+  orig: 92, 100
+  offset: 0, 0
+  index: -1
+minimapBorder
+  rotate: false
+  xy: 2, 207
+  size: 375, 375
+  orig: 375, 375
+  offset: 0, 0
+  index: -1
+ntm_logo
+  rotate: false
+  xy: 716, 701
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+placeholder_alien
+  rotate: false
+  xy: 885, 784
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+planet01
+  rotate: false
+  xy: 716, 853
+  size: 167, 163
+  orig: 167, 163
+  offset: 0, 0
+  index: -1
+planet02
+  rotate: false
+  xy: 528, 275
+  size: 146, 145
+  orig: 146, 145
+  offset: 0, 0
+  index: -1
+plantet03
+  rotate: false
+  xy: 379, 273
+  size: 147, 147
+  orig: 147, 147
+  offset: 0, 0
+  index: -1
+plantet04
+  rotate: false
+  xy: 885, 886
+  size: 130, 130
+  orig: 130, 130
+  offset: 0, 0
+  index: -1
+plantet05
+  rotate: false
+  xy: 802, 299
+  size: 123, 121
+  orig: 123, 121
+  offset: 0, 0
+  index: -1
+plantet06
+  rotate: false
+  xy: 676, 297
+  size: 124, 123
+  orig: 124, 123
+  offset: 0, 0
+  index: -1
+plantet07
+  rotate: false
+  xy: 716, 591
+  size: 108, 108
+  orig: 108, 108
+  offset: 0, 0
+  index: -1
+plantet08
+  rotate: false
+  xy: 881, 440
+  size: 103, 103
+  orig: 103, 103
+  offset: 0, 0
+  index: -1
+popupMenu
+  rotate: false
+  xy: 434, 586
+  size: 280, 430
+  orig: 280, 430
+  offset: 0, 0
+  index: -1
 row01
   rotate: false
-  xy: 379, 639
+  xy: 2, 166
   size: 500, 39
   orig: 500, 39
   offset: 0, 0
   index: -1
 row02
   rotate: false
-  xy: 284, 598
+  xy: 2, 125
   size: 500, 39
   orig: 500, 39
   offset: 0, 0
   index: -1
 row03
   rotate: false
-  xy: 284, 557
+  xy: 2, 84
   size: 500, 39
   orig: 500, 39
   offset: 0, 0
   index: -1
 row04
   rotate: false
-  xy: 284, 516
+  xy: 2, 43
   size: 500, 39
   orig: 500, 39
   offset: 0, 0
   index: -1
 row05
   rotate: false
-  xy: 284, 475
+  xy: 2, 2
   size: 500, 39
   orig: 500, 39
   offset: 0, 0
   index: -1
 row06
   rotate: false
-  xy: 284, 434
+  xy: 434, 545
   size: 500, 39
   orig: 500, 39
   offset: 0, 0
   index: -1
 row07
   rotate: false
-  xy: 284, 393
+  xy: 379, 504
   size: 500, 39
   orig: 500, 39
   offset: 0, 0
   index: -1
 row08
   rotate: false
-  xy: 284, 352
+  xy: 379, 463
   size: 500, 39
   orig: 500, 39
   offset: 0, 0
   index: -1
 row09
   rotate: false
-  xy: 284, 311
+  xy: 379, 422
   size: 500, 39
   orig: 500, 39
   offset: 0, 0
   index: -1
-ship_placeholder
-  rotate: false
-  xy: 868, 430
-  size: 40, 105
-  orig: 40, 105
-  offset: 0, 0
-  index: -1
 slot00
   rotate: false
-  xy: 284, 225
+  xy: 868, 702
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot01
   rotate: false
-  xy: 115, 80
+  xy: 927, 358
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot02
   rotate: false
-  xy: 935, 942
+  xy: 927, 276
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot03
   rotate: false
-  xy: 786, 455
+  xy: 920, 620
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot04
   rotate: false
-  xy: 366, 225
+  xy: 676, 215
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot05
   rotate: false
-  xy: 786, 373
+  xy: 758, 215
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot06
   rotate: false
-  xy: 448, 225
+  xy: 840, 217
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot07
   rotate: false
-  xy: 530, 225
+  xy: 922, 194
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot08
   rotate: false
-  xy: 612, 225
+  xy: 840, 135
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slot09
   rotate: false
-  xy: 694, 225
+  xy: 922, 112
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotDrop
   rotate: false
-  xy: 115, 2
+  xy: 668, 137
   size: 76, 76
   orig: 76, 76
   offset: 0, 0
   index: -1
 slotOK
   rotate: false
-  xy: 197, 80
+  xy: 528, 193
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorDivide
   rotate: false
-  xy: 786, 291
+  xy: 504, 111
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorMinus
   rotate: false
-  xy: 776, 209
+  xy: 504, 29
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorMultiply
   rotate: false
-  xy: 833, 840
+  xy: 586, 111
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorPlus
   rotate: false
-  xy: 826, 758
+  xy: 586, 29
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
-sun_placeholder
+sun
   rotate: false
-  xy: 379, 722
-  size: 300, 300
-  orig: 300, 300
+  xy: 2, 584
+  size: 430, 432
+  orig: 430, 432
   offset: 0, 0
   index: -1

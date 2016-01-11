@@ -33,7 +33,7 @@ public class SolarSystem implements Disposable {
 			result = new Planet();
 			result.radius = random.nextInt(700);
 			result.radians = (float) (random.nextFloat() * 2 * Math.PI);
-			if (result.radius > 200 && !arePlanetsColliding(result.radians, index)) {
+			if (result.radius > 350 && !arePlanetsColliding(result.radians, index)) {
 				foundPosition = true;
 			}
 		}
