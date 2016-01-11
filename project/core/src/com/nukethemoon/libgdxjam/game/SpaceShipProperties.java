@@ -26,7 +26,7 @@ public class SpaceShipProperties {
 
 	transient public static final SpaceShipProperties properties = new SpaceShipProperties(); //TODO!
 
-	transient public static final int INITIAL_MAX_FUEL = 100000;
+	transient public static final int INITIAL_MAX_FUEL = 10000;
 	transient public static final float INITAL_FUEL_CONSUMPTION = 0.1f;
 	transient public static final int INITIAL_MAX_SHIELD = 1000;
 

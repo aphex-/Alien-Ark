@@ -54,6 +54,7 @@ import com.nukethemoon.libgdxjam.ui.MenuTable;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
 import com.nukethemoon.libgdxjam.ui.ToastTable;
 import com.nukethemoon.libgdxjam.ui.animation.FadeTableAnimation;
+import com.nukethemoon.libgdxjam.ui.hud.ShipProgressBar;
 import com.nukethemoon.tools.ani.Ani;
 import com.nukethemoon.tools.ani.AnimationFinishedListener;
 import com.nukethemoon.tools.ani.BaseAnimation;
@@ -91,6 +92,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private ParticleEffect effectThrust;
 	private ParticleEffect effectExplosion;
+
+	private final ShipProgressBar shieldProgressBar;
+	private final ShipProgressBar fuelProgressBar;
 
 	private boolean gameOver = false;
 	private boolean pause = false;
@@ -158,6 +162,11 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		onReloadScene(planetConfig);
 		initParticles();
 		initStage(planetConfig);
+
+		shieldProgressBar = new ShipProgressBar(ShipProgressBar.ProgressType.SHIELD);
+		stage.addActor(shieldProgressBar);
+		fuelProgressBar = new ShipProgressBar(ShipProgressBar.ProgressType.FUEL);
+		stage.addActor(fuelProgressBar);
 
 		App.TUTORIAL_CONTROLLER.register(stage, ani);
 		App.TUTORIAL_CONTROLLER.nextStepFor(this.getClass());
@@ -480,12 +489,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	@Override
 	public void onRocketDamage() {
 		App.audioController.playSound("energy_shield.mp3");
-		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
+		shieldProgressBar.setValue(rocket.getShield(), rocket.getMaxShield());
 	}
 
 	@Override
 	public void onRocketFuelConsumed() {
-		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
+		fuelProgressBar.setValue(rocket.getFuel(), rocket.getMaxFuel());
 	}
 
 	@Override
