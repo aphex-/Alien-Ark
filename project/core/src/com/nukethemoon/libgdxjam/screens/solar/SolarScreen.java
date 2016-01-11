@@ -93,7 +93,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
 		batch = new SpriteBatch();
-		arkSprite = new Sprite(App.TEXTURES.findRegion("ship_placeholder"));
+		arkSprite = new Sprite(App.TEXTURES.findRegion("rocket"));
 		exhaustSprite = new Sprite(App.TEXTURES.findRegion("exhaust_placeholder"));
 
 		world = new World(new Vector2(0, 0), true);
@@ -127,13 +127,13 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	private void setupPlanets() {
-		planetSprites[0] = new Sprite(App.TEXTURES.findRegion("planet_1_placeholder"));
-		planetSprites[1] = new Sprite(App.TEXTURES.findRegion("planet_2_placeholder"));
-		planetSprites[2] = new Sprite(App.TEXTURES.findRegion("planet_3_placeholder"));
-		planetSprites[3] = new Sprite(App.TEXTURES.findRegion("planet_1_placeholder"));
+		planetSprites[0] = new Sprite(App.TEXTURES.findRegion("planet01"));
+		planetSprites[1] = new Sprite(App.TEXTURES.findRegion("planet02"));
+		planetSprites[2] = new Sprite(App.TEXTURES.findRegion("plantet03"));
+		planetSprites[3] = new Sprite(App.TEXTURES.findRegion("plantet04"));
 
 
-		sunSprite = new Sprite(App.TEXTURES.findRegion("sun_placeholder"));
+		sunSprite = new Sprite(App.TEXTURES.findRegion("sun"));
 		sunSprite.setPosition(SolarSystem.SUN_POSITION.x, SolarSystem.SUN_POSITION.y);
 
 		pointLight = new PointLight[SolarSystem.NUMBER_OF_PLANETS];
