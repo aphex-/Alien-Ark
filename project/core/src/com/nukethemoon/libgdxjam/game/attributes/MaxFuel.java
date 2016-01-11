@@ -9,8 +9,4 @@ public class MaxFuel extends Attribute {
 		setCurrentValue(maxFuel);
 	}
 
-	@Override
-	public String name() {
-		return "MAX FUEL";
-	}
 }

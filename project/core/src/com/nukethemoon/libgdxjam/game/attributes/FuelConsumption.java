@@ -10,8 +10,4 @@ public class FuelConsumption extends Attribute {
 		setCurrentValue(SpaceShipProperties.INITAL_FUEL_CONSUMPTION);
 	}
 
-	@Override
-	public String name() {
-		return "FUEL CONSUMPTION";
-	}
 }

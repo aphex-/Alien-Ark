@@ -8,8 +8,5 @@ public class LandingDistance extends Attribute{
 		setCurrentValue(meter);
 	}
 
-	@Override
-	public String name() {
-		return "LANDING DISTANCE";
-	}
+
 }

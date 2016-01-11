@@ -6,8 +6,5 @@ public class Shield extends Attribute{
 		setCurrentValue(shield);
 	}
 
-	@Override
-	public String name() {
-		return "SHIELD";
-	}
+
 }

@@ -38,7 +38,9 @@ public abstract class Attribute {
 		return App.TEXTURES.findRegion(slot);
 	}
 
-	public abstract String name();
+	public String name(){
+		return getName(getClass());
+	}
 
 	public static TextureRegion getPropertiesTexture(Class<? extends Attribute> clazz){
 		String row = "row00";
@@ -58,5 +60,36 @@ public abstract class Attribute {
 			row = "row05";
 		}
 		return App.TEXTURES.findRegion(row);
+	}
+
+	public String getDescription() {
+		return getDescription(getClass());
+	}
+
+	public static String getDescription(Class<? extends Attribute> clazz){
+
+		return "Description of: " + clazz.getSimpleName().toUpperCase();
+	}
+
+
+	public static String getName(Class<? extends Attribute> clazz) {
+		String name = "?";
+		if(clazz == Speed.class) {
+			name = "SPEED";
+		} else if(clazz == MaxFuel.class){
+			name = "MAXIMUM FUEL";
+		} else if(clazz == Luck.class){
+			name = "LUCK";
+		} else if(clazz == Shield.class){
+			name = "MAXIMUM SHIELD";
+		} else if(clazz == LandingDistance.class){
+			name = "LANDING DISTANCE";
+		} else if(clazz == ItemCollectRadius.class){
+			name = "ITEM COLLECT RADIUS";
+		} else if(clazz == Inertia.class){
+			name = "INERTIA";
+		}
+
+		return name;
 	}
 }

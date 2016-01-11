@@ -19,6 +19,7 @@ public class TutorialController {
 
 	private Stage stage;
 	private Ani ani;
+	private DialogTable dialogTable;
 
 
 	public enum TutorialStep {
@@ -68,7 +69,7 @@ public class TutorialController {
 				"Who gave a rocket to a beginner?",
 				"Anyway.. lets make the best out",
 				"of it. " +
-				"I will show you the basics of",
+						"I will show you the basics of",
 				"the modern space flight controls.",
 				"Simply use your CURSOR KEYS or",
 				"W, A, S and D to change",
@@ -131,7 +132,10 @@ public class TutorialController {
 
 
 		tutorialDialogs.put(TutorialStep.CRAFT_AN_ALIEN, new DialogTable(skin, new String[]{
-				"Craft an ALIEN",
+				"The ARTIFACTS you collected are",
+				"somewhat organic life forms.",
+				"With the lab we have on board you can",
+				"easily hybridize them into fully-fletched ALIENS!"
 		}));
 
 		tutorialDialogs.put(TutorialStep.END_TUTORIAL, new DialogTable(skin, new String[]{
@@ -149,7 +153,8 @@ public class TutorialController {
 			closeCurrent();
 			if (currentStep.ordinal() + 1 < currentStep.values().length) {
 				currentStep = TutorialStep.values()[currentStep.ordinal() + 1];
-				DialogTable dialogTable = tutorialDialogs.get(currentStep);
+				dialogTable = tutorialDialogs.get(currentStep);
+
 				stage.addActor(dialogTable);
 				ani.add(dialogTable.createAnimation());
 			}
@@ -157,6 +162,12 @@ public class TutorialController {
 				App.config.tutorialEnabled = false;
 				App.saveConfig();
 			}
+		}
+	}
+
+	public void toFront() {
+		if (dialogTable != null) {
+			dialogTable.toFront();
 		}
 	}
 

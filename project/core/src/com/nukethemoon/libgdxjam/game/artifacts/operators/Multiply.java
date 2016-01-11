@@ -15,4 +15,14 @@ public class Multiply extends OperatorArtifact {
 	public TextureRegion getBackgroundTexture() {
 		return App.TEXTURES.findRegion("slotOperatorMultiply");
 	}
+
+	@Override
+	public String getAlienVerb() {
+		return "MULTIPLIES";
+	}
+
+	@Override
+	public String getDescription() {
+		return "Takes a given VALUE and MULTIPLYS it with a provided ATTRIBUTE's current value";
+	}
 }

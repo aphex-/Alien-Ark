@@ -58,9 +58,9 @@ public class App extends Game {
 		// instance space ship
 		// load game entities
 		// openScreen(SplashScreen.class);
-		openPlanetScreen(0);
+		//openPlanetScreen(0);
 		SpaceShipProperties.properties.testInit();
-		//openArkScreen();
+		openArkScreen();
 
 
 		//openSolarScreen();

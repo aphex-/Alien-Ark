@@ -18,4 +18,6 @@ public abstract class OperatorArtifact extends Artifact {
 	public TextureRegion getBackgroundTexture() {
 		return App.TEXTURES.findRegion("slot04");
 	}
+
+	public abstract String getAlienVerb();
 }

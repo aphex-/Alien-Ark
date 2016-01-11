@@ -66,6 +66,11 @@ public class ArkScreen implements Screen {
 	private DragAndDrop dragAndDrop;
 	private Table alienTable;
 	private Table artifactsTable;
+	private Label leftHintText;
+	private Label rightHintText;
+
+	private Actor selectedArtifact;
+	private Actor selectedAlien;
 
 	public ArkScreen(Skin uiSkin, InputMultiplexer multiplexer) {
 		ani = new Ani();
@@ -110,6 +115,30 @@ public class ArkScreen implements Screen {
 
 		createPropertiesList();
 
+		createCloseButton();
+
+		leftHintText = new Label("", skin);
+		leftHintText.setX(70);
+		leftHintText.setY(90);
+		leftHintText.setWidth(255);
+		leftHintText.setHeight(95);
+		leftHintText.setWrap(true);
+		stage.addActor(leftHintText);
+
+		rightHintText = new Label("", skin);
+		rightHintText.setX(Gdx.graphics.getWidth() - 255 - 70);
+		rightHintText.setY(90);
+		rightHintText.setWidth(255);
+		rightHintText.setHeight(95);
+		rightHintText.setWrap(true);
+
+		stage.addActor(rightHintText);
+
+		multiplexer.addProcessor(stage);
+
+	}
+
+	private void createCloseButton() {
 		Actor closeButton = new Actor();
 		closeButton.setX(493);
 		closeButton.setY(32);
@@ -122,11 +151,7 @@ public class ArkScreen implements Screen {
 			}
 		});
 
-
 		stage.addActor(closeButton);
-
-		multiplexer.addProcessor(stage);
-
 	}
 
 	private void createPropertiesList() {
@@ -201,7 +226,18 @@ public class ArkScreen implements Screen {
 		for (int i = 0; i < artifacts.size(); ++i) {
 			final Artifact artifact = artifacts.get(i);
 			final Actor actor = artifact.createActor();
+			actor.setUserObject(artifact);
 			artifactsTable.add(actor).space(5).width(75).height(75);
+
+			actor.addListener(new ClickListener(){
+
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					selectedArtifact = actor;
+					selectedAlien = null;
+					updateHintTexts();
+				}
+			});
 
 			dragAndDrop.addSource(new DragAndDrop.Source(actor) {
 
@@ -241,12 +277,26 @@ public class ArkScreen implements Screen {
 		for (int i = 0; i < aliens.size(); ++i) {
 			final Alien alien = aliens.get(i);
 			final Image img = new Image(alien.getTexture());
+			img.setUserObject(alien);
+			img.addListener(new ClickListener(){
 
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					selectedAlien = img;
+					selectedArtifact = null;
+					updateHintTexts();
+				}
+			});
 			alienTable.add(img).space(5).width(75).height(75);
 
 			if ((i + 1) % 3 == 0)
 				alienTable.row();
 		}
+	}
+
+	private void updateHintTexts() {
+		leftHintText.setText(selectedArtifact == null ? "" : ((Artifact) selectedArtifact.getUserObject()).getDescription());
+		rightHintText.setText(selectedAlien == null ? "" : ((Alien)selectedAlien.getUserObject()).getDescription());
 	}
 
 	private void addDropTarget(final WorkbenchSlot slot) {
@@ -283,6 +333,7 @@ public class ArkScreen implements Screen {
 		spriteBatch.end();
 
 		//x=75 y=height-145 scroll pane left
+		App.TUTORIAL_CONTROLLER.toFront();
 		stage.act(delta);
 		stage.draw();
 		ani.update();

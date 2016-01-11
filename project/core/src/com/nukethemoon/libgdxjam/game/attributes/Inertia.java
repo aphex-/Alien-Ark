@@ -6,8 +6,4 @@ public class Inertia extends Attribute {
 		setCurrentValue(val);
 	}
 
-	@Override
-	public String name() {
-		return "INERTIA";
-	}
 }

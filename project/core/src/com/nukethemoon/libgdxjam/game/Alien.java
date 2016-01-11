@@ -64,4 +64,8 @@ public class Alien {
 		return attribute.getBackgroundTexture();
 	}
 
+	public String getDescription(){
+		return operator.getAlienVerb() + " your " + attribute.getName() + " by " + value.getValue();
+	}
+
 }

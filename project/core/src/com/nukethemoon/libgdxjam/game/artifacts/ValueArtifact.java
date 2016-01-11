@@ -36,4 +36,9 @@ public class ValueArtifact extends Artifact {
 	public TextureRegion getBackgroundTexture() {
 		return App.TEXTURES.findRegion("slot00");
 	}
+
+	@Override
+	public String getDescription() {
+		return "Gives you a value of " + value + " to combine it with an OPERATOR and an ATTRIBUTE.";
+	}
 }

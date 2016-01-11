@@ -8,8 +8,5 @@ public class Luck extends Attribute{
 		setCurrentValue(val);
 	}
 
-	@Override
-	public String name() {
-		return "SENSOR ACCURACY";
-	}
+
 }

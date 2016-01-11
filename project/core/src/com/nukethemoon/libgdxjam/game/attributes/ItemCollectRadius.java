@@ -6,8 +6,5 @@ public class ItemCollectRadius extends Attribute{
 		setCurrentValue(radius);
 	}
 
-	@Override
-	public String name() {
-		return "ITEM COLLECT RADIUS";
-	}
+
 }

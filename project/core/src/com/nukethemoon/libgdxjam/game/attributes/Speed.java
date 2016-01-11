@@ -6,8 +6,5 @@ public class Speed extends Attribute {
 		setCurrentValue(speed);
 	}
 
-	@Override
-	public String name() {
-		return "SPEED";
-	}
+
 }

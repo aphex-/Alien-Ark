@@ -15,4 +15,14 @@ public class Increase extends OperatorArtifact {
 	public TextureRegion getBackgroundTexture() {
 		return App.TEXTURES.findRegion("slotOperatorPlus");
 	}
+
+	@Override
+	public String getDescription() {
+		return "Takes a given VALUE and ADDS it to a provided ATTRIBUTE's original value";
+	}
+
+	@Override
+	public String getAlienVerb() {
+		return "INCREASES";
+	}
 }

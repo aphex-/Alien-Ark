@@ -15,4 +15,14 @@ public class Decrease extends OperatorArtifact {
 	public TextureRegion getBackgroundTexture() {
 		return App.TEXTURES.findRegion("slotOperatorMinus");
 	}
+
+	@Override
+	public String getDescription() {
+		return "Takes a given VALUE and SUBTRACTS it from a provided ATTRIBUTE's original value";
+	}
+
+	@Override
+	public String getAlienVerb() {
+		return "DECREASES";
+	}
 }

@@ -14,6 +14,8 @@ import com.nukethemoon.libgdxjam.game.attributes.MaxFuel;
 import com.nukethemoon.libgdxjam.game.attributes.Shield;
 import com.nukethemoon.libgdxjam.game.attributes.Speed;
 
+import org.w3c.dom.Attr;
+
 public class AttributeArtifact extends Artifact {
 
 	private final Class<? extends Attribute> ownAttribute;
@@ -37,4 +39,14 @@ public class AttributeArtifact extends Artifact {
 	public Actor getForeground() {
 		return new Image(App.TEXTURES.findRegion("placeholder_alien"));
 	}
+
+	@Override
+	public String getDescription() {
+		return Attribute.getDescription(ownAttribute);
+	}
+
+	public String getName(){
+		return Attribute.getName(ownAttribute);
+	}
+
 }
