@@ -6,14 +6,14 @@ import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.tools.ani.AnimationFinishedListener;
 import com.nukethemoon.tools.ani.BaseAnimation;
 
-public class TractorBeamAnimation extends BaseAnimation {
+public class ScanAnimation extends BaseAnimation {
 
 	private ModelInstance modelInstance;
 	private Vector3 baseScale = new Vector3();
 	private Vector3 baseTranslation = new Vector3();
 	private float radius;
 
-	public TractorBeamAnimation(ModelInstance beamInstance, float radius, AnimationFinishedListener listener) {
+	public ScanAnimation(ModelInstance beamInstance, float radius, AnimationFinishedListener listener) {
 		super(500, listener);
 		this.radius = radius;
 		this.modelInstance = beamInstance;

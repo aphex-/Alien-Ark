@@ -10,12 +10,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Styles;
+import com.nukethemoon.libgdxjam.ui.animation.TableHighlightAnimation;
 
-public class PopupTable extends Table {
+public class DialogTable extends Table {
 
 	private Table content;
 
-	public PopupTable(Skin skin) {
+	public DialogTable(Skin skin, String[] textLines) {
 		setBackground(Styles.NINE_PATCH_DIALOG_01);
 		pad(0);
 		content = new Table();
@@ -30,29 +31,24 @@ public class PopupTable extends Table {
 		imageButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				PopupTable.this.remove();
+				DialogTable.this.remove();
 			}
 		});
 		add(imageButton).top().right();
 		row();
 
-		content.add(new Label("sdfjsi sdf dfis asdassdfp", skin));
-		content.row();
-		content.add(new Label("sdfjsi sdf dfis asdassdfp", skin));
-		content.row();
-		content.add(new Label("sdfjsi sdf dfis asdassdfp", skin));
-		content.row();
-		content.add(new Label("sdfjsi sdf dfis asdassdfp", skin));
-		content.row();
-		content.add(new Label("sdfjsi sdf dfis asdassdfp", skin));
-		content.row();
-		content.add(new Label("sdfjsi sdf dfis asdassdfp", skin));
-		content.row();
-		content.add(new Label("sdfjsi sdf dfis asdassdfp", skin));
-		content.row();
+		for (String line : textLines) {
+			content.add(new Label(line, skin)).left();
+			content.row();
+		}
+
 		add(content).colspan(2);
 
 		pack();
 		setPosition(20, Gdx.graphics.getHeight() - this.getHeight() - 50);
+	}
+
+	public TableHighlightAnimation createAnimation() {
+		return new TableHighlightAnimation(this);
 	}
 }

@@ -4,18 +4,21 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.physics.bullet.Bullet;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.input.InputController;
 import com.nukethemoon.libgdxjam.screens.MenuScreen;
 import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
+import com.nukethemoon.libgdxjam.screens.planet.TutorialController;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.solar.SolarScreen;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 
 public class App extends Game {
 
@@ -24,18 +27,26 @@ public class App extends Game {
 	private static App app;
 	public static TextureAtlas TEXTURES;
 
-	private static Map<Class<? extends Screen>, ? extends Screen> SCREENS = new HashMap<Class<? extends Screen>, Screen>();
 	public static AudioController audioController;
 
 	public static SolarSystem solarSystem = new SolarSystem();
+	public static TutorialController TUTORIAL_CONTROLLER;
+
+	private static Gson gson;
+	public static Save save;
+	public static Config config;
 
 	@Override
 	public void create () {
 		app = this;
+		gson = new GsonBuilder().setPrettyPrinting().create();
+		loadConfig();
 		Bullet.init();
 		Models.init();
+		loadSaveGame();
 		TEXTURES = new TextureAtlas("textures/game.atlas");
 		Styles.init(TEXTURES);
+		TUTORIAL_CONTROLLER = new TutorialController(Styles.UI_SKIN);
 		MULTIPLEXER = new InputMultiplexer();
 		MULTIPLEXER.addProcessor(new InputController());
 		Gdx.input.setInputProcessor(MULTIPLEXER);
@@ -44,10 +55,8 @@ public class App extends Game {
 		solarSystem = new SolarSystem();
 		solarSystem.calculatePlanetPositions();
 
-
 		// instance space ship
 		// load game entities
-
 		// openScreen(SplashScreen.class);
 		openPlanetScreen(0);
 		SpaceShipProperties.properties.testInit();
@@ -56,7 +65,6 @@ public class App extends Game {
 
 		//openSolarScreen();
 	}
-
 
 	public static void openScreen(Class<? extends Screen> screenClass) {
 		/*Screen screen = SCREENS.get(screenClass);
@@ -90,6 +98,55 @@ public class App extends Game {
 
 	public static void onGameOver() {
 		openSolarScreen();
+	}
+
+	public static void saveProgress() {
+		FileHandle fileHandle = openFile("save/save.json");
+		if (fileHandle != null) {
+			String jsonString = gson.toJson(save);
+			fileHandle.writeString(jsonString, false);
+		}
+	}
+
+	public static void saveConfig() {
+		FileHandle fileHandle = openFile("save/config.json");
+		if (fileHandle != null) {
+			String jsonString = gson.toJson(config);
+			fileHandle.writeString(jsonString, false);
+		}
+	}
+
+	private static void loadSaveGame() {
+		FileHandle fileHandle = openFile("save/save.json");
+		if (fileHandle != null) {
+			save = gson.fromJson(fileHandle.readString(), Save.class);
+		}
+		if (save == null) {
+			save = new Save();
+		}
+	}
+
+
+	private static void loadConfig() {
+		FileHandle fileHandle = openFile("save/config.json");
+		if (fileHandle != null) {
+			config = gson.fromJson(fileHandle.readString(), Config.class);
+		}
+		if (config == null) {
+			config = new Config();
+		}
+	}
+
+	private static FileHandle openFile(String path) {
+		if (!Gdx.files.local(path).exists()) {
+			try {
+				Gdx.files.local(path).file().createNewFile();
+			} catch (IOException e) {
+				Log.e(App.class, "Error creating file " + path);
+				return null;
+			}
+		}
+		return Gdx.files.local(path);
 	}
 
 	@Override

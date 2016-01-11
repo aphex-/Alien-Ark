@@ -12,16 +12,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
+import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
 
 public class DevelopmentWindow extends ClosableWindow {
 
 	public static NinePatchDrawable INNER_BACKGROUND;
 
-	public DevelopmentWindow(final Skin skin, Stage stage, final PlanetConfig planetConfig, final ReloadSceneListener reloadSceneListener) {
+	public DevelopmentWindow(final Skin skin, Stage stage, final PlanetConfig planetConfig,
+							 final PlanetScreen planetScreen, final ReloadSceneListener reloadSceneListener) {
 		super("Development", skin);
 		NinePatch patch = new NinePatch(new Texture(Gdx.files.internal("skin/background.png")),
 				1, 1, 1, 1);
+
+
 
 		INNER_BACKGROUND = new NinePatchDrawable(patch);
 
@@ -75,6 +79,18 @@ public class DevelopmentWindow extends ClosableWindow {
 		add(new Label("'Tab' toggle camera", skin)).left().fill();
 		row();
 		add(new Label("'p' toggle pause", skin)).left().fill();
+
+		row();
+
+		final TextButton leaveButton = new TextButton("Leave Planet", skin);
+		leaveButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				planetScreen.leavePlanet();
+			}
+		});
+		leaveButton.setPosition(10, 10);
+		add(leaveButton);
 
 		pack();
 	}

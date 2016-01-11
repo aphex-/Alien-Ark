@@ -1,6 +1,5 @@
 package com.nukethemoon.libgdxjam.ui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -47,9 +46,7 @@ public class RocketMainTable extends Table {
 	@Override
 	public void pack() {
 		super.pack();
-		setPosition(
-				Gdx.graphics.getWidth() - getWidth() - 10,
-				Gdx.graphics.getHeight() - getHeight() - 10);
+		setPosition(10, 10);
 	}
 
 

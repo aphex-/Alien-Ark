@@ -31,7 +31,10 @@ import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
+import com.nukethemoon.libgdxjam.ui.MenuButton;
+import com.nukethemoon.libgdxjam.ui.MenuTable;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
+import com.nukethemoon.tools.ani.Ani;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +50,8 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	private static final int RAYS_NUM = 333;
 	private final World world;
+	private final InputMultiplexer multiplexer;
+	private final Ani ani;
 
 	private Vector2 shipPosition = new Vector2(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
 	private final RayHandler rayHandler;
@@ -92,9 +97,11 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
+		this.multiplexer = multiplexer;
 		batch = new SpriteBatch();
 		arkSprite = new Sprite(App.TEXTURES.findRegion("rocket"));
 		exhaustSprite = new Sprite(App.TEXTURES.findRegion("exhaust_placeholder"));
+		ani = new Ani();
 
 		world = new World(new Vector2(0, 0), true);
 
@@ -107,6 +114,9 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		rayHandler = createRayHandler(world);
 		createPointLights();
 		updateShadowBodies(world);
+
+		App.TUTORIAL_CONTROLLER.register(stage, ani);
+		App.TUTORIAL_CONTROLLER.nextStepFor(this.getClass());
 
 	}
 
@@ -161,6 +171,21 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		});
 		mainUI.add(arkScreenButton);
 		stage.addActor(mainUI);
+
+		final MenuButton menuButton = new MenuButton(uiSkin);
+		menuButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				menuButton.openMenu(stage, new MenuTable.CloseListener() {
+					@Override
+					public void onClose() {
+
+					}
+				});
+			}
+		});
+
+		stage.addActor(menuButton);
 	}
 
 	private RayHandler createRayHandler(World world) {
@@ -231,6 +256,8 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 		stage.act(delta);
 		stage.draw();
+
+		ani.update();
 	}
 
 	private void renderArc() {
@@ -370,10 +397,12 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	private void openPlanetScreen(int planetIndex) {
+		multiplexer.removeProcessor(stage);
 		App.openPlanetScreen(planetIndex);
 	}
 
 	private void openArkScreen() {
+		multiplexer.removeProcessor(stage);
 		App.openArkScreen();
 	}
 

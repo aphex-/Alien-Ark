@@ -23,17 +23,22 @@ public class Styles {
 	public static TextButton.TextButtonStyle STYLE_BUTTON_01;
 
 	public static Color COLOR_01 = new Color(28f / 255f, 25f / 255f, 18f / 255f, 1);
+	public static Color COLOR_DARK_BROWN = new Color(52f / 255f, 90f / 255f, 65f / 255f, 1);
+	public static Color COLOR_LIGHT_YELLOW = new Color(251f / 255f, 242f / 255f, 199f / 255f, 1);
 
 	public static BitmapFont FONT_DOSIS_SMALL;
+	public static BitmapFont FONT_DOSIS_PROGRESS_TYPE;
 	public static BitmapFont FONT_DOSIS_MEDIUM_BORDER;
 	public static BitmapFont FONT_DOSIS_SMALL_DIALOG_HEADLINE;
 
-	public static BitmapFont FONT_ENTSANS_SMALL_BORDER;
+	public static BitmapFont FONT_ENTSANS_SMALL;
 
 	public static BitmapFont FONT_LIBERATION_SMALL_BORDER;
 
 	public static Label.LabelStyle LABEL_01;
 	public static Label.LabelStyle LABEL_02;
+
+	public static Label.LabelStyle LABEL_PROGRESS_TYPE;
 
 	public static Label.LabelStyle LABEL_DEV;
 
@@ -46,12 +51,13 @@ public class Styles {
 		UI_SKIN = new Skin();
 
 		FONT_DOSIS_SMALL = 					createFont("fonts/Dosis-Medium.ttf", 	18, Color.WHITE, null, 			0);
-		FONT_DOSIS_SMALL_DIALOG_HEADLINE = 	createFont("fonts/Dosis-Medium.ttf", 	18, new Color(52f / 255f, 90f / 255f, 65f / 255f, 1), null, 			0);
+		FONT_DOSIS_SMALL_DIALOG_HEADLINE = 	createFont("fonts/Dosis-Medium.ttf", 	18, COLOR_DARK_BROWN, null, 	0);
 
 		FONT_DOSIS_MEDIUM_BORDER = 	createFont("fonts/Dosis-Medium.ttf", 	26, Color.WHITE, Color.BLACK, 	2);
-		FONT_ENTSANS_SMALL_BORDER = createFont("fonts/entsans.ttf", 		16, Color.WHITE, Color.BLACK, 	1);
+		FONT_ENTSANS_SMALL = createFont("fonts/entsans.ttf", 		26, COLOR_LIGHT_YELLOW, null, 	0);
 
 		FONT_LIBERATION_SMALL_BORDER = 	createFont("fonts/LiberationMono-Bold.ttf",	22, Color.WHITE, Color.BLACK, 2);
+		FONT_DOSIS_PROGRESS_TYPE = createFont("fonts/Dosis-Medium.ttf", 22, COLOR_LIGHT_YELLOW, null, 0);
 
 		loadDefaultSkin(FONT_DOSIS_SMALL);
 
@@ -75,13 +81,16 @@ public class Styles {
 		LABEL_02.font = FONT_DOSIS_MEDIUM_BORDER;
 
 		LABEL_DEV = new Label.LabelStyle(standardLabelStyle);
-		LABEL_DEV.font = FONT_ENTSANS_SMALL_BORDER;
+		LABEL_DEV.font = FONT_ENTSANS_SMALL;
 
 		LABEL_HUD_NUMBERS = new Label.LabelStyle(standardLabelStyle);
-		LABEL_HUD_NUMBERS.font = FONT_ENTSANS_SMALL_BORDER;
+		LABEL_HUD_NUMBERS.font = FONT_ENTSANS_SMALL;
 
 		LABEL_DIALOG_HEADLINE = new Label.LabelStyle(standardLabelStyle);
 		LABEL_DIALOG_HEADLINE.font = FONT_DOSIS_SMALL_DIALOG_HEADLINE;
+
+		LABEL_PROGRESS_TYPE = new Label.LabelStyle(standardLabelStyle);
+		LABEL_PROGRESS_TYPE.font = FONT_DOSIS_PROGRESS_TYPE;
 
 	}
 

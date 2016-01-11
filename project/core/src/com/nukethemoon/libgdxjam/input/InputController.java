@@ -2,7 +2,7 @@ package com.nukethemoon.libgdxjam.input;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.nukethemoon.libgdxjam.Config;
+import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Log;
 
 public class InputController implements InputProcessor {
@@ -10,7 +10,7 @@ public class InputController implements InputProcessor {
 	@Override
 	public boolean keyDown(int keycode) {
 		boolean result = Gdx.input.isKeyPressed(keycode);
-		if (Config.DEBUG && result) {
+		if (App.config.debugMode && result) {
 			Log.l(InputController.class, "key down " + keycode);
 		}
 		return false;
@@ -28,7 +28,7 @@ public class InputController implements InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if (Config.DEBUG) {
+		if (App.config.debugMode) {
 			Log.l(InputController.class, "touch down x " + screenX + " y " + screenY);
 		}
 		return false;
