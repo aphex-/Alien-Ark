@@ -62,7 +62,11 @@ public class MiniMap {
 	}
 
 	public void drawMiniMap() {
-		Gdx.gl.glViewport(Gdx.graphics.getWidth() - MINI_MAP_SIZE - 10, 10, MINI_MAP_SIZE, MINI_MAP_SIZE);
+		Gdx.gl.glViewport(
+				Gdx.graphics.getWidth() - MINI_MAP_SIZE - 10,
+				Gdx.graphics.getHeight() - MINI_MAP_SIZE - 10,
+				MINI_MAP_SIZE,
+				MINI_MAP_SIZE);
 
 		Vector3 rocketPosition = rocket.getPosition();
 		float groundZRotation = rocket.getGroundZRotation();

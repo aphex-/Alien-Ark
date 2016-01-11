@@ -54,12 +54,9 @@ import com.nukethemoon.libgdxjam.ui.MenuTable;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
 import com.nukethemoon.libgdxjam.ui.ToastTable;
 import com.nukethemoon.libgdxjam.ui.animation.FadeTableAnimation;
-import com.nukethemoon.libgdxjam.ui.hud.PositionTable;
 import com.nukethemoon.tools.ani.Ani;
 import com.nukethemoon.tools.ani.AnimationFinishedListener;
 import com.nukethemoon.tools.ani.BaseAnimation;
-
-import java.awt.*;
 
 public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener, RocketListener,
 		ControllerPhysic.PhysicsListener  {
@@ -76,7 +73,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private Rocket rocket;
 
 	private RocketMainTable mainUI;
-	private PositionTable positionTable;
 	private ScanAnimation scanAnimation;
 
 	private final ShapeRenderer shapeRenderer;
@@ -217,8 +213,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
 		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
 		stage.addActor(mainUI);
-		positionTable = new PositionTable(uiSkin);
-		stage.addActor(positionTable);
 
 		if (App.config.debugMode) {
 			developmentWindow = new DevelopmentWindow(uiSkin, stage, planetConfig, this, this);
@@ -520,14 +514,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRocketChangedTilePosition() {
-		Point tilePosition = rocket.getTilePosition();
-		positionTable.setTilePosition(tilePosition.x, tilePosition.y);
 		if (!pause) {
 			planetController.updateRequestCenter(rocket.getPosition(), rocket.getDirection());
 		}
 	}
-
-
 
 	@Override
 	public void onRocketScanStart() {
