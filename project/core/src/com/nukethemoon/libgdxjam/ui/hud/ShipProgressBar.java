@@ -13,6 +13,7 @@ import com.nukethemoon.libgdxjam.Styles;
 public class ShipProgressBar extends Table {
 
 	private final Label valueLabel;
+	private final ProgressTable progressTable;
 
 	public enum ProgressType {
 		SHIELD(new Vector2(), new Vector2(), new Vector2()),
@@ -36,30 +37,27 @@ public class ShipProgressBar extends Table {
 		this.progressType = progressType;
 		TextureAtlas.AtlasRegion bgTextureRegion = App.TEXTURES.findRegion("FuelShieldBackground");
 		Sprite bgSprite = new Sprite(bgTextureRegion);
+
+		Label label = new Label(progressType.name(), Styles.LABEL_PROGRESS_TYPE);
+		progressTable = new ProgressTable(progressType);
+		valueLabel = new Label("0", Styles.LABEL_HUD_NUMBERS);
+
 		if (progressType == ProgressType.SHIELD) {
 			bgSprite.flip(true, false);
 			right().bottom();
+			add(valueLabel).width(100);
+			add(progressTable).right().width(205).padLeft(5).padRight(5);
+			add(label).right().width(76).fill().padLeft(7);
 		} else {
 			left().bottom();
+			add(label).left().width(73).fill().padLeft(10);
+			add(progressTable).width(205).padLeft(5).padRight(5);
+			add(valueLabel).width(100).padLeft(5);
 		}
 		setBackground(new SpriteDrawable(bgSprite));
 		setWidth(bgTextureRegion.getRegionWidth());
 		setHeight(bgTextureRegion.getRegionHeight());
 
-		Label label = new Label(progressType.name(), Styles.LABEL_PROGRESS_TYPE);
-		Table progressTable = new Table();
-
-		valueLabel = new Label("0", Styles.LABEL_HUD_NUMBERS);
-
-		if (progressType == ProgressType.SHIELD) {
-			add(valueLabel).width(100);
-			add(progressTable).right().width(205).padLeft(5).padRight(5);
-			add(label).right().width(76).fill().padLeft(7);
-		} else {
-			add(label).left().width(73).fill().padLeft(10);
-			add(progressTable).width(205).padLeft(5).padRight(5);
-			add(valueLabel).width(100).padLeft(5);
-		}
 		pack();
 		applyPosition();
 	}
@@ -74,5 +72,6 @@ public class ShipProgressBar extends Table {
 
 	public void setValue(int value, int maxShield) {
 		valueLabel.setText(value + "");
+		progressTable.setValue(value, maxShield);
 	}
 }

@@ -51,7 +51,6 @@ import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.libgdxjam.ui.GameOverTable;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.MenuTable;
-import com.nukethemoon.libgdxjam.ui.RocketMainTable;
 import com.nukethemoon.libgdxjam.ui.ToastTable;
 import com.nukethemoon.libgdxjam.ui.animation.FadeTableAnimation;
 import com.nukethemoon.libgdxjam.ui.hud.ShipProgressBar;
@@ -73,11 +72,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private Rocket rocket;
 
-	private RocketMainTable mainUI;
 	private ScanAnimation scanAnimation;
 
 	private final ShapeRenderer shapeRenderer;
-	private final ShapeRenderer depthShape;
 
 	private final InputMultiplexer multiplexer;
 	private final Skin uiSkin;
@@ -134,7 +131,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		environment = new Environment();
 
 		shapeRenderer = new ShapeRenderer();
-		depthShape = new ShapeRenderer();
 		shapeRenderer.setAutoShapeType(true);
 
 		camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -217,11 +213,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private void initStage(final PlanetConfig planetConfig) {
 		multiplexer.addProcessor(stage);
-
-		mainUI = new RocketMainTable(uiSkin);
-		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
-		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
-		stage.addActor(mainUI);
 
 		if (App.config.debugMode) {
 			developmentWindow = new DevelopmentWindow(uiSkin, stage, planetConfig, this, this);
@@ -510,14 +501,14 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public void onRocketFuelBonus() {
 		showToast("Fuel +" + Balancing.FUEL_BONUS);
 		App.audioController.playSound("bonus.mp3");
-		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
+		fuelProgressBar.setValue(rocket.getFuel(), rocket.getMaxFuel());
 	}
 
 	@Override
 	public void onRocketShieldBonus() {
 		showToast("Shield +" + Balancing.SHIELD_BONUS);
 		App.audioController.playSound("bonus.mp3");
-		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
+		shieldProgressBar.setValue(rocket.getShield(), rocket.getMaxShield());
 	}
 
 
