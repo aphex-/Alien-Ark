@@ -4,8 +4,11 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.physics.bullet.Bullet;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.input.InputController;
 import com.nukethemoon.libgdxjam.screens.MenuScreen;
@@ -14,6 +17,7 @@ import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.solar.SolarScreen;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,11 +33,16 @@ public class App extends Game {
 
 	public static SolarSystem solarSystem = new SolarSystem();
 
+	private static Gson gson;
+	private static Save save;
+
 	@Override
 	public void create () {
 		app = this;
 		Bullet.init();
 		Models.init();
+		gson = new GsonBuilder().setPrettyPrinting().create();
+		loadSaveGame();
 		TEXTURES = new TextureAtlas("textures/game.atlas");
 		Styles.init(TEXTURES);
 		MULTIPLEXER = new InputMultiplexer();
@@ -44,10 +53,8 @@ public class App extends Game {
 		solarSystem = new SolarSystem();
 		solarSystem.calculatePlanetPositions();
 
-
 		// instance space ship
 		// load game entities
-
 		// openScreen(SplashScreen.class);
 		openPlanetScreen(0);
 		SpaceShipProperties.properties.testInit();
@@ -56,7 +63,6 @@ public class App extends Game {
 
 		//openSolarScreen();
 	}
-
 
 	public static void openScreen(Class<? extends Screen> screenClass) {
 		/*Screen screen = SCREENS.get(screenClass);
@@ -90,6 +96,36 @@ public class App extends Game {
 
 	public static void onGameOver() {
 		openSolarScreen();
+	}
+
+	public static void saveProgress() {
+		FileHandle fileHandle = openSaveFile();
+		if (fileHandle != null) {
+			String jsonString = gson.toJson(save);
+			fileHandle.writeString(jsonString, false);
+		}
+	}
+
+	private static void loadSaveGame() {
+		FileHandle fileHandle = openSaveFile();
+		if (fileHandle != null) {
+			save = gson.fromJson(fileHandle.readString(), Save.class);
+		}
+		if (save == null) {
+			save = new Save();
+		}
+	}
+
+	private static FileHandle openSaveFile() {
+		if (!Gdx.files.local("save/save.json").exists()) {
+			try {
+				Gdx.files.local("save/save.json").file().createNewFile();
+			} catch (IOException e) {
+				Log.e(App.class, "Error creating save file");
+				return null;
+			}
+		}
+		return Gdx.files.local("save/save.json");
 	}
 
 	@Override

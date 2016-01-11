@@ -24,12 +24,11 @@ import java.util.List;
 public class SpaceShipProperties {
 
 
-	public static final SpaceShipProperties properties = new SpaceShipProperties(); //TODO!
+	transient public static final SpaceShipProperties properties = new SpaceShipProperties(); //TODO!
 
-	public static final int INITIAL_MAX_FUEL = 100000;
-	public static final float INITAL_FUEL_CONSUMPTION = 0.1f;
-
-	public static final int INITIAL_MAX_SHIELD = 1000;
+	transient public static final int INITIAL_MAX_FUEL = 100000;
+	transient public static final float INITAL_FUEL_CONSUMPTION = 0.1f;
+	transient public static final int INITIAL_MAX_SHIELD = 1000;
 
 	private List<String> collectedArtifacIds = new ArrayList<String>();
 

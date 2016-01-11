@@ -32,6 +32,7 @@ import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
+import com.nukethemoon.libgdxjam.ui.MenuTable;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
 
 import java.util.ArrayList;
@@ -169,7 +170,12 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		menuButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				menuButton.openMenu(stage);
+				menuButton.openMenu(stage, new MenuTable.CloseListener() {
+					@Override
+					public void onClose() {
+
+					}
+				});
 			}
 		});
 

@@ -59,6 +59,7 @@ import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.libgdxjam.ui.GameOverTable;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
+import com.nukethemoon.libgdxjam.ui.MenuTable;
 import com.nukethemoon.libgdxjam.ui.PopupTable;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
 import com.nukethemoon.libgdxjam.ui.ToastTable;
@@ -144,6 +145,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private Ani ani;
 	private DevelopmentWindow developmentWindow;
+	private MenuButton menuButton;
 
 
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
@@ -279,24 +281,34 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			stage.addActor(devButton);
 		}
 
-		final MenuButton menuButton = new MenuButton(uiSkin);
+		menuButton = new MenuButton(uiSkin);
 		menuButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				menuButton.openMenu(stage);
+				onPauseClicked();
 			}
 		});
-
 
 		stage.addActor(menuButton);
 	}
 
-
+	private void onPauseClicked() {
+		if (!pause) {
+			pause = true;
+			menuButton.openMenu(stage, new MenuTable.CloseListener() {
+				@Override
+				public void onClose() {
+					pause = false;
+				}
+			});
+		}
+	}
 
 	public void leavePlanet() {
 		renderEnabled = false;
 		multiplexer.removeProcessor(stage);
 		dispose();
+		App.saveProgress();
 		App.openSolarScreen();
 	}
 
@@ -350,7 +362,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		modelBatch.begin(camera);
 		rocket.drawModel(modelBatch, environment, effectThrust, effectExplosion);
 		planetController.render(modelBatch, environment, false);
-
 		environmentSphere.transform.idt();
 		environmentSphere.transform.setToTranslation(rocket.getPosition().x, rocket.getPosition().y, 0);
 		environmentSphere.transform.scl(1000);
@@ -358,29 +369,26 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		modelBatch.render(environmentSphere);
 		modelBatch.end();
 
-		if (!pause) {
-			particleSystem.update();
-		}
-
 		particleSystem.begin();
 		particleSystem.draw();
 		particleSystem.end();
-		modelBatch.render(particleSystem);
 
+		modelBatch.render(particleSystem);
 		drawOrigin();
+		physicsController.debugRender(camera);
+
+		if (!pause) {
+			particleSystem.update();
+			ani.update();
+			if (!gameOver) {
+				physicsController.stepSimulation(delta);
+			}
+		}
 
 		if (stage != null) {
 			stage.act(delta);
 			stage.draw();
 		}
-		physicsController.debugRender(camera);
-
-		if (!gameOver) {
-			physicsController.stepSimulation(delta);
-		}
-
-		ani.update();
-
 		drawMiniMap();
 	}
 
@@ -589,7 +597,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			freeCameraInput.setEnabled(!freeCameraInput.isEnabled());
 		}
 		if (keycode == 44) {
-			pause = !pause;
+			onPauseClicked();
 		}
 		if (keycode == 62) {
 			rocket.toggleThrust();
@@ -634,7 +642,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		} else {
 			rocket.reduceThirdPersonOffsetY();
 		}
-
 		return false;
 	}
 
