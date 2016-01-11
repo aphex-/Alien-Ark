@@ -18,8 +18,6 @@ import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.solar.SolarScreen;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class App extends Game {
 
@@ -28,7 +26,6 @@ public class App extends Game {
 	private static App app;
 	public static TextureAtlas TEXTURES;
 
-	private static Map<Class<? extends Screen>, ? extends Screen> SCREENS = new HashMap<Class<? extends Screen>, Screen>();
 	public static AudioController audioController;
 
 	public static SolarSystem solarSystem = new SolarSystem();
