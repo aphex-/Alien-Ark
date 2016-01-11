@@ -29,7 +29,8 @@ public class TutorialController {
 		COLLECT_THE_ARTIFACT,
 		LEAVE_THE_PLANET,
 		OPEN_COMMAND_CENTER,
-		CRAFT_AN_ALIEN
+		CRAFT_AN_ALIEN,
+		END_TUTORIAL
 	}
 
 	private Map<TutorialStep, DialogTable> tutorialDialogs = new HashMap<TutorialStep, DialogTable>();
@@ -132,6 +133,10 @@ public class TutorialController {
 		tutorialDialogs.put(TutorialStep.CRAFT_AN_ALIEN, new DialogTable(skin, new String[]{
 				"Craft an ALIEN",
 		}));
+
+		tutorialDialogs.put(TutorialStep.END_TUTORIAL, new DialogTable(skin, new String[]{
+				"The end of the tutorial",
+		}));
 	}
 
 	public void register(Stage stage, Ani ani) {
@@ -148,13 +153,22 @@ public class TutorialController {
 				stage.addActor(dialogTable);
 				ani.add(dialogTable.createAnimation());
 			}
+			if (currentStep == TutorialStep.END_TUTORIAL) {
+				enabled = false;
+			}
 		}
 	}
 
 	public void nextStepFor(Class<? extends Screen> screenClass) {
+		if (!enabled) {
+			return;
+		}
+
 		if (screenClass == PlanetScreen.class) {
-			currentStep = TutorialStep.values()[TutorialStep.SHIP_CONTROLS.ordinal() - 1];
-			next();
+			if (planetScreenStep == 0) {
+				currentStep = TutorialStep.values()[TutorialStep.SHIP_CONTROLS.ordinal() - 1];
+				next();
+			}
 		}
 
 		if (screenClass == SolarScreen.class) {
@@ -174,11 +188,7 @@ public class TutorialController {
 				next();
 			}
 		}
-
-
 	}
-
-
 
 	private void closeCurrent() {
 		if (currentStep != TutorialStep.NULL) {
@@ -188,7 +198,6 @@ public class TutorialController {
 			}
 		}
 	}
-
 
 	public void onKeyTyped(int keyCode) {
 		if (enabled) {
@@ -226,6 +235,12 @@ public class TutorialController {
 		}
 	}
 
+	public void onAlienCrafted() {
+		if (currentStep == TutorialStep.CRAFT_AN_ALIEN) {
+			next();
+		}
+	}
+
 	public void onArtifactCollected() {
 		if (currentStep == TutorialStep.COLLECT_THE_ARTIFACT) {
 			next();
@@ -235,6 +250,7 @@ public class TutorialController {
 	public void onLeavePlanet() {
 		if (currentStep.ordinal() < TutorialStep.LEAVE_THE_PLANET.ordinal()) {
 			currentStep = TutorialStep.LEAVE_THE_PLANET;
+			planetScreenStep = 1;
 		}
 	}
 }

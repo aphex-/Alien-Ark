@@ -266,7 +266,7 @@ public class ArkScreen implements Screen {
 			public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
 				slot.insertArtifact((Artifact) payload.getObject());
 				dragAndDrop.removeTarget(this);
-
+				App.TUTORIAL_CONTROLLER.onAlienCrafted();
 			}
 		});
 		stage.addActor(slot);
