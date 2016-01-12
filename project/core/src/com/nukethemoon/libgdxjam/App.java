@@ -56,11 +56,12 @@ public class App extends Game {
 		solarSystem = new SolarSystem();
 		solarSystem.calculatePlanetPositions();
 
+		SpaceShipProperties.properties.testInit();
 		// instance space ship
 		// load game entities
 		// openScreen(SplashScreen.class);
 		openPlanetScreen(0);
-		SpaceShipProperties.properties.testInit();
+
 		//openArkScreen();
 
 

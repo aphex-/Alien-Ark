@@ -3,10 +3,11 @@ package com.nukethemoon.libgdxjam.game.attributes;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.nukethemoon.libgdxjam.App;
-import com.nukethemoon.libgdxjam.game.artifacts.OperatorArtifact;
-import com.nukethemoon.libgdxjam.game.artifacts.ValueArtifact;
 
 public abstract class Attribute {
+
+	public static final float INTERNAL_MIN = -1;
+	public static final float INTERNAL_MAX = -1;
 
 	private float currentValue;
 
@@ -22,7 +23,7 @@ public abstract class Attribute {
 		String slot = "slot00";
 		if(clazz == Speed.class) {
 			slot = "slot03";
-		} else if(clazz == MaxFuel.class){
+		} else if(clazz == FuelCapacity.class){
 			slot = "slot01";
 		} else if(clazz == Luck.class){
 			slot = "slot06";
@@ -46,7 +47,7 @@ public abstract class Attribute {
 		String row = "row00";
 		if(clazz == Speed.class) {
 			row = "row03";
-		} else if(clazz == MaxFuel.class){
+		} else if(clazz == FuelCapacity.class){
 			row = "row01";
 		} else if(clazz == Luck.class){
 			row = "row06";
@@ -76,7 +77,7 @@ public abstract class Attribute {
 		String name = "?";
 		if(clazz == Speed.class) {
 			name = "SPEED";
-		} else if(clazz == MaxFuel.class){
+		} else if(clazz == FuelCapacity.class){
 			name = "MAXIMUM FUEL";
 		} else if(clazz == Luck.class){
 			name = "LUCK";

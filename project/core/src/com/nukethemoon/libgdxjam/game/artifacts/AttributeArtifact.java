@@ -6,15 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.game.Artifact;
 import com.nukethemoon.libgdxjam.game.attributes.Attribute;
-import com.nukethemoon.libgdxjam.game.attributes.Inertia;
-import com.nukethemoon.libgdxjam.game.attributes.ItemCollectRadius;
-import com.nukethemoon.libgdxjam.game.attributes.LandingDistance;
-import com.nukethemoon.libgdxjam.game.attributes.Luck;
-import com.nukethemoon.libgdxjam.game.attributes.MaxFuel;
-import com.nukethemoon.libgdxjam.game.attributes.Shield;
-import com.nukethemoon.libgdxjam.game.attributes.Speed;
-
-import org.w3c.dom.Attr;
 
 public class AttributeArtifact extends Artifact {
 
