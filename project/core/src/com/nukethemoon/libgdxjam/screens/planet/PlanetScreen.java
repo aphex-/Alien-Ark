@@ -262,6 +262,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		App.TUTORIAL_CONTROLLER.onLeavePlanet();
 		renderEnabled = false;
 		multiplexer.removeProcessor(stage);
+		multiplexer.removeProcessor(this);
+		multiplexer.removeProcessor(freeCameraInput);
 		dispose();
 		App.saveProgress();
 		App.openSolarScreen();
