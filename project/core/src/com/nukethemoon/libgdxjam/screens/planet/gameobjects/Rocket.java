@@ -25,6 +25,8 @@ import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
+import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
+import com.nukethemoon.libgdxjam.game.attributes.ShieldCapacity;
 import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 
@@ -35,7 +37,7 @@ public class Rocket extends GameObject implements Disposable {
 
 	private static final float THIRD_PERSON_OFFSET_Z = 6;
 	private static final int MIN_DAMAGE_DELAY_MILLIS = 200;
-	private static final Vector3 START_POSITION = new Vector3(0, 0, 30);
+	private static final Vector3 START_POSITION = new Vector3(20, 0, 120);
 	private static final Vector3 LAUNCH_IMPULSE = new Vector3(0, 0, 55);
 	private static final int LAUNCH_INDESTRUCTIBLE_TICKS = 30;
 	private static final float FUEL_CONSUMPTION = 0.1f;
@@ -52,12 +54,6 @@ public class Rocket extends GameObject implements Disposable {
 	private final ModelInstance shieldModelInstance;
 	private final ModelInstance tractorBeamModelInstance;
 	private final Model model;
-
-	private float speed = 30f; // min 20f max 100f
-	private float maneuverability = 2.75f; // min 0.75f max 3.0f
-	private float friction = 0.2f; // min 0.2f max 3.0f;
-
-	private int maxShield = 1000;
 
 	float drill = 0;
 	float xRotation = 0;
@@ -88,8 +84,7 @@ public class Rocket extends GameObject implements Disposable {
 
 	private float tickFuelCount = 1;
 
-	private int maxFuel = SpaceShipProperties.properties.getMaxFuel();
-
+	private int maxFuel = SpaceShipProperties.properties.computeMaxFuel();
 
 	public Rocket() {
 		// init graphic
@@ -121,16 +116,17 @@ public class Rocket extends GameObject implements Disposable {
 		BoundingBox boundingBox = new BoundingBox();
 		model.calculateBoundingBox(boundingBox);
 		btCollisionShape shape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.5f));
-		rocketModelInstance.transform.setToTranslation(START_POSITION);
+		rocketModelInstance.transform.setToRotation(0, 0, 1, 0);
+		rocketModelInstance.transform.trn(START_POSITION);
 		float mass = 1;
-		addRigidBody(shape, mass, friction, CollisionTypes.ROCKET.mask,
+		addRigidBody(shape, mass, SpaceShipProperties.properties.getLandslide(), CollisionTypes.ROCKET.mask,
 				new RocketMotionState(rocketModelInstance.transform));
 		rigidBodyList.get(0).setActivationState(4); // disable deactivation
-		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(speed));
+		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(
+				SpaceShipProperties.properties.getSpeed()));
 
-		// init properties
-		SpaceShipProperties.properties.currentFuel = SpaceShipProperties.INITIAL_MAX_FUEL;
-		SpaceShipProperties.properties.currentShield = SpaceShipProperties.INITIAL_MAX_SHIELD;
+		SpaceShipProperties.properties.setCurrentInternalFuel((int) 	FuelCapacity.INTERNAL_MAX);
+		SpaceShipProperties.properties.setCurrentInternalShield((int) 	ShieldCapacity.INTERNAL_MAX);
 
 		thrustSound = App.audioController.getSound("thrust.wav");
 	}
@@ -142,28 +138,28 @@ public class Rocket extends GameObject implements Disposable {
 
 	public void rotateLeft() {
 		if (thrusting) {
-			zRotation = (zRotation + maneuverability) % 360;
+			zRotation = (zRotation + SpaceShipProperties.properties.getManeuverability()) % 360;
 		}
 	}
 
 	public void rotateRight() {
 		if (thrusting) {
-			zRotation = (zRotation - maneuverability) % 360;
+			zRotation = (zRotation - SpaceShipProperties.properties.getManeuverability()) % 360;
 		}
 	}
 
 	public void rotateDown() {
 		if (thrusting) {
-			if ((xRotation - maneuverability) > -89) {
-				xRotation = (xRotation - maneuverability) % 360;
+			if ((xRotation - SpaceShipProperties.properties.getManeuverability()) > -89) {
+				xRotation = (xRotation - SpaceShipProperties.properties.getManeuverability()) % 360;
 			}
 		}
 	}
 
 	public void rotateUp() {
 		if (thrusting) {
-			if((xRotation + maneuverability) < 89) {
-				xRotation = (xRotation + maneuverability) % 360;
+			if((xRotation + SpaceShipProperties.properties.getManeuverability()) < 89) {
+				xRotation = (xRotation + SpaceShipProperties.properties.getManeuverability()) % 360;
 			}
 		}
 	}
@@ -186,7 +182,6 @@ public class Rocket extends GameObject implements Disposable {
 			tractorBeamModelInstance.transform.set(rocketModelInstance.transform);
 			tractorBeamModelInstance.transform.trn(tmpVec0);
 		}
-
 
 		if (rigidBodyList.get(0).getLinearVelocity().len() < 0.1 && !thrusting) {
 			if (moving) {
@@ -225,7 +220,7 @@ public class Rocket extends GameObject implements Disposable {
 		if (isOutOfFuel()) {
 			return;
 		}
-		tmpMovement.set(getDirection()).nor().scl(speed);
+		tmpMovement.set(getDirection()).nor().scl(SpaceShipProperties.properties.getSpeed());
 		rigidBodyList.get(0).applyCentralForce(tmpMovement);
 	}
 
@@ -253,7 +248,7 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	private void onThrustEnabled() {
-		SpaceShipProperties.properties.currentFuel -= THRUST_START_FUEL_COST;
+		SpaceShipProperties.properties.addCurrentInternalFuel(-THRUST_START_FUEL_COST);
 		if (isOutOfFuel()) {
 			return;
 		}
@@ -277,7 +272,7 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
-	private void onExplode() {
+	public void onExplode() {
 		exploded = true;
 		if (listener != null) {
 			listener.onRocketExploded();
@@ -314,31 +309,23 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	public void applyThirdPerson(Camera camera) {
-
 		Vector3 position = getPosition();
 		if (position.z < 0) {
 			return;
 		}
-
 		tmpCamPosition.set(position);
-
 		tmpCamOffset.set(getDirection());
 		tmpCamOffset.scl(-thirdPersonOffsetY);
-
 		tmpCamPosition.add(tmpCamOffset);
 		tmpCamPosition.z += THIRD_PERSON_OFFSET_Z;
-
 		// creating a delay for the camera
 		tmpCamPosition.x = lastCamPosition.x + (tmpCamPosition.x - lastCamPosition.x) / 20f;
 		tmpCamPosition.y = lastCamPosition.y + (tmpCamPosition.y - lastCamPosition.y) / 20f;
 		tmpCamPosition.z = lastCamPosition.z + (tmpCamPosition.z - lastCamPosition.z) / 20f;
-
 		tmpCamPosition.z = Math.max(tmpCamPosition.z, 1);
-
 		camera.position.set(tmpCamPosition);
 		camera.lookAt(position);
 		camera.up.set(Vector3.Z);
-
 		lastCamPosition.set(camera.position);
 	}
 
@@ -392,17 +379,17 @@ public class Rocket extends GameObject implements Disposable {
 			tickFuelCount = tickFuelCount - FUEL_CONSUMPTION;
 			if (tickFuelCount <= 0) {
 				tickFuelCount = 1;
-				SpaceShipProperties.properties.currentFuel--;
+				SpaceShipProperties.properties.addCurrentInternalFuel(-1);
 				if (listener != null) {
 					listener.onRocketFuelConsumed();
 				}
 			}
 
-			// cap the peed
+			// cap the speed
 			Vector3 linearVelocity = rigidBodyList.get(0).getLinearVelocity();
 			float tickSpeed = linearVelocity.len();
-			if (tickSpeed > speed) {
-				linearVelocity.scl(speed / tickSpeed);
+			if (tickSpeed > SpaceShipProperties.properties.getSpeed()) {
+				linearVelocity.scl(SpaceShipProperties.properties.getSpeed() / tickSpeed);
 				rigidBodyList.get(0).setLinearVelocity(tmpMovement);
 			}
 		}
@@ -415,12 +402,12 @@ public class Rocket extends GameObject implements Disposable {
 		lastDamageTime = System.currentTimeMillis();
 
 		if (ticksSinceLastLaunch > LAUNCH_INDESTRUCTIBLE_TICKS) {
-			SpaceShipProperties.properties.currentShield -= damage;
+			SpaceShipProperties.properties.addCurrentShield(-damage);
 			if (listener != null) {
 				listener.onRocketDamage();
 			}
 		}
-		if (SpaceShipProperties.properties.currentShield == 0) {
+		if (SpaceShipProperties.properties.getCurrentInternalShield() == 0) {
 			onExplode();
 		}
 	}
@@ -435,28 +422,19 @@ public class Rocket extends GameObject implements Disposable {
 		}
 
 		if (type == CollisionTypes.FUEL) {
-			SpaceShipProperties.properties.currentFuel = SpaceShipProperties.properties.currentFuel + Balancing.FUEL_BONUS;
+			SpaceShipProperties.properties.addCurrentInternalFuel(Balancing.FUEL_BONUS);
 			listener.onRocketFuelBonus();
 		}
 
 		if (type == CollisionTypes.SHIELD) {
-			SpaceShipProperties.properties.currentShield = SpaceShipProperties.properties.currentShield + Balancing.SHIELD_BONUS;
+			SpaceShipProperties.properties.addCurrentShield(Balancing.SHIELD_BONUS);
 			listener.onRocketShieldBonus();
 		}
-	}
 
-	public int getShield() {
-		return SpaceShipProperties.properties.getCurrentShield();
+		if (type == CollisionTypes.PORTAL_EXIT) {
+			listener.onRocketEntersPortal();
+		}
 	}
-
-	public int getMaxShield() {
-		return maxShield;
-	}
-
-	public int getFuel() {
-		return SpaceShipProperties.properties.getCurrentFuel();
-	}
-
 
 	public boolean isThrusting() {
 		return thrusting;
@@ -471,14 +449,22 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
-	public int getMaxFuel() {
-		return maxFuel;
-	}
-
 	public boolean isOutOfFuel() {
-		return SpaceShipProperties.properties.currentFuel <= 0;
+		return SpaceShipProperties.properties.getCurrentInternalFuel() <= 0;
 	}
 
+
+	public float getGroundZRotation() {
+		return zRotation;
+	}
+
+	public void setTractorBeamVisibility(boolean visible) {
+		tractorBeamVisible = visible;
+	}
+
+	public ModelInstance getTractorBeamModelInstance() {
+		return tractorBeamModelInstance;
+	}
 
 	static class RocketMotionState extends btMotionState {
 		private Matrix4 transform;
@@ -498,21 +484,5 @@ public class Rocket extends GameObject implements Disposable {
 			transform.idt();
 			transform.trn(worldTrans.getTranslation(tmpVector));
 		}
-	}
-
-	public float getGroundZRotation() {
-		return zRotation;
-	}
-
-	public void setTractorBeamVisibility(boolean visible) {
-		tractorBeamVisible = visible;
-	}
-
-	public ModelInstance getTractorBeamModelInstance() {
-		return tractorBeamModelInstance;
-	}
-
-	public float getScanRadus() {
-		return 5f;
 	}
 }

@@ -17,10 +17,11 @@ public class Styles {
 
 	public static NinePatchDrawable NINE_PATCH_POPUP_BG_01;
 	public static NinePatchDrawable NINE_PATCH_BUTTON_BG_01;
-
+	public static NinePatchDrawable NINE_PATCH_STANDARD_BUTTON;
 	public static NinePatchDrawable NINE_PATCH_DIALOG_01;
 
 	public static TextButton.TextButtonStyle STYLE_BUTTON_01;
+	public static TextButton.TextButtonStyle STYLE_BUTTON_02;
 
 	public static Color COLOR_01 = new Color(28f / 255f, 25f / 255f, 18f / 255f, 1);
 	public static Color COLOR_DARK_BROWN = new Color(52f / 255f, 90f / 255f, 65f / 255f, 1);
@@ -52,21 +53,19 @@ public class Styles {
 	public static void init(TextureAtlas atlas) {
 		UI_SKIN = new Skin();
 
-		FONT_DOSIS_SMALL = 					createFont("fonts/Dosis-Medium.ttf", 	18, Color.WHITE, null, 			0);
-		FONT_DOSIS_SMALL_DIALOG_HEADLINE = 	createFont("fonts/Dosis-Medium.ttf", 	18, COLOR_DARK_BROWN, null, 	0);
-
-		FONT_DOSIS_MEDIUM_BORDER = 	createFont("fonts/Dosis-Medium.ttf", 	26, Color.WHITE, Color.BLACK, 	2);
-		FONT_ENTSANS_SMALL = createFont("fonts/entsans.ttf", 		26, COLOR_LIGHT_YELLOW, null, 	0);
-
-		FONT_LIBERATION_SMALL_BORDER = 	createFont("fonts/LiberationMono-Bold.ttf",	22, Color.WHITE, Color.BLACK, 2);
-		FONT_DOSIS_PROGRESS_TYPE = createFont("fonts/Dosis-Medium.ttf", 22, COLOR_LIGHT_YELLOW, null, 0);
+		FONT_DOSIS_SMALL = 					createFont("fonts/Dosis-Medium.ttf", 		18, Color.WHITE, 		null, 			0);
+		FONT_DOSIS_MEDIUM_BORDER = 			createFont("fonts/Dosis-Medium.ttf", 		26, Color.WHITE, 		Color.BLACK,	2);
+		FONT_DOSIS_SMALL_DIALOG_HEADLINE = 	createFont("fonts/Dosis-Medium.ttf", 		18, COLOR_DARK_BROWN, 	null, 			0);
+		FONT_DOSIS_PROGRESS_TYPE = 			createFont("fonts/Dosis-Medium.ttf", 		22, COLOR_LIGHT_YELLOW, null, 			0);
+		FONT_ENTSANS_SMALL = 				createFont("fonts/entsans.ttf", 			26, COLOR_LIGHT_YELLOW, null, 			0);
+		FONT_LIBERATION_SMALL_BORDER = 		createFont("fonts/LiberationMono-Bold.ttf",	22, Color.WHITE, 		Color.BLACK, 	2);
 
 		loadDefaultSkin(FONT_DOSIS_SMALL);
 
-
-		NINE_PATCH_POPUP_BG_01 = 	new NinePatchDrawable(new NinePatch(atlas.findRegion("popupbg01"),16, 16, 16, 16));
-		NINE_PATCH_BUTTON_BG_01 = 	new NinePatchDrawable(new NinePatch(atlas.findRegion("buttonbg01"),32, 32, 32, 32));
-		NINE_PATCH_DIALOG_01 = 		new NinePatchDrawable(new NinePatch(atlas.findRegion("dialogBg01"), 33, 33, 42, 21));
+		NINE_PATCH_POPUP_BG_01 = 		new NinePatchDrawable(new NinePatch(atlas.findRegion("popupbg01"),16, 16, 16, 16));
+		NINE_PATCH_BUTTON_BG_01 = 		new NinePatchDrawable(new NinePatch(atlas.findRegion("buttonbg01"),32, 32, 32, 32));
+		NINE_PATCH_DIALOG_01 = 			new NinePatchDrawable(new NinePatch(atlas.findRegion("dialogBg01"), 33, 33, 42, 21));
+		NINE_PATCH_STANDARD_BUTTON = 	new NinePatchDrawable(new NinePatch(atlas.findRegion("buttonStandard9patch"), 18, 18, 18, 18));
 
 		TextButton.TextButtonStyle textButtonStyle = UI_SKIN.get(TextButton.TextButtonStyle.class);
 		STYLE_BUTTON_01 = new TextButton.TextButtonStyle(textButtonStyle); // copy from default values
@@ -74,6 +73,12 @@ public class Styles {
 		STYLE_BUTTON_01.down = 		Styles.NINE_PATCH_BUTTON_BG_01;
 		STYLE_BUTTON_01.checked = 	Styles.NINE_PATCH_BUTTON_BG_01;
 		STYLE_BUTTON_01.fontColor = COLOR_01;
+
+		STYLE_BUTTON_02 = new TextButton.TextButtonStyle(textButtonStyle);
+		STYLE_BUTTON_02.up = 		Styles.NINE_PATCH_STANDARD_BUTTON;
+		STYLE_BUTTON_02.down = 		Styles.NINE_PATCH_STANDARD_BUTTON;
+		STYLE_BUTTON_02.checked = 	Styles.NINE_PATCH_STANDARD_BUTTON;
+		STYLE_BUTTON_02.font = 		FONT_DOSIS_SMALL_DIALOG_HEADLINE;
 
 		Label.LabelStyle standardLabelStyle = UI_SKIN.get(Label.LabelStyle.class);
 		LABEL_01 = new Label.LabelStyle(standardLabelStyle);
@@ -83,7 +88,7 @@ public class Styles {
 		LABEL_02.font = FONT_DOSIS_MEDIUM_BORDER;
 
 		LABEL_DEV = new Label.LabelStyle(standardLabelStyle);
-		LABEL_DEV.font = FONT_ENTSANS_SMALL;
+		LABEL_DEV.font = FONT_DOSIS_SMALL;
 
 		LABEL_HUD_NUMBERS = new Label.LabelStyle(standardLabelStyle);
 		LABEL_HUD_NUMBERS.font = FONT_ENTSANS_SMALL;

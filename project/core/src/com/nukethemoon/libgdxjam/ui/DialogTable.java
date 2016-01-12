@@ -14,16 +14,16 @@ import com.nukethemoon.libgdxjam.ui.animation.TableHighlightAnimation;
 
 public class DialogTable extends Table {
 
-	private Table content;
+	protected Table content;
 
-	public DialogTable(Skin skin, String[] textLines) {
+	public DialogTable(Skin skin, String[] textLines, String title) {
 		setBackground(Styles.NINE_PATCH_DIALOG_01);
 		pad(0);
 		content = new Table();
 		content.pad(15);
 		content.padTop(5);
 
-		Label titleTable = new Label("INFORMATION", Styles.LABEL_DIALOG_HEADLINE);
+		Label titleTable = new Label(title, Styles.LABEL_DIALOG_HEADLINE);
 		add(titleTable).left().top().padLeft(15).fill().padTop(12);
 
 		ImageButton imageButton = new ImageButton(
@@ -44,8 +44,12 @@ public class DialogTable extends Table {
 
 		add(content).colspan(2);
 
+		updatePosition(20, 50);
+	}
+
+	public void updatePosition(int left, int top) {
 		pack();
-		setPosition(20, Gdx.graphics.getHeight() - this.getHeight() - 50);
+		setPosition(left, Gdx.graphics.getHeight() - this.getHeight() - top);
 	}
 
 	public TableHighlightAnimation createAnimation() {

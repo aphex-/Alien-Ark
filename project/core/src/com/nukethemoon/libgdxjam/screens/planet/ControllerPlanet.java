@@ -3,18 +3,18 @@ package com.nukethemoon.libgdxjam.screens.planet;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.Log;
-import com.nukethemoon.libgdxjam.Models;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPart;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPortal;
+import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.tools.ani.Ani;
 import com.nukethemoon.tools.opusproto.generator.ChunkListener;
@@ -36,11 +36,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	public static float TILE_GRAPHIC_SIZE = 3f;
 	public static float TRACTOR_BEAM_TOLERANCE_RADIUS = 5f;
 
-	private final ModelInstance planetPortal;
-	private final ModelInstance planetPortalTorus01;
-	private final ModelInstance planetPortalTorus02;
-	private final ModelInstance planetPortalTorus03;
-	private final ModelInstance planetPortalTorus04;
+	private final PlanetPortal planetPortal;
 
 	private Opus opus;
 	private PlanetConfig planetConfig;
@@ -81,15 +77,6 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private Vector2 tmpVec6 = new Vector2();
 	private Vector3 tmpVec7 = new Vector3();
 
-	private Matrix4 rotMat01 = new Matrix4();
-	private Matrix4 rotMat02 = new Matrix4();
-	private Matrix4 rotMat03 = new Matrix4();
-	private Matrix4 rotMat04 = new Matrix4();
-
-	private float rot01 = 0;
-	private float rot02 = 0;
-	private float rot03 = 0;
-	private float rot04 = 0;
 
 	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
 		this.planetConfig = pPlanetConfig;
@@ -123,26 +110,14 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 			}
 		}
 
-		planetPortal = new ModelInstance(Models.PLANET_PORTAL);
-		planetPortalTorus01 = new ModelInstance(Models.PLANET_PORTAL_TORUS);
-		planetPortalTorus01.transform.setToRotation(0, 1, 0, 30);
-		planetPortalTorus01.transform.trn(0, 0, 118);
-		rot01 = (float) Math.random() * 360;
+		planetPortal = new PlanetPortal();
+		for (btRigidBody body : planetPortal.rigidBodyList) {
+			controllerPhysic.addRigidBody(body, CollisionTypes.GROUND);
+		}
+		for (btCollisionObject object : planetPortal.collisionObjectList) {
+			controllerPhysic.addCollisionObject(object);
+		}
 
-		planetPortalTorus02 = new ModelInstance(Models.PLANET_PORTAL_TORUS);
-		planetPortalTorus02.transform.setToRotation(0, 1, 0, 30);
-		planetPortalTorus02.transform.trn(-20f, 0, 130);
-		rot02 = (float) Math.random() * 360;
-
-		planetPortalTorus03 = new ModelInstance(Models.PLANET_PORTAL_TORUS);
-		planetPortalTorus03.transform.setToRotation(0, 1, 0, 30);
-		planetPortalTorus03.transform.trn(-40, 0, 142);
-		rot03 = (float) Math.random() * 360;
-
-		planetPortalTorus04 = new ModelInstance(Models.PLANET_PORTAL_TORUS);
-		planetPortalTorus04.transform.setToRotation(0, 1, 0, 30);
-		planetPortalTorus04.transform.trn(-60f, 0, 154);
-		rot04 = (float) Math.random() * 360;
 	}
 
 	public void requestChunks(List<Point> chunkCoordinates) {
@@ -346,15 +321,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 			return;
 		}
 
-		batch.render(planetPortal, environment);
-
-		batch.render(planetPortalTorus01, environment);
-		/*rot02++;
-		rotMat02.setToRotation(1, 0, 0, rot02);
-		planetPortalTorus02.transform.mul(rotMat02);*/
-		batch.render(planetPortalTorus02, environment);
-		batch.render(planetPortalTorus03, environment);
-		batch.render(planetPortalTorus04, environment);
+		planetPortal.render(batch, environment);
 
 
 		for (Collectible c : currentVisibleCollectibles) {

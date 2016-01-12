@@ -43,7 +43,7 @@ public class App extends Game {
 		gson = new GsonBuilder().setPrettyPrinting().create();
 		loadConfig();
 		Bullet.init();
-		Models.init();
+		Models.init(); // needs an initialized Bullet
 		loadSaveGame();
 		TEXTURES = new TextureAtlas("textures/game.atlas");
 		Styles.init(TEXTURES);
@@ -56,11 +56,12 @@ public class App extends Game {
 		solarSystem = new SolarSystem();
 		solarSystem.calculatePlanetPositions();
 
+		SpaceShipProperties.properties.testInit();
 		// instance space ship
 		// load game entities
 		// openScreen(SplashScreen.class);
 		openPlanetScreen(0);
-		SpaceShipProperties.properties.testInit();
+
 		//openArkScreen();
 
 
@@ -98,6 +99,8 @@ public class App extends Game {
 
 
 	public static void onGameOver() {
+		SpaceShipProperties.properties.currentSolarPosition.set(
+				SolarScreen.INITIAL_ARK_POSITION_X, SolarScreen.INITIAL_ARK_POSITION_Y);
 		openSolarScreen();
 	}
 

@@ -25,6 +25,7 @@ import com.nukethemoon.libgdxjam.game.Alien;
 import com.nukethemoon.libgdxjam.game.Artifact;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.game.attributes.Attribute;
+import com.nukethemoon.libgdxjam.ui.hud.ShipProgressBar;
 import com.nukethemoon.tools.ani.Ani;
 
 import java.util.List;
@@ -72,6 +73,9 @@ public class ArkScreen implements Screen {
 	private Actor selectedAlien;
 	private Table propertiesTable;
 
+	private ShipProgressBar fuelProgressBar;
+	private ShipProgressBar shieldProgressBar;
+
 	public ArkScreen(Skin uiSkin, InputMultiplexer multiplexer) {
 		ani = new Ani();
 		skin = uiSkin;
@@ -84,6 +88,14 @@ public class ArkScreen implements Screen {
 
 		App.TUTORIAL_CONTROLLER.register(stage, ani);
 		App.TUTORIAL_CONTROLLER.nextStepFor(this.getClass());
+
+		fuelProgressBar = new ShipProgressBar(ShipProgressBar.ProgressType.FUEL);
+		fuelProgressBar.updateFromShipProperties();
+		shieldProgressBar = new ShipProgressBar(ShipProgressBar.ProgressType.SHIELD);
+		shieldProgressBar.updateFromShipProperties();
+
+		stage.addActor(fuelProgressBar);
+		stage.addActor(shieldProgressBar);
 	}
 
 	@Override
@@ -326,8 +338,10 @@ public class ArkScreen implements Screen {
 			public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
 				if(!slot.isOccupied()) {
 					slot.insertArtifact((Artifact) payload.getObject());
-
+					fuelProgressBar.updateFromShipProperties();
+					shieldProgressBar.updateFromShipProperties();
 					updateResultSlot();
+					
 				}
 
 			}

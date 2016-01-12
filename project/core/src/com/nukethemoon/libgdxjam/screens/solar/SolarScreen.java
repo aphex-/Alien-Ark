@@ -5,12 +5,14 @@ import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -21,26 +23,31 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.Styles;
+import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
+import com.nukethemoon.libgdxjam.ui.EnterOrbitTable;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.MenuTable;
-import com.nukethemoon.libgdxjam.ui.RocketMainTable;
+import com.nukethemoon.libgdxjam.ui.hud.ShipProgressBar;
 import com.nukethemoon.tools.ani.Ani;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class SolarScreen implements Screen, RocketListener, ControllerPhysic.PhysicsListener {
+public class SolarScreen implements Screen, RocketListener, ControllerPhysic.PhysicsListener, InputProcessor {
 
 	//TODO:
 	/*
@@ -49,12 +56,15 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	- planeten müssen entdeckt werden per radar */
 
 	private static final int RAYS_NUM = 333;
+	private static final int SUN_COLLISION = 999;
 	private final World world;
 	private final InputMultiplexer multiplexer;
 	private final Ani ani;
 //	private StarsBackground bg;
 
-	private Vector2 shipPosition = new Vector2(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
+	private EnterOrbitTable enterOrbitTable = null;
+
+	private Vector2 shipPosition;
 	private final RayHandler rayHandler;
 	private OrthographicCamera camera;
 
@@ -72,8 +82,8 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	private int currentSpeedLevel = 0;
 
 
-	private static final int INITIAL_ARK_POSITION_Y = 10;
-	private static final int INITIAL_ARK_POSITION_X = 10;
+	public static final int INITIAL_ARK_POSITION_Y = -300;
+	public static final int INITIAL_ARK_POSITION_X = -125;
 
 	private SpriteBatch batch;
 
@@ -90,23 +100,32 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	private Stage stage;
 	private Sprite sunSprite;
-	private RocketMainTable mainUI;
 	private Rocket rocket;
 	private List<Body> bodies;
 	private PointLight[] pointLight;
 	private float counter = 0f;
 
+	private ShipProgressBar fuelProgressBar;
+	private ShipProgressBar shieldProgressBar;
+	private TiledDrawable bgTile;
+
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
 		this.multiplexer = multiplexer;
+		multiplexer.addProcessor(this);
 		batch = new SpriteBatch();
 		arkSprite = new Sprite(App.TEXTURES.findRegion("rocket"));
 		exhaustSprite = new Sprite(App.TEXTURES.findRegion("exhaust_placeholder"));
 		ani = new Ani();
 
+		fuelProgressBar = new ShipProgressBar(ShipProgressBar.ProgressType.FUEL);
+		fuelProgressBar.updateFromShipProperties();
+		shieldProgressBar = new ShipProgressBar(ShipProgressBar.ProgressType.SHIELD);
+		shieldProgressBar.updateFromShipProperties();
+
 
 		world = new World(new Vector2(0, 0), true);
-
+		shipPosition = SpaceShipProperties.properties.currentSolarPosition;
 
 		//new DirectionalLight(rayHandler, RAYS_NUM, new Color(1, 0.6f, 0.9f, 0.6f), 45);
 		setupSpaceship();
@@ -115,27 +134,27 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 		rayHandler = createRayHandler(world);
 		createPointLights();
-		updateShadowBodies(world);
+//		updateShadowBodies(world);
 
 		App.TUTORIAL_CONTROLLER.register(stage, ani);
 		App.TUTORIAL_CONTROLLER.nextStepFor(this.getClass());
 
+		stage.addActor(fuelProgressBar);
+		stage.addActor(shieldProgressBar);
+
 	}
 
 	private void createPointLights() {
-
-		new PointLight(rayHandler, RAYS_NUM, new Color(1, 0.8f, 0.8f, 1f), 2000, 0, 0);
+		new PointLight(rayHandler, RAYS_NUM, new Color(1f, 1f, 1f, 1f), 5000, 0, 0);
 	}
 
 	private void setupSpaceship() {
 		rocket = new Rocket();
 		rocket.setListener(this);
-
-		arkSprite.setPosition(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
+		arkSprite.setPosition(shipPosition.x, shipPosition.y);
 		arkWidth = arkSprite.getWidth();
 		arkHeight = arkSprite.getHeight();
-
-		exhaustSprite.setPosition(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
+		exhaustSprite.setPosition(shipPosition.x, shipPosition.y);
 	}
 
 	private void setupPlanets() {
@@ -154,6 +173,8 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 			Vector2 position = App.solarSystem.getPlanetPosition(i);
 			planetSprites[i].setPosition(position.x, position.y);
 		}
+		TextureAtlas.AtlasRegion stars = App.TEXTURES.findRegion("stars");
+		bgTile = new TiledDrawable(stars);
 	}
 
 	private void setupArkButton(Skin uiSkin, InputMultiplexer multiplexer) {
@@ -161,19 +182,17 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		stage = new Stage(new ScreenViewport());
 		multiplexer.addProcessor(stage);
 
-		mainUI = new RocketMainTable(uiSkin);
-		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
-		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
-
-		TextButton arkScreenButton = new TextButton("open Ark", uiSkin);
+		TextureRegionDrawable drawable = new TextureRegionDrawable(App.TEXTURES.findRegion("buttonControlCenter"));
+		ImageButton arkScreenButton = new ImageButton(drawable);
+		arkScreenButton.setPosition((Gdx.graphics.getWidth() / 2) - (arkScreenButton.getWidth() / 2),
+				10);
+		stage.addActor(arkScreenButton);
 		arkScreenButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				openArkScreen();
 			}
 		});
-		mainUI.add(arkScreenButton);
-		stage.addActor(mainUI);
 
 		final MenuButton menuButton = new MenuButton(uiSkin);
 		menuButton.addListener(new ClickListener() {
@@ -235,14 +254,14 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClearColor(21/255f, 21/255f, 21/255f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		handleArkMovementInput(delta);
 		handleAppNavigation();
 
-		camera.update();
-		batch.setProjectionMatrix(camera.combined);
-		//batch.disableBlending();
+//		camera.update();
+//		batch.setProjectionMatrix(camera.combined);
+//		//batch.disableBlending();
 //		bg.draw(batch);
 		renderPlanets();
 
@@ -250,11 +269,10 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 		rotatePlanets(delta);
 
-
-		//rayHandler.setCombinedMatrix(camera);
-		rayHandler.setCombinedMatrix(camera.combined);
+		rayHandler.setCombinedMatrix(camera);
+//		rayHandler.setCombinedMatrix(camera.combined);
 		rayHandler.updateAndRender();
-
+//
 		camera.position.set(arkSprite.getX(), arkSprite.getY(), 0);
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
@@ -295,6 +313,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	private void renderPlanets() {
 		batch.begin();
+		bgTile.draw(batch, -3000, -3000, 6000, 6000);
 		sunSprite.draw(batch);
 		for (int i = 0; i < planetSprites.length; i++) {
 			planetSprites[i].draw(batch);
@@ -320,7 +339,8 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		}
 
 
-		if (Gdx.app.getInput().isKeyPressed(19) && !rocket.isOutOfFuel()) {
+		//if (Gdx.app.getInput().isKeyPressed(19) && !rocket.isOutOfFuel()) {
+		if (Gdx.app.getInput().isKeyPressed(19)) {
 			currentSpeedLevel += 1;
 			rocket.setThrust(true);
 
@@ -389,15 +409,24 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	private int determinePlanetCollison() {
+		if (isColliding(sunSprite)) {
+			return SUN_COLLISION;
+		}
 		for (int i = 0; i < planetSprites.length; i++) {
-			Sprite planetSprite = planetSprites[i];
-			Rectangle planetBounds = planetSprite.getBoundingRectangle();
-			if (planetBounds.contains(shipPosition.x, shipPosition.y)) {
+			if (isColliding(planetSprites[i])) {
 				return i;
-
 			}
 		}
 		return -1;
+	}
+
+	private boolean isColliding(Sprite sprite ) {
+		Rectangle planetBounds = sprite.getBoundingRectangle();
+		if (planetBounds.contains(shipPosition.x, shipPosition.y)) {
+			return true;
+
+		}
+		return false;
 	}
 
 	private boolean isArcSelected() {
@@ -405,11 +434,13 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	private void openPlanetScreen(int planetIndex) {
+		multiplexer.removeProcessor(this);
 		multiplexer.removeProcessor(stage);
 		App.openPlanetScreen(planetIndex);
 	}
 
 	private void openArkScreen() {
+		multiplexer.removeProcessor(this);
 		multiplexer.removeProcessor(stage);
 		App.openArkScreen();
 	}
@@ -447,9 +478,28 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	private void handleAppNavigation() {
-		int planetIndex = determinePlanetCollison();
-		if (planetIndex != -1) {
-			openPlanetScreen(planetIndex);
+
+
+
+		final int planetIndex = determinePlanetCollison();
+		if (planetIndex == SUN_COLLISION) {
+			rocket.onExplode();
+		} else if (planetIndex != -1) {
+			if (enterOrbitTable == null) {
+				enterOrbitTable = new EnterOrbitTable(Styles.UI_SKIN, planetIndex);
+				stage.addActor(enterOrbitTable);
+				enterOrbitTable.setClickListener(new ClickListener() {
+					@Override
+					public void clicked(InputEvent event, float x, float y) {
+						openPlanetScreen(planetIndex);
+					}
+				});
+			}
+		} else {
+			if (enterOrbitTable != null) {
+				enterOrbitTable.remove();
+				enterOrbitTable = null;
+			}
 		}
 
 		if (isArcSelected()) {
@@ -468,7 +518,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 		}
 		App.solarSystem.rotate((Math.PI / 256), 0.5f);
-		updateShadowBodies(world);
+//		updateShadowBodies(world);
 		updatePlanets();
 		rocket.handlePhysicTick();
 	}
@@ -504,12 +554,12 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	@Override
 	public void onRocketDamage() {
 		App.audioController.playSound("hit_high.mp3");
-		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
+		shieldProgressBar.updateFromShipProperties();
 	}
 
 	@Override
 	public void onRocketFuelConsumed() {
-		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
+		fuelProgressBar.updateFromShipProperties();
 	}
 
 	@Override
@@ -543,6 +593,11 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	@Override
+	public void onRocketEntersPortal() {
+
+	}
+
+	@Override
 	public void onRocketCollided(CollisionTypes type, btCollisionObject collisionObject) {
 
 	}
@@ -550,5 +605,48 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	@Override
 	public void onInternalTick() {
 
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		if (keycode == Input.Keys.ENTER && enterOrbitTable != null) {
+			openPlanetScreen(enterOrbitTable.getPlanetIndex());
+		}
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		return false;
 	}
 }

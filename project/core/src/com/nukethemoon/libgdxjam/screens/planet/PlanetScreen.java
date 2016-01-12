@@ -36,6 +36,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Balancing;
+import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ArtifactCollectAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ScanAnimation;
@@ -106,7 +107,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private static String[] KNOWN_PLANETS = new String[] {
 		"planet01",
 		"planet02",
-		"planet03"
+		"planet03",
+		"planet04",
+		"planet05"
 	};
 
 	private Ani ani;
@@ -116,6 +119,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
 		pPlanetIndex = pPlanetIndex % KNOWN_PLANETS.length;
+
 		stage = new Stage(new ScreenViewport());
 
 		ani = new Ani();
@@ -161,8 +165,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		shieldProgressBar = new ShipProgressBar(ShipProgressBar.ProgressType.SHIELD);
 		stage.addActor(shieldProgressBar);
+		shieldProgressBar.updateFromShipProperties();
 		fuelProgressBar = new ShipProgressBar(ShipProgressBar.ProgressType.FUEL);
 		stage.addActor(fuelProgressBar);
+		fuelProgressBar.updateFromShipProperties();
 
 		App.TUTORIAL_CONTROLLER.register(stage, ani);
 		App.TUTORIAL_CONTROLLER.nextStepFor(this.getClass());
@@ -259,6 +265,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		App.TUTORIAL_CONTROLLER.onLeavePlanet();
 		renderEnabled = false;
 		multiplexer.removeProcessor(stage);
+		multiplexer.removeProcessor(this);
+		multiplexer.removeProcessor(freeCameraInput);
 		dispose();
 		App.saveProgress();
 		App.openSolarScreen();
@@ -468,6 +476,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRocketDisabledThrust() {
+		fuelProgressBar.updateFromShipProperties();
 		showToast("Landing procedure...");
 		particleSystem.remove(effectThrust);
 	}
@@ -480,12 +489,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	@Override
 	public void onRocketDamage() {
 		App.audioController.playSound("energy_shield.mp3");
-		shieldProgressBar.setValue(rocket.getShield(), rocket.getMaxShield());
+		shieldProgressBar.updateFromShipProperties();
 	}
 
 	@Override
 	public void onRocketFuelConsumed() {
-		fuelProgressBar.setValue(rocket.getFuel(), rocket.getMaxFuel());
+		fuelProgressBar.updateFromShipProperties();
 	}
 
 	@Override
@@ -501,14 +510,14 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public void onRocketFuelBonus() {
 		showToast("Fuel +" + Balancing.FUEL_BONUS);
 		App.audioController.playSound("bonus.mp3");
-		fuelProgressBar.setValue(rocket.getFuel(), rocket.getMaxFuel());
+		fuelProgressBar.updateFromShipProperties();
 	}
 
 	@Override
 	public void onRocketShieldBonus() {
 		showToast("Shield +" + Balancing.SHIELD_BONUS);
 		App.audioController.playSound("bonus.mp3");
-		shieldProgressBar.setValue(rocket.getShield(), rocket.getMaxShield());
+		shieldProgressBar.updateFromShipProperties();
 	}
 
 
@@ -523,7 +532,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public void onRocketScanStart() {
 		showToast("Scan started!");
 		rocket.setTractorBeamVisibility(true);
-		scanAnimation = new ScanAnimation(rocket.getTractorBeamModelInstance(), rocket.getScanRadus(),
+		scanAnimation = new ScanAnimation(rocket.getTractorBeamModelInstance(),
+				SpaceShipProperties.properties.getScanRadius(),
 				new AnimationFinishedListener() {
 			@Override
 			public void onAnimationFinished(BaseAnimation baseAnimation) {
@@ -536,7 +546,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private void onScanAnimationFinished(boolean wasCanceled) {
 		if (!wasCanceled) {
 			rocket.setTractorBeamVisibility(false);
-			final ArtifactObject artifactObject = planetController.tryCollect(rocket.getPosition(), rocket.getScanRadus());
+			final ArtifactObject artifactObject = planetController.tryCollect(rocket.getPosition(),
+					SpaceShipProperties.properties.getScanRadius());
 			if (artifactObject == null) {
 				showToast("Not close enough to an Artifact");
 			} else {
@@ -564,6 +575,11 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		showToast("Scan canceled!");
 		rocket.setTractorBeamVisibility(false);
 		ani.forceStop(scanAnimation);
+	}
+
+	@Override
+	public void onRocketEntersPortal() {
+		leavePlanet();
 	}
 
 	// === physic events ===

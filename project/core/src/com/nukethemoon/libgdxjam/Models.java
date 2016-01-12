@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 
@@ -24,6 +25,13 @@ public class Models {
 	public static Model PLANET_PORTAL;
 	public static Model PLANET_PORTAL_TORUS;
 
+	public static btCollisionShape PORTAL_TUBE_COLLISION;
+	public static btCollisionShape PORTAL_STAND_COLLISION;
+	public static btCollisionShape PORTAL_TRIGGER_COLLISION;
+
+	/**
+	 * Needs an initialized com.badlogic.gdx.physics.bullet.Bullet.
+	 */
 
 	public static void init() {
 		ModelLoader loader = new ObjLoader();
@@ -44,6 +52,14 @@ public class Models {
 
 		PLANET_PORTAL = 		loader.loadModel(Gdx.files.internal("models/planetPortal.obj"), param);
 		PLANET_PORTAL_TORUS = 	loader.loadModel(Gdx.files.internal("models/portalTorus.obj"), param);
+
+		PORTAL_STAND_COLLISION = Bullet.obtainStaticNodeShape(PLANET_PORTAL.nodes);
+
+		Model portalTorusCollisionModel = loader.loadModel(Gdx.files.internal("models/planetPortalCollisionTube.obj"), param);
+		PORTAL_TUBE_COLLISION = Bullet.obtainStaticNodeShape(portalTorusCollisionModel.nodes);
+
+		Model portalTriggerModel = loader.loadModel(Gdx.files.internal("models/portalTrigger.obj"), param);
+		PORTAL_TRIGGER_COLLISION = Bullet.obtainStaticNodeShape(portalTriggerModel.nodes);
 	}
 
 	public static void dispose() {
