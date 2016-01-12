@@ -19,7 +19,7 @@ public class EnterOrbitTable extends DialogTable {
 	}
 
 	public void setClickListener(ClickListener clickListener) {
-
+		enterButton.addListener(clickListener);
 	}
 
 
