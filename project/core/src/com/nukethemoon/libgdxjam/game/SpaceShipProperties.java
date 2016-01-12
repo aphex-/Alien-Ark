@@ -131,13 +131,17 @@ public class SpaceShipProperties {
 		}
 		return (int) maxFuel.getCurrentValue();*/
 
-		int fuelUserValue = 200; // TODO: calculate by crew members
-		return toInternalValue(fuelUserValue, FuelCapacity.INTERNAL_MIN, FuelCapacity.INTERNAL_MAX);
+		int initialUserValue = toUserValue(FuelCapacity.INTERNAL_INITIAL, FuelCapacity.INTERNAL_MIN, FuelCapacity.INTERNAL_MAX);
+		int alienUserBonus = 0; // TODO: calculate by crew members
+		int userValue = initialUserValue + alienUserBonus;
+		return toInternalValue(userValue, FuelCapacity.INTERNAL_MIN, FuelCapacity.INTERNAL_MAX);
 	}
 
 	private float computeShieldCapacity() {
-		int shieldUserValue = 100; // TODO: calculate by crew members
-		return toInternalValue(shieldUserValue, ShieldCapacity.INTERNAL_MIN, ShieldCapacity.INTERNAL_MAX);
+		int initialUserValue = toUserValue(ShieldCapacity.INTERNAL_INITIAL, ShieldCapacity.INTERNAL_MIN, ShieldCapacity.INTERNAL_MAX);
+		int alienUserBonus = 0; // TODO: calculate by crew members
+		int userValue = initialUserValue + alienUserBonus;
+		return toInternalValue(userValue, ShieldCapacity.INTERNAL_MIN, ShieldCapacity.INTERNAL_MAX);
 	}
 
 	public float computeSpeedPerUnit() {
@@ -202,9 +206,9 @@ public class SpaceShipProperties {
 		cachedInternalManeuverability = 2.75f; 					// internal min   0.75f 	internal max    3.00f
 		cachedInternalLandslide = 0.2f; 						// internal min   0.20f 	internal max    3.00f
 		cachedInternalFuelCapacity = computeFuelCapacity();		// internal min 200.00f 	internal max 9999.00f
-		cachedInternalShieldCapacity = 100;						// internal min 200.00f 	internal max 9999.00f
+		cachedInternalShieldCapacity = computeShieldCapacity();	// internal min 200.00f 	internal max 9999.00f
 		cachedInternalScanRadius = 5;							// internal min   5.00f 	internal max   50.00f
-		cachedInternalMisfortune = 0;									// internal min   0.00f 	internal max    1.00f
+		cachedInternalMisfortune = 0;							// internal min   0.00f 	internal max    1.00f
 	}
 
 	/**
