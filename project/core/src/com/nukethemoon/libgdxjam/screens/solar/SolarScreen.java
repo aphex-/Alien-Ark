@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -26,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Styles;
@@ -54,6 +56,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	- planeten müssen entdeckt werden per radar */
 
 	private static final int RAYS_NUM = 333;
+	private static final int SUN_COLLISION = 999;
 	private final World world;
 	private final InputMultiplexer multiplexer;
 	private final Ani ani;
@@ -79,8 +82,8 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	private int currentSpeedLevel = 0;
 
 
-	public static final int INITIAL_ARK_POSITION_Y = 10;
-	public static final int INITIAL_ARK_POSITION_X = 10;
+	public static final int INITIAL_ARK_POSITION_Y = -300;
+	public static final int INITIAL_ARK_POSITION_X = -125;
 
 	private SpriteBatch batch;
 
@@ -104,6 +107,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	private ShipProgressBar fuelProgressBar;
 	private ShipProgressBar shieldProgressBar;
+	private TiledDrawable bgTile;
 
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
@@ -130,7 +134,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 		rayHandler = createRayHandler(world);
 		createPointLights();
-		updateShadowBodies(world);
+//		updateShadowBodies(world);
 
 		App.TUTORIAL_CONTROLLER.register(stage, ani);
 		App.TUTORIAL_CONTROLLER.nextStepFor(this.getClass());
@@ -141,8 +145,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	private void createPointLights() {
-
-		new PointLight(rayHandler, RAYS_NUM, new Color(1, 0.8f, 0.8f, 1f), 2000, 0, 0);
+		new PointLight(rayHandler, RAYS_NUM, new Color(1f, 1f, 1f, 1f), 5000, 0, 0);
 	}
 
 	private void setupSpaceship() {
@@ -170,6 +173,8 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 			Vector2 position = App.solarSystem.getPlanetPosition(i);
 			planetSprites[i].setPosition(position.x, position.y);
 		}
+		TextureAtlas.AtlasRegion stars = App.TEXTURES.findRegion("stars");
+		bgTile = new TiledDrawable(stars);
 	}
 
 	private void setupArkButton(Skin uiSkin, InputMultiplexer multiplexer) {
@@ -249,14 +254,14 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClearColor(21/255f, 21/255f, 21/255f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		handleArkMovementInput(delta);
 		handleAppNavigation();
 
-		camera.update();
-		batch.setProjectionMatrix(camera.combined);
-		//batch.disableBlending();
+//		camera.update();
+//		batch.setProjectionMatrix(camera.combined);
+//		//batch.disableBlending();
 //		bg.draw(batch);
 		renderPlanets();
 
@@ -264,11 +269,10 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 		rotatePlanets(delta);
 
-
-		//rayHandler.setCombinedMatrix(camera);
-		rayHandler.setCombinedMatrix(camera.combined);
+		rayHandler.setCombinedMatrix(camera);
+//		rayHandler.setCombinedMatrix(camera.combined);
 		rayHandler.updateAndRender();
-
+//
 		camera.position.set(arkSprite.getX(), arkSprite.getY(), 0);
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
@@ -309,6 +313,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	private void renderPlanets() {
 		batch.begin();
+		bgTile.draw(batch, -3000, -3000, 6000, 6000);
 		sunSprite.draw(batch);
 		for (int i = 0; i < planetSprites.length; i++) {
 			planetSprites[i].draw(batch);
@@ -404,15 +409,24 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	private int determinePlanetCollison() {
+		if (isColliding(sunSprite)) {
+			return SUN_COLLISION;
+		}
 		for (int i = 0; i < planetSprites.length; i++) {
-			Sprite planetSprite = planetSprites[i];
-			Rectangle planetBounds = planetSprite.getBoundingRectangle();
-			if (planetBounds.contains(shipPosition.x, shipPosition.y)) {
+			if (isColliding(planetSprites[i])) {
 				return i;
-
 			}
 		}
 		return -1;
+	}
+
+	private boolean isColliding(Sprite sprite ) {
+		Rectangle planetBounds = sprite.getBoundingRectangle();
+		if (planetBounds.contains(shipPosition.x, shipPosition.y)) {
+			return true;
+
+		}
+		return false;
 	}
 
 	private boolean isArcSelected() {
@@ -464,8 +478,13 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	private void handleAppNavigation() {
+
+
+
 		final int planetIndex = determinePlanetCollison();
-		if (planetIndex != -1) {
+		if (planetIndex == SUN_COLLISION) {
+			rocket.onExplode();
+		} else if (planetIndex != -1) {
 			if (enterOrbitTable == null) {
 				enterOrbitTable = new EnterOrbitTable(Styles.UI_SKIN, planetIndex);
 				stage.addActor(enterOrbitTable);
@@ -499,7 +518,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 		}
 		App.solarSystem.rotate((Math.PI / 256), 0.5f);
-		updateShadowBodies(world);
+//		updateShadowBodies(world);
 		updatePlanets();
 		rocket.handlePhysicTick();
 	}

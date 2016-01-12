@@ -270,7 +270,7 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
-	private void onExplode() {
+	public void onExplode() {
 		exploded = true;
 		if (listener != null) {
 			listener.onRocketExploded();

@@ -41,7 +41,7 @@ button02
   index: -1
 buttonControlCenter
   rotate: false
-  xy: 948, 774
+  xy: 948, 652
   size: 66, 62
   orig: 66, 62
   offset: 0, 0
@@ -62,14 +62,14 @@ buttonStandard9patch
   index: -1
 checkbox
   rotate: false
-  xy: 948, 625
+  xy: 948, 610
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 checkboxChecked
   rotate: false
-  xy: 948, 583
+  xy: 948, 568
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
@@ -83,14 +83,14 @@ dialogBg01
   index: -1
 exhaust_placeholder
   rotate: false
-  xy: 948, 667
-  size: 40, 105
-  orig: 40, 105
+  xy: 948, 838
+  size: 66, 120
+  orig: 66, 120
   offset: 0, 0
   index: -1
 exitImage
   rotate: false
-  xy: 948, 547
+  xy: 948, 532
   size: 34, 34
   orig: 34, 34
   offset: 0, 0
@@ -153,7 +153,7 @@ plantet10
   index: -1
 popupbg01
   rotate: false
-  xy: 984, 547
+  xy: 984, 532
   size: 34, 34
   orig: 34, 34
   offset: 0, 0
@@ -188,7 +188,7 @@ progressBar04
   index: -1
 rocket
   rotate: false
-  xy: 948, 838
+  xy: 948, 716
   size: 66, 120
   orig: 66, 120
   offset: 0, 0
