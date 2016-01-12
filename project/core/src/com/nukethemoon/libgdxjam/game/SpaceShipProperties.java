@@ -1,5 +1,6 @@
 package com.nukethemoon.libgdxjam.game;
 
+import com.badlogic.gdx.math.Vector2;
 import com.nukethemoon.libgdxjam.game.artifacts.AttributeArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.OperatorArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.ValueArtifact;
@@ -15,6 +16,7 @@ import com.nukethemoon.libgdxjam.game.attributes.Luck;
 import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
 import com.nukethemoon.libgdxjam.game.attributes.Shield;
 import com.nukethemoon.libgdxjam.game.attributes.Speed;
+import com.nukethemoon.libgdxjam.screens.solar.SolarScreen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,8 @@ public class SpaceShipProperties {
 
 	private int currentFuel;
 	private int currentShield;
+
+	public Vector2 currentSolarPosition;
 
 	/* 	Cached internal values that are calculated
 		if the ship attributes change. A cache is
@@ -97,6 +101,8 @@ public class SpaceShipProperties {
 		getFuelCapacity();
 		computeSpeedPerUnit();
 
+		currentSolarPosition = new Vector2(SolarScreen.INITIAL_ARK_POSITION_X, SolarScreen.INITIAL_ARK_POSITION_Y);
+
 		updateCache();
 	}
 
@@ -113,7 +119,7 @@ public class SpaceShipProperties {
 		return (int) maxFuel.getCurrentValue();*/
 
 		int fuelUserValue = 200; // TODO: calculate by crew members
-		return toInternalValue(fuelUserValue, FuelCapacity.INTERNAL_MIN, FuelCapacity.INERNAL_MAX);
+		return toInternalValue(fuelUserValue, FuelCapacity.INTERNAL_MIN, FuelCapacity.INTERNAL_MAX);
 	}
 
 
@@ -188,7 +194,7 @@ public class SpaceShipProperties {
 		======== SHIP ATTRIBUTES =========
 		Ship attributes must be scaled.
 		There is an 'internal value' (float) that we use for physic etc. calculations
-		There is an 'user value' (int) that we use to show in UI and combine artifacts
+		There is an 'user value' (int) that we use to show in the UI and to combine artifacts
 
 		The 'internal value' min/max range depends on the attribute
 		The 'user value' min/max range is the same for all attributes:

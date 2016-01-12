@@ -26,12 +26,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
+import com.nukethemoon.libgdxjam.ui.EnterOrbitTable;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.MenuTable;
 import com.nukethemoon.libgdxjam.ui.RocketMainTable;
@@ -55,7 +57,9 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	private final Ani ani;
 //	private StarsBackground bg;
 
-	private Vector2 shipPosition = new Vector2(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
+	private EnterOrbitTable enterOrbitTable = null;
+
+	private Vector2 shipPosition;
 	private final RayHandler rayHandler;
 	private OrthographicCamera camera;
 
@@ -73,8 +77,8 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	private int currentSpeedLevel = 0;
 
 
-	private static final int INITIAL_ARK_POSITION_Y = 10;
-	private static final int INITIAL_ARK_POSITION_X = 10;
+	public static final int INITIAL_ARK_POSITION_Y = 10;
+	public static final int INITIAL_ARK_POSITION_X = 10;
 
 	private SpriteBatch batch;
 
@@ -107,7 +111,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 
 		world = new World(new Vector2(0, 0), true);
-
+		shipPosition = SpaceShipProperties.properties.currentSolarPosition;
 
 		//new DirectionalLight(rayHandler, RAYS_NUM, new Color(1, 0.6f, 0.9f, 0.6f), 45);
 		setupSpaceship();
@@ -131,12 +135,10 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	private void setupSpaceship() {
 		rocket = new Rocket();
 		rocket.setListener(this);
-
-		arkSprite.setPosition(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
+		arkSprite.setPosition(shipPosition.x, shipPosition.y);
 		arkWidth = arkSprite.getWidth();
 		arkHeight = arkSprite.getHeight();
-
-		exhaustSprite.setPosition(INITIAL_ARK_POSITION_X, INITIAL_ARK_POSITION_Y);
+		exhaustSprite.setPosition(shipPosition.x, shipPosition.y);
 	}
 
 	private void setupPlanets() {
@@ -325,7 +327,8 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		}
 
 
-		if (Gdx.app.getInput().isKeyPressed(19) && !rocket.isOutOfFuel()) {
+		//if (Gdx.app.getInput().isKeyPressed(19) && !rocket.isOutOfFuel()) {
+		if (Gdx.app.getInput().isKeyPressed(19)) {
 			currentSpeedLevel += 1;
 			rocket.setThrust(true);
 
@@ -452,9 +455,23 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	private void handleAppNavigation() {
-		int planetIndex = determinePlanetCollison();
+		final int planetIndex = determinePlanetCollison();
 		if (planetIndex != -1) {
-			openPlanetScreen(planetIndex);
+			if (enterOrbitTable == null) {
+				enterOrbitTable = new EnterOrbitTable(Styles.UI_SKIN);
+				stage.addActor(enterOrbitTable);
+				enterOrbitTable.setClickListener(new ClickListener() {
+					@Override
+					public void clicked(InputEvent event, float x, float y) {
+						openPlanetScreen(planetIndex);
+					}
+				});
+			}
+		} else {
+			if (enterOrbitTable != null) {
+				enterOrbitTable.remove();
+				enterOrbitTable = null;
+			}
 		}
 
 		if (isArcSelected()) {

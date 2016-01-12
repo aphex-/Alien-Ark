@@ -162,8 +162,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		shieldProgressBar = new ShipProgressBar(ShipProgressBar.ProgressType.SHIELD);
 		stage.addActor(shieldProgressBar);
+		shieldProgressBar.updateFromShipProperties();
 		fuelProgressBar = new ShipProgressBar(ShipProgressBar.ProgressType.FUEL);
 		stage.addActor(fuelProgressBar);
+		fuelProgressBar.updateFromShipProperties();
 
 		App.TUTORIAL_CONTROLLER.register(stage, ani);
 		App.TUTORIAL_CONTROLLER.nextStepFor(this.getClass());
@@ -469,9 +471,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRocketDisabledThrust() {
-		fuelProgressBar.setValue(
-				SpaceShipProperties.properties.getCurrentFuel(),
-				SpaceShipProperties.properties.getFuelCapacity());
+		fuelProgressBar.updateFromShipProperties();
 
 		showToast("Landing procedure...");
 		particleSystem.remove(effectThrust);
@@ -485,16 +485,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	@Override
 	public void onRocketDamage() {
 		App.audioController.playSound("energy_shield.mp3");
-		shieldProgressBar.setValue(
-				SpaceShipProperties.properties.getCurrentShield(),
-				SpaceShipProperties.properties.getShieldCapacity());
+		shieldProgressBar.updateFromShipProperties();
 	}
 
 	@Override
 	public void onRocketFuelConsumed() {
-		fuelProgressBar.setValue(
-				SpaceShipProperties.properties.getCurrentFuel(),
-				SpaceShipProperties.properties.getFuelCapacity());
+		fuelProgressBar.updateFromShipProperties();
 	}
 
 	@Override
@@ -510,18 +506,14 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public void onRocketFuelBonus() {
 		showToast("Fuel +" + Balancing.FUEL_BONUS);
 		App.audioController.playSound("bonus.mp3");
-		fuelProgressBar.setValue(
-				SpaceShipProperties.properties.getCurrentFuel(),
-				SpaceShipProperties.properties.getFuelCapacity());
+		fuelProgressBar.updateFromShipProperties();
 	}
 
 	@Override
 	public void onRocketShieldBonus() {
 		showToast("Shield +" + Balancing.SHIELD_BONUS);
 		App.audioController.playSound("bonus.mp3");
-		shieldProgressBar.setValue(
-				SpaceShipProperties.properties.getCurrentShield(),
-				SpaceShipProperties.properties.getShieldCapacity());
+		shieldProgressBar.updateFromShipProperties();
 	}
 
 

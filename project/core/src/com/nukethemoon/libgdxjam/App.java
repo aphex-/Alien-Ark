@@ -60,12 +60,12 @@ public class App extends Game {
 		// instance space ship
 		// load game entities
 		// openScreen(SplashScreen.class);
-		openPlanetScreen(0);
+		//openPlanetScreen(0);
 
 		//openArkScreen();
 
 
-		//openSolarScreen();
+		openSolarScreen();
 	}
 
 	public static void openScreen(Class<? extends Screen> screenClass) {
@@ -99,6 +99,8 @@ public class App extends Game {
 
 
 	public static void onGameOver() {
+		SpaceShipProperties.properties.currentSolarPosition.set(
+				SolarScreen.INITIAL_ARK_POSITION_X, SolarScreen.INITIAL_ARK_POSITION_Y);
 		openSolarScreen();
 	}
 

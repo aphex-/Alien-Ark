@@ -44,10 +44,10 @@ public class ProgressTable extends Table {
 			}
 		} else {
 			for (int i = 0; i < images.length; i++) {
-				if (i > barCount && value != 0) {
-					images[i].setVisible(true);
-				} else {
+				if (i > barCount || value == 0) {
 					images[i].setVisible(false);
+				} else {
+					images[i].setVisible(true);
 				}
 			}
 

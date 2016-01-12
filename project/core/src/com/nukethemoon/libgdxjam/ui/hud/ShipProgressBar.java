@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Styles;
+import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 
 public class ShipProgressBar extends Table {
 
@@ -73,5 +74,17 @@ public class ShipProgressBar extends Table {
 	public void setValue(int value, int maxShield) {
 		valueLabel.setText(value + "");
 		progressTable.setValue(value, maxShield);
+	}
+
+	public void updateFromShipProperties() {
+		if (progressType == ProgressType.SHIELD) {
+			setValue(
+					SpaceShipProperties.properties.getCurrentShield(),
+					SpaceShipProperties.properties.getShieldCapacity());
+		} else {
+			setValue(
+					SpaceShipProperties.properties.getCurrentFuel(),
+					SpaceShipProperties.properties.getFuelCapacity());
+		}
 	}
 }

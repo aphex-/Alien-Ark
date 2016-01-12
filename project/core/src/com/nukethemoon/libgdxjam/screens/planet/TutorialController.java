@@ -62,7 +62,7 @@ public class TutorialController {
 				"CURSOR KEYS or W, A, S and D.",
 				"Travel to a planet and avoid",
 				"to fall into the Star."
-		}));
+		}, "TUTORIAL 01"));
 
 		tutorialDialogs.put(TutorialStep.SHIP_CONTROLS, new DialogTable(skin, new String[]{
 				"This is your first flight?",
@@ -74,7 +74,7 @@ public class TutorialController {
 				"Simply use your CURSOR KEYS or",
 				"W, A, S and D to change",
 				"the direction."
-		}));
+		}, "TUTORIAL 02"));
 
 		tutorialDialogs.put(TutorialStep.REACH_THE_ARTIFACT, new DialogTable(skin, new String[]{
 				"Take a look at the mini map.",
@@ -84,7 +84,7 @@ public class TutorialController {
 				"position.",
 				"Fly to this ARTIFACT using your",
 				"new flight skills."
-		}));
+		}, "TUTORIAL 03"));
 
 		tutorialDialogs.put(TutorialStep.COLLECT_THE_ARTIFACT, new DialogTable(skin, new String[]{
 				"Respect! I underestimated your",
@@ -97,7 +97,7 @@ public class TutorialController {
 				"on solid ground.",
 				"Press SPACE again start the",
 				"engines if you miss the right spot."
-		}));
+		}, "TUTORIAL 04"));
 
 		tutorialDialogs.put(TutorialStep.COLLECT_THE_ARTIFACT, new DialogTable(skin, new String[]{
 				"Respect! I underestimated your",
@@ -110,7 +110,7 @@ public class TutorialController {
 				"on solid ground.",
 				"Press SPACE again to start the",
 				"engines if you miss the right spot."
-		}));
+		}, "TUTORIAL 05"));
 
 		tutorialDialogs.put(TutorialStep.LEAVE_THE_PLANET, new DialogTable(skin, new String[]{
 				"Perfect! You found an ARTIFACT.",
@@ -119,7 +119,7 @@ public class TutorialController {
 				"Lets leave the planet through",
 				"the PLANET PORTAL.",
 				"Press SPACE to start your engines."
-		}));
+		}, "TUTORIAL 06"));
 
 
 		tutorialDialogs.put(TutorialStep.OPEN_COMMAND_CENTER, new DialogTable(skin, new String[]{
@@ -128,7 +128,7 @@ public class TutorialController {
 				"Open the COMMAND CENTER by",
 				"pressing the button called",
 				"'command center button'.",
-		}));
+		}, "TUTORIAL 07"));
 
 
 		tutorialDialogs.put(TutorialStep.CRAFT_AN_ALIEN, new DialogTable(skin, new String[]{
@@ -136,11 +136,11 @@ public class TutorialController {
 				"somewhat organic life forms.",
 				"With the lab we have on board you can",
 				"easily hybridize them into fully-fletched ALIENS!"
-		}));
+		}, "TUTORIAL 08"));
 
 		tutorialDialogs.put(TutorialStep.END_TUTORIAL, new DialogTable(skin, new String[]{
 				"The end of the tutorial",
-		}));
+		}, "TUTORIAL 09"));
 	}
 
 	public void register(Stage stage, Ani ani) {
