@@ -1,8 +1,8 @@
 package com.nukethemoon.libgdxjam.game.artifacts;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.nukethemoon.libgdxjam.App;
@@ -22,19 +22,22 @@ public class ValueArtifact extends Artifact {
 	}
 
 	@Override
-	protected Actor getForeground() {
-		Label label = new Label("" + value, Styles.UI_SKIN);
-		Label.LabelStyle newStyle = new Label.LabelStyle(label.getStyle());
-		newStyle.fontColor = Color.BLACK;
-		label.setStyle(newStyle);
-		label.setAlignment(Align.center);
-
-		return label;
+	public TextureRegion getBackgroundTexture() {
+		return App.TEXTURES.findRegion("slot00");
 	}
 
 	@Override
-	public TextureRegion getBackgroundTexture() {
-		return App.TEXTURES.findRegion("slot00");
+	public Actor createActor(float w, float h) {
+		Actor a  = super.createActor(w,h);
+		Group g = new Group();
+		Label l = new Label(String.valueOf(value), Styles.UI_SKIN);
+		l.setStyle(Styles.LABEL_VALUE_ARTIFACT);
+		l.setAlignment(Align.center);
+		l.setWidth(w);
+		l.setHeight(h);
+		g.addActor(a);
+		g.addActor(l);
+		return g;
 	}
 
 	@Override

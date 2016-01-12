@@ -17,11 +17,6 @@ public abstract class Artifact {
 
 	protected abstract TextureRegion getBackgroundTexture();
 
-
-	protected Actor getForeground(){
-		return null;
-	};
-
 	public abstract String getDescription();
 
 	public Actor createActor(float w, float h) {
@@ -29,19 +24,6 @@ public abstract class Artifact {
 		bg.setWidth(w);
 		bg.setHeight(h);
 
-		Actor fg = getForeground();
-		if(fg == null){
-			return bg;
-		}
-
-		fg.setWidth(w);
-		fg.setHeight(h);
-
-		final Group group = new Group();
-		group.addActor(bg);
-		group.addActor(fg);
-
-		return group;
-
+		return bg;
 	}
 }

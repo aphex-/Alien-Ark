@@ -45,6 +45,8 @@ public class Styles {
 	public static Label.LabelStyle LABEL_HUD_NUMBERS;
 	public static Label.LabelStyle LABEL_DIALOG_HEADLINE;
 
+	public static Label.LabelStyle LABEL_VALUE_ARTIFACT;
+
 	public static Skin UI_SKIN;
 
 	public static void init(TextureAtlas atlas) {
@@ -85,6 +87,10 @@ public class Styles {
 
 		LABEL_HUD_NUMBERS = new Label.LabelStyle(standardLabelStyle);
 		LABEL_HUD_NUMBERS.font = FONT_ENTSANS_SMALL;
+
+		LABEL_VALUE_ARTIFACT = new Label.LabelStyle(standardLabelStyle);
+		LABEL_VALUE_ARTIFACT.font = FONT_ENTSANS_SMALL;
+		LABEL_VALUE_ARTIFACT.fontColor = Color.BLACK;
 
 		LABEL_DIALOG_HEADLINE = new Label.LabelStyle(standardLabelStyle);
 		LABEL_DIALOG_HEADLINE.font = FONT_DOSIS_SMALL_DIALOG_HEADLINE;

@@ -20,20 +20,22 @@ public class Alien {
 		this.value = value;
 	}
 
-	//delete this?
-	public void modifySpeed(Speed speed) {
-		Log.l(SpaceShipProperties.class, "Combining speed " + speed.getCurrentValue() + " with Operator " + operator.getClass().getSimpleName() + " and Value " + value.getValue());
-		attribute.apply(speed,operator, value);
-	}
-
 	public void modifyAttribute(Attribute attributeToModify) {
 		attribute.apply(attributeToModify, operator, value);
 	}
 
-	public static Alien createAlien(Artifact... artifacts) {
-		//TODO check valid conditions and return "Useless fool" if invalid
+	public static void createAlien(Artifact... artifacts) {
 
-		return new Alien(findAttribute(artifacts), findOperator(artifacts), findValue(artifacts));
+		AttributeArtifact attribute = findAttribute(artifacts);
+		OperatorArtifact operator = findOperator(artifacts);
+		ValueArtifact value = findValue(artifacts);
+		Alien a = new Alien(attribute, operator, value);
+		SpaceShipProperties.properties.getAliens().add(a);
+		SpaceShipProperties.properties.getArtifacts().remove(attribute);
+		SpaceShipProperties.properties.getArtifacts().remove(operator);
+		SpaceShipProperties.properties.getArtifacts().remove(value);
+
+		SpaceShipProperties.properties.computeProperties();
 	}
 
 	private static <T extends Artifact> T find(Artifact[] artifacts, Class<T> clazz){

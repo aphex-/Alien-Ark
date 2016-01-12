@@ -21,19 +21,19 @@ public abstract class Attribute {
 	public static TextureRegion getSlotTexture(Class<? extends Attribute> clazz){
 		String slot = "slot00";
 		if(clazz == Speed.class) {
-			slot = "slot03";
+			slot = "attributeSpeed";
 		} else if(clazz == MaxFuel.class){
-			slot = "slot01";
+			slot = "attributeFuelCapacity";
 		} else if(clazz == Luck.class){
-			slot = "slot06";
+			slot = "attributeLuck";
 		} else if(clazz == Shield.class){
-			slot = "slot02";
+			slot = "attributeShieldCapacity";
 		} else if(clazz == LandingDistance.class){
-			slot = "slot04";
+			slot = "attributeLandingDistance";
 		} else if(clazz == ItemCollectRadius.class){
-			slot = "slot09";
+			slot = "attributeItemCollectRadius";
 		} else if(clazz == Inertia.class){
-			slot = "slot05";
+			slot = "attributeTraegheit";
 		}
 		return App.TEXTURES.findRegion(slot);
 	}
@@ -49,15 +49,15 @@ public abstract class Attribute {
 		} else if(clazz == MaxFuel.class){
 			row = "row01";
 		} else if(clazz == Luck.class){
-			row = "row06";
-		} else if(clazz == Shield.class){
 			row = "row02";
-		} else if(clazz == LandingDistance.class){
+		} else if(clazz == Shield.class){
 			row = "row04";
-		} else if(clazz == ItemCollectRadius.class){
-			row = "row09";
-		} else if(clazz == Inertia.class){
+		} else if(clazz == LandingDistance.class){
 			row = "row05";
+		} else if(clazz == ItemCollectRadius.class){
+			row = "row07";
+		} else if(clazz == Inertia.class){
+			row = "row06";
 		}
 		return App.TEXTURES.findRegion(row);
 	}

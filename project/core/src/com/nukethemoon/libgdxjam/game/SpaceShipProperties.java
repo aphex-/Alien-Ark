@@ -4,12 +4,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.nukethemoon.libgdxjam.game.artifacts.AttributeArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.OperatorArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.ValueArtifact;
-import com.nukethemoon.libgdxjam.game.artifacts.operators.Decrease;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Divide;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Increase;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Multiply;
 import com.nukethemoon.libgdxjam.game.attributes.Attribute;
-import com.nukethemoon.libgdxjam.game.attributes.FuelConsumption;
 import com.nukethemoon.libgdxjam.game.attributes.Inertia;
 import com.nukethemoon.libgdxjam.game.attributes.ItemCollectRadius;
 import com.nukethemoon.libgdxjam.game.attributes.LandingDistance;
@@ -54,7 +52,7 @@ public class SpaceShipProperties {
 	}
 
 	private SpaceShipProperties() {
-		currentFuel = computeMaxFuel();
+		currentFuel = (int) maxFuel.getCurrentValue();
 	}
 
 	public void testInit() {
@@ -66,43 +64,18 @@ public class SpaceShipProperties {
 		artifacts.add(v);
 		artifacts.add(o);
 
+		artifacts.add(new AttributeArtifact(Inertia.class));
+		artifacts.add(new AttributeArtifact(ItemCollectRadius.class));
+		artifacts.add(new AttributeArtifact(Shield.class));
+		artifacts.add(new AttributeArtifact(MaxFuel.class));
+		artifacts.add(new AttributeArtifact(Luck.class));
+		artifacts.add(new AttributeArtifact(LandingDistance.class));
+
 		artifacts.add(new Divide());
 		artifacts.add(new Multiply());
 
-		Alien alien = Alien.createAlien(a, o, v);
-		aliens.add(alien);
-
-		a = new AttributeArtifact(Speed.class);
-		v = new ValueArtifact(0.5f);
-		o = new Decrease();
-		alien = Alien.createAlien(a, o, v);
-		aliens.add(alien);
-
-		a = new AttributeArtifact(MaxFuel.class);
-		v = new ValueArtifact(100);
-		o = new Decrease();
-		alien = Alien.createAlien(a, o, v);
-		aliens.add(alien);
-
-		a = new AttributeArtifact(FuelConsumption.class);
-		v = new ValueArtifact(0.25f);
-		o = new Increase();
-		alien = Alien.createAlien(a, o, v);
-		aliens.add(alien);
-
-		computeMaxFuel();
-		computeFuelConsumption();
-		computeSpeedPerUnit();
 	}
 
-
-	public float computeSpeedPerUnit() {
-
-		for (Alien a : aliens) {
-			a.modifyAttribute(speed);
-		}
-		return speed.getCurrentValue();
-	}
 
 	public List<Alien> getAliens() {
 		return aliens;
@@ -110,27 +83,6 @@ public class SpaceShipProperties {
 
 	public List<Artifact> getArtifacts() {
 		return artifacts;
-	}
-
-	public int computeMaxFuel() {
-		if (aliens == null) {
-			aliens = new ArrayList<Alien>();
-		}
-
-		for (Alien alien : aliens) {
-			alien.modifyAttribute(maxFuel);
-		}
-
-		currentFuel = (int) Math.min(currentFuel, maxFuel.getCurrentValue());
-		return (int) maxFuel.getCurrentValue();
-	}
-
-	public float computeFuelConsumption() {
-		FuelConsumption consumption = new FuelConsumption();
-		for (Alien alien : aliens) {
-			alien.modifyAttribute(consumption);
-		}
-		return consumption.getCurrentValue();
 	}
 
 	public int getCurrentFuel() {
@@ -148,5 +100,17 @@ public class SpaceShipProperties {
 
 	public boolean isCollectedArtifact(String id) {
 		return collectedArtifactIds.contains(id);
+	}
+
+	public void computeProperties() {
+		for (Attribute attribute: getAttributes()) {
+			for (Alien alien : aliens) {
+				alien.modifyAttribute(attribute);
+			}
+		}
+	}
+
+	public int getMaxFuel() {
+		return (int) maxFuel.getCurrentValue();
 	}
 }

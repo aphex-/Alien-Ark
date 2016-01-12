@@ -1,6 +1,7 @@
 package com.nukethemoon.libgdxjam.game.artifacts;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.game.Artifact;
 import com.nukethemoon.libgdxjam.game.attributes.Attribute;
@@ -14,10 +15,6 @@ public abstract class OperatorArtifact extends Artifact {
 
 	protected abstract float applyOperator(float base, float value);
 
-	@Override
-	public TextureRegion getBackgroundTexture() {
-		return App.TEXTURES.findRegion("slot04");
-	}
-
 	public abstract String getAlienVerb();
+
 }

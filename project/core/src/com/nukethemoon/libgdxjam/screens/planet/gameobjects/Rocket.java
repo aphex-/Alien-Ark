@@ -88,7 +88,7 @@ public class Rocket extends GameObject implements Disposable {
 
 	private float tickFuelCount = 1;
 
-	private int maxFuel = SpaceShipProperties.properties.computeMaxFuel();
+	private int maxFuel = SpaceShipProperties.properties.getMaxFuel();
 
 
 	public Rocket() {

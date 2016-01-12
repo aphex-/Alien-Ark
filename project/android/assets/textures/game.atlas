@@ -220,9 +220,72 @@ size: 1024,1024
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+alienFuelCapacity
+  rotate: false
+  xy: 716, 701
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+alienItemCollectRadius
+  rotate: false
+  xy: 379, 270
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+alienLandingDistance
+  rotate: false
+  xy: 531, 270
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+alienLuck
+  rotate: false
+  xy: 683, 270
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+alienShieldCapacity
+  rotate: false
+  xy: 504, 118
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+alienSpeed
+  rotate: false
+  xy: 656, 118
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+alienTraegheit
+  rotate: false
+  xy: 835, 270
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+attributeFuelCapacity
+  rotate: false
+  xy: 808, 118
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+attributeItemCollectRadius
+  rotate: false
+  xy: 868, 701
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
 buttonbg01
   rotate: false
-  xy: 826, 599
+  xy: 711, 16
   size: 92, 100
   orig: 92, 100
   offset: 0, 0
@@ -234,16 +297,9 @@ minimapBorder
   orig: 375, 375
   offset: 0, 0
   index: -1
-ntm_logo
-  rotate: false
-  xy: 716, 701
-  size: 150, 150
-  orig: 150, 150
-  offset: 0, 0
-  index: -1
 placeholder_alien
   rotate: false
-  xy: 885, 784
+  xy: 609, 16
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -255,20 +311,6 @@ planet01
   orig: 167, 163
   offset: 0, 0
   index: -1
-planet02
-  rotate: false
-  xy: 528, 275
-  size: 146, 145
-  orig: 146, 145
-  offset: 0, 0
-  index: -1
-plantet03
-  rotate: false
-  xy: 379, 273
-  size: 147, 147
-  orig: 147, 147
-  offset: 0, 0
-  index: -1
 plantet04
   rotate: false
   xy: 885, 886
@@ -278,16 +320,9 @@ plantet04
   index: -1
 plantet05
   rotate: false
-  xy: 802, 299
+  xy: 881, 422
   size: 123, 121
   orig: 123, 121
-  offset: 0, 0
-  index: -1
-plantet06
-  rotate: false
-  xy: 676, 297
-  size: 124, 123
-  orig: 124, 123
   offset: 0, 0
   index: -1
 plantet07
@@ -299,7 +334,7 @@ plantet07
   index: -1
 plantet08
   rotate: false
-  xy: 881, 440
+  xy: 504, 13
   size: 103, 103
   orig: 103, 103
   offset: 0, 0
@@ -376,112 +411,28 @@ row09
   index: -1
 slot00
   rotate: false
-  xy: 868, 702
+  xy: 826, 619
   size: 80, 80
   orig: 80, 80
-  offset: 0, 0
-  index: -1
-slot01
-  rotate: false
-  xy: 927, 358
-  size: 80, 80
-  orig: 80, 80
-  offset: 0, 0
-  index: -1
-slot02
-  rotate: false
-  xy: 927, 276
-  size: 80, 80
-  orig: 80, 80
-  offset: 0, 0
-  index: -1
-slot03
-  rotate: false
-  xy: 920, 620
-  size: 80, 80
-  orig: 80, 80
-  offset: 0, 0
-  index: -1
-slot04
-  rotate: false
-  xy: 676, 215
-  size: 80, 80
-  orig: 80, 80
-  offset: 0, 0
-  index: -1
-slot05
-  rotate: false
-  xy: 758, 215
-  size: 80, 80
-  orig: 80, 80
-  offset: 0, 0
-  index: -1
-slot06
-  rotate: false
-  xy: 840, 217
-  size: 80, 80
-  orig: 80, 80
-  offset: 0, 0
-  index: -1
-slot07
-  rotate: false
-  xy: 922, 194
-  size: 80, 80
-  orig: 80, 80
-  offset: 0, 0
-  index: -1
-slot08
-  rotate: false
-  xy: 840, 135
-  size: 80, 80
-  orig: 80, 80
-  offset: 0, 0
-  index: -1
-slot09
-  rotate: false
-  xy: 922, 112
-  size: 80, 80
-  orig: 80, 80
-  offset: 0, 0
-  index: -1
-slotDrop
-  rotate: false
-  xy: 668, 137
-  size: 76, 76
-  orig: 76, 76
   offset: 0, 0
   index: -1
 slotOK
   rotate: false
-  xy: 528, 193
+  xy: 805, 36
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorDivide
   rotate: false
-  xy: 504, 111
+  xy: 908, 619
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorMinus
   rotate: false
-  xy: 504, 29
-  size: 80, 80
-  orig: 80, 80
-  offset: 0, 0
-  index: -1
-slotOperatorMultiply
-  rotate: false
-  xy: 586, 111
-  size: 80, 80
-  orig: 80, 80
-  offset: 0, 0
-  index: -1
-slotOperatorPlus
-  rotate: false
-  xy: 586, 29
+  xy: 887, 36
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
@@ -491,5 +442,95 @@ sun
   xy: 2, 584
   size: 430, 432
   orig: 430, 432
+  offset: 0, 0
+  index: -1
+
+game3.png
+size: 512,512
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+attributeLandingDistance
+  rotate: false
+  xy: 2, 356
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+attributeLuck
+  rotate: false
+  xy: 2, 204
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+attributeShieldCapacity
+  rotate: false
+  xy: 154, 356
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+attributeSpeed
+  rotate: false
+  xy: 2, 52
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+attributeTraegheit
+  rotate: false
+  xy: 154, 204
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+ntm_logo
+  rotate: false
+  xy: 306, 356
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+planet02
+  rotate: false
+  xy: 306, 209
+  size: 146, 145
+  orig: 146, 145
+  offset: 0, 0
+  index: -1
+plantet03
+  rotate: false
+  xy: 154, 55
+  size: 147, 147
+  orig: 147, 147
+  offset: 0, 0
+  index: -1
+plantet06
+  rotate: false
+  xy: 306, 84
+  size: 124, 123
+  orig: 124, 123
+  offset: 0, 0
+  index: -1
+slotDrop
+  rotate: false
+  xy: 432, 131
+  size: 76, 76
+  orig: 76, 76
+  offset: 0, 0
+  index: -1
+slotOperatorMultiply
+  rotate: false
+  xy: 303, 2
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+slotOperatorPlus
+  rotate: false
+  xy: 385, 2
+  size: 80, 80
+  orig: 80, 80
   offset: 0, 0
   index: -1

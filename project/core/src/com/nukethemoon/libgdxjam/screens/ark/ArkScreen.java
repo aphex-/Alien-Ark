@@ -31,10 +31,10 @@ import java.util.List;
 
 //TODO merge von Artifatcs
 //TODO cancel von Artifatcs merges
-//TODO Korrekte Attributartifact texturen
 //TODO Korrekte Alien texturen
 //TODO anzahl aliens/artifacts
 //TODO Scroll shadow
+//TODO error handling
 //TODO polishing. Abstände, Größen, Farben
 
 //TODO (opional) Artifact hint text, wenn Attr. noch unbekannt ("???")
@@ -70,6 +70,7 @@ public class ArkScreen implements Screen {
 
 	private Actor selectedArtifact;
 	private Actor selectedAlien;
+	private Table propertiesTable;
 
 	public ArkScreen(Skin uiSkin, InputMultiplexer multiplexer) {
 		ani = new Ani();
@@ -114,6 +115,7 @@ public class ArkScreen implements Screen {
 		addDropTarget(workbenchSlot2);
 		addDropTarget(workbenchSlot3);
 
+		propertiesTable = new Table();
 		createPropertiesList();
 
 		createCloseButton();
@@ -160,7 +162,7 @@ public class ArkScreen implements Screen {
 	}
 
 	private void createPropertiesList() {
-		Table propertiesTable = new Table();
+
 
 		for (Attribute a : SpaceShipProperties.properties.getAttributes()) {
 			Table singleProperty = new Table();
@@ -234,7 +236,7 @@ public class ArkScreen implements Screen {
 			actor.setUserObject(artifact);
 			artifactsTable.add(actor).space(5).width(80).height(80);
 
-			actor.addListener(new ClickListener(){
+			actor.addListener(new ClickListener() {
 
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
@@ -252,8 +254,11 @@ public class ArkScreen implements Screen {
 					actor.setVisible(false);
 
 					DragAndDrop.Payload payload = new DragAndDrop.Payload();
-
-					dragAndDrop.setDragActorPosition(-x, -y);
+					if (actor instanceof Group) {
+						dragAndDrop.setDragActorPosition(-x, -y);
+					} else {
+						dragAndDrop.setDragActorPosition(-x, -y + 80);
+					}
 					payload.setObject(artifact);
 
 					payload.setDragActor(artifact.createActor(80, 80));
@@ -319,17 +324,18 @@ public class ArkScreen implements Screen {
 
 			@Override
 			public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
-				slot.insertArtifact((Artifact) payload.getObject());
-				dragAndDrop.removeTarget(this);
+				if(!slot.isOccupied()) {
+					slot.insertArtifact((Artifact) payload.getObject());
 
-				updateSlots();
+					updateResultSlot();
+				}
 
 			}
 		});
 		stage.addActor(slot);
 	}
 
-	private void updateSlots(){
+	private void updateResultSlot(){
 		if(workbenchSlot1.isOccupied() && workbenchSlot2.isOccupied() && workbenchSlot3.isOccupied()){
 			resultAreaImg.setVisible(true);
 			resultAreaImg.setDrawable(new TextureRegionDrawable(App.TEXTURES.findRegion("slotOK")));
@@ -337,9 +343,13 @@ public class ArkScreen implements Screen {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
 					Alien.createAlien(workbenchSlot1.pop(), workbenchSlot2.pop(), workbenchSlot3.pop());
-					updateSlots();
+					updateResultSlot();
 					updateAlienInventory();
 					updateArtifactsInventory();
+
+					propertiesTable.clearChildren();
+					createPropertiesList();
+					//todo (optional) highlight updated property
 
 					App.TUTORIAL_CONTROLLER.onAlienCrafted();
 				}
@@ -348,6 +358,7 @@ public class ArkScreen implements Screen {
 			resultAreaImg.setVisible(false);
 		}
 	}
+
 
 	@Override
 	public void render(float delta) {
@@ -406,6 +417,7 @@ public class ArkScreen implements Screen {
 			Artifact a = insertedArtifact;
 			insertedArtifact = null;
 			stage.getRoot().removeActor(actor);
+			actor = new Actor();
 
 			return a;
 		}
