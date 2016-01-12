@@ -26,11 +26,7 @@ public class SpaceShipProperties {
 
 	transient public static final SpaceShipProperties properties = new SpaceShipProperties(); //TODO!
 
-	public static final int USER_VALUE_MIN = 200;
-	public static final int USER_VALUE_MAX = 9999;
-
-	transient public static final int INITIAL_MAX_FUEL = 200;
-	transient public static final int INITIAL_MAX_SHIELD = 100;
+	public static final int USER_VALUE_MAX = 9999; // the maximum value for crew member bonus
 
 	private List<String> collectedArtifactIds = new ArrayList<String>();
 
@@ -41,6 +37,20 @@ public class SpaceShipProperties {
 	private int currentInternalShield;
 
 	public Vector2 currentSolarPosition;
+
+		/*
+		======== SHIP ATTRIBUTES =========
+		Ship attributes must be scaled.
+		There is an 'internal value' (float) that we use for physic etc. calculations
+		There is an 'user value' (int) that we use to show in the UI and to combine artifacts
+
+		The 'internal value' min/max range depends on the attribute
+		The 'user value' is between 0 and USER_VALUE_MAX
+
+		shield's and fuel's	internal should match 1 : 1 to the user value
+		since this is the only value the player see the direct result (in the progress bars)
+	 */
+
 
 	/* 	Cached internal values that are calculated
 		if the ship attributes change. A cache is
@@ -56,9 +66,9 @@ public class SpaceShipProperties {
 
 
 	private Speed speed = new Speed(100);
-	private FuelCapacity fuelCapacity = new FuelCapacity(INITIAL_MAX_FUEL);
+	private FuelCapacity fuelCapacity = new FuelCapacity((int) FuelCapacity.INTERNAL_INITIAL);
 	private Luck luck = new Luck(.1f);
-	private ShieldCapacity shieldCapacity = new ShieldCapacity(INITIAL_MAX_SHIELD);
+	private ShieldCapacity shieldCapacity = new ShieldCapacity((int) ShieldCapacity.INTERNAL_INITIAL);
 	private LandingDistance landingDistance = new LandingDistance(10);
 	private ItemCollectRadius radius = new ItemCollectRadius(12);
 	private Inertia inertia = new Inertia(.75f);
@@ -68,8 +78,8 @@ public class SpaceShipProperties {
 	}
 
 	private SpaceShipProperties() {
-		currentInternalFuel = (int) computeFuelCapacity();
-		currentInternalShield = (int) computeShieldCapacity();
+		currentInternalFuel = (int) computeFuelCapacity(); // max fuel on start
+		currentInternalShield = (int) computeShieldCapacity(); // max shield on start
 		currentSolarPosition = new Vector2(SolarScreen.INITIAL_ARK_POSITION_X, SolarScreen.INITIAL_ARK_POSITION_Y);
 		updateCache();
 	}
@@ -193,17 +203,6 @@ public class SpaceShipProperties {
 		cachedInternalLuck = 0;									// internal min   0.00f 	internal max    1.00f
 	}
 
-	/*
-		======== SHIP ATTRIBUTES =========
-		Ship attributes must be scaled.
-		There is an 'internal value' (float) that we use for physic etc. calculations
-		There is an 'user value' (int) that we use to show in the UI and to combine artifacts
-
-		The 'internal value' min/max range depends on the attribute
-		The 'user value' min/max range is the same for all attributes:
-			min = 200, max = 9999
-	 */
-
 	/**
 	 * Calculates the 'internal value' by the 'user value'.
 	 * @param userValue The 'user value' between the min and max.
@@ -212,13 +211,13 @@ public class SpaceShipProperties {
 	 * @return The 'internal value'.
 	 */
 	public static float toInternalValue(int userValue, float internalMin, float internalMax) {
-		float userValueScale = (float) (userValue - USER_VALUE_MIN) / (float) (USER_VALUE_MAX - USER_VALUE_MIN);
+		float userValueScale = (float) (userValue) / (float) (USER_VALUE_MAX);
 		return ((internalMax - internalMin) * userValueScale) + internalMin;
 	}
 
 	public static int toUserValue(float internalValue, float internalMin, float internalMax) {
 		float internalValueScale = (internalValue - internalMin) / (internalMax - internalMin);
-		return (int) ((USER_VALUE_MAX - USER_VALUE_MIN) * internalValueScale) + USER_VALUE_MIN;
+		return (int) ((USER_VALUE_MAX) * internalValueScale);
 	}
 
 	public float getSpeed() {
