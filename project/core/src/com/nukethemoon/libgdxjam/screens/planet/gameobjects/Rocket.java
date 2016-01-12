@@ -53,12 +53,6 @@ public class Rocket extends GameObject implements Disposable {
 	private final ModelInstance tractorBeamModelInstance;
 	private final Model model;
 
-	private float speed = 30f; // min 20f max 100f
-	private float maneuverability = 2.75f; // min 0.75f max 3.0f
-	private float friction = 0.2f; // min 0.2f max 3.0f;
-
-	private int maxShield = 1000;
-
 	float drill = 0;
 	float xRotation = 0;
 	float zRotation = 0;
@@ -87,8 +81,6 @@ public class Rocket extends GameObject implements Disposable {
 	private RocketListener listener;
 
 	private float tickFuelCount = 1;
-
-	private int maxFuel = SpaceShipProperties.properties.computeMaxFuel();
 
 
 	public Rocket() {
@@ -123,10 +115,11 @@ public class Rocket extends GameObject implements Disposable {
 		btCollisionShape shape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.5f));
 		rocketModelInstance.transform.setToTranslation(START_POSITION);
 		float mass = 1;
-		addRigidBody(shape, mass, friction, CollisionTypes.ROCKET.mask,
+		addRigidBody(shape, mass, SpaceShipProperties.properties.getLandslide(), CollisionTypes.ROCKET.mask,
 				new RocketMotionState(rocketModelInstance.transform));
 		rigidBodyList.get(0).setActivationState(4); // disable deactivation
-		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(speed));
+		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(
+				SpaceShipProperties.properties.getSpeed()));
 
 		// init properties
 		SpaceShipProperties.properties.setCurrentFuel(SpaceShipProperties.INITIAL_MAX_FUEL);
@@ -142,28 +135,28 @@ public class Rocket extends GameObject implements Disposable {
 
 	public void rotateLeft() {
 		if (thrusting) {
-			zRotation = (zRotation + maneuverability) % 360;
+			zRotation = (zRotation + SpaceShipProperties.properties.getManeuverability()) % 360;
 		}
 	}
 
 	public void rotateRight() {
 		if (thrusting) {
-			zRotation = (zRotation - maneuverability) % 360;
+			zRotation = (zRotation - SpaceShipProperties.properties.getManeuverability()) % 360;
 		}
 	}
 
 	public void rotateDown() {
 		if (thrusting) {
-			if ((xRotation - maneuverability) > -89) {
-				xRotation = (xRotation - maneuverability) % 360;
+			if ((xRotation - SpaceShipProperties.properties.getManeuverability()) > -89) {
+				xRotation = (xRotation - SpaceShipProperties.properties.getManeuverability()) % 360;
 			}
 		}
 	}
 
 	public void rotateUp() {
 		if (thrusting) {
-			if((xRotation + maneuverability) < 89) {
-				xRotation = (xRotation + maneuverability) % 360;
+			if((xRotation + SpaceShipProperties.properties.getManeuverability()) < 89) {
+				xRotation = (xRotation + SpaceShipProperties.properties.getManeuverability()) % 360;
 			}
 		}
 	}
@@ -186,7 +179,6 @@ public class Rocket extends GameObject implements Disposable {
 			tractorBeamModelInstance.transform.set(rocketModelInstance.transform);
 			tractorBeamModelInstance.transform.trn(tmpVec0);
 		}
-
 
 		if (rigidBodyList.get(0).getLinearVelocity().len() < 0.1 && !thrusting) {
 			if (moving) {
@@ -225,7 +217,7 @@ public class Rocket extends GameObject implements Disposable {
 		if (isOutOfFuel()) {
 			return;
 		}
-		tmpMovement.set(getDirection()).nor().scl(speed);
+		tmpMovement.set(getDirection()).nor().scl(SpaceShipProperties.properties.getSpeed());
 		rigidBodyList.get(0).applyCentralForce(tmpMovement);
 	}
 
@@ -314,31 +306,23 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	public void applyThirdPerson(Camera camera) {
-
 		Vector3 position = getPosition();
 		if (position.z < 0) {
 			return;
 		}
-
 		tmpCamPosition.set(position);
-
 		tmpCamOffset.set(getDirection());
 		tmpCamOffset.scl(-thirdPersonOffsetY);
-
 		tmpCamPosition.add(tmpCamOffset);
 		tmpCamPosition.z += THIRD_PERSON_OFFSET_Z;
-
 		// creating a delay for the camera
 		tmpCamPosition.x = lastCamPosition.x + (tmpCamPosition.x - lastCamPosition.x) / 20f;
 		tmpCamPosition.y = lastCamPosition.y + (tmpCamPosition.y - lastCamPosition.y) / 20f;
 		tmpCamPosition.z = lastCamPosition.z + (tmpCamPosition.z - lastCamPosition.z) / 20f;
-
 		tmpCamPosition.z = Math.max(tmpCamPosition.z, 1);
-
 		camera.position.set(tmpCamPosition);
 		camera.lookAt(position);
 		camera.up.set(Vector3.Z);
-
 		lastCamPosition.set(camera.position);
 	}
 
@@ -398,11 +382,11 @@ public class Rocket extends GameObject implements Disposable {
 				}
 			}
 
-			// cap the peed
+			// cap the speed
 			Vector3 linearVelocity = rigidBodyList.get(0).getLinearVelocity();
 			float tickSpeed = linearVelocity.len();
-			if (tickSpeed > speed) {
-				linearVelocity.scl(speed / tickSpeed);
+			if (tickSpeed > SpaceShipProperties.properties.getSpeed()) {
+				linearVelocity.scl(SpaceShipProperties.properties.getSpeed() / tickSpeed);
 				rigidBodyList.get(0).setLinearVelocity(tmpMovement);
 			}
 		}
@@ -445,19 +429,6 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
-	public int getShield() {
-		return SpaceShipProperties.properties.getCurrentShield();
-	}
-
-	public int getMaxShield() {
-		return maxShield;
-	}
-
-	public int getFuel() {
-		return SpaceShipProperties.properties.getCurrentFuel();
-	}
-
-
 	public boolean isThrusting() {
 		return thrusting;
 	}
@@ -471,14 +442,22 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
-	public int getMaxFuel() {
-		return maxFuel;
-	}
-
 	public boolean isOutOfFuel() {
 		return SpaceShipProperties.properties.getCurrentFuel() <= 0;
 	}
 
+
+	public float getGroundZRotation() {
+		return zRotation;
+	}
+
+	public void setTractorBeamVisibility(boolean visible) {
+		tractorBeamVisible = visible;
+	}
+
+	public ModelInstance getTractorBeamModelInstance() {
+		return tractorBeamModelInstance;
+	}
 
 	static class RocketMotionState extends btMotionState {
 		private Matrix4 transform;
@@ -498,21 +477,5 @@ public class Rocket extends GameObject implements Disposable {
 			transform.idt();
 			transform.trn(worldTrans.getTranslation(tmpVector));
 		}
-	}
-
-	public float getGroundZRotation() {
-		return zRotation;
-	}
-
-	public void setTractorBeamVisibility(boolean visible) {
-		tractorBeamVisible = visible;
-	}
-
-	public ModelInstance getTractorBeamModelInstance() {
-		return tractorBeamModelInstance;
-	}
-
-	public float getScanRadius() {
-		return 5f;
 	}
 }

@@ -26,6 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
@@ -162,8 +163,12 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		multiplexer.addProcessor(stage);
 
 		mainUI = new RocketMainTable(uiSkin);
-		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
-		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
+		mainUI.setShieldValue(
+				SpaceShipProperties.properties.getCurrentShield(),
+				SpaceShipProperties.properties.getShieldCapacity());
+		mainUI.setFuelValue(
+				SpaceShipProperties.properties.getCurrentFuel(),
+				SpaceShipProperties.properties.getFuelCapacity());
 
 		TextButton arkScreenButton = new TextButton("open Ark", uiSkin);
 		arkScreenButton.addListener(new ClickListener() {
@@ -504,12 +509,16 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	@Override
 	public void onRocketDamage() {
 		App.audioController.playSound("hit_high.mp3");
-		mainUI.setShieldValue(rocket.getShield(), rocket.getMaxShield());
+		mainUI.setShieldValue(
+				SpaceShipProperties.properties.getCurrentShield(),
+				SpaceShipProperties.properties.getShieldCapacity());
 	}
 
 	@Override
 	public void onRocketFuelConsumed() {
-		mainUI.setFuelValue(rocket.getFuel(), rocket.getMaxFuel());
+		mainUI.setFuelValue(
+				SpaceShipProperties.properties.getCurrentFuel(),
+				SpaceShipProperties.properties.getFuelCapacity());
 	}
 
 	@Override

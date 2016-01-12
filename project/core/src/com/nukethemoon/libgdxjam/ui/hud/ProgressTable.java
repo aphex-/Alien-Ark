@@ -33,13 +33,26 @@ public class ProgressTable extends Table {
 	public int setValue(int value, int max) {
 		float progress = (float) value / (float) max;
 		int barCount = (int) Math.floor(progress * images.length);
-		for (int i = 0; i < images.length; i++) {
-			if (i > barCount || value == 0) {
-				images[i].setVisible(false);
-			} else {
-				images[i].setVisible(true);
+
+		if (progressType == ShipProgressBar.ProgressType.FUEL) {
+			for (int i = 0; i < images.length; i++) {
+				if (i > barCount || value == 0) {
+					images[i].setVisible(false);
+				} else {
+					images[i].setVisible(true);
+				}
 			}
+		} else {
+			for (int i = 0; i < images.length; i++) {
+				if (i > barCount && value != 0) {
+					images[i].setVisible(true);
+				} else {
+					images[i].setVisible(false);
+				}
+			}
+
 		}
+
 		return barCount;
 	}
 }

@@ -48,7 +48,7 @@ public class SpaceShipProperties {
 	}
 
 	private SpaceShipProperties() {
-		currentFuel = computeMaxFuel();
+		currentFuel = getFuelCapacity();
 	}
 
 	public void testInit() {
@@ -78,7 +78,7 @@ public class SpaceShipProperties {
 		alien = Alien.createAlien(a, o, v);
 		aliens.add(alien);
 
-		computeMaxFuel();
+		getFuelCapacity();
 		computeSpeedPerUnit();
 	}
 
@@ -99,31 +99,12 @@ public class SpaceShipProperties {
 		return artifacts;
 	}
 
-	public int computeMaxFuel() {
-		// this changed the current and max value every time called
-		// I had to comment it out to test a fuel progress bar case
-		/*if (aliens == null) {
-			aliens = new ArrayList<Alien>();
-		}
-		for (Alien alien : aliens) {
-			alien.modifyAttribute(maxFuel);
-		}
-		return (int) maxFuel.getCurrentValue();*/
-		// TODO: depend on aliens
-		return INITIAL_MAX_FUEL;
-	}
-
-	public int computeMaxShield() {
-		// TODO: depend on aliens
-		return INITIAL_MAX_SHIELD;
-	}
-
 	public int getCurrentFuel() {
 		return currentFuel;
 	}
 
 	public int setCurrentFuel(int fuel) {
-		currentFuel = Math.max(0, Math.min(fuel, computeMaxFuel()));
+		currentFuel = Math.max(0, Math.min(fuel, getFuelCapacity()));
 		return currentFuel;
 	}
 
@@ -136,7 +117,7 @@ public class SpaceShipProperties {
 	}
 
 	public int setCurrentShield(int shield) {
-		currentShield = Math.max(0, Math.min(shield, computeMaxShield()));
+		currentShield = Math.max(0, Math.min(shield, getShieldCapacity()));
 		return currentShield;
 	}
 
@@ -151,4 +132,45 @@ public class SpaceShipProperties {
 	public boolean isCollectedArtifact(String id) {
 		return collectedArtifactIds.contains(id);
 	}
+
+	// ======== SHIP ATTRIBUTES =========
+	public float getSpeed() {
+		return 30f; // min 20f max 100f
+	}
+
+	public float getManeuverability() {
+		return 2.75f; // min 0.75f max 3.0f
+	}
+
+	public float getLandslide() {
+		return 0.2f; // min 0.2f max 3.0f;
+	}
+
+	public int getFuelCapacity() {
+		// this changed the current and max value every time called
+		// I had to comment it out to test a fuel progress bar case
+		/*if (aliens == null) {
+			aliens = new ArrayList<Alien>();
+		}
+		for (Alien alien : aliens) {
+			alien.modifyAttribute(maxFuel);
+		}
+		return (int) maxFuel.getCurrentValue();*/
+		// TODO: depend on aliens
+		return INITIAL_MAX_FUEL; // min 200 max 9000
+	}
+
+	public int getShieldCapacity() {
+		// TODO: depend on aliens
+		return INITIAL_MAX_SHIELD;
+	}
+
+	public float getScanRadius() {
+		return 0; // min 0 max 1
+	}
+
+	public float getLuck() {
+		return 0; // min 0 max 1
+	}
+
 }

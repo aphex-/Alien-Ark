@@ -36,6 +36,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Balancing;
+import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ArtifactCollectAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ScanAnimation;
@@ -468,7 +469,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRocketDisabledThrust() {
-		fuelProgressBar.setValue(rocket.getFuel(), rocket.getMaxFuel());
+		fuelProgressBar.setValue(
+				SpaceShipProperties.properties.getCurrentFuel(),
+				SpaceShipProperties.properties.getFuelCapacity());
+
 		showToast("Landing procedure...");
 		particleSystem.remove(effectThrust);
 	}
@@ -481,12 +485,16 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	@Override
 	public void onRocketDamage() {
 		App.audioController.playSound("energy_shield.mp3");
-		shieldProgressBar.setValue(rocket.getShield(), rocket.getMaxShield());
+		shieldProgressBar.setValue(
+				SpaceShipProperties.properties.getCurrentShield(),
+				SpaceShipProperties.properties.getShieldCapacity());
 	}
 
 	@Override
 	public void onRocketFuelConsumed() {
-		fuelProgressBar.setValue(rocket.getFuel(), rocket.getMaxFuel());
+		fuelProgressBar.setValue(
+				SpaceShipProperties.properties.getCurrentFuel(),
+				SpaceShipProperties.properties.getFuelCapacity());
 	}
 
 	@Override
@@ -502,14 +510,18 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public void onRocketFuelBonus() {
 		showToast("Fuel +" + Balancing.FUEL_BONUS);
 		App.audioController.playSound("bonus.mp3");
-		fuelProgressBar.setValue(rocket.getFuel(), rocket.getMaxFuel());
+		fuelProgressBar.setValue(
+				SpaceShipProperties.properties.getCurrentFuel(),
+				SpaceShipProperties.properties.getFuelCapacity());
 	}
 
 	@Override
 	public void onRocketShieldBonus() {
 		showToast("Shield +" + Balancing.SHIELD_BONUS);
 		App.audioController.playSound("bonus.mp3");
-		shieldProgressBar.setValue(rocket.getShield(), rocket.getMaxShield());
+		shieldProgressBar.setValue(
+				SpaceShipProperties.properties.getCurrentShield(),
+				SpaceShipProperties.properties.getShieldCapacity());
 	}
 
 
@@ -524,7 +536,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public void onRocketScanStart() {
 		showToast("Scan started!");
 		rocket.setTractorBeamVisibility(true);
-		scanAnimation = new ScanAnimation(rocket.getTractorBeamModelInstance(), rocket.getScanRadius(),
+		scanAnimation = new ScanAnimation(rocket.getTractorBeamModelInstance(),
+				SpaceShipProperties.properties.getScanRadius(),
 				new AnimationFinishedListener() {
 			@Override
 			public void onAnimationFinished(BaseAnimation baseAnimation) {
@@ -537,7 +550,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private void onScanAnimationFinished(boolean wasCanceled) {
 		if (!wasCanceled) {
 			rocket.setTractorBeamVisibility(false);
-			final ArtifactObject artifactObject = planetController.tryCollect(rocket.getPosition(), rocket.getScanRadius());
+			final ArtifactObject artifactObject = planetController.tryCollect(rocket.getPosition(),
+					SpaceShipProperties.properties.getScanRadius());
 			if (artifactObject == null) {
 				showToast("Not close enough to an Artifact");
 			} else {
