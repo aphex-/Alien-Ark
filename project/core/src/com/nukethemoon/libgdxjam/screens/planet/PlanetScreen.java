@@ -574,6 +574,11 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		ani.forceStop(scanAnimation);
 	}
 
+	@Override
+	public void onRocketEntersPortal() {
+		leavePlanet();
+	}
+
 	// === physic events ===
 
 	@Override

@@ -24,7 +24,6 @@ import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Balancing;
-import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
 import com.nukethemoon.libgdxjam.game.attributes.ShieldCapacity;
@@ -431,7 +430,7 @@ public class Rocket extends GameObject implements Disposable {
 		}
 
 		if (type == CollisionTypes.PORTAL_EXIT) {
-			Log.e(Rocket.class, "Exit");
+			listener.onRocketEntersPortal();
 		}
 	}
 

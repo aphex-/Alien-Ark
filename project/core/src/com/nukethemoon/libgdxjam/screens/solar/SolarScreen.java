@@ -574,6 +574,11 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	@Override
+	public void onRocketEntersPortal() {
+
+	}
+
+	@Override
 	public void onRocketCollided(CollisionTypes type, btCollisionObject collisionObject) {
 
 	}

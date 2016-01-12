@@ -14,5 +14,6 @@ public interface RocketListener {
 	void onRocketChangedTilePosition();
 	void onRocketScanStart();
 	void onRocketScanEnd();
+	void onRocketEntersPortal();
 
 }
