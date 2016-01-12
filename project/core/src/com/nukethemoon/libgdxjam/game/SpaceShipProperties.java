@@ -9,12 +9,12 @@ import com.nukethemoon.libgdxjam.game.artifacts.operators.Divide;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Increase;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Multiply;
 import com.nukethemoon.libgdxjam.game.attributes.Attribute;
+import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
 import com.nukethemoon.libgdxjam.game.attributes.Inertia;
 import com.nukethemoon.libgdxjam.game.attributes.ItemCollectRadius;
 import com.nukethemoon.libgdxjam.game.attributes.LandingDistance;
 import com.nukethemoon.libgdxjam.game.attributes.Luck;
-import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
-import com.nukethemoon.libgdxjam.game.attributes.Shield;
+import com.nukethemoon.libgdxjam.game.attributes.ShieldCapacity;
 import com.nukethemoon.libgdxjam.game.attributes.Speed;
 import com.nukethemoon.libgdxjam.screens.solar.SolarScreen;
 
@@ -37,8 +37,8 @@ public class SpaceShipProperties {
 	private List<Artifact> artifacts = new ArrayList<Artifact>();
 	private List<Alien> aliens = new ArrayList<Alien>();
 
-	private int currentFuel;
-	private int currentShield;
+	private int currentInternalFuel;
+	private int currentInternalShield;
 
 	public Vector2 currentSolarPosition;
 
@@ -58,17 +58,20 @@ public class SpaceShipProperties {
 	private Speed speed = new Speed(100);
 	private FuelCapacity fuelCapacity = new FuelCapacity(INITIAL_MAX_FUEL);
 	private Luck luck = new Luck(.1f);
-	private Shield shield = new Shield(INITIAL_MAX_SHIELD);
+	private ShieldCapacity shieldCapacity = new ShieldCapacity(INITIAL_MAX_SHIELD);
 	private LandingDistance landingDistance = new LandingDistance(10);
 	private ItemCollectRadius radius = new ItemCollectRadius(12);
 	private Inertia inertia = new Inertia(.75f);
 
 	public Attribute[] getAttributes(){
-		return new Attribute[]{fuelCapacity, shield, speed, luck, landingDistance, radius, inertia};
+		return new Attribute[]{fuelCapacity, shieldCapacity, speed, luck, landingDistance, radius, inertia};
 	}
 
 	private SpaceShipProperties() {
-		currentFuel = getFuelCapacity();
+		currentInternalFuel = (int) computeFuelCapacity();
+		currentInternalShield = (int) computeShieldCapacity();
+		currentSolarPosition = new Vector2(SolarScreen.INITIAL_ARK_POSITION_X, SolarScreen.INITIAL_ARK_POSITION_Y);
+		updateCache();
 	}
 
 	public void testInit() {
@@ -100,10 +103,6 @@ public class SpaceShipProperties {
 
 		getFuelCapacity();
 		computeSpeedPerUnit();
-
-		currentSolarPosition = new Vector2(SolarScreen.INITIAL_ARK_POSITION_X, SolarScreen.INITIAL_ARK_POSITION_Y);
-
-		updateCache();
 	}
 
 	private float computeFuelCapacity() {
@@ -122,6 +121,10 @@ public class SpaceShipProperties {
 		return toInternalValue(fuelUserValue, FuelCapacity.INTERNAL_MIN, FuelCapacity.INTERNAL_MAX);
 	}
 
+	private float computeShieldCapacity() {
+		int shieldUserValue = 100; // TODO: calculate by crew members
+		return toInternalValue(shieldUserValue, ShieldCapacity.INTERNAL_MIN, ShieldCapacity.INTERNAL_MAX);
+	}
 
 	public float computeSpeedPerUnit() {
 
@@ -139,30 +142,30 @@ public class SpaceShipProperties {
 		return artifacts;
 	}
 
-	public int getCurrentFuel() {
-		return currentFuel;
+	public int getCurrentInternalFuel() {
+		return currentInternalFuel;
 	}
 
-	public int setCurrentFuel(int fuel) {
-		currentFuel = Math.max(0, Math.min(fuel, getFuelCapacity()));
-		return currentFuel;
+	public int setCurrentInternalFuel(int fuel) {
+		currentInternalFuel = Math.max(0, Math.min(fuel, getFuelCapacity()));
+		return currentInternalFuel;
 	}
 
-	public int addCurrentFuel(int add) {
-		return setCurrentFuel(getCurrentFuel() + add);
+	public int addCurrentInternalFuel(int add) {
+		return setCurrentInternalFuel(getCurrentInternalFuel() + add);
 	}
 
-	public int getCurrentShield() {
-		return currentShield;
+	public int getCurrentInternalShield() {
+		return currentInternalShield;
 	}
 
-	public int setCurrentShield(int shield) {
-		currentShield = Math.max(0, Math.min(shield, getShieldCapacity()));
-		return currentShield;
+	public int setCurrentInternalShield(int shield) {
+		currentInternalShield = Math.max(0, Math.min(shield, getShieldCapacity()));
+		return currentInternalShield;
 	}
 
 	public int addCurrentShield(int add) {
-		return setCurrentShield(getCurrentShield() + add);
+		return setCurrentInternalShield(getCurrentInternalShield() + add);
 	}
 
 	public void addArtifact(String id) {
@@ -185,7 +188,7 @@ public class SpaceShipProperties {
 		cachedInternalManeuverability = 2.75f; 					// internal min   0.75f 	internal max    3.00f
 		cachedInternalLandslide = 0.2f; 						// internal min   0.20f 	internal max    3.00f
 		cachedInternalFuelCapacity = computeFuelCapacity();		// internal min 200.00f 	internal max 9999.00f
-		cachedInternalShieldCapacity = 200;						// internal min 200.00f 	internal max 9999.00f
+		cachedInternalShieldCapacity = 100;						// internal min 200.00f 	internal max 9999.00f
 		cachedInternalScanRadius = 5;							// internal min   5.00f 	internal max   50.00f
 		cachedInternalLuck = 0;									// internal min   0.00f 	internal max    1.00f
 	}

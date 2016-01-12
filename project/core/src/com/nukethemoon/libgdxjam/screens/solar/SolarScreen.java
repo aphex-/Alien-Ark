@@ -168,10 +168,10 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 		mainUI = new RocketMainTable(uiSkin);
 		mainUI.setShieldValue(
-				SpaceShipProperties.properties.getCurrentShield(),
+				SpaceShipProperties.properties.getCurrentInternalShield(),
 				SpaceShipProperties.properties.getShieldCapacity());
 		mainUI.setFuelValue(
-				SpaceShipProperties.properties.getCurrentFuel(),
+				SpaceShipProperties.properties.getCurrentInternalFuel(),
 				SpaceShipProperties.properties.getFuelCapacity());
 
 		TextButton arkScreenButton = new TextButton("open Ark", uiSkin);
@@ -531,14 +531,14 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	public void onRocketDamage() {
 		App.audioController.playSound("hit_high.mp3");
 		mainUI.setShieldValue(
-				SpaceShipProperties.properties.getCurrentShield(),
+				SpaceShipProperties.properties.getCurrentInternalShield(),
 				SpaceShipProperties.properties.getShieldCapacity());
 	}
 
 	@Override
 	public void onRocketFuelConsumed() {
 		mainUI.setFuelValue(
-				SpaceShipProperties.properties.getCurrentFuel(),
+				SpaceShipProperties.properties.getCurrentInternalFuel(),
 				SpaceShipProperties.properties.getFuelCapacity());
 	}
 

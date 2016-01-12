@@ -27,7 +27,7 @@ public abstract class Attribute {
 			slot = "slot01";
 		} else if(clazz == Luck.class){
 			slot = "slot06";
-		} else if(clazz == Shield.class){
+		} else if(clazz == ShieldCapacity.class){
 			slot = "slot02";
 		} else if(clazz == LandingDistance.class){
 			slot = "slot04";
@@ -51,7 +51,7 @@ public abstract class Attribute {
 			row = "row01";
 		} else if(clazz == Luck.class){
 			row = "row06";
-		} else if(clazz == Shield.class){
+		} else if(clazz == ShieldCapacity.class){
 			row = "row02";
 		} else if(clazz == LandingDistance.class){
 			row = "row04";
@@ -81,7 +81,7 @@ public abstract class Attribute {
 			name = "MAXIMUM FUEL";
 		} else if(clazz == Luck.class){
 			name = "LUCK";
-		} else if(clazz == Shield.class){
+		} else if(clazz == ShieldCapacity.class){
 			name = "MAXIMUM SHIELD";
 		} else if(clazz == LandingDistance.class){
 			name = "LANDING DISTANCE";

@@ -25,6 +25,8 @@ import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
+import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
+import com.nukethemoon.libgdxjam.game.attributes.ShieldCapacity;
 import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 
@@ -121,9 +123,8 @@ public class Rocket extends GameObject implements Disposable {
 		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(
 				SpaceShipProperties.properties.getSpeed()));
 
-		// init properties
-		SpaceShipProperties.properties.setCurrentFuel(SpaceShipProperties.INITIAL_MAX_FUEL);
-		SpaceShipProperties.properties.setCurrentShield(SpaceShipProperties.INITIAL_MAX_SHIELD);
+		SpaceShipProperties.properties.setCurrentInternalFuel((int) 	FuelCapacity.INTERNAL_MAX);
+		SpaceShipProperties.properties.setCurrentInternalShield((int) 	ShieldCapacity.INTERNAL_MAX);
 
 		thrustSound = App.audioController.getSound("thrust.wav");
 	}
@@ -245,7 +246,7 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	private void onThrustEnabled() {
-		SpaceShipProperties.properties.addCurrentFuel(-THRUST_START_FUEL_COST);
+		SpaceShipProperties.properties.addCurrentInternalFuel(-THRUST_START_FUEL_COST);
 		if (isOutOfFuel()) {
 			return;
 		}
@@ -376,7 +377,7 @@ public class Rocket extends GameObject implements Disposable {
 			tickFuelCount = tickFuelCount - FUEL_CONSUMPTION;
 			if (tickFuelCount <= 0) {
 				tickFuelCount = 1;
-				SpaceShipProperties.properties.addCurrentFuel(-1);
+				SpaceShipProperties.properties.addCurrentInternalFuel(-1);
 				if (listener != null) {
 					listener.onRocketFuelConsumed();
 				}
@@ -404,7 +405,7 @@ public class Rocket extends GameObject implements Disposable {
 				listener.onRocketDamage();
 			}
 		}
-		if (SpaceShipProperties.properties.getCurrentShield() == 0) {
+		if (SpaceShipProperties.properties.getCurrentInternalShield() == 0) {
 			onExplode();
 		}
 	}
@@ -419,7 +420,7 @@ public class Rocket extends GameObject implements Disposable {
 		}
 
 		if (type == CollisionTypes.FUEL) {
-			SpaceShipProperties.properties.addCurrentFuel(Balancing.FUEL_BONUS);
+			SpaceShipProperties.properties.addCurrentInternalFuel(Balancing.FUEL_BONUS);
 			listener.onRocketFuelBonus();
 		}
 
@@ -443,7 +444,7 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	public boolean isOutOfFuel() {
-		return SpaceShipProperties.properties.getCurrentFuel() <= 0;
+		return SpaceShipProperties.properties.getCurrentInternalFuel() <= 0;
 	}
 
 

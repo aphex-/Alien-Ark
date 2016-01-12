@@ -10,6 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
+import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
+import com.nukethemoon.libgdxjam.game.attributes.ShieldCapacity;
 
 public class ShipProgressBar extends Table {
 
@@ -72,18 +74,24 @@ public class ShipProgressBar extends Table {
 	}
 
 	public void setValue(int value, int maxShield) {
-		valueLabel.setText(value + "");
+		int userValue;
+		if (progressType == ProgressType.SHIELD) {
+			userValue = SpaceShipProperties.toUserValue(value, ShieldCapacity.INTERNAL_MIN, ShieldCapacity.INTERNAL_MAX);
+		} else {
+			userValue = SpaceShipProperties.toUserValue(value, FuelCapacity.INTERNAL_MIN, FuelCapacity.INTERNAL_MAX);
+		}
+		valueLabel.setText(userValue + "");
 		progressTable.setValue(value, maxShield);
 	}
 
 	public void updateFromShipProperties() {
 		if (progressType == ProgressType.SHIELD) {
 			setValue(
-					SpaceShipProperties.properties.getCurrentShield(),
+					SpaceShipProperties.properties.getCurrentInternalShield(),
 					SpaceShipProperties.properties.getShieldCapacity());
 		} else {
 			setValue(
-					SpaceShipProperties.properties.getCurrentFuel(),
+					SpaceShipProperties.properties.getCurrentInternalFuel(),
 					SpaceShipProperties.properties.getFuelCapacity());
 		}
 	}
