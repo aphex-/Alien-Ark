@@ -22,9 +22,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Styles;
@@ -176,7 +177,8 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		stage = new Stage(new ScreenViewport());
 		multiplexer.addProcessor(stage);
 
-		TextButton arkScreenButton = new TextButton("open Ark", uiSkin);
+		TextureRegionDrawable drawable = new TextureRegionDrawable(App.TEXTURES.findRegion("buttonControlCenter"));
+		ImageButton arkScreenButton = new ImageButton(drawable);
 		arkScreenButton.setPosition((Gdx.graphics.getWidth() / 2) - (arkScreenButton.getWidth() / 2),
 				10);
 		stage.addActor(arkScreenButton);
