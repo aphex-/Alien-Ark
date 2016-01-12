@@ -37,7 +37,7 @@ import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.libgdxjam.ui.EnterOrbitTable;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.MenuTable;
-import com.nukethemoon.libgdxjam.ui.RocketMainTable;
+import com.nukethemoon.libgdxjam.ui.hud.ShipProgressBar;
 import com.nukethemoon.tools.ani.Ani;
 
 import java.util.ArrayList;
@@ -96,11 +96,13 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	private Stage stage;
 	private Sprite sunSprite;
-	private RocketMainTable mainUI;
 	private Rocket rocket;
 	private List<Body> bodies;
 	private PointLight[] pointLight;
 	private float counter = 0f;
+
+	private ShipProgressBar fuelProgressBar;
+	private ShipProgressBar shieldProgressBar;
 
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
@@ -110,6 +112,11 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		arkSprite = new Sprite(App.TEXTURES.findRegion("rocket"));
 		exhaustSprite = new Sprite(App.TEXTURES.findRegion("exhaust_placeholder"));
 		ani = new Ani();
+
+		fuelProgressBar = new ShipProgressBar(ShipProgressBar.ProgressType.FUEL);
+		fuelProgressBar.updateFromShipProperties();
+		shieldProgressBar = new ShipProgressBar(ShipProgressBar.ProgressType.SHIELD);
+		shieldProgressBar.updateFromShipProperties();
 
 
 		world = new World(new Vector2(0, 0), true);
@@ -126,6 +133,9 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 		App.TUTORIAL_CONTROLLER.register(stage, ani);
 		App.TUTORIAL_CONTROLLER.nextStepFor(this.getClass());
+
+		stage.addActor(fuelProgressBar);
+		stage.addActor(shieldProgressBar);
 
 	}
 
@@ -166,23 +176,16 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		stage = new Stage(new ScreenViewport());
 		multiplexer.addProcessor(stage);
 
-		mainUI = new RocketMainTable(uiSkin);
-		mainUI.setShieldValue(
-				SpaceShipProperties.properties.getCurrentInternalShield(),
-				SpaceShipProperties.properties.getShieldCapacity());
-		mainUI.setFuelValue(
-				SpaceShipProperties.properties.getCurrentInternalFuel(),
-				SpaceShipProperties.properties.getFuelCapacity());
-
 		TextButton arkScreenButton = new TextButton("open Ark", uiSkin);
+		arkScreenButton.setPosition((Gdx.graphics.getWidth() / 2) - (arkScreenButton.getWidth() / 2),
+				10);
+		stage.addActor(arkScreenButton);
 		arkScreenButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				openArkScreen();
 			}
 		});
-		mainUI.add(arkScreenButton);
-		stage.addActor(mainUI);
 
 		final MenuButton menuButton = new MenuButton(uiSkin);
 		menuButton.addListener(new ClickListener() {
@@ -530,16 +533,12 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	@Override
 	public void onRocketDamage() {
 		App.audioController.playSound("hit_high.mp3");
-		mainUI.setShieldValue(
-				SpaceShipProperties.properties.getCurrentInternalShield(),
-				SpaceShipProperties.properties.getShieldCapacity());
+		shieldProgressBar.updateFromShipProperties();
 	}
 
 	@Override
 	public void onRocketFuelConsumed() {
-		mainUI.setFuelValue(
-				SpaceShipProperties.properties.getCurrentInternalFuel(),
-				SpaceShipProperties.properties.getFuelCapacity());
+		fuelProgressBar.updateFromShipProperties();
 	}
 
 	@Override
