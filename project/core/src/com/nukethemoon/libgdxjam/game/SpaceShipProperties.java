@@ -54,7 +54,7 @@ public class SpaceShipProperties {
 		we should rename 'scanradius' to 'scan accuracy' (more abstract)
 	 */
 
-	private Speed speed = new Speed(100);
+	private Speed speed = new Speed(30);
 	private FuelCapacity fuelCapacity = new FuelCapacity((int) FuelCapacity.INTERNAL_INITIAL);
 	private Luck luck = new Luck(.1f);
 	private ShieldCapacity shieldCapacity = new ShieldCapacity((int) ShieldCapacity.INTERNAL_INITIAL);
