@@ -24,18 +24,18 @@ public abstract class Artifact {
 
 	public abstract String getDescription();
 
-	public Actor createActor() {
+	public Actor createActor(float w, float h) {
 		final Image bg = new Image(getBackgroundTexture());
-		bg.setWidth(75);
-		bg.setHeight(75);
+		bg.setWidth(w);
+		bg.setHeight(h);
 
 		Actor fg = getForeground();
 		if(fg == null){
 			return bg;
 		}
 
-		fg.setWidth(75);
-		fg.setHeight(75);
+		fg.setWidth(w);
+		fg.setHeight(h);
 
 		final Group group = new Group();
 		group.addActor(bg);

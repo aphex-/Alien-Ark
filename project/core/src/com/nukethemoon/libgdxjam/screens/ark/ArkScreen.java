@@ -33,11 +33,9 @@ import java.util.List;
 //TODO cancel von Artifatcs merges
 //TODO Korrekte Attributartifact texturen
 //TODO Korrekte Alien texturen
-//TODO Alien hint text
-
-//TODO Artifact hint text, wenn Attr. bekannt ("Speed")
 //TODO anzahl aliens/artifacts
 //TODO Scroll shadow
+//TODO polishing. Abstände, Größen, Farben
 
 //TODO (opional) Artifact hint text, wenn Attr. noch unbekannt ("???")
 //TODO (optional) anzahl aliens beschränken
@@ -54,7 +52,8 @@ public class ArkScreen implements Screen {
 	private WorkbenchSlot workbenchSlot2;
 	private WorkbenchSlot workbenchSlot3;
 
-	private Actor resultArea;
+	private Image resultAreaImg;
+	private Image resultAreaHighlight;
 
 	private SpriteBatch spriteBatch;
 
@@ -89,17 +88,19 @@ public class ArkScreen implements Screen {
 	@Override
 	public void show() {
 		workbenchSlot1 = new WorkbenchSlot();
-		int dimension = 75;
-		workbenchSlot1.setBounds(400, 435, dimension, dimension);
+		int dimension = 80;
+		int y = 433;
+		workbenchSlot1.setBounds(400, y, dimension, dimension);
 
 		workbenchSlot2 = new WorkbenchSlot();
-		workbenchSlot2.setBounds(527, 435, dimension, dimension);
+		workbenchSlot2.setBounds(527, y, dimension, dimension);
 
 		workbenchSlot3 = new WorkbenchSlot();
-		workbenchSlot3.setBounds(652, 435, dimension, dimension);
+		workbenchSlot3.setBounds(652, y, dimension, dimension);
 
-		resultArea = new Actor();
-		resultArea.setBounds(777, 435, dimension, dimension);
+		resultAreaImg = new Image();
+		resultAreaImg.setBounds(805, y, dimension, dimension);
+		stage.addActor(resultAreaImg);
 
 		background = new Texture("textures/background02.png");
 
@@ -117,6 +118,13 @@ public class ArkScreen implements Screen {
 
 		createCloseButton();
 
+		createHintTexts();
+
+		multiplexer.addProcessor(stage);
+
+	}
+
+	private void createHintTexts() {
 		leftHintText = new Label("", skin);
 		leftHintText.setX(70);
 		leftHintText.setY(90);
@@ -133,9 +141,6 @@ public class ArkScreen implements Screen {
 		rightHintText.setWrap(true);
 
 		stage.addActor(rightHintText);
-
-		multiplexer.addProcessor(stage);
-
 	}
 
 	private void createCloseButton() {
@@ -225,9 +230,9 @@ public class ArkScreen implements Screen {
 
 		for (int i = 0; i < artifacts.size(); ++i) {
 			final Artifact artifact = artifacts.get(i);
-			final Actor actor = artifact.createActor();
+			final Actor actor = artifact.createActor(80, 80);
 			actor.setUserObject(artifact);
-			artifactsTable.add(actor).space(5).width(75).height(75);
+			artifactsTable.add(actor).space(5).width(80).height(80);
 
 			actor.addListener(new ClickListener(){
 
@@ -251,7 +256,7 @@ public class ArkScreen implements Screen {
 					dragAndDrop.setDragActorPosition(-x, -y);
 					payload.setObject(artifact);
 
-					payload.setDragActor(artifact.createActor());
+					payload.setDragActor(artifact.createActor(80, 80));
 
 					return payload;
 				}
@@ -296,7 +301,7 @@ public class ArkScreen implements Screen {
 
 	private void updateHintTexts() {
 		leftHintText.setText(selectedArtifact == null ? "" : ((Artifact) selectedArtifact.getUserObject()).getDescription());
-		rightHintText.setText(selectedAlien == null ? "" : ((Alien)selectedAlien.getUserObject()).getDescription());
+		rightHintText.setText(selectedAlien == null ? "" : ((Alien) selectedAlien.getUserObject()).getDescription());
 	}
 
 	private void addDropTarget(final WorkbenchSlot slot) {
@@ -316,12 +321,33 @@ public class ArkScreen implements Screen {
 			public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
 				slot.insertArtifact((Artifact) payload.getObject());
 				dragAndDrop.removeTarget(this);
-				App.TUTORIAL_CONTROLLER.onAlienCrafted();
+
+				updateSlots();
+
 			}
 		});
 		stage.addActor(slot);
 	}
 
+	private void updateSlots(){
+		if(workbenchSlot1.isOccupied() && workbenchSlot2.isOccupied() && workbenchSlot3.isOccupied()){
+			resultAreaImg.setVisible(true);
+			resultAreaImg.setDrawable(new TextureRegionDrawable(App.TEXTURES.findRegion("slotOK")));
+			resultAreaImg.addListener(new ClickListener(){
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					Alien.createAlien(workbenchSlot1.pop(), workbenchSlot2.pop(), workbenchSlot3.pop());
+					updateSlots();
+					updateAlienInventory();
+					updateArtifactsInventory();
+
+					App.TUTORIAL_CONTROLLER.onAlienCrafted();
+				}
+			});
+		} else {
+			resultAreaImg.setVisible(false);
+		}
+	}
 
 	@Override
 	public void render(float delta) {
@@ -370,19 +396,25 @@ public class ArkScreen implements Screen {
 
 	private class WorkbenchSlot extends Actor {
 		private Artifact insertedArtifact;
-		private Actor actor = new Group();
+		private Actor actor = new Actor();
 
 		public WorkbenchSlot() {
 
 		}
 
+		public Artifact pop(){
+			Artifact a = insertedArtifact;
+			insertedArtifact = null;
+			stage.getRoot().removeActor(actor);
+
+			return a;
+		}
+
 		public void insertArtifact(Artifact artifact) {
 			this.insertedArtifact = artifact;
-			actor = artifact.createActor();
+			actor = artifact.createActor(getWidth(), getHeight());
 			actor.setX(getX());
 			actor.setY(getY());
-			actor.setWidth(getWidth());
-			actor.setHeight(getHeight());
 		}
 
 		@Override
