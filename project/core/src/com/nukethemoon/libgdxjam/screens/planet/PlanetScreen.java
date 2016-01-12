@@ -118,8 +118,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
-		//pPlanetIndex = pPlanetIndex % KNOWN_PLANETS.length;
-		pPlanetIndex = 4;
+		pPlanetIndex = pPlanetIndex % KNOWN_PLANETS.length;
 
 		stage = new Stage(new ScreenViewport());
 
