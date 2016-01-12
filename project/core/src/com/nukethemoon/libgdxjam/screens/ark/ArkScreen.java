@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.game.Alien;
 import com.nukethemoon.libgdxjam.game.Artifact;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
@@ -30,13 +31,10 @@ import com.nukethemoon.tools.ani.Ani;
 
 import java.util.List;
 
-//TODO merge von Artifatcs
 //TODO cancel von Artifatcs merges
-//TODO Korrekte Alien texturen
-//TODO anzahl aliens/artifacts
 //TODO Scroll shadow
 //TODO error handling
-//TODO polishing. Abstände, Größen, Farben
+//TODO polishing. Abstände, Größen, Farben, Reihenfolge properties
 
 //TODO (opional) Artifact hint text, wenn Attr. noch unbekannt ("???")
 //TODO (optional) anzahl aliens beschränken
@@ -75,6 +73,8 @@ public class ArkScreen implements Screen {
 
 	private ShipProgressBar fuelProgressBar;
 	private ShipProgressBar shieldProgressBar;
+	private Label artifactCount;
+	private Label alienCount;
 
 	public ArkScreen(Skin uiSkin, InputMultiplexer multiplexer) {
 		ani = new Ani();
@@ -174,8 +174,6 @@ public class ArkScreen implements Screen {
 	}
 
 	private void createPropertiesList() {
-
-
 		for (Attribute a : SpaceShipProperties.properties.getAttributes()) {
 			Table singleProperty = new Table();
 			singleProperty.align(Align.bottomLeft);
@@ -192,11 +190,14 @@ public class ArkScreen implements Screen {
 
 		propertiesTable.setWidth(520);
 		ScrollPane pane = new ScrollPane(propertiesTable);
+
 		pane.setX(390);
 		pane.setY(100);
 		pane.setWidth(500);
 		pane.setHeight(210);
 		stage.addActor(pane);
+
+
 	}
 
 	private void createArtifactsInventory() {
@@ -217,6 +218,21 @@ public class ArkScreen implements Screen {
 		artifactsScrollPane.setScrollingDisabled(true, false);
 
 		stage.addActor(artifactsScrollPane);
+
+		artifactCount = new Label("0", skin);
+		artifactCount.setStyle(Styles.LABEL_VALUE_ARTIFACT);
+		artifactCount.setX(275);
+		artifactCount.setY(560);
+
+		stage.addActor(artifactCount);
+
+		alienCount = new Label("0", skin);
+		alienCount.setStyle(Styles.LABEL_VALUE_ARTIFACT);
+		alienCount.setX(Gdx.graphics.getWidth() - 120);
+		alienCount.setY(560);
+
+		stage.addActor(alienCount);
+
 	}
 
 	private void createAlienInventory() {
@@ -239,6 +255,8 @@ public class ArkScreen implements Screen {
 	}
 
 	private void updateArtifactsInventory() {
+
+
 		artifactsTable.clear();
 		final List<Artifact> artifacts = SpaceShipProperties.properties.getArtifacts();
 
@@ -290,6 +308,8 @@ public class ArkScreen implements Screen {
 			if ((i + 1) % 3 == 0)
 				artifactsTable.row();
 		}
+
+		artifactCount.setText(String.valueOf(artifacts.size()));
 	}
 
 	private void updateAlienInventory() {
@@ -300,7 +320,7 @@ public class ArkScreen implements Screen {
 			final Alien alien = aliens.get(i);
 			final Image img = new Image(alien.getTexture());
 			img.setUserObject(alien);
-			img.addListener(new ClickListener(){
+			img.addListener(new ClickListener() {
 
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
@@ -314,6 +334,8 @@ public class ArkScreen implements Screen {
 			if ((i + 1) % 3 == 0)
 				alienTable.row();
 		}
+
+		alienCount.setText(String.valueOf(aliens.size()));
 	}
 
 	private void updateHintTexts() {
@@ -336,12 +358,12 @@ public class ArkScreen implements Screen {
 
 			@Override
 			public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
-				if(!slot.isOccupied()) {
+				if (!slot.isOccupied()) {
 					slot.insertArtifact((Artifact) payload.getObject());
 					fuelProgressBar.updateFromShipProperties();
 					shieldProgressBar.updateFromShipProperties();
 					updateResultSlot();
-					
+
 				}
 
 			}
@@ -349,11 +371,11 @@ public class ArkScreen implements Screen {
 		stage.addActor(slot);
 	}
 
-	private void updateResultSlot(){
-		if(workbenchSlot1.isOccupied() && workbenchSlot2.isOccupied() && workbenchSlot3.isOccupied()){
+	private void updateResultSlot() {
+		if (workbenchSlot1.isOccupied() && workbenchSlot2.isOccupied() && workbenchSlot3.isOccupied()) {
 			resultAreaImg.setVisible(true);
 			resultAreaImg.setDrawable(new TextureRegionDrawable(App.TEXTURES.findRegion("slotOK")));
-			resultAreaImg.addListener(new ClickListener(){
+			resultAreaImg.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
 					Alien.createAlien(workbenchSlot1.pop(), workbenchSlot2.pop(), workbenchSlot3.pop());
@@ -427,7 +449,7 @@ public class ArkScreen implements Screen {
 
 		}
 
-		public Artifact pop(){
+		public Artifact pop() {
 			Artifact a = insertedArtifact;
 			insertedArtifact = null;
 			stage.getRoot().removeActor(actor);
