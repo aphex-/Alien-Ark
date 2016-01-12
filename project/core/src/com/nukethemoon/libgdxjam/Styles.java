@@ -86,7 +86,7 @@ public class Styles {
 		LABEL_02.font = FONT_DOSIS_MEDIUM_BORDER;
 
 		LABEL_DEV = new Label.LabelStyle(standardLabelStyle);
-		LABEL_DEV.font = FONT_ENTSANS_SMALL;
+		LABEL_DEV.font = FONT_DOSIS_SMALL;
 
 		LABEL_HUD_NUMBERS = new Label.LabelStyle(standardLabelStyle);
 		LABEL_HUD_NUMBERS.font = FONT_ENTSANS_SMALL;
