@@ -60,12 +60,12 @@ public class App extends Game {
 		// instance space ship
 		// load game entities
 		// openScreen(SplashScreen.class);
-		//openPlanetScreen(0);
+		openPlanetScreen(0);
 
 		//openArkScreen();
 
 
-		openSolarScreen();
+		//openSolarScreen();
 	}
 
 	public static void openScreen(Class<? extends Screen> screenClass) {

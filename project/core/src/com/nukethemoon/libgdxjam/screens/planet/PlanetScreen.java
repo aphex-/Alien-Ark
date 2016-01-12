@@ -107,7 +107,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private static String[] KNOWN_PLANETS = new String[] {
 		"planet01",
 		"planet02",
-		"planet03"
+		"planet03",
+		"planet04",
+		"planet05"
 	};
 
 	private Ani ani;
@@ -116,7 +118,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
-		pPlanetIndex = pPlanetIndex % KNOWN_PLANETS.length;
+		//pPlanetIndex = pPlanetIndex % KNOWN_PLANETS.length;
+		pPlanetIndex = 4;
+
 		stage = new Stage(new ScreenViewport());
 
 		ani = new Ani();

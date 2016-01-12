@@ -202,7 +202,7 @@ public class SpaceShipProperties {
 
 		// TODO: add compute methods
 
-		cachedInternalSpeed = 30f; 								// internal min  20.00f 	internal max  100.00f
+		cachedInternalSpeed = 100f; 							// internal min  20.00f 	internal max  100.00f
 		cachedInternalManeuverability = 2.75f; 					// internal min   0.75f 	internal max    3.00f
 		cachedInternalLandslide = 0.2f; 						// internal min   0.20f 	internal max    3.00f
 		cachedInternalFuelCapacity = computeFuelCapacity();		// internal min 200.00f 	internal max 9999.00f
