@@ -87,7 +87,7 @@ public class Rocket extends GameObject implements Disposable {
 	public Rocket() {
 		// init graphic
 		ModelLoader loader = new ObjLoader();
-		model = loader.loadModel(Gdx.files.internal("models/rocket.obj"));
+		model = loader.loadModel(Gdx.files.internal("models/rocket.obj"), new ObjLoader.ObjLoaderParameters(true));
 		rocketModelInstance = new ModelInstance(model);
 
 
