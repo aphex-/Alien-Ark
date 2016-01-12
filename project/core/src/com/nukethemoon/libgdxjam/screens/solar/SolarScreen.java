@@ -458,7 +458,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		final int planetIndex = determinePlanetCollison();
 		if (planetIndex != -1) {
 			if (enterOrbitTable == null) {
-				enterOrbitTable = new EnterOrbitTable(Styles.UI_SKIN);
+				enterOrbitTable = new EnterOrbitTable(Styles.UI_SKIN, planetIndex);
 				stage.addActor(enterOrbitTable);
 				enterOrbitTable.setClickListener(new ClickListener() {
 					@Override

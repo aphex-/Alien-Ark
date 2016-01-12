@@ -9,8 +9,8 @@ public class EnterOrbitTable extends DialogTable {
 
 	private final Button enterButton;
 
-	public EnterOrbitTable(Skin skin) {
-		super(skin, new String[] {"Do you want to enter", "the planets orbit?"}, "NAVIGATION");
+	public EnterOrbitTable(Skin skin, int planetIndex) {
+		super(skin, new String[] {"Do you want to enter", "the planets orbit?", "planet index " + planetIndex}, "NAVIGATION");
 		enterButton = new TextButton("ENTER", skin);
 		content.add(enterButton).colspan(2);
 		updatePosition(350, 50);
