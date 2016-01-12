@@ -49,6 +49,10 @@ public class SpaceShipProperties {
 
 		shield's and fuel's	internal should match 1 : 1 to the user value
 		since this is the only value the player see the direct result (in the progress bars)
+
+
+		we should rename 'speed' to 'engine power' (more abstract)
+		we should rename 'scanradius' to 'scan accuracy' (more abstract)
 	 */
 
 
@@ -56,13 +60,13 @@ public class SpaceShipProperties {
 		if the ship attributes change. A cache is
 		needed to avoid frame-wise calculations.
 	*/
-	private float cachedInternalSpeed = 0;
-	private float cachedInternalManeuverability = 0;
-	private float cachedInternalLandslide = 0;
-	private float cachedInternalFuelCapacity = 0;
-	private float cachedInternalShieldCapacity = 0;
-	private float cachedInternalScanRadius = 0;
-	private float cachedInternalLuck = 0;
+	private float cachedInternalSpeed = 0; 				// balanced = better
+	private float cachedInternalManeuverability = 0; 	// higher = better
+	private float cachedInternalLandslide = 0; 			// lower = better
+	private float cachedInternalFuelCapacity = 0;		// higher = better
+	private float cachedInternalShieldCapacity = 0;		// higher = better
+	private float cachedInternalScanRadius = 0;			// higher = better
+	private float cachedInternalMisfortune = 0; 		// lower = better
 
 
 	private Speed speed = new Speed(100);
@@ -200,7 +204,7 @@ public class SpaceShipProperties {
 		cachedInternalFuelCapacity = computeFuelCapacity();		// internal min 200.00f 	internal max 9999.00f
 		cachedInternalShieldCapacity = 100;						// internal min 200.00f 	internal max 9999.00f
 		cachedInternalScanRadius = 5;							// internal min   5.00f 	internal max   50.00f
-		cachedInternalLuck = 0;									// internal min   0.00f 	internal max    1.00f
+		cachedInternalMisfortune = 0;									// internal min   0.00f 	internal max    1.00f
 	}
 
 	/**
@@ -244,7 +248,7 @@ public class SpaceShipProperties {
 		return cachedInternalScanRadius;
 	}
 
-	public float getLuck() {
+	public float misFortune() {
 		return 0;
 	}
 
