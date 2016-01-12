@@ -440,7 +440,7 @@ public class Rocket extends GameObject implements Disposable {
 		}
 
 		if (type == CollisionTypes.SHIELD) {
-			SpaceShipProperties.properties.addCurrentFuel(Balancing.SHIELD_BONUS);
+			SpaceShipProperties.properties.addCurrentShield(Balancing.SHIELD_BONUS);
 			listener.onRocketShieldBonus();
 		}
 	}

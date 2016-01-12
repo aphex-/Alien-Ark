@@ -1,6 +1,5 @@
 package com.nukethemoon.libgdxjam.game;
 
-import com.badlogic.gdx.math.Vector2;
 import com.nukethemoon.libgdxjam.game.artifacts.AttributeArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.OperatorArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.ValueArtifact;
@@ -29,9 +28,6 @@ public class SpaceShipProperties {
 	transient public static final int INITIAL_MAX_SHIELD = 100;
 
 	private List<String> collectedArtifactIds = new ArrayList<String>();
-
-	private Vector2 position;
-	private Vector2 movementVector;
 
 	private List<Artifact> artifacts = new ArrayList<Artifact>();
 	private List<Alien> aliens = new ArrayList<Alien>();
