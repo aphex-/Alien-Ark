@@ -43,9 +43,9 @@ public class ProgressTable extends Table {
 				}
 			}
 		} else {
-			int usedCount = images.length - barCount;
+			int usedCount = images.length - (barCount + 1);
 			for (int i = 0; i < images.length; i++) {
-				if (i < usedCount) {
+				if (i < usedCount || value == 0) {
 					images[i].setVisible(false);
 				} else {
 					images[i].setVisible(true);
