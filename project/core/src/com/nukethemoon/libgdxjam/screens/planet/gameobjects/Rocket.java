@@ -37,7 +37,7 @@ public class Rocket extends GameObject implements Disposable {
 
 	private static final float THIRD_PERSON_OFFSET_Z = 6;
 	private static final int MIN_DAMAGE_DELAY_MILLIS = 200;
-	private static final Vector3 START_POSITION = new Vector3(0, 0, 30);
+	private static final Vector3 START_POSITION = new Vector3(20, 0, 120);
 	private static final Vector3 LAUNCH_IMPULSE = new Vector3(0, 0, 55);
 	private static final int LAUNCH_INDESTRUCTIBLE_TICKS = 30;
 	private static final float FUEL_CONSUMPTION = 0.1f;
@@ -115,7 +115,8 @@ public class Rocket extends GameObject implements Disposable {
 		BoundingBox boundingBox = new BoundingBox();
 		model.calculateBoundingBox(boundingBox);
 		btCollisionShape shape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.5f));
-		rocketModelInstance.transform.setToTranslation(START_POSITION);
+		rocketModelInstance.transform.setToRotation(0, 0, 1, 0);
+		rocketModelInstance.transform.trn(START_POSITION);
 		float mass = 1;
 		addRigidBody(shape, mass, SpaceShipProperties.properties.getLandslide(), CollisionTypes.ROCKET.mask,
 				new RocketMotionState(rocketModelInstance.transform));
