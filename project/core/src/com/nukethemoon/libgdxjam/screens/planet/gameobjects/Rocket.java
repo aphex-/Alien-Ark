@@ -452,8 +452,12 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 
-	public float getGroundZRotation() {
+	public float getZRotation() {
 		return zRotation;
+	}
+
+	public float getXRotation() {
+		return xRotation;
 	}
 
 	public void setTractorBeamVisibility(boolean visible) {
@@ -482,5 +486,9 @@ public class Rocket extends GameObject implements Disposable {
 			transform.idt();
 			transform.trn(worldTrans.getTranslation(tmpVector));
 		}
+	}
+
+	public ModelInstance getRocketModelInstance() {
+		return rocketModelInstance;
 	}
 }
