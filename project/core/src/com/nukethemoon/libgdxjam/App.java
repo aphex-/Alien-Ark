@@ -43,7 +43,7 @@ public class App extends Game {
 		gson = new GsonBuilder().setPrettyPrinting().create();
 		loadConfig();
 		Bullet.init();
-		Models.init();
+		Models.init(); // needs an initialized Bullet
 		loadSaveGame();
 		TEXTURES = new TextureAtlas("textures/game.atlas");
 		Styles.init(TEXTURES);
