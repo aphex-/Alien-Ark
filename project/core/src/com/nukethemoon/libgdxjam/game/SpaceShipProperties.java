@@ -8,6 +8,7 @@ import com.nukethemoon.libgdxjam.game.artifacts.operators.Divide;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Increase;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Multiply;
 import com.nukethemoon.libgdxjam.game.attributes.Attribute;
+import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
 import com.nukethemoon.libgdxjam.game.attributes.Inertia;
 import com.nukethemoon.libgdxjam.game.attributes.ItemCollectRadius;
 import com.nukethemoon.libgdxjam.game.attributes.LandingDistance;
@@ -53,20 +54,6 @@ public class SpaceShipProperties {
 		we should rename 'scanradius' to 'scan accuracy' (more abstract)
 	 */
 
-
-	/* 	Cached internal values that are calculated
-		if the ship attributes change. A cache is
-		needed to avoid frame-wise calculations.
-	*/
-	private float cachedInternalSpeed = 0; 				// balanced = better
-	private float cachedInternalManeuverability = 0; 	// higher = better
-	private float cachedInternalLandslide = 0; 			// lower = better
-	private float cachedInternalFuelCapacity = 0;		// higher = better
-	private float cachedInternalShieldCapacity = 0;		// higher = better
-	private float cachedInternalScanRadius = 0;			// higher = better
-	private float cachedInternalMisfortune = 0; 		// lower = better
-
-
 	private Speed speed = new Speed(100);
 	private FuelCapacity fuelCapacity = new FuelCapacity((int) FuelCapacity.INTERNAL_INITIAL);
 	private Luck luck = new Luck(.1f);
@@ -75,13 +62,13 @@ public class SpaceShipProperties {
 	private ItemCollectRadius radius = new ItemCollectRadius(12);
 	private Inertia inertia = new Inertia(.75f);
 
-	public Attribute[] getAttributes(){
+	public Attribute[] getAttributes() {
 		return new Attribute[]{fuelCapacity, shieldCapacity, speed, luck, landingDistance, radius, inertia};
 	}
 
 	private SpaceShipProperties() {
-		currentInternalFuel = (int) maxFuel.getCurrentValue();
-		currentInternalShield (int) shieldCapacity.getCurrentValue();
+		currentInternalFuel = (int) fuelCapacity.getCurrentValue();
+		currentInternalShield = (int) shieldCapacity.getCurrentValue();
 		currentSolarPosition = new Vector2(SolarScreen.INITIAL_ARK_POSITION_X, SolarScreen.INITIAL_ARK_POSITION_Y);
 	}
 
@@ -96,18 +83,15 @@ public class SpaceShipProperties {
 
 		artifacts.add(new AttributeArtifact(Inertia.class));
 		artifacts.add(new AttributeArtifact(ItemCollectRadius.class));
-		artifacts.add(new AttributeArtifact(Shield.class));
-		artifacts.add(new AttributeArtifact(MaxFuel.class));
+		artifacts.add(new AttributeArtifact(ShieldCapacity.class));
+		artifacts.add(new AttributeArtifact(FuelCapacity.class));
 		artifacts.add(new AttributeArtifact(Luck.class));
 		artifacts.add(new AttributeArtifact(LandingDistance.class));
 
 		artifacts.add(new Divide());
 		artifacts.add(new Multiply());
-
-		
 	}
 
-	
 
 	public List<Alien> getAliens() {
 		return aliens;
@@ -117,8 +101,6 @@ public class SpaceShipProperties {
 		return artifacts;
 	}
 
-	public int getCurrentFuel() {
-		return currentFuel;
 	public int getCurrentInternalFuel() {
 		return currentInternalFuel;
 	}
@@ -154,42 +136,23 @@ public class SpaceShipProperties {
 	}
 
 	public void computeProperties() {
-		for (Attribute attribute: getAttributes()) {
+		for (Attribute attribute : getAttributes()) {
 			for (Alien alien : aliens) {
 				alien.modifyAttribute(attribute);
 			}
 		}
 	}
 
-	public int getMaxFuel() {
-		return (int) maxFuel.getCurrentValue();
-	}
-
-	/**
-	 * Updates the cached values. Call if the crew memvers of
-	 * the ship has changed.
-	 */
-	public void updateCache() {
-
-		// TODO: add compute methods
-
-		cachedInternalSpeed = 100f; 							// internal min  20.00f 	internal max  100.00f
-		cachedInternalManeuverability = 2.75f; 					// internal min   0.75f 	internal max    3.00f
-		cachedInternalLandslide = 0.2f; 						// internal min   0.20f 	internal max    3.00f
-		cachedInternalFuelCapacity = computeFuelCapacity();		// internal min 200.00f 	internal max 9999.00f
-		cachedInternalShieldCapacity = computeShieldCapacity();	// internal min 200.00f 	internal max 9999.00f
-		cachedInternalScanRadius = 5;							// internal min   5.00f 	internal max   50.00f
-		cachedInternalMisfortune = 0;							// internal min   0.00f 	internal max    1.00f
-	}
 
 	/**
 	 * Calculates the 'internal value' by the 'user value'.
-	 * @param userValue The 'user value' between the min and max.
+	 *
+	 * @param userValue   The 'user value' between the min and max.
 	 * @param internalMin The minimum 'internal value' of the attribute.
 	 * @param internalMax The maximum 'internal value' of the attribute.
 	 * @return The 'internal value'.
 	 */
-	public static float toInternalValue(int userValue, float internalMin, float internalMax) {
+	public static float toInternalValue(float userValue, float internalMin, float internalMax) {
 		float userValueScale = (float) (userValue) / (float) (USER_VALUE_MAX);
 		return ((internalMax - internalMin) * userValueScale) + internalMin;
 	}
@@ -200,31 +163,31 @@ public class SpaceShipProperties {
 	}
 
 	public float getSpeed() {
-		return cachedInternalSpeed;
+		return speed.getCurrentValue();
 	}
 
 	public float getManeuverability() {
-		return cachedInternalManeuverability;
+		return toInternalValue(inertia.getCurrentValue(), 0.75f, 20f);
 	}
 
 	public float getLandslide() {
-		return cachedInternalLandslide;
+		return toInternalValue(landingDistance.getCurrentValue(), 1f, 90f);
 	}
 
 	public int getFuelCapacity() {
-		return (int) fuelCapacity;
+		return (int) fuelCapacity.getCurrentValue();
 	}
 
 	public int getShieldCapacity() {
-		return (int) cachedInternalShieldCapacity;
+		return (int) shieldCapacity.getCurrentValue();
 	}
 
 	public float getScanRadius() {
-		return cachedInternalScanRadius;
+		return radius.getCurrentValue();
 	}
 
 	public float misFortune() {
-		return 0;
+		return 1 - luck.getCurrentValue(); //HÄ? wieso umgedreht?
 	}
 
 }

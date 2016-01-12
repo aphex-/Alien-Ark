@@ -84,8 +84,6 @@ public class Rocket extends GameObject implements Disposable {
 
 	private float tickFuelCount = 1;
 
-	private int maxFuel = SpaceShipProperties.properties.computeMaxFuel();
-
 	public Rocket() {
 		// init graphic
 		ModelLoader loader = new ObjLoader();

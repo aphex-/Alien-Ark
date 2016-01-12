@@ -3,8 +3,6 @@ package com.nukethemoon.libgdxjam.game.attributes;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.nukethemoon.libgdxjam.App;
-import com.nukethemoon.libgdxjam.game.artifacts.OperatorArtifact;
-import com.nukethemoon.libgdxjam.game.artifacts.ValueArtifact;
 
 public abstract class Attribute {
 
@@ -18,45 +16,45 @@ public abstract class Attribute {
 		this.currentValue = currentValue;
 	}
 
-	public static TextureRegion getSlotTexture(Class<? extends Attribute> clazz){
+	public static TextureRegion getSlotTexture(Class<? extends Attribute> clazz) {
 		String slot = "slot00";
-		if(clazz == Speed.class) {
+		if (clazz == Speed.class) {
 			slot = "attributeSpeed";
-		} else if(clazz == MaxFuel.class){
+		} else if (clazz == FuelCapacity.class) {
 			slot = "attributeFuelCapacity";
-		} else if(clazz == Luck.class){
+		} else if (clazz == Luck.class) {
 			slot = "attributeLuck";
-		} else if(clazz == Shield.class){
+		} else if (clazz == ShieldCapacity.class) {
 			slot = "attributeShieldCapacity";
-		} else if(clazz == LandingDistance.class){
+		} else if (clazz == LandingDistance.class) {
 			slot = "attributeLandingDistance";
-		} else if(clazz == ItemCollectRadius.class){
+		} else if (clazz == ItemCollectRadius.class) {
 			slot = "attributeItemCollectRadius";
-		} else if(clazz == Inertia.class){
+		} else if (clazz == Inertia.class) {
 			slot = "attributeTraegheit";
 		}
 		return App.TEXTURES.findRegion(slot);
 	}
 
-	public String name(){
+	public String name() {
 		return getName(getClass());
 	}
 
-	public static TextureRegion getPropertiesTexture(Class<? extends Attribute> clazz){
+	public static TextureRegion getPropertiesTexture(Class<? extends Attribute> clazz) {
 		String row = "row00";
-		if(clazz == Speed.class) {
+		if (clazz == Speed.class) {
 			row = "row03";
-		} else if(clazz == MaxFuel.class){
+		} else if (clazz == FuelCapacity.class) {
 			row = "row01";
-		} else if(clazz == Luck.class){
+		} else if (clazz == Luck.class) {
 			row = "row02";
-		} else if(clazz == Shield.class){
+		} else if (clazz == ShieldCapacity.class) {
 			row = "row04";
-		} else if(clazz == LandingDistance.class){
+		} else if (clazz == LandingDistance.class) {
 			row = "row05";
-		} else if(clazz == ItemCollectRadius.class){
+		} else if (clazz == ItemCollectRadius.class) {
 			row = "row07";
-		} else if(clazz == Inertia.class){
+		} else if (clazz == Inertia.class) {
 			row = "row06";
 		}
 		return App.TEXTURES.findRegion(row);
@@ -66,7 +64,7 @@ public abstract class Attribute {
 		return getDescription(getClass());
 	}
 
-	public static String getDescription(Class<? extends Attribute> clazz){
+	public static String getDescription(Class<? extends Attribute> clazz) {
 
 		return "Description of: " + clazz.getSimpleName().toUpperCase();
 	}
@@ -74,19 +72,19 @@ public abstract class Attribute {
 
 	public static String getName(Class<? extends Attribute> clazz) {
 		String name = "?";
-		if(clazz == Speed.class) {
+		if (clazz == Speed.class) {
 			name = "SPEED";
-		} else if(clazz == MaxFuel.class){
+		} else if (clazz == FuelCapacity.class) {
 			name = "MAXIMUM FUEL";
-		} else if(clazz == Luck.class){
+		} else if (clazz == Luck.class) {
 			name = "LUCK";
-		} else if(clazz == Shield.class){
+		} else if (clazz == ShieldCapacity.class) {
 			name = "MAXIMUM SHIELD";
-		} else if(clazz == LandingDistance.class){
+		} else if (clazz == LandingDistance.class) {
 			name = "LANDING DISTANCE";
-		} else if(clazz == ItemCollectRadius.class){
+		} else if (clazz == ItemCollectRadius.class) {
 			name = "ITEM COLLECT RADIUS";
-		} else if(clazz == Inertia.class){
+		} else if (clazz == Inertia.class) {
 			name = "INERTIA";
 		}
 
