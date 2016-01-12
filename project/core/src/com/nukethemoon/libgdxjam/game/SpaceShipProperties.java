@@ -9,7 +9,6 @@ import com.nukethemoon.libgdxjam.game.artifacts.operators.Divide;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Increase;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Multiply;
 import com.nukethemoon.libgdxjam.game.attributes.Attribute;
-import com.nukethemoon.libgdxjam.game.attributes.FuelConsumption;
 import com.nukethemoon.libgdxjam.game.attributes.Inertia;
 import com.nukethemoon.libgdxjam.game.attributes.ItemCollectRadius;
 import com.nukethemoon.libgdxjam.game.attributes.LandingDistance;
@@ -26,9 +25,8 @@ public class SpaceShipProperties {
 
 	transient public static final SpaceShipProperties properties = new SpaceShipProperties(); //TODO!
 
-	transient public static final int INITIAL_MAX_FUEL = 10000;
-	transient public static final float INITAL_FUEL_CONSUMPTION = 0.1f;
-	transient public static final int INITIAL_MAX_SHIELD = 1000;
+	transient public static final int INITIAL_MAX_FUEL = 200;
+	transient public static final int INITIAL_MAX_SHIELD = 100;
 
 	private List<String> collectedArtifactIds = new ArrayList<String>();
 
@@ -38,8 +36,8 @@ public class SpaceShipProperties {
 	private List<Artifact> artifacts = new ArrayList<Artifact>();
 	private List<Alien> aliens = new ArrayList<Alien>();
 
-	public int currentFuel;
-	public int currentShield;
+	private int currentFuel;
+	private int currentShield;
 
 	private Speed speed = new Speed(100);
 	private MaxFuel maxFuel = new MaxFuel(INITIAL_MAX_FUEL);
@@ -84,14 +82,7 @@ public class SpaceShipProperties {
 		alien = Alien.createAlien(a, o, v);
 		aliens.add(alien);
 
-		a = new AttributeArtifact(FuelConsumption.class);
-		v = new ValueArtifact(0.25f);
-		o = new Increase();
-		alien = Alien.createAlien(a, o, v);
-		aliens.add(alien);
-
 		computeMaxFuel();
-		computeFuelConsumption();
 		computeSpeedPerUnit();
 	}
 
@@ -113,33 +104,48 @@ public class SpaceShipProperties {
 	}
 
 	public int computeMaxFuel() {
-		if (aliens == null) {
+		// this changed the current and max value every time called
+		// I had to comment it out to test a fuel progress bar case
+		/*if (aliens == null) {
 			aliens = new ArrayList<Alien>();
 		}
-
 		for (Alien alien : aliens) {
 			alien.modifyAttribute(maxFuel);
 		}
-
-		currentFuel = (int) Math.min(currentFuel, maxFuel.getCurrentValue());
-		return (int) maxFuel.getCurrentValue();
+		return (int) maxFuel.getCurrentValue();*/
+		// TODO: depend on aliens
+		return INITIAL_MAX_FUEL;
 	}
 
-	public float computeFuelConsumption() {
-		FuelConsumption consumption = new FuelConsumption();
-		for (Alien alien : aliens) {
-			alien.modifyAttribute(consumption);
-		}
-		return consumption.getCurrentValue();
+	public int computeMaxShield() {
+		// TODO: depend on aliens
+		return INITIAL_MAX_SHIELD;
 	}
 
 	public int getCurrentFuel() {
 		return currentFuel;
 	}
 
+	public int setCurrentFuel(int fuel) {
+		currentFuel = Math.max(0, Math.min(fuel, computeMaxFuel()));
+		return currentFuel;
+	}
+
+	public int addCurrentFuel(int add) {
+		return setCurrentFuel(getCurrentFuel() + add);
+	}
 
 	public int getCurrentShield() {
 		return currentShield;
+	}
+
+	public int setCurrentShield(int shield) {
+		currentShield = Math.max(0, Math.min(shield, computeMaxShield()));
+		return currentShield;
+	}
+
+	public int addCurrentShield(int add) {
+		return setCurrentShield(getCurrentShield() + add);
 	}
 
 	public void addArtifact(String id) {

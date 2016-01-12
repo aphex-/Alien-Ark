@@ -468,6 +468,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRocketDisabledThrust() {
+		fuelProgressBar.setValue(rocket.getFuel(), rocket.getMaxFuel());
 		showToast("Landing procedure...");
 		particleSystem.remove(effectThrust);
 	}
@@ -523,7 +524,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public void onRocketScanStart() {
 		showToast("Scan started!");
 		rocket.setTractorBeamVisibility(true);
-		scanAnimation = new ScanAnimation(rocket.getTractorBeamModelInstance(), rocket.getScanRadus(),
+		scanAnimation = new ScanAnimation(rocket.getTractorBeamModelInstance(), rocket.getScanRadius(),
 				new AnimationFinishedListener() {
 			@Override
 			public void onAnimationFinished(BaseAnimation baseAnimation) {
@@ -536,7 +537,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private void onScanAnimationFinished(boolean wasCanceled) {
 		if (!wasCanceled) {
 			rocket.setTractorBeamVisibility(false);
-			final ArtifactObject artifactObject = planetController.tryCollect(rocket.getPosition(), rocket.getScanRadus());
+			final ArtifactObject artifactObject = planetController.tryCollect(rocket.getPosition(), rocket.getScanRadius());
 			if (artifactObject == null) {
 				showToast("Not close enough to an Artifact");
 			} else {

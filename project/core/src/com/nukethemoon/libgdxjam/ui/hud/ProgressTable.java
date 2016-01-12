@@ -32,10 +32,14 @@ public class ProgressTable extends Table {
 
 	public int setValue(int value, int max) {
 		float progress = (float) value / (float) max;
-		int barCount = (int) (progress * 8);
-
-
-		images[5].setVisible(false);
+		int barCount = (int) Math.floor(progress * images.length);
+		for (int i = 0; i < images.length; i++) {
+			if (i > barCount || value == 0) {
+				images[i].setVisible(false);
+			} else {
+				images[i].setVisible(true);
+			}
+		}
 		return barCount;
 	}
 }

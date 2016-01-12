@@ -129,8 +129,8 @@ public class Rocket extends GameObject implements Disposable {
 		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(speed));
 
 		// init properties
-		SpaceShipProperties.properties.currentFuel = SpaceShipProperties.INITIAL_MAX_FUEL;
-		SpaceShipProperties.properties.currentShield = SpaceShipProperties.INITIAL_MAX_SHIELD;
+		SpaceShipProperties.properties.setCurrentFuel(SpaceShipProperties.INITIAL_MAX_FUEL);
+		SpaceShipProperties.properties.setCurrentShield(SpaceShipProperties.INITIAL_MAX_SHIELD);
 
 		thrustSound = App.audioController.getSound("thrust.wav");
 	}
@@ -253,7 +253,7 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	private void onThrustEnabled() {
-		SpaceShipProperties.properties.currentFuel -= THRUST_START_FUEL_COST;
+		SpaceShipProperties.properties.addCurrentFuel(-THRUST_START_FUEL_COST);
 		if (isOutOfFuel()) {
 			return;
 		}
@@ -392,7 +392,7 @@ public class Rocket extends GameObject implements Disposable {
 			tickFuelCount = tickFuelCount - FUEL_CONSUMPTION;
 			if (tickFuelCount <= 0) {
 				tickFuelCount = 1;
-				SpaceShipProperties.properties.currentFuel--;
+				SpaceShipProperties.properties.addCurrentFuel(-1);
 				if (listener != null) {
 					listener.onRocketFuelConsumed();
 				}
@@ -415,12 +415,12 @@ public class Rocket extends GameObject implements Disposable {
 		lastDamageTime = System.currentTimeMillis();
 
 		if (ticksSinceLastLaunch > LAUNCH_INDESTRUCTIBLE_TICKS) {
-			SpaceShipProperties.properties.currentShield -= damage;
+			SpaceShipProperties.properties.addCurrentShield(-damage);
 			if (listener != null) {
 				listener.onRocketDamage();
 			}
 		}
-		if (SpaceShipProperties.properties.currentShield == 0) {
+		if (SpaceShipProperties.properties.getCurrentShield() == 0) {
 			onExplode();
 		}
 	}
@@ -435,12 +435,12 @@ public class Rocket extends GameObject implements Disposable {
 		}
 
 		if (type == CollisionTypes.FUEL) {
-			SpaceShipProperties.properties.currentFuel = SpaceShipProperties.properties.currentFuel + Balancing.FUEL_BONUS;
+			SpaceShipProperties.properties.addCurrentFuel(Balancing.FUEL_BONUS);
 			listener.onRocketFuelBonus();
 		}
 
 		if (type == CollisionTypes.SHIELD) {
-			SpaceShipProperties.properties.currentShield = SpaceShipProperties.properties.currentShield + Balancing.SHIELD_BONUS;
+			SpaceShipProperties.properties.addCurrentFuel(Balancing.SHIELD_BONUS);
 			listener.onRocketShieldBonus();
 		}
 	}
@@ -476,7 +476,7 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	public boolean isOutOfFuel() {
-		return SpaceShipProperties.properties.currentFuel <= 0;
+		return SpaceShipProperties.properties.getCurrentFuel() <= 0;
 	}
 
 
@@ -512,7 +512,7 @@ public class Rocket extends GameObject implements Disposable {
 		return tractorBeamModelInstance;
 	}
 
-	public float getScanRadus() {
+	public float getScanRadius() {
 		return 5f;
 	}
 }
