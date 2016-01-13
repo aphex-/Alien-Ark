@@ -1,3 +1,5 @@
+uniform float u_jumpValue;
+
 #ifdef GL_ES
 #define LOWP lowp
 #define MED mediump
@@ -184,5 +186,11 @@ void main() {
 	#else
 		gl_FragColor.a = 1.0;
 	#endif
+
+	if (u_jumpValue > 0.0) {
+		gl_FragColor.r = 1.0;
+		gl_FragColor.g = 0.0;
+		gl_FragColor.b = 1.0;
+	}
 
 }

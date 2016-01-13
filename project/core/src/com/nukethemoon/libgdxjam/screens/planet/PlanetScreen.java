@@ -16,6 +16,8 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.Renderable;
+import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
@@ -24,6 +26,8 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BufferedParticleBatch;
+import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
+import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
@@ -140,7 +144,19 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		rocket.setListener(this);
 		gson = new GsonBuilder().setPrettyPrinting().create();
 
-		modelBatch = new ModelBatch();
+		final String vertexShaderText = Gdx.files.internal("shaders/default.vertex.glsl").readString();
+		final String fragmentShaderText = Gdx.files.internal("shaders/default.fragment.glsl").readString();
+
+
+		modelBatch = new ModelBatch(new DefaultShaderProvider() {
+			@Override
+			protected Shader createShader (Renderable renderable) {
+				DefaultShader.Config config = new DefaultShader.Config(vertexShaderText, fragmentShaderText);
+				DefaultShader shader = new RocketShadowShader(renderable, config);
+				return shader;
+			}
+		});
+
 		environment = new Environment();
 
 		shapeRenderer = new ShapeRenderer();
