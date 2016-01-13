@@ -21,7 +21,7 @@ public class ExitPlanetAnimation extends BaseAnimation {
 	private final int targetZRotation = 90;
 	private final int targetXRotation = 30;
 
-	private Vector3 cameraTarget01 = new Vector3(0, 140, 100);
+	private Vector3 cameraTarget01 = new Vector3(0, 0, 100);
 
 	private Vector3 cameraStartPosition = new Vector3();
 
@@ -35,7 +35,7 @@ public class ExitPlanetAnimation extends BaseAnimation {
 		rocketStartPosition = rocket.getPosition();
 		xRotation = rocket.getXRotation();
 		zRotation = rocket.getZRotation();
-
+		rocket.setThirdPersonCam(null);
 		cameraStartPosition.set(camera.position);
 	}
 
@@ -51,10 +51,10 @@ public class ExitPlanetAnimation extends BaseAnimation {
 			transform.rotate(Vector3.X, xRotation + ((targetXRotation - xRotation) * steadyProgress)); // 30
 			transform.trn(rocketStartPosition);
 
-			tmpVector.set(cameraStartPosition);
-			tmpVector.sub(cameraTarget01).scl(steadyProgress);
-			camera.position.set(tmpVector);
-			camera.update();
+			//tmpVector.set(cameraStartPosition);
+			//tmpVector.sub(cameraTarget01).scl(steadyProgress);
+			//camera.position.set(tmpVector);
+			//camera.update();
 		}
 
 		if (fieldOfViewProgress > 0) {

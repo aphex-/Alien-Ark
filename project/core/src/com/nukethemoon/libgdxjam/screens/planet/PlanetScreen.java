@@ -124,12 +124,17 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		stage = new Stage(new ScreenViewport());
 
+		camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		camera.near = 1f;
+		camera.far = 30000f;
+
 		ani = new Ani();
 		uiSkin = pUISkin;
 		planetIndex = pPlanetIndex;
 		multiplexer = pMultiplexer;
 
 		rocket = new Rocket();
+		rocket.setThirdPersonCam(camera);
 		rocket.setListener(this);
 		gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -139,9 +144,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		shapeRenderer = new ShapeRenderer();
 		shapeRenderer.setAutoShapeType(true);
 
-		camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		camera.near = 1f;
-		camera.far = 30000f;
+
 
 		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/" + KNOWN_PLANETS[planetIndex] + "/sceneConfig.json");
 		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
@@ -305,11 +308,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			}
 		}
 
-		if (!freeCameraInput.isEnabled()) {
-			if (!pause) {
-				rocket.applyThirdPerson(camera);
-			}
-		} else {
+		if (freeCameraInput.isEnabled()) {
 			freeCameraInput.update(delta);
 		}
 		camera.update();

@@ -3,7 +3,7 @@ package com.nukethemoon.libgdxjam.screens.planet.gameobjects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -83,6 +83,7 @@ public class Rocket extends GameObject implements Disposable {
 	private RocketListener listener;
 
 	private float tickFuelCount = 1;
+	private PerspectiveCamera camera;
 
 	public Rocket() {
 		// init graphic
@@ -127,6 +128,10 @@ public class Rocket extends GameObject implements Disposable {
 		SpaceShipProperties.properties.setCurrentInternalShield((int) 	ShieldCapacity.INTERNAL_MAX);
 
 		thrustSound = App.audioController.getSound("thrust.wav");
+	}
+
+	public void setThirdPersonCam(PerspectiveCamera camera) {
+		this.camera = camera;
 	}
 
 	public void setListener(RocketListener listener) {
@@ -306,26 +311,7 @@ public class Rocket extends GameObject implements Disposable {
 		thirdPersonOffsetY++;
 	}
 
-	public void applyThirdPerson(Camera camera) {
-		Vector3 position = getPosition();
-		if (position.z < 0) {
-			return;
-		}
-		tmpCamPosition.set(position);
-		tmpCamOffset.set(getDirection());
-		tmpCamOffset.scl(-thirdPersonOffsetY);
-		tmpCamPosition.add(tmpCamOffset);
-		tmpCamPosition.z += THIRD_PERSON_OFFSET_Z;
-		// creating a delay for the camera
-		tmpCamPosition.x = lastCamPosition.x + (tmpCamPosition.x - lastCamPosition.x) / 15f;
-		tmpCamPosition.y = lastCamPosition.y + (tmpCamPosition.y - lastCamPosition.y) / 15f;
-		tmpCamPosition.z = lastCamPosition.z + (tmpCamPosition.z - lastCamPosition.z) / 15f;
-		tmpCamPosition.z = Math.max(tmpCamPosition.z, 1);
-		camera.position.set(tmpCamPosition);
-		camera.lookAt(position);
-		camera.up.set(Vector3.Z);
-		lastCamPosition.set(camera.position);
-	}
+
 
 	public void drawModel(ModelBatch modelBatch, Environment environment, ParticleEffect thrustEffect,
 						  ParticleEffect effectExplosion) {
@@ -468,10 +454,18 @@ public class Rocket extends GameObject implements Disposable {
 		return tractorBeamModelInstance;
 	}
 
-	static class RocketMotionState extends btMotionState {
-		private Matrix4 transform;
+	public ModelInstance getRocketModelInstance() {
+		return rocketModelInstance;
+	}
 
+	/**
+	 * This class is used by Bullet to update
+	 * and read the transform of the rocket.
+	 */
+	class RocketMotionState extends btMotionState {
+		private Matrix4 transform;
 		private Vector3 tmpVector = new Vector3();
+		private Vector3 tmpVector2 = new Vector3();
 
 		public RocketMotionState(Matrix4 transform) {
 			this.transform = transform;
@@ -483,12 +477,35 @@ public class Rocket extends GameObject implements Disposable {
 		@Override
 		public void setWorldTransform (Matrix4 worldTrans) {
 			// ignore rotation
-			transform.idt();
-			transform.trn(worldTrans.getTranslation(tmpVector));
+			transform.setToTranslation(worldTrans.getTranslation(tmpVector));
+			applyThirdPerson(worldTrans);
 		}
+
+		public void applyThirdPerson(Matrix4 worldTrans) {
+			if (camera == null) {
+				return;
+			}
+			Vector3 position = worldTrans.getTranslation(tmpVector2);
+			if (position.z < 0) {
+				return;
+			}
+			tmpCamPosition.set(position);
+			tmpCamOffset.set(getDirection());
+			tmpCamOffset.scl(-thirdPersonOffsetY);
+			tmpCamPosition.add(tmpCamOffset);
+			tmpCamPosition.z += THIRD_PERSON_OFFSET_Z;
+			// creating a delay for the camera
+			tmpCamPosition.x = lastCamPosition.x + (tmpCamPosition.x - lastCamPosition.x) / 10f;
+			tmpCamPosition.y = lastCamPosition.y + (tmpCamPosition.y - lastCamPosition.y) / 10f;
+			tmpCamPosition.z = lastCamPosition.z + (tmpCamPosition.z - lastCamPosition.z) / 10f;
+			tmpCamPosition.z = Math.max(tmpCamPosition.z, 1);
+			camera.position.set(tmpCamPosition);
+			camera.lookAt(position);
+			camera.up.set(Vector3.Z);
+			lastCamPosition.set(camera.position);
+		}
+
 	}
 
-	public ModelInstance getRocketModelInstance() {
-		return rocketModelInstance;
-	}
+
 }
