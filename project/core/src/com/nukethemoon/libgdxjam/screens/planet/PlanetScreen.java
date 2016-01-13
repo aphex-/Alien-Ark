@@ -6,21 +6,17 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
@@ -53,7 +49,6 @@ import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
-import com.nukethemoon.libgdxjam.screens.planet.helper.SphereTextureProvider;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.libgdxjam.ui.GameOverTable;
@@ -69,7 +64,7 @@ import com.nukethemoon.tools.ani.BaseAnimation;
 public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener, RocketListener,
 		ControllerPhysic.PhysicsListener  {
 
-	private ModelInstance environmentSphere;
+
 	private ModelBatch modelBatch;
 	private Environment environment;
 
@@ -108,7 +103,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	public static Gson gson;
 	private AssetManager assetManager;
-	private Model sphereModel;
 
 	private final MiniMap miniMap;
 
@@ -181,7 +175,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		miniMap = new MiniMap(rocket, planetController);
 
-		loadSphere(planetConfig.id);
+
 		onReloadScene(planetConfig);
 		initParticles();
 		initStage(planetConfig);
@@ -242,13 +236,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		for (DirectionalLight dLight : planetConfig.environmentDirectionalLights) {
 			environment.add(dLight);
 		}
-	}
-
-	private void loadSphere(String planetId) {
-		ModelLoader loader = new ObjLoader();
-		sphereModel = loader.loadModel(Gdx.files.internal("models/sphere01.obj"),
-				new SphereTextureProvider(planetId));
-		environmentSphere = new ModelInstance(sphereModel);
 	}
 
 	private void initStage(final PlanetConfig planetConfig) {
@@ -349,12 +336,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		modelBatch.begin(camera);
 		rocket.drawModel(modelBatch, environment, effectThrust, effectExplosion);
-		planetController.render(modelBatch, environment, false);
-		environmentSphere.transform.idt();
-		environmentSphere.transform.setToTranslation(rocket.getPosition().x, rocket.getPosition().y, 0);
-		environmentSphere.transform.scl(1000);
-
-		modelBatch.render(environmentSphere);
+		planetController.render(modelBatch, environment, false, rocket.getPosition());
 		modelBatch.end();
 
 		particleSystem.begin();

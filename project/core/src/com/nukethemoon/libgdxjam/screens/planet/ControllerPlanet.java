@@ -1,5 +1,7 @@
 package com.nukethemoon.libgdxjam.screens.planet;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -7,6 +9,7 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector2;
@@ -20,6 +23,7 @@ import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPart;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPortal;
+import com.nukethemoon.libgdxjam.screens.planet.helper.SphereTextureProvider;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.tools.ani.Ani;
@@ -41,115 +45,126 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	public static float TILE_GRAPHIC_SIZE = 3f;
 	public static float TRACTOR_BEAM_TOLERANCE_RADIUS = 5f;
+	public static int INFINITE_WATER_SIZE = 10000;
+	private static float infiniteWaterHeight;
 
-	private final PlanetPortal planetPortal;
+		private final PlanetPortal planetPortal;
 
-	private final Model waterModel;
-	private final ModelInstance waterModelInstance;
+		private final Model waterModel;
+		private final ModelInstance waterModelInstance;
 
-	private Opus opus;
-	private PlanetConfig planetConfig;
-	private ControllerPhysic controllerPhysic;
-	private Ani ani;
+		private Opus opus;
+		private PlanetConfig planetConfig;
+		private ControllerPhysic controllerPhysic;
+		private Ani ani;
 
-	private List<Point> currentVisiblePlanetParts = new ArrayList<Point>();
-	private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
-	private List<ArtifactObject> currentVisibleArtifacts = new ArrayList<ArtifactObject>();
-	private List<PointWithId> allArtifactsOnPlanet = new ArrayList<PointWithId>();
+		private List<Point> currentVisiblePlanetParts = new ArrayList<Point>();
+		private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
+		private List<ArtifactObject> currentVisibleArtifacts = new ArrayList<ArtifactObject>();
+		private List<PointWithId> allArtifactsOnPlanet = new ArrayList<PointWithId>();
 
-	private Map<Point, PlanetPart> planetPartBuffer = new HashMap<Point, PlanetPart>();
-	private final TypeInterpreter typeInterpreter;
+		private Map<Point, PlanetPart> planetPartBuffer = new HashMap<Point, PlanetPart>();
+		private final TypeInterpreter typeInterpreter;
 
-	private CollectedItemCache collectedItemCache = new CollectedItemCache();
+		private CollectedItemCache collectedItemCache = new CollectedItemCache();
 
-	private List<Point> tmpRequestList = new ArrayList<Point>();
+		private List<Point> tmpRequestList = new ArrayList<Point>();
 
-	private int requestRadiusInTiles = 110;
-	private int lastRequestCenterTileX = 0;
-	private int lastRequestCenterTileY = 0;
-	private long requestCount = 0;
-	private int chunkBufferSize;
+		private int requestRadiusInTiles = 110;
+		private int lastRequestCenterTileX = 0;
+		private int lastRequestCenterTileY = 0;
+		private long requestCount = 0;
+		private int chunkBufferSize;
 
-	private List<Point> tmpRemoveList = new ArrayList<Point>();
-	private List<Collectible> tmpRemoveList2 = new ArrayList<Collectible>();
-	private List<Point> tmpRemoveList3 = new ArrayList<Point>();
+		private ModelInstance environmentSphere;
+		private Model sphereModel;
 
-
-	private Vector2 nearestArtifactPosition = new Vector2();
-
-	private Vector2 tmpVec1 = new Vector2();
-	private Vector2 tmpVector1 = new Vector2();
-	private Vector2 tmpVector2 = new Vector2();
-	private Vector3 tmpVec3 = new Vector3();
-	private Vector3 tmpVec4 = new Vector3();
-	private Vector2 tmpVec5 = new Vector2();
-	private Vector2 tmpVec6 = new Vector2();
-	private Vector3 tmpVec7 = new Vector3();
+		private List<Point> tmpRemoveList = new ArrayList<Point>();
+		private List<Collectible> tmpRemoveList2 = new ArrayList<Collectible>();
+		private List<Point> tmpRemoveList3 = new ArrayList<Point>();
 
 
-	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
-		this.planetConfig = pPlanetConfig;
-		this.controllerPhysic = controllerPhysic;
-		this.ani = ani;
+		private Vector2 nearestArtifactPosition = new Vector2();
+
+		private Vector2 tmpVec1 = new Vector2();
+		private Vector2 tmpVector1 = new Vector2();
+		private Vector2 tmpVector2 = new Vector2();
+		private Vector3 tmpVec3 = new Vector3();
+		private Vector3 tmpVec4 = new Vector3();
+		private Vector2 tmpVec5 = new Vector2();
+		private Vector2 tmpVec6 = new Vector2();
+		private Vector3 tmpVec7 = new Vector3();
 
 
-		OpusLoaderJson loader = new OpusLoaderJson();
-		try {
-			// load opus by a json file
-			opus = loader.load("entities/planets/" + planetName + "/opusConfig.json");
-			;
-			com.nukethemoon.tools.opusproto.log.Log.logLevel = com.nukethemoon.tools.opusproto.log.Log.LogType.Error;
+		public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
+			this.planetConfig = pPlanetConfig;
+			this.controllerPhysic = controllerPhysic;
+			this.ani = ani;
 
-			chunkBufferSize = (requestRadiusInTiles / opus.getConfig().chunkSize) * 2;
 
-			// add a callback to receive chunks
-			opus.addChunkListener(this);
+			OpusLoaderJson loader = new OpusLoaderJson();
+			try {
+				// load opus by a json file
+				opus = loader.load("entities/planets/" + planetName + "/opusConfig.json");
+				;
+				com.nukethemoon.tools.opusproto.log.Log.logLevel = com.nukethemoon.tools.opusproto.log.Log.LogType.Error;
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+				chunkBufferSize = (requestRadiusInTiles / opus.getConfig().chunkSize) * 2;
 
-		typeInterpreter = toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter());
+				// add a callback to receive chunks
+				opus.addChunkListener(this);
 
-		updateNearestArtifact(0, 0);
-
-		for (PointWithId p : pPlanetConfig.artifacts) {
-			if (!SpaceShipProperties.properties.isCollectedArtifact(p.id)) {
-				allArtifactsOnPlanet.add(p);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+
+			typeInterpreter = toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter());
+
+			updateNearestArtifact(0, 0);
+
+			for (PointWithId p : pPlanetConfig.artifacts) {
+				if (!SpaceShipProperties.properties.isCollectedArtifact(p.id)) {
+					allArtifactsOnPlanet.add(p);
+				}
+			}
+
+			// init water
+			waterModel = createInfiniteWaterPart(typeInterpreter, 0, pPlanetConfig);
+			waterModelInstance = new ModelInstance(waterModel);
+
+			planetPortal = new PlanetPortal();
+			for (btRigidBody body : planetPortal.rigidBodyList) {
+				controllerPhysic.addRigidBody(body, CollisionTypes.GROUND);
+			}
+			for (btCollisionObject object : planetPortal.collisionObjectList) {
+				controllerPhysic.addCollisionObject(object);
+			}
+
+			loadSphere(planetConfig.id);
+
 		}
 
-		// init water
-		waterModel = createInfiniteWaterPart(typeInterpreter, 0, pPlanetConfig);
-		waterModelInstance = new ModelInstance(waterModel);
-
-		planetPortal = new PlanetPortal();
-		for (btRigidBody body : planetPortal.rigidBodyList) {
-			controllerPhysic.addRigidBody(body, CollisionTypes.GROUND);
-		}
-		for (btCollisionObject object : planetPortal.collisionObjectList) {
-			controllerPhysic.addCollisionObject(object);
-		}
-
+	private void loadSphere(String planetId) {
+		ModelLoader loader = new ObjLoader();
+		sphereModel = loader.loadModel(Gdx.files.internal("models/sphere01.obj"),
+				new SphereTextureProvider(planetId));
+		environmentSphere = new ModelInstance(sphereModel);
 	}
 
 	public static Model createInfiniteWaterPart(TypeInterpreter interpreter, int landscapeIndex, PlanetConfig planetConfig) {
 		ModelBuilder modelBuilder = new ModelBuilder();
 		MeshBuilder builder = new MeshBuilder();
-		float WATER_HEIGHT = interpreter.it.get(landscapeIndex).endValue;
+		float waterHeight = interpreter.it.get(landscapeIndex).endValue;
 		builder.begin(PlanetPart.VERTEX_ATTRIBUTES, GL20.GL_TRIANGLES);
-		float z = WATER_HEIGHT * planetConfig.landscapeHeight - 1;
-		float width = 1000;
-		float height = 1000;
-		Vector3 corner01 = new Vector3(-1000f, -1000f, z);
-		Vector3 corner02 = new Vector3(width, -10000f, z);
-		Vector3 corner03 = new Vector3(width, height, z);
-		Vector3 corner04 = new Vector3(-1000f, height, z);
+		infiniteWaterHeight = waterHeight * planetConfig.landscapeHeight - 1;
+		Vector3 corner01 = new Vector3(-INFINITE_WATER_SIZE, -INFINITE_WATER_SIZE, infiniteWaterHeight);
+		Vector3 corner02 = new Vector3(INFINITE_WATER_SIZE, -INFINITE_WATER_SIZE, infiniteWaterHeight);
+		Vector3 corner03 = new Vector3(INFINITE_WATER_SIZE, INFINITE_WATER_SIZE, infiniteWaterHeight);
+		Vector3 corner04 = new Vector3(-INFINITE_WATER_SIZE, INFINITE_WATER_SIZE, infiniteWaterHeight);
 		builder.rect(corner01, corner02, corner03, corner04, new Vector3(0, 0, 1));
 		Material waterMaterial = planetConfig.layerConfigs.get(landscapeIndex).material;
 		Mesh mesh = builder.end();
 		modelBuilder.begin();
-		modelBuilder.node().id = PlanetPart.LANDSCAPE_NODE_NAME + landscapeIndex;
 		modelBuilder.part(PlanetPart.LANDSCAPE_PART_NAME + landscapeIndex, mesh, GL20.GL_TRIANGLES, waterMaterial);
 		return modelBuilder.end();
 	}
@@ -347,12 +362,13 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 	}
 
-	public void render(ModelBatch batch, Environment environment, boolean planetOnly) {
+	public void render(ModelBatch batch, Environment environment, boolean planetOnly, Vector3 rocketPosition) {
 		for (Map.Entry<Point, PlanetPart> entry : planetPartBuffer.entrySet()) {
 			PlanetPart planetPart = entry.getValue();
 			renderEnv(planetPart.getModelInstance(), batch, environment);
 		}
 
+		waterModelInstance.transform.setToTranslation(rocketPosition.x, rocketPosition.y, infiniteWaterHeight);
 		renderEnv(waterModelInstance, batch, environment);
 
 		if (planetOnly) {
@@ -361,6 +377,10 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		planetPortal.render(batch, environment);
 
+		environmentSphere.transform.idt();
+		environmentSphere.transform.setToTranslation(rocketPosition.x, rocketPosition.y, 0);
+		environmentSphere.transform.scl(1000);
+		batch.render(environmentSphere);
 
 		for (Collectible c : currentVisibleCollectibles) {
 			renderEnv(c.getModelInstance(), batch, environment);

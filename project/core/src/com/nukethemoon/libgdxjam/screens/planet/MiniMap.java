@@ -78,7 +78,7 @@ public class MiniMap {
 
 		// === mini map landscape ===
 		miniMapModelBatch.begin(miniMapCamera);
-		planetController.render(miniMapModelBatch, null, true);
+		planetController.render(miniMapModelBatch, null, true, rocketPosition);
 		miniMapModelBatch.end();
 
 		// === mini map items ===
