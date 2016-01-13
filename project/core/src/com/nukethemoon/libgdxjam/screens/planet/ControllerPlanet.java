@@ -446,7 +446,6 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		for (Point p : tmpRemoveList3) {
 			disposePlanetPart(p);
 		}
-		waterModel.dispose();
 	}
 
 	/**

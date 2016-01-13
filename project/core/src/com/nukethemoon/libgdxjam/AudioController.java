@@ -33,7 +33,8 @@ public class AudioController {
 			"match_highlight.mp3",
 			"thrust.wav",
 			"bonus_stream.mp3",
-			"dialogHighlight.mp3"
+			"dialogHighlight.mp3",
+			"robo_laser.mp3"
 	};
 
 
