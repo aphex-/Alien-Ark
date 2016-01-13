@@ -1,6 +1,7 @@
 package com.nukethemoon.libgdxjam.game;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.game.artifacts.AttributeArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.OperatorArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.ValueArtifact;
@@ -22,11 +23,16 @@ public class Alien {
 		attribute.apply(attributeToModify, operator, value);
 	}
 
-	public static void createAlien(Artifact... artifacts) {
+	public static boolean createAlien(Artifact... artifacts) {
 
 		AttributeArtifact attribute = findAttribute(artifacts);
 		OperatorArtifact operator = findOperator(artifacts);
 		ValueArtifact value = findValue(artifacts);
+
+		if(attribute == null || operator == null || value == null){
+			return false;
+		}
+
 		Alien a = new Alien(attribute, operator, value);
 		SpaceShipProperties.properties.getAliens().add(a);
 		SpaceShipProperties.properties.getArtifacts().remove(attribute);
@@ -34,6 +40,8 @@ public class Alien {
 		SpaceShipProperties.properties.getArtifacts().remove(value);
 
 		SpaceShipProperties.properties.computeProperties();
+
+		return true;
 	}
 
 	private static <T extends Artifact> T find(Artifact[] artifacts, Class<T> clazz){

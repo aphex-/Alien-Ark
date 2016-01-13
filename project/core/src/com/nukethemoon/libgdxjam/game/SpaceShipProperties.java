@@ -65,7 +65,6 @@ public class SpaceShipProperties {
 
 	public void testInit() {
 
-
 		ValueArtifact v = new ValueArtifact(10);
 		OperatorArtifact o = new Increase();
 
@@ -74,6 +73,7 @@ public class SpaceShipProperties {
 		artifacts.add(v);
 		artifacts.add(o);
 		artifacts.add(new ValueArtifact(10));
+		artifacts.add(new ValueArtifact(15));
 		artifacts.add(new AttributeArtifact(Inertia.class));
 		artifacts.add(new AttributeArtifact(ItemCollectRadius.class));
 		artifacts.add(new AttributeArtifact(ShieldCapacity.class));
@@ -84,6 +84,7 @@ public class SpaceShipProperties {
 		Alien.createAlien(v, o, new AttributeArtifact(Speed.class));
 
 		artifacts.add(new Divide());
+		artifacts.add(new Increase());
 		artifacts.add(new Multiply());
 	}
 

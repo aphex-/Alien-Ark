@@ -26,6 +26,7 @@ import com.nukethemoon.libgdxjam.game.Alien;
 import com.nukethemoon.libgdxjam.game.Artifact;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.game.attributes.Attribute;
+import com.nukethemoon.libgdxjam.ui.DialogTable;
 import com.nukethemoon.libgdxjam.ui.hud.ShipProgressBar;
 import com.nukethemoon.tools.ani.Ani;
 
@@ -42,8 +43,8 @@ import java.util.List;
 
 public class ArkScreen implements Screen {
 
-	public static final int INVENTORY_WIDTH = 245;
-	public static final int INVENTORY_OFFSET_X = 75;
+	public static final int INVENTORY_WIDTH = 255;
+	public static final int INVENTORY_OFFSET_X = 70;
 	public static final int INVENTORY_HEIGHT = 355;
 	public static final int INVENTORY_Y = 200;
 	private final Ani ani;
@@ -52,7 +53,6 @@ public class ArkScreen implements Screen {
 	private WorkbenchSlot workbenchSlot3;
 
 	private Image resultAreaImg;
-	private Image resultAreaHighlight;
 
 	private SpriteBatch spriteBatch;
 
@@ -96,6 +96,9 @@ public class ArkScreen implements Screen {
 
 		stage.addActor(fuelProgressBar);
 		stage.addActor(shieldProgressBar);
+
+
+		App.config.tutorialEnabled = true;
 	}
 
 	@Override
@@ -136,6 +139,7 @@ public class ArkScreen implements Screen {
 
 		multiplexer.addProcessor(stage);
 
+		App.TUTORIAL_CONTROLLER.onArkEntered();
 	}
 
 	private void createHintTexts() {
@@ -208,7 +212,7 @@ public class ArkScreen implements Screen {
 		artifactsTable.padRight(2);
 		artifactsTable.padLeft(2);
 		artifactsTable.padBottom(6);
-		artifactsTable.top();
+		artifactsTable.top().left();
 		ScrollPane artifactsScrollPane = new ScrollPane(artifactsTable);
 
 		artifactsScrollPane.setX(INVENTORY_OFFSET_X);
@@ -226,13 +230,6 @@ public class ArkScreen implements Screen {
 
 		stage.addActor(artifactCount);
 
-		alienCount = new Label("0", skin);
-		alienCount.setStyle(Styles.LABEL_VALUE_ARTIFACT);
-		alienCount.setX(Gdx.graphics.getWidth() - 120);
-		alienCount.setY(560);
-
-		stage.addActor(alienCount);
-
 	}
 
 	private void createAlienInventory() {
@@ -242,16 +239,24 @@ public class ArkScreen implements Screen {
 		alienTable.padRight(2);
 		alienTable.padLeft(2);
 		alienTable.padBottom(6);
-		alienTable.top();
+		alienTable.top().left();
 
 		ScrollPane alienScrollPane = new ScrollPane(alienTable);
 		alienScrollPane.setX(Gdx.graphics.getWidth() - INVENTORY_OFFSET_X - INVENTORY_WIDTH);
+
 		alienScrollPane.setY(INVENTORY_Y);
 		alienScrollPane.setWidth(INVENTORY_WIDTH);
 		alienScrollPane.setHeight(INVENTORY_HEIGHT);
 		alienScrollPane.setScrollingDisabled(true, false);
 
 		stage.addActor(alienScrollPane);
+
+		alienCount = new Label("0", skin);
+		alienCount.setStyle(Styles.LABEL_VALUE_ARTIFACT);
+		alienCount.setX(Gdx.graphics.getWidth() - 120);
+		alienCount.setY(560);
+
+		stage.addActor(alienCount);
 	}
 
 	private void updateArtifactsInventory() {
@@ -298,9 +303,7 @@ public class ArkScreen implements Screen {
 
 				@Override
 				public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Payload payload, DragAndDrop.Target target) {
-					if (target != null) {
-						artifactsTable.removeActor(getActor());
-					} else {
+					if (target == null) {
 						actor.setVisible(true);
 					}
 				}
@@ -347,7 +350,7 @@ public class ArkScreen implements Screen {
 		dragAndDrop.addTarget(new DragAndDrop.Target(slot) {
 			@Override
 			public boolean drag(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
-				//TODO
+				//TODO highlight that slot is hit
 				return true;
 			}
 
@@ -360,10 +363,10 @@ public class ArkScreen implements Screen {
 			public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
 				if (!slot.isOccupied()) {
 					slot.insertArtifact((Artifact) payload.getObject());
-					fuelProgressBar.updateFromShipProperties();
-					shieldProgressBar.updateFromShipProperties();
 					updateResultSlot();
 
+				} else {
+					source.getActor().setVisible(true);
 				}
 
 			}
@@ -378,16 +381,23 @@ public class ArkScreen implements Screen {
 			resultAreaImg.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
-					Alien.createAlien(workbenchSlot1.pop(), workbenchSlot2.pop(), workbenchSlot3.pop());
-					updateResultSlot();
-					updateAlienInventory();
-					updateArtifactsInventory();
+					if(Alien.createAlien(workbenchSlot1.pop(), workbenchSlot2.pop(), workbenchSlot3.pop())) {
+						updateResultSlot();
+						updateAlienInventory();
+						updateArtifactsInventory();
 
-					propertiesTable.clearChildren();
-					createPropertiesList();
-					//todo (optional) highlight updated property
+						propertiesTable.clearChildren();
+						createPropertiesList();
+						//todo (optional) highlight updated property
 
-					App.TUTORIAL_CONTROLLER.onAlienCrafted();
+						fuelProgressBar.updateFromShipProperties();
+						shieldProgressBar.updateFromShipProperties();
+					} else {
+						stage.addActor(new DialogTable(skin, new String[]{"To craft an usable ALIEN you need", "to use 3 different kind of ARTIFACTS.", "", "Try again!"}, "HYBRIDIZATION FAILED"));
+						updateResultSlot();
+						updateArtifactsInventory();
+					}
+					resultAreaImg.removeListener(this);
 				}
 			});
 		} else {
@@ -435,10 +445,6 @@ public class ArkScreen implements Screen {
 	@Override
 	public void dispose() {
 		stage.dispose();
-	}
-
-	private static float invertYAxis(float yValue) {
-		return Gdx.graphics.getHeight() - yValue;
 	}
 
 	private class WorkbenchSlot extends Actor {

@@ -21,7 +21,6 @@ public class TutorialController {
 	private Ani ani;
 	private DialogTable dialogTable;
 
-
 	public enum TutorialStep {
 		NULL,
 		REACH_PLANET,
@@ -133,9 +132,10 @@ public class TutorialController {
 
 		tutorialDialogs.put(TutorialStep.CRAFT_AN_ALIEN, new DialogTable(skin, new String[]{
 				"The ARTIFACTS you collected are",
-				"somewhat organic life forms.",
-				"With the lab we have on board you can",
-				"easily hybridize them into fully-fletched ALIENS!"
+				"organic life forms.",
+				"With the lab that is on board you can",
+				"easily hybridize them into fully-fletched ALIENS!",
+				"Drag & Drop three ARTIFACTS into the LAB."
 		}, "TUTORIAL 08"));
 
 		tutorialDialogs.put(TutorialStep.END_TUTORIAL, new DialogTable(skin, new String[]{
@@ -249,7 +249,7 @@ public class TutorialController {
 		}
 	}
 
-	public void onAlienCrafted() {
+	public void onArkEntered() {
 		if (App.config.tutorialEnabled) {
 			if (currentStep == TutorialStep.CRAFT_AN_ALIEN) {
 				next();
