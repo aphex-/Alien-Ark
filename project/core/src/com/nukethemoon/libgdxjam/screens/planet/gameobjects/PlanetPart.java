@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.model.NodePart;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
@@ -37,7 +38,7 @@ public class PlanetPart extends GameObject {
 
 	private static final float COLLECTIBLE_GROUND_OFFSET = 5;
 
-	private final int VERTEX_ATTRIBUTES = VertexAttributes.Usage.Position
+	private static final int VERTEX_ATTRIBUTES = VertexAttributes.Usage.Position
 			| VertexAttributes.Usage.ColorUnpacked
 			| VertexAttributes.Usage.Normal;
 
@@ -94,12 +95,6 @@ public class PlanetPart extends GameObject {
 
 		modelBuilder.begin();
 		createLandscapePart(chunk);
-		for (int i = 0; i < pPlanetConfig.layerConfigs.size(); i++) {
-			PlanetConfig.LandscapeLayerConfig layerConfig = pPlanetConfig.layerConfigs.get(i);
-			if (CollisionTypes.byName(layerConfig.collisionType) == CollisionTypes.WATER) {
-				createWaterPart(chunk, i);
-			}
-		}
 		model = modelBuilder.end();
 		modelInstance = new ModelInstance(model);
 		modelInstance.transform.translate(getGraphicOffsetX(chunk), getGraphicOffsetY(chunk), 0);
@@ -159,22 +154,16 @@ public class PlanetPart extends GameObject {
 			CollisionTypes landscapeType = CollisionTypes.byName(planetConfig.layerConfigs.get(landscapeLayerIndex).collisionType);
 
 			if (areAllPartsValid(landscapeNode)) {
-				btCollisionShape collisionShape = Bullet.obtainStaticNodeShape(landscapeNode, false);
-				shapes.add(collisionShape);
-
 				if (landscapeType != CollisionTypes.WATER) {
+					btCollisionShape collisionShape = Bullet.obtainStaticNodeShape(landscapeNode, false);
+					shapes.add(collisionShape);
+
 					float mass = 0;
 					float friction = 1;
 					PlanetConfig.LandscapeLayerConfig layerConfig = planetConfig.layerConfigs.get(landscapeLayerIndex);
 					int userValue = CollisionTypes.byName(layerConfig.collisionType).mask;
 					addRigidBody(collisionShape, mass, friction, userValue,
 							new StandardMotionState(modelInstance.transform));
-				} else {
-					btCollisionObject object = new btCollisionObject();
-					object.setCollisionShape(collisionShape);
-					object.setWorldTransform(modelInstance.transform);
-					object.setUserValue(CollisionTypes.WATER.mask);
-					addCollisionObject(object);
 				}
 			}
 		}
@@ -186,6 +175,9 @@ public class PlanetPart extends GameObject {
 	 * @return True if the node is valid.
 	 */
 	private boolean areAllPartsValid(Node node) {
+		if (node == null) {
+			return false;
+		}
 		for (NodePart nodePart : node.parts) {
 			boolean usesTriangles = (nodePart.meshPart.primitiveType == GL20.GL_TRIANGLES);
 			if ((nodePart.meshPart.size <= 0) || !usesTriangles) {
@@ -396,24 +388,27 @@ public class PlanetPart extends GameObject {
 	 * Creates a water plane.
 	 * @param chunk The chunk.
 	 */
-	private void createWaterPart(Chunk chunk, int landscapeIndex) {
-		MeshBuilder builder = meshBuilders.get(landscapeIndex);
+	public static Model createWaterPart(TypeInterpreter interpreter, int landscapeIndex, PlanetConfig planetConfig) {
+		ModelBuilder modelBuilder = new ModelBuilder();
+		MeshBuilder builder = new MeshBuilder();
 		float WATER_HEIGHT = interpreter.it.get(landscapeIndex).endValue;
 		builder.begin(VERTEX_ATTRIBUTES, GL20.GL_TRIANGLES);
 		float z = WATER_HEIGHT * planetConfig.landscapeHeight;
-		float width = chunk.getWidth() * tileSize;
-		float height = chunk.getHeight() * tileSize;
+		float width = 1000;
+		float height = 1000;
 
-		Vector3 corner01 = new Vector3(0f, 0f, z);
-		Vector3 corner02 = new Vector3(width, 0f, z);
+		Vector3 corner01 = new Vector3(-1000f, -1000f, z);
+		Vector3 corner02 = new Vector3(width, -10000f, z);
 		Vector3 corner03 = new Vector3(width, height, z);
-		Vector3 corner04 = new Vector3(0f, height, z);
+		Vector3 corner04 = new Vector3(-1000f, height, z);
 
 		builder.rect(corner01, corner02, corner03, corner04, new Vector3(0, 0, 1));
 		Material waterMaterial = planetConfig.layerConfigs.get(landscapeIndex).material;
 		Mesh mesh = builder.end();
+		modelBuilder.begin();
 		modelBuilder.node().id = LANDSCAPE_NODE_NAME + landscapeIndex;
 		modelBuilder.part(LANDSCAPE_PART_NAME + landscapeIndex, mesh, GL20.GL_TRIANGLES, waterMaterial);
+		return modelBuilder.end();
 	}
 
 
@@ -437,4 +432,5 @@ public class PlanetPart extends GameObject {
 		}
 		model.dispose();
 	}
+
 }

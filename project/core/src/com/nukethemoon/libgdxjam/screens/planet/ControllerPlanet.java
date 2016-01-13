@@ -1,11 +1,15 @@
 package com.nukethemoon.libgdxjam.screens.planet;
 
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.Log;
@@ -38,6 +42,9 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	private final PlanetPortal planetPortal;
 
+	private final Model waterModel;
+	private final ModelInstance waterModelInstance;
+
 	private Opus opus;
 	private PlanetConfig planetConfig;
 	private ControllerPhysic controllerPhysic;
@@ -55,7 +62,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	private List<Point> tmpRequestList = new ArrayList<Point>();
 
-	private int requestRadiusInTiles = 100;
+	private int requestRadiusInTiles = 110;
 	private int lastRequestCenterTileX = 0;
 	private int lastRequestCenterTileY = 0;
 	private long requestCount = 0;
@@ -109,6 +116,17 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 				allArtifactsOnPlanet.add(p);
 			}
 		}
+
+		// init water
+		waterModel = PlanetPart.createWaterPart(typeInterpreter, 0, pPlanetConfig);
+		waterModelInstance = new ModelInstance(waterModel);
+		btCollisionShape waterCollisionShape = Bullet.obtainStaticNodeShape(waterModel.nodes.first(), false);
+		btCollisionObject waterCollisionObject = new btCollisionObject();
+		waterCollisionObject.setCollisionShape(waterCollisionShape);
+		waterCollisionObject.setWorldTransform(new Matrix4());
+		waterCollisionObject.setUserValue(CollisionTypes.WATER.mask);
+
+
 
 		planetPortal = new PlanetPortal();
 		for (btRigidBody body : planetPortal.rigidBodyList) {
@@ -316,6 +334,8 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 			PlanetPart planetPart = entry.getValue();
 			renderEnv(planetPart.getModelInstance(), batch, environment);
 		}
+
+		renderEnv(waterModelInstance, batch, environment);
 
 		if (planetOnly) {
 			return;
