@@ -1,3 +1,5 @@
+uniform float u_jumpValue;
+
 #if defined(diffuseTextureFlag) || defined(specularTextureFlag)
 #define textureFlag
 #endif
@@ -183,6 +185,7 @@ varying vec3 v_ambientLight;
 #endif //separateAmbientFlag
 
 #endif // lightingFlag
+
 
 void main() {
 	#ifdef diffuseTextureFlag
