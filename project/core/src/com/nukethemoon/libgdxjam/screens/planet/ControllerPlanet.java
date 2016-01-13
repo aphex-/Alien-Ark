@@ -4,11 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -43,112 +45,119 @@ import java.util.concurrent.ExecutionException;
 
 public class ControllerPlanet implements ChunkListener, Disposable {
 
-	public static float TILE_GRAPHIC_SIZE = 3f;
+	public static float TILE_GRAPHIC_SIZE = 5f;
 	public static float TRACTOR_BEAM_TOLERANCE_RADIUS = 5f;
 	public static int INFINITE_WATER_SIZE = 10000;
 	private static float infiniteWaterHeight;
 
-		private final PlanetPortal planetPortal;
+	private final PlanetPortal planetPortal;
 
-		private final Model waterModel;
-		private final ModelInstance waterModelInstance;
+	private final Model waterModel;
+	private final ModelInstance waterModelInstance;
 
-		private Opus opus;
-		private PlanetConfig planetConfig;
-		private ControllerPhysic controllerPhysic;
-		private Ani ani;
+	private Opus opus;
+	private PlanetConfig planetConfig;
+	private ControllerPhysic controllerPhysic;
+	private Ani ani;
 
-		private List<Point> currentVisiblePlanetParts = new ArrayList<Point>();
-		private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
-		private List<ArtifactObject> currentVisibleArtifacts = new ArrayList<ArtifactObject>();
-		private List<PointWithId> allArtifactsOnPlanet = new ArrayList<PointWithId>();
+	private List<Point> currentVisiblePlanetParts = new ArrayList<Point>();
+	private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
+	private List<ArtifactObject> currentVisibleArtifacts = new ArrayList<ArtifactObject>();
+	private List<PointWithId> allArtifactsOnPlanet = new ArrayList<PointWithId>();
 
-		private Map<Point, PlanetPart> planetPartBuffer = new HashMap<Point, PlanetPart>();
-		private final TypeInterpreter typeInterpreter;
+	private Map<Point, PlanetPart> planetPartBuffer = new HashMap<Point, PlanetPart>();
+	private final TypeInterpreter typeInterpreter;
 
-		private CollectedItemCache collectedItemCache = new CollectedItemCache();
+	private CollectedItemCache collectedItemCache = new CollectedItemCache();
 
-		private List<Point> tmpRequestList = new ArrayList<Point>();
+	private List<Point> tmpRequestList = new ArrayList<Point>();
 
-		private int requestRadiusInTiles = 110;
-		private int lastRequestCenterTileX = 0;
-		private int lastRequestCenterTileY = 0;
-		private long requestCount = 0;
-		private int chunkBufferSize;
+	private int requestRadiusInTiles = 110;
+	private int lastRequestCenterTileX = 0;
+	private int lastRequestCenterTileY = 0;
+	private long requestCount = 0;
+	private int chunkBufferSize;
 
-		private ModelInstance environmentSphere;
-		private Model sphereModel;
+	private ModelInstance environmentSphere;
+	private Model sphereModel;
 
-		private List<Point> tmpRemoveList = new ArrayList<Point>();
-		private List<Collectible> tmpRemoveList2 = new ArrayList<Collectible>();
-		private List<Point> tmpRemoveList3 = new ArrayList<Point>();
-
-
-		private Vector2 nearestArtifactPosition = new Vector2();
-
-		private Vector2 tmpVec1 = new Vector2();
-		private Vector2 tmpVector1 = new Vector2();
-		private Vector2 tmpVector2 = new Vector2();
-		private Vector3 tmpVec3 = new Vector3();
-		private Vector3 tmpVec4 = new Vector3();
-		private Vector2 tmpVec5 = new Vector2();
-		private Vector2 tmpVec6 = new Vector2();
-		private Vector3 tmpVec7 = new Vector3();
+	private List<Point> tmpRemoveList = new ArrayList<Point>();
+	private List<Collectible> tmpRemoveList2 = new ArrayList<Collectible>();
+	private List<Point> tmpRemoveList3 = new ArrayList<Point>();
 
 
-		public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
-			this.planetConfig = pPlanetConfig;
-			this.controllerPhysic = controllerPhysic;
-			this.ani = ani;
+	private Vector2 nearestArtifactPosition = new Vector2();
+
+	private Vector2 tmpVec1 = new Vector2();
+	private Vector2 tmpVector1 = new Vector2();
+	private Vector2 tmpVector2 = new Vector2();
+	private Vector3 tmpVec3 = new Vector3();
+	private Vector3 tmpVec4 = new Vector3();
+	private Vector2 tmpVec5 = new Vector2();
+	private Vector2 tmpVec6 = new Vector2();
+	private Vector3 tmpVec7 = new Vector3();
 
 
-			OpusLoaderJson loader = new OpusLoaderJson();
-			try {
-				// load opus by a json file
-				opus = loader.load("entities/planets/" + planetName + "/opusConfig.json");
-				;
-				com.nukethemoon.tools.opusproto.log.Log.logLevel = com.nukethemoon.tools.opusproto.log.Log.LogType.Error;
+	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
+		this.planetConfig = pPlanetConfig;
+		this.controllerPhysic = controllerPhysic;
+		this.ani = ani;
 
-				chunkBufferSize = (requestRadiusInTiles / opus.getConfig().chunkSize) * 2;
 
-				// add a callback to receive chunks
-				opus.addChunkListener(this);
+		OpusLoaderJson loader = new OpusLoaderJson();
+		try {
+			// load opus by a json file
+			opus = loader.load("entities/planets/" + planetName + "/opusConfig.json");
+			;
+			com.nukethemoon.tools.opusproto.log.Log.logLevel = com.nukethemoon.tools.opusproto.log.Log.LogType.Error;
 
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			chunkBufferSize = (requestRadiusInTiles / opus.getConfig().chunkSize) * 2;
 
-			typeInterpreter = toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter());
+			// add a callback to receive chunks
+			opus.addChunkListener(this);
 
-			updateNearestArtifact(0, 0);
-
-			for (PointWithId p : pPlanetConfig.artifacts) {
-				if (!SpaceShipProperties.properties.isCollectedArtifact(p.id)) {
-					allArtifactsOnPlanet.add(p);
-				}
-			}
-
-			// init water
-			waterModel = createInfiniteWaterPart(typeInterpreter, 0, pPlanetConfig);
-			waterModelInstance = new ModelInstance(waterModel);
-
-			planetPortal = new PlanetPortal();
-			for (btRigidBody body : planetPortal.rigidBodyList) {
-				controllerPhysic.addRigidBody(body, CollisionTypes.GROUND);
-			}
-			for (btCollisionObject object : planetPortal.collisionObjectList) {
-				controllerPhysic.addCollisionObject(object);
-			}
-
-			loadSphere(planetConfig.id);
-
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
+		typeInterpreter = toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter());
+
+		updateNearestArtifact(0, 0);
+
+		for (PointWithId p : pPlanetConfig.artifacts) {
+			if (!SpaceShipProperties.properties.isCollectedArtifact(p.id)) {
+				allArtifactsOnPlanet.add(p);
+			}
+		}
+
+		// init water
+		waterModel = createInfiniteWaterPart(typeInterpreter, 0, pPlanetConfig);
+		waterModelInstance = new ModelInstance(waterModel);
+
+		planetPortal = new PlanetPortal();
+		for (btRigidBody body : planetPortal.rigidBodyList) {
+			controllerPhysic.addRigidBody(body, CollisionTypes.GROUND);
+		}
+		for (btCollisionObject object : planetPortal.collisionObjectList) {
+			controllerPhysic.addCollisionObject(object);
+		}
+
+		loadSphere(planetConfig.id);
+
+	}
 
 	private void loadSphere(String planetId) {
 		ModelLoader loader = new ObjLoader();
 		sphereModel = loader.loadModel(Gdx.files.internal("models/sphere01.obj"),
 				new SphereTextureProvider(planetId));
 		environmentSphere = new ModelInstance(sphereModel);
+		Attribute attribute = environmentSphere.materials.get(0).get(
+				ColorAttribute.getAttributeType(ColorAttribute.DiffuseAlias));
+
+		((ColorAttribute) attribute).color.r = 1;
+		((ColorAttribute) attribute).color.g = 1;
+		((ColorAttribute) attribute).color.b = 1;
+
 	}
 
 	public static Model createInfiniteWaterPart(TypeInterpreter interpreter, int landscapeIndex, PlanetConfig planetConfig) {
