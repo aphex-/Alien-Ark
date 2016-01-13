@@ -1,15 +1,17 @@
 package com.nukethemoon.libgdxjam.screens.planet;
 
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.Log;
@@ -118,15 +120,8 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 
 		// init water
-		waterModel = PlanetPart.createWaterPart(typeInterpreter, 0, pPlanetConfig);
+		waterModel = createInfiniteWaterPart(typeInterpreter, 0, pPlanetConfig);
 		waterModelInstance = new ModelInstance(waterModel);
-		btCollisionShape waterCollisionShape = Bullet.obtainStaticNodeShape(waterModel.nodes.first(), false);
-		btCollisionObject waterCollisionObject = new btCollisionObject();
-		waterCollisionObject.setCollisionShape(waterCollisionShape);
-		waterCollisionObject.setWorldTransform(new Matrix4());
-		waterCollisionObject.setUserValue(CollisionTypes.WATER.mask);
-
-
 
 		planetPortal = new PlanetPortal();
 		for (btRigidBody body : planetPortal.rigidBodyList) {
@@ -137,6 +132,29 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 
 	}
+
+	public static Model createInfiniteWaterPart(TypeInterpreter interpreter, int landscapeIndex, PlanetConfig planetConfig) {
+		ModelBuilder modelBuilder = new ModelBuilder();
+		MeshBuilder builder = new MeshBuilder();
+		float WATER_HEIGHT = interpreter.it.get(landscapeIndex).endValue;
+		builder.begin(PlanetPart.VERTEX_ATTRIBUTES, GL20.GL_TRIANGLES);
+		float z = WATER_HEIGHT * planetConfig.landscapeHeight - 1;
+		float width = 1000;
+		float height = 1000;
+		Vector3 corner01 = new Vector3(-1000f, -1000f, z);
+		Vector3 corner02 = new Vector3(width, -10000f, z);
+		Vector3 corner03 = new Vector3(width, height, z);
+		Vector3 corner04 = new Vector3(-1000f, height, z);
+		builder.rect(corner01, corner02, corner03, corner04, new Vector3(0, 0, 1));
+		Material waterMaterial = planetConfig.layerConfigs.get(landscapeIndex).material;
+		Mesh mesh = builder.end();
+		modelBuilder.begin();
+		modelBuilder.node().id = PlanetPart.LANDSCAPE_NODE_NAME + landscapeIndex;
+		modelBuilder.part(PlanetPart.LANDSCAPE_PART_NAME + landscapeIndex, mesh, GL20.GL_TRIANGLES, waterMaterial);
+		return modelBuilder.end();
+	}
+
+
 
 	public void requestChunks(List<Point> chunkCoordinates) {
 
@@ -428,6 +446,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		for (Point p : tmpRemoveList3) {
 			disposePlanetPart(p);
 		}
+		waterModel.dispose();
 	}
 
 	/**
