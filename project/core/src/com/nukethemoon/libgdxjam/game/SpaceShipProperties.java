@@ -26,7 +26,7 @@ public class SpaceShipProperties {
 	transient public static final SpaceShipProperties properties = new SpaceShipProperties(); //TODO!
 
 	public static final int USER_VALUE_MAX = 9999; // the maximum value for crew member bonus
-	public static final int INITIAL_SPEED = 100;
+	public static final int INITIAL_SPEED = 30;
 	public static final float INITIAL_LUCK = .1f;
 	public static final int INITIAL_LANDING_DISTANCE = 10;
 	public static final int INITIAL_COLLECT_RADIUS = 12;
@@ -42,24 +42,10 @@ public class SpaceShipProperties {
 
 	public Vector2 currentSolarPosition;
 
-		/*
-		======== SHIP ATTRIBUTES =========
-		Ship attributes must be scaled.
-		There is an 'internal value' (float) that we use for physic etc. calculations
-		There is an 'user value' (int) that we use to show in the UI and to combine artifacts
 
-		The 'internal value' min/max range depends on the attribute
-		The 'user value' is between 0 and USER_VALUE_MAX
-
-		shield's and fuel's	internal should match 1 : 1 to the user value
-		since this is the only value the player see the direct result (in the progress bars)
-
-
-		we should rename 'speed' to 'engine power' (more abstract)
-		we should rename 'scanradius' to 'scan accuracy' (more abstract)
-	 */
 
 	private Speed speed = new Speed(INITIAL_SPEED);
+
 	private FuelCapacity fuelCapacity = new FuelCapacity((int) FuelCapacity.INTERNAL_INITIAL);
 	private Luck luck = new Luck(INITIAL_LUCK);
 	private ShieldCapacity shieldCapacity = new ShieldCapacity((int) ShieldCapacity.INTERNAL_INITIAL);
@@ -209,5 +195,30 @@ public class SpaceShipProperties {
 	public float misFortune() {
 		return 1 - luck.getCurrentValue(); //HÄ? wieso umgedreht?
 	}
+
+
+	/*
+
+	we should rename 'speed' to 'engine power' (more abstract)
+	we should rename 'scanradius' to 'scan accuracy' (more abstract)
+
+	Speed				// internal min  20.00f 	internal max  100.00f		// balanced = better
+	Maneuverability 	// internal min   0.75f 	internal max    3.00f		// higher = better
+	Landslide 			// internal min   0.20f 	internal max    3.00f		// lower = better
+	FuelCapacity 		// internal min 200.00f 	internal max 9999.00f		// higher = better
+	ShieldCapacity = 	// internal min 200.00f 	internal max 9999.00f		// higher = better
+	ScanRadius			// internal min   5.00f 	internal max   50.00f		// higher = better
+	Misfortune 			// internal min   0.00f 	internal max    1.00f		// lower = better
+
+	Ship attributes must be scaled.
+	The 'internal value' (float) that is used physic etc. calculations
+	The 'user value' (int) is used to show in the UI and to combine artifacts
+
+	The 'internal value' min/max range depends on the attribute
+	The 'user value' is always between 0 and USER_VALUE_MAX
+
+	shield's and fuel's	internal should match 1 : 1 to the user value
+	since this is the only value the player see the direct result (in the progress bars)
+	 */
 
 }

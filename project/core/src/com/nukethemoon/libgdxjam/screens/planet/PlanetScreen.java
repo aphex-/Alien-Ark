@@ -39,6 +39,7 @@ import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ArtifactCollectAnimation;
+import com.nukethemoon.libgdxjam.screens.planet.animations.ExitPlanetAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ScanAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWindow;
@@ -85,7 +86,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private ControllerPhysic physicsController;
 
 	private Stage stage;
-
 	private final FreeCameraInput freeCameraInput;
 
 	private ParticleEffect effectThrust;
@@ -97,6 +97,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private boolean gameOver = false;
 	private boolean pause = false;
 	private boolean renderEnabled = true;
+	private boolean physicEnabled = true;
+	private boolean rocketEnabled = true;
 
 	public static Gson gson;
 	private AssetManager assetManager;
@@ -286,8 +288,22 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		planetController.updateNearestArtifact(rocket.getPosition().x, rocket.getPosition().y);
-		App.TUTORIAL_CONTROLLER.applyNearestArtifact(planetController.getNearestArtifactPosition(), rocket.getPosition());
+		if (rocketEnabled) {
+			planetController.updateNearestArtifact(rocket.getPosition().x, rocket.getPosition().y);
+			App.TUTORIAL_CONTROLLER.applyNearestArtifact(planetController.getNearestArtifactPosition(), rocket.getPosition());
+			if (Gdx.app.getInput().isKeyPressed(Input.Keys.LEFT) || Gdx.app.getInput().isKeyPressed(Input.Keys.A)) {
+				rocket.rotateLeft();
+			}
+			if (Gdx.app.getInput().isKeyPressed(Input.Keys.RIGHT) || Gdx.app.getInput().isKeyPressed(Input.Keys.D)) {
+				rocket.rotateRight();
+			}
+			if (Gdx.app.getInput().isKeyPressed(Input.Keys.UP) || Gdx.app.getInput().isKeyPressed(Input.Keys.W)) {
+				rocket.rotateUp();
+			}
+			if (Gdx.app.getInput().isKeyPressed(Input.Keys.DOWN) || Gdx.app.getInput().isKeyPressed(Input.Keys.S)) {
+				rocket.rotateDown();
+			}
+		}
 
 		if (!freeCameraInput.isEnabled()) {
 			if (!pause) {
@@ -298,20 +314,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		}
 		camera.update();
 
-		if (Gdx.app.getInput().isKeyPressed(Input.Keys.LEFT) || Gdx.app.getInput().isKeyPressed(Input.Keys.A)) {
-			rocket.rotateLeft();
-		}
-		if (Gdx.app.getInput().isKeyPressed(Input.Keys.RIGHT) || Gdx.app.getInput().isKeyPressed(Input.Keys.D)) {
-			rocket.rotateRight();
-		}
-		if (Gdx.app.getInput().isKeyPressed(Input.Keys.UP) || Gdx.app.getInput().isKeyPressed(Input.Keys.W)) {
-			rocket.rotateUp();
-		}
-		if (Gdx.app.getInput().isKeyPressed(Input.Keys.DOWN) || Gdx.app.getInput().isKeyPressed(Input.Keys.S)) {
-			rocket.rotateDown();
-		}
-
-		if (!pause) {
+		if (!pause && rocketEnabled) {
 			//rocket.thrust();
 			rocket.update();
 		}
@@ -332,13 +335,14 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		modelBatch.render(particleSystem);
 		drawOrigin();
-		physicsController.debugRender(camera);
+
 
 		if (!pause) {
 			particleSystem.update();
 			ani.update();
-			if (!gameOver) {
+			if (!gameOver && physicEnabled) {
 				physicsController.stepSimulation(delta);
+				physicsController.debugRender(camera);
 			}
 		}
 		if (stage != null) {
@@ -579,7 +583,15 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRocketEntersPortal() {
-		leavePlanet();
+		physicEnabled = false;
+		rocketEnabled = false;
+		ExitPlanetAnimation exitPlanetAnimation = new ExitPlanetAnimation(camera, rocket, new AnimationFinishedListener() {
+			@Override
+			public void onAnimationFinished(BaseAnimation baseAnimation) {
+				leavePlanet();
+			}
+		});
+		ani.add(exitPlanetAnimation);
 	}
 
 	// === physic events ===
@@ -587,7 +599,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	@Override
 	public void onRocketCollided(CollisionTypes type, btCollisionObject collisionObject) {
 		rocket.handleCollision(type);
-
 		if (type == CollisionTypes.FUEL || type == CollisionTypes.SHIELD) {
 			Collectible collectible = planetController.getCollectible(collisionObject);
 			planetController.removeCollectible(collectible);

@@ -35,7 +35,7 @@ import java.awt.*;
 public class Rocket extends GameObject implements Disposable {
 
 
-	private static final float THIRD_PERSON_OFFSET_Z = 6;
+	private static final float THIRD_PERSON_OFFSET_Z = 2;
 	private static final int MIN_DAMAGE_DELAY_MILLIS = 200;
 	private static final Vector3 START_POSITION = new Vector3(20, 0, 120);
 	private static final Vector3 LAUNCH_IMPULSE = new Vector3(0, 0, 55);
@@ -60,7 +60,7 @@ public class Rocket extends GameObject implements Disposable {
 	float zRotation = 0;
 
 	private Point lastTilePosition = null;
-	private float thirdPersonOffsetY = 10;
+	private float thirdPersonOffsetY = 3;
 
 	private Vector3 lastCamPosition = new Vector3();
 	private Vector3 tmpCamPosition = new Vector3();
@@ -87,7 +87,7 @@ public class Rocket extends GameObject implements Disposable {
 	public Rocket() {
 		// init graphic
 		ModelLoader loader = new ObjLoader();
-		model = loader.loadModel(Gdx.files.internal("models/rocket.obj"));
+		model = loader.loadModel(Gdx.files.internal("models/rocket.obj"), new ObjLoader.ObjLoaderParameters(true));
 		rocketModelInstance = new ModelInstance(model);
 
 
@@ -317,9 +317,9 @@ public class Rocket extends GameObject implements Disposable {
 		tmpCamPosition.add(tmpCamOffset);
 		tmpCamPosition.z += THIRD_PERSON_OFFSET_Z;
 		// creating a delay for the camera
-		tmpCamPosition.x = lastCamPosition.x + (tmpCamPosition.x - lastCamPosition.x) / 20f;
-		tmpCamPosition.y = lastCamPosition.y + (tmpCamPosition.y - lastCamPosition.y) / 20f;
-		tmpCamPosition.z = lastCamPosition.z + (tmpCamPosition.z - lastCamPosition.z) / 20f;
+		tmpCamPosition.x = lastCamPosition.x + (tmpCamPosition.x - lastCamPosition.x) / 15f;
+		tmpCamPosition.y = lastCamPosition.y + (tmpCamPosition.y - lastCamPosition.y) / 15f;
+		tmpCamPosition.z = lastCamPosition.z + (tmpCamPosition.z - lastCamPosition.z) / 15f;
 		tmpCamPosition.z = Math.max(tmpCamPosition.z, 1);
 		camera.position.set(tmpCamPosition);
 		camera.lookAt(position);
@@ -452,8 +452,12 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 
-	public float getGroundZRotation() {
+	public float getZRotation() {
 		return zRotation;
+	}
+
+	public float getXRotation() {
+		return xRotation;
 	}
 
 	public void setTractorBeamVisibility(boolean visible) {
@@ -482,5 +486,9 @@ public class Rocket extends GameObject implements Disposable {
 			transform.idt();
 			transform.trn(worldTrans.getTranslation(tmpVector));
 		}
+	}
+
+	public ModelInstance getRocketModelInstance() {
+		return rocketModelInstance;
 	}
 }

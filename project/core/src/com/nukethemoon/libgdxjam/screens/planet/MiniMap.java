@@ -69,7 +69,7 @@ public class MiniMap {
 				MINI_MAP_SIZE);
 
 		Vector3 rocketPosition = rocket.getPosition();
-		float groundZRotation = rocket.getGroundZRotation();
+		float groundZRotation = rocket.getZRotation();
 
 		miniMapCamera.up.set(rocket.getDirection());
 		miniMapCamera.position.set(rocket.getPosition());
@@ -92,7 +92,7 @@ public class MiniMap {
 				rocketArrow.getRegionHeight() / 2f,
 				rocketArrow.getRegionWidth(),
 				rocketArrow.getRegionHeight(),
-				MINI_ZOOM, MINI_ZOOM, rocket.getGroundZRotation());
+				MINI_ZOOM, MINI_ZOOM, rocket.getZRotation());
 		// collectibles
 		drawMiniMapCollectibles(miniMapBatch, groundZRotation);
 		miniMapBatch.end();
