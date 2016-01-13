@@ -9,5 +9,6 @@ public class Config {
 
 	public boolean debugMode = true;
 	public boolean tutorialEnabled = true;
+	public float FOV = 68;
 
 }

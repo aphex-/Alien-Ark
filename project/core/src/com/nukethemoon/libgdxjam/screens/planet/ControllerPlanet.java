@@ -202,7 +202,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		return nearestArtifactPosition;
 	}
 
-	public void updateRequestCenter(Vector3 position, Vector3 direction) {
+	public void updateRequestCenter(Vector3 position) {
 		tmpVec1.set((float) (Math.floor(position.x) / TILE_GRAPHIC_SIZE), (float) (Math.floor(position.y) / TILE_GRAPHIC_SIZE));
 		//tmpVec2.set(direction.x, direction.y).nor().scl(-1).scl(requestRadiusInTiles * 0.7f);
 		//tmpVec1.sub(tmpVec2);

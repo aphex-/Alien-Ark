@@ -56,6 +56,7 @@ public class Rocket extends GameObject implements Disposable {
 	private final Model model;
 
 	float drill = 0;
+
 	float xRotation = 0;
 	float zRotation = 0;
 
@@ -125,7 +126,7 @@ public class Rocket extends GameObject implements Disposable {
 				SpaceShipProperties.properties.getSpeed()));
 
 		SpaceShipProperties.properties.setCurrentInternalFuel((int) 	FuelCapacity.INTERNAL_MAX);
-		SpaceShipProperties.properties.setCurrentInternalShield((int) 	ShieldCapacity.INTERNAL_MAX);
+		SpaceShipProperties.properties.setCurrentInternalShield((int) ShieldCapacity.INTERNAL_MAX);
 
 		thrustSound = App.audioController.getSound("thrust.wav");
 	}
@@ -446,6 +447,18 @@ public class Rocket extends GameObject implements Disposable {
 		return xRotation;
 	}
 
+	public void setXRotation(float xRotation) {
+		this.xRotation = xRotation;
+	}
+
+	public void setZRotation(float zRotation) {
+		this.zRotation = zRotation;
+	}
+
+	public Vector3 getLastCamPosition() {
+		return lastCamPosition;
+	}
+
 	public void setTractorBeamVisibility(boolean visible) {
 		tractorBeamVisible = visible;
 	}
@@ -470,6 +483,7 @@ public class Rocket extends GameObject implements Disposable {
 		public RocketMotionState(Matrix4 transform) {
 			this.transform = transform;
 		}
+
 		@Override
 		public void getWorldTransform (Matrix4 worldTrans) {
 			worldTrans.set(transform);

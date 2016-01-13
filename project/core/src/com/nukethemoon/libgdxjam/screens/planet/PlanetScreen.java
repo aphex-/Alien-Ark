@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BufferedParticleBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -39,6 +40,7 @@ import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ArtifactCollectAnimation;
+import com.nukethemoon.libgdxjam.screens.planet.animations.EnterPlanetAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ExitPlanetAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ScanAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
@@ -97,8 +99,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private boolean gameOver = false;
 	private boolean pause = false;
 	private boolean renderEnabled = true;
-	private boolean physicEnabled = true;
-	private boolean rocketEnabled = true;
+	private boolean physicEnabled = false;
+	private boolean rocketEnabled = false;
 
 	public static Gson gson;
 	private AssetManager assetManager;
@@ -124,7 +126,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		stage = new Stage(new ScreenViewport());
 
-		camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		camera = new PerspectiveCamera(App.config.FOV, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera.near = 1f;
 		camera.far = 30000f;
 
@@ -177,6 +179,17 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		App.TUTORIAL_CONTROLLER.register(stage, ani);
 		App.TUTORIAL_CONTROLLER.nextStepFor(this.getClass());
+
+		planetController.updateRequestCenter(new Vector3(0, 0, 0));
+
+		EnterPlanetAnimation enterPlanetAnimation = new EnterPlanetAnimation(camera, rocket, new AnimationFinishedListener() {
+			@Override
+			public void onAnimationFinished(BaseAnimation baseAnimation) {
+				physicEnabled = true;
+				rocketEnabled = true;
+			}
+		});
+		ani.add(enterPlanetAnimation);
 	}
 
 	private void initParticles() {
@@ -527,7 +540,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	@Override
 	public void onRocketChangedTilePosition() {
 		if (!pause) {
-			planetController.updateRequestCenter(rocket.getPosition(), rocket.getDirection());
+			planetController.updateRequestCenter(rocket.getPosition());
 		}
 	}
 
