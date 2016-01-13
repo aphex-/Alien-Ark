@@ -1,12 +1,10 @@
 package com.nukethemoon.libgdxjam.game;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.game.artifacts.AttributeArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.OperatorArtifact;
 import com.nukethemoon.libgdxjam.game.artifacts.ValueArtifact;
 import com.nukethemoon.libgdxjam.game.attributes.Attribute;
-import com.nukethemoon.libgdxjam.game.attributes.Speed;
 
 public class Alien {
 
@@ -60,10 +58,9 @@ public class Alien {
 	}
 
 	public TextureRegion getTexture(){
-		if(attribute == null)
-			return null;
 
-		return attribute.getBackgroundTexture();
+
+		return attribute.getAlienTexture();
 	}
 
 	public String getDescription(){

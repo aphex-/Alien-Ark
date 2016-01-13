@@ -32,4 +32,7 @@ public class AttributeArtifact extends Artifact {
 		return Attribute.getName(ownAttribute);
 	}
 
+	public TextureRegion getAlienTexture() {
+		return Attribute.getAlienTexture(ownAttribute);
+	}
 }

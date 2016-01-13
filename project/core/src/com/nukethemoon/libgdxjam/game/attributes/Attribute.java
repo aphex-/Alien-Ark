@@ -90,4 +90,24 @@ public abstract class Attribute {
 
 		return name;
 	}
+
+	public static TextureRegion getAlienTexture(Class<? extends Attribute> clazz) {
+		String row = "slot00";
+		if (clazz == Speed.class) {
+			row = "alienSpeed";
+		} else if (clazz == FuelCapacity.class) {
+			row = "alienFuelCapacity";
+		} else if (clazz == Luck.class) {
+			row = "alienLuck";
+		} else if (clazz == ShieldCapacity.class) {
+			row = "alienShieldCapacity";
+		} else if (clazz == LandingDistance.class) {
+			row = "alienLandingDistance";
+		} else if (clazz == ItemCollectRadius.class) {
+			row = "alienItemCollectRadius";
+		} else if (clazz == Inertia.class) {
+			row = "alienTraegheit";
+		}
+		return App.TEXTURES.findRegion(row);
+	}
 }

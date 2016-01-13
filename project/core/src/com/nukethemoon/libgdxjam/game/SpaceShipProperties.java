@@ -26,6 +26,11 @@ public class SpaceShipProperties {
 	transient public static final SpaceShipProperties properties = new SpaceShipProperties(); //TODO!
 
 	public static final int USER_VALUE_MAX = 9999; // the maximum value for crew member bonus
+	public static final int INITIAL_SPEED = 100;
+	public static final float INITIAL_LUCK = .1f;
+	public static final int INITIAL_LANDING_DISTANCE = 10;
+	public static final int INITIAL_COLLECT_RADIUS = 12;
+	public static final float INITIAL_INERTIA = .75f;
 
 	private List<String> collectedArtifactIds = new ArrayList<String>();
 
@@ -54,13 +59,13 @@ public class SpaceShipProperties {
 		we should rename 'scanradius' to 'scan accuracy' (more abstract)
 	 */
 
-	private Speed speed = new Speed(100);
+	private Speed speed = new Speed(INITIAL_SPEED);
 	private FuelCapacity fuelCapacity = new FuelCapacity((int) FuelCapacity.INTERNAL_INITIAL);
-	private Luck luck = new Luck(.1f);
+	private Luck luck = new Luck(INITIAL_LUCK);
 	private ShieldCapacity shieldCapacity = new ShieldCapacity((int) ShieldCapacity.INTERNAL_INITIAL);
-	private LandingDistance landingDistance = new LandingDistance(10);
-	private ItemCollectRadius radius = new ItemCollectRadius(12);
-	private Inertia inertia = new Inertia(.75f);
+	private LandingDistance landingDistance = new LandingDistance(INITIAL_LANDING_DISTANCE);
+	private ItemCollectRadius radius = new ItemCollectRadius(INITIAL_COLLECT_RADIUS);
+	private Inertia inertia = new Inertia(INITIAL_INERTIA);
 
 	public Attribute[] getAttributes() {
 		return new Attribute[]{fuelCapacity, shieldCapacity, speed, luck, landingDistance, radius, inertia};
@@ -73,20 +78,24 @@ public class SpaceShipProperties {
 	}
 
 	public void testInit() {
-		AttributeArtifact a = new AttributeArtifact(Speed.class);
+
+
 		ValueArtifact v = new ValueArtifact(10);
 		OperatorArtifact o = new Increase();
 
-		artifacts.add(a);
+		artifacts.add(new AttributeArtifact(Speed.class));
+		artifacts.add(new AttributeArtifact(Speed.class));
 		artifacts.add(v);
 		artifacts.add(o);
-
+		artifacts.add(new ValueArtifact(10));
 		artifacts.add(new AttributeArtifact(Inertia.class));
 		artifacts.add(new AttributeArtifact(ItemCollectRadius.class));
 		artifacts.add(new AttributeArtifact(ShieldCapacity.class));
 		artifacts.add(new AttributeArtifact(FuelCapacity.class));
 		artifacts.add(new AttributeArtifact(Luck.class));
 		artifacts.add(new AttributeArtifact(LandingDistance.class));
+
+		Alien.createAlien(v, o, new AttributeArtifact(Speed.class));
 
 		artifacts.add(new Divide());
 		artifacts.add(new Multiply());
@@ -136,6 +145,8 @@ public class SpaceShipProperties {
 	}
 
 	public void computeProperties() {
+		resetAttributes();
+
 		for (Attribute attribute : getAttributes()) {
 			for (Alien alien : aliens) {
 				alien.modifyAttribute(attribute);
@@ -143,6 +154,15 @@ public class SpaceShipProperties {
 		}
 	}
 
+	private void resetAttributes() {
+		speed = new Speed(INITIAL_SPEED);
+		fuelCapacity = new FuelCapacity((int) FuelCapacity.INTERNAL_INITIAL);
+		luck = new Luck(INITIAL_LUCK);
+		shieldCapacity = new ShieldCapacity((int) ShieldCapacity.INTERNAL_INITIAL);
+		landingDistance = new LandingDistance(INITIAL_LANDING_DISTANCE);
+		radius = new ItemCollectRadius(INITIAL_COLLECT_RADIUS);
+		inertia = new Inertia(INITIAL_INERTIA);
+	}
 
 	/**
 	 * Calculates the 'internal value' by the 'user value'.
