@@ -1,0 +1,11 @@
+# Blender MTL File: 'artifact landing.blend'
+# Material Count: 1
+
+newmtl Material.001
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.001518 0.015209 0.056128
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
