@@ -1,6 +1,5 @@
 package com.nukethemoon.libgdxjam.screens.planet.gameobjects;
 
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.nukethemoon.libgdxjam.ArtifactDefinitions;
 import com.nukethemoon.libgdxjam.Models;
@@ -9,17 +8,13 @@ import com.nukethemoon.libgdxjam.screens.planet.ObjectPlacementInfo;
 public class ArtifactObject {
 
 	private final ModelInstance modelInstance;
-
 	private ObjectPlacementInfo definition;
 
 	public ArtifactObject(ObjectPlacementInfo artifactDefinition) {
 		this.definition = artifactDefinition;
-		Model modelOfArtifact = ArtifactDefinitions.getModelOfArtifact(artifactDefinition.id);
-		if (modelOfArtifact != null) {
-			modelInstance = new ModelInstance(modelOfArtifact);
-		} else {
-			modelInstance = new ModelInstance(Models.ARTIFACT_E);
-		}
+		ArtifactDefinitions.ConcreteArtifactType concreteArtifactType =
+				ArtifactDefinitions.ConcreteArtifactType.byName(artifactDefinition.type);
+		modelInstance = new ModelInstance(Models.ARTIFACT_MODELS.get(concreteArtifactType));
 		adjust(0);
 	}
 

@@ -1,17 +1,10 @@
 package com.nukethemoon.libgdxjam;
 
-import com.badlogic.gdx.graphics.g3d.Model;
-
-import java.util.HashMap;
-import java.util.Map;
-
 public class ArtifactDefinitions {
 
-	private static Map<String, ArtifactDefinition> DEFINITIONS = new HashMap<String, ArtifactDefinition>();
-
-	public enum ConcreteArtifact {
+	public enum ConcreteArtifactType {
 		ATTRIBUTE_SPEED,
-		ATTRIBUTE_INERITA,
+		ATTRIBUTE_INERTIA,
 		ATTRIBUTE_LANDSLIDE,
 		ATTRIBUTE_FUEL_CAPACITY,
 		ATTRIBUTE_SHIELD_CAPACITY,
@@ -20,55 +13,21 @@ public class ArtifactDefinitions {
 		OPERATOR_PLUS,
 		OPERATOR_MINUS,
 		OPERATOR_MULTIPLY,
-		OPERATOR_DEVIDE,
+		OPERATOR_DIVIDE,
 		VALUE_100,
 		VALUE_200,
 		VALUE_500,
 		VALUE_1000,
-		VALUE_2000,
-	}
-
-	static {
-		DEFINITIONS.put("art0001_planet01", new ArtifactDefinition(ArtifactModelType.E));
-		DEFINITIONS.put("art0002_planet01", new ArtifactDefinition(ArtifactModelType.F));
-		DEFINITIONS.put("art0003_planet01", new ArtifactDefinition(ArtifactModelType.W));
-		DEFINITIONS.put("art0004_planet01", new ArtifactDefinition(ArtifactModelType.E));
-		DEFINITIONS.put("art0005_planet01", new ArtifactDefinition(ArtifactModelType.W));
-		DEFINITIONS.put("art0001_planet02", new ArtifactDefinition(ArtifactModelType.W));
-	}
-
-	public enum ArtifactModelType {
-		W,
-		F,
-		E
-	}
+		VALUE_2000;
 
 
-	public static Model getModelOfArtifact(String artifactId) {
-		ArtifactDefinition artifactDefinition = DEFINITIONS.get(artifactId);
-		if (artifactDefinition != null) {
-			ArtifactModelType modelType = artifactDefinition.modelType;
-			if (modelType != null) {
-				if (modelType == ArtifactModelType.E) {
-					return Models.ARTIFACT_E;
-				}
-				if (modelType == ArtifactModelType.W) {
-					return Models.ARTIFACT_W;
-				}
-				if (modelType == ArtifactModelType.F) {
-					return Models.ARTIFACT_F;
+		public static ConcreteArtifactType byName(String name) {
+			for (ConcreteArtifactType t : ConcreteArtifactType.values()) {
+				if (t.name().toLowerCase().equals(name.toLowerCase())) {
+					return t;
 				}
 			}
-		}
-		return null;
-	}
-
-
-	public static class ArtifactDefinition {
-		ArtifactModelType modelType;
-		public ArtifactDefinition(ArtifactModelType type) {
-			modelType = type;
+			return null;
 		}
 	}
-
 }

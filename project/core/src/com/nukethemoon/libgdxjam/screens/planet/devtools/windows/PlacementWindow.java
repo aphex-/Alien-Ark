@@ -80,7 +80,7 @@ public class PlacementWindow extends ClosableWindow implements DevelopmentPlacem
 	}
 
 	@Override
-	public void onArtifactAdd(ArtifactDefinitions.ConcreteArtifact artifact) {
+	public void onArtifactAdd(ArtifactDefinitions.ConcreteArtifactType artifact) {
 		Vector3 cp = renderer.getCursorPosition();
 		String newArtifactId = controllerPlanet.getPlanetConfig().consumeArtifactId();
 		ObjectPlacementInfo point = new ObjectPlacementInfo(cp.x, cp.y, newArtifactId);

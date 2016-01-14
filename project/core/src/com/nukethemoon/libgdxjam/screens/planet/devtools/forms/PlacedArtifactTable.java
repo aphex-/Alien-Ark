@@ -15,7 +15,7 @@ import com.nukethemoon.libgdxjam.screens.planet.ObjectPlacementInfo;
 public class PlacedArtifactTable extends Table {
 
 	private final TextButton addButton;
-	private final SelectBox<ArtifactDefinitions.ConcreteArtifact> selectBox;
+	private final SelectBox<ArtifactDefinitions.ConcreteArtifactType> selectBox;
 	private ArtifactPlacementListener listener;
 
 	private Table artifactContent;
@@ -25,8 +25,8 @@ public class PlacedArtifactTable extends Table {
 	public PlacedArtifactTable() {
 		setBackground(Styles.NINE_PATCH_POPUP_BG_01);
 
-		selectBox = new SelectBox<ArtifactDefinitions.ConcreteArtifact>(Styles.UI_SKIN);
-		selectBox.setItems(ArtifactDefinitions.ConcreteArtifact.values());
+		selectBox = new SelectBox<ArtifactDefinitions.ConcreteArtifactType>(Styles.UI_SKIN);
+		selectBox.setItems(ArtifactDefinitions.ConcreteArtifactType.values());
 		add(selectBox);
 
 		addButton = new TextButton("add artifact", Styles.UI_SKIN);
@@ -91,7 +91,7 @@ public class PlacedArtifactTable extends Table {
 
 
 	public interface ArtifactPlacementListener {
-		void onArtifactAdd(ArtifactDefinitions.ConcreteArtifact concreteType);
+		void onArtifactAdd(ArtifactDefinitions.ConcreteArtifactType concreteType);
 		void onArtifactRemove(String id);
 		void onArtifactView(float graphicX, float graphicY);
 	}
