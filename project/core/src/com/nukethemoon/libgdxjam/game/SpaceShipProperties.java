@@ -1,6 +1,12 @@
 package com.nukethemoon.libgdxjam.game;
 
 import com.badlogic.gdx.math.Vector2;
+import com.nukethemoon.libgdxjam.game.artifacts.AttributeArtifact;
+import com.nukethemoon.libgdxjam.game.artifacts.OperatorArtifact;
+import com.nukethemoon.libgdxjam.game.artifacts.ValueArtifact;
+import com.nukethemoon.libgdxjam.game.artifacts.operators.Divide;
+import com.nukethemoon.libgdxjam.game.artifacts.operators.Increase;
+import com.nukethemoon.libgdxjam.game.artifacts.operators.Multiply;
 import com.nukethemoon.libgdxjam.game.attributes.Attribute;
 import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
 import com.nukethemoon.libgdxjam.game.attributes.Inertia;
@@ -56,7 +62,7 @@ public class SpaceShipProperties {
 
 	public void testInit() {
 
-		/*ValueArtifact v = new ValueArtifact(10);
+		ValueArtifact v = new ValueArtifact(10);
 		OperatorArtifact o = new Increase();
 
 		artifacts.add(new AttributeArtifact(Speed.class));
@@ -76,7 +82,7 @@ public class SpaceShipProperties {
 
 		artifacts.add(new Divide());
 		artifacts.add(new Increase());
-		artifacts.add(new Multiply());*/
+		artifacts.add(new Multiply());
 	}
 
 	public void onArtifactCollected(Artifact artifact, String inGameId) {
