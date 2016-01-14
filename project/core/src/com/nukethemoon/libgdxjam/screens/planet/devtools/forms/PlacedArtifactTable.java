@@ -3,16 +3,19 @@ package com.nukethemoon.libgdxjam.screens.planet.devtools.forms;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.nukethemoon.libgdxjam.ArtifactDefinitions;
 import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
-import com.nukethemoon.libgdxjam.screens.planet.PointWithId;
+import com.nukethemoon.libgdxjam.screens.planet.ObjectPlacementInfo;
 
 public class PlacedArtifactTable extends Table {
 
 	private final TextButton addButton;
+	private final SelectBox<ArtifactDefinitions.ConcreteArtifact> selectBox;
 	private ArtifactPlacementListener listener;
 
 	private Table artifactContent;
@@ -21,6 +24,10 @@ public class PlacedArtifactTable extends Table {
 
 	public PlacedArtifactTable() {
 		setBackground(Styles.NINE_PATCH_POPUP_BG_01);
+
+		selectBox = new SelectBox<ArtifactDefinitions.ConcreteArtifact>(Styles.UI_SKIN);
+		selectBox.setItems(ArtifactDefinitions.ConcreteArtifact.values());
+		add(selectBox);
 
 		addButton = new TextButton("add artifact", Styles.UI_SKIN);
 		add(addButton);
@@ -36,16 +43,19 @@ public class PlacedArtifactTable extends Table {
 
 	public void update(ControllerPlanet planet) {
 		artifactContent.clear();
-		for (PointWithId p : planet.getAllArtifactsOnPlanet()) {
+		for (ObjectPlacementInfo p : planet.getAllArtifactsOnPlanet()) {
 			addToList(p);
 		}
 		pack();
 	}
 
-	private void addToList(final PointWithId p) {
+	private void addToList(final ObjectPlacementInfo p) {
 		Table artifactEntry = new Table();
-		artifactEntry.add(new Label("Tile x " + p.x + " y" + p.y, Styles.LABEL_DEV)).left().width(200).fill();
-		artifactEntry.add(new Label("Id " + p.id, Styles.LABEL_DEV)).left().width(200).fill();
+
+		artifactEntry.add(new Label(p.type, Styles.LABEL_DEV)).left().width(250).fill();
+		artifactEntry.add(new Label("X: " + p.x, Styles.LABEL_DEV)).left().width(100).fill();
+		artifactEntry.add(new Label("Y: " + p.y, Styles.LABEL_DEV)).left().width(100).fill();
+		artifactEntry.add(new Label("ID: " + p.id, Styles.LABEL_DEV)).left().width(200).fill();
 		TextButton removeButton = new TextButton("X", Styles.UI_SKIN);
 		artifactEntry.add(removeButton).left();
 		removeButton.addListener(new ClickListener() {
@@ -64,8 +74,8 @@ public class PlacedArtifactTable extends Table {
 			}
 		});
 		artifactEntry.add(removeButton);
-
-		artifactContent.add(artifactEntry);
+		artifactContent.add(artifactEntry).colspan(2);
+		artifactContent.row();
 		pack();
 	}
 
@@ -74,16 +84,16 @@ public class PlacedArtifactTable extends Table {
 		addButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				listener.onArtifactAdd();
+				listener.onArtifactAdd(selectBox.getSelected());
 			}
 		});
 	}
 
 
 	public interface ArtifactPlacementListener {
-		void onArtifactAdd();
+		void onArtifactAdd(ArtifactDefinitions.ConcreteArtifact concreteType);
 		void onArtifactRemove(String id);
-		void onArtifactView(int tileX, int tileY);
+		void onArtifactView(float graphicX, float graphicY);
 	}
 
 }

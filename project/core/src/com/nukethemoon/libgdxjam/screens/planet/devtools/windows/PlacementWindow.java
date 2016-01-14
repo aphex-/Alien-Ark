@@ -6,12 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.nukethemoon.libgdxjam.ArtifactDefinitions;
 import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
+import com.nukethemoon.libgdxjam.screens.planet.ObjectPlacementInfo;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
-import com.nukethemoon.libgdxjam.screens.planet.PointWithId;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.DevelopmentPlacementRenderer;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.forms.PlacedArtifactTable;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
@@ -79,8 +80,18 @@ public class PlacementWindow extends ClosableWindow implements DevelopmentPlacem
 	}
 
 	@Override
-	public void onArtifactAdd() {
+	public void onArtifactAdd(ArtifactDefinitions.ConcreteArtifact artifact) {
 		Vector3 cp = renderer.getCursorPosition();
+		String newArtifactId = controllerPlanet.getPlanetConfig().consumeArtifactId();
+		ObjectPlacementInfo point = new ObjectPlacementInfo(cp.x, cp.y, newArtifactId);
+		point.type = artifact.name();
+		ArtifactObject artifactObject = new ArtifactObject(point);
+		// live add
+		controllerPlanet.addArtifact(artifactObject);
+		controllerPlanet.getAllArtifactsOnPlanet().add(point);
+		// planet config add
+		controllerPlanet.getPlanetConfig().artifacts.add(point);
+		update();
 	}
 
 	@Override
@@ -98,9 +109,9 @@ public class PlacementWindow extends ClosableWindow implements DevelopmentPlacem
 		update();
 	}
 
-	private void removeArtifactFromList(List<PointWithId> list, String id) {
-		PointWithId pointToRemove = null;
-		for (PointWithId p : list) {
+	private void removeArtifactFromList(List<ObjectPlacementInfo> list, String id) {
+		ObjectPlacementInfo pointToRemove = null;
+		for (ObjectPlacementInfo p : list) {
 			if (p.id.equals(id)) {
 				pointToRemove = p;
 				break;
@@ -112,7 +123,7 @@ public class PlacementWindow extends ClosableWindow implements DevelopmentPlacem
 	}
 
 	@Override
-	public void onArtifactView(int tileX, int tileY) {
-		planetScreen.devJumpTo(tileX, tileY);
+	public void onArtifactView(float graphicX, float graphicY) {
+		planetScreen.devJumpTo(graphicX, graphicY);
 	}
 }

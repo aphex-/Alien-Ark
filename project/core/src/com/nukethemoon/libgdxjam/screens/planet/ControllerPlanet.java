@@ -64,7 +64,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
 
 	private List<ArtifactObject> currentVisibleArtifacts = new ArrayList<ArtifactObject>();
-	private List<PointWithId> allArtifactsOnPlanet = new ArrayList<PointWithId>();
+	private List<ObjectPlacementInfo> allArtifactsOnPlanet = new ArrayList<ObjectPlacementInfo>();
 
 	private Map<Point, PlanetPart> planetPartBuffer = new HashMap<Point, PlanetPart>();
 	private final TypeInterpreter typeInterpreter;
@@ -125,7 +125,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		updateNearestArtifact(0, 0);
 
-		for (PointWithId p : pPlanetConfig.artifacts) {
+		for (ObjectPlacementInfo p : pPlanetConfig.artifacts) {
 			if (!SpaceShipProperties.properties.isCollectedArtifact(p.id)) {
 				allArtifactsOnPlanet.add(p);
 			}
@@ -212,9 +212,9 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	public void updateNearestArtifact(float rocketX, float rocketY) {
 		float shortestDistance = -1;
 		nearestArtifactPosition = null;
-		for(PointWithId p : allArtifactsOnPlanet) {
-			float artifactX = PlanetPart.getTileGraphicX(p.x);
-			float artifactY = PlanetPart.getTileGraphicY(p.y);
+		for(ObjectPlacementInfo p : allArtifactsOnPlanet) {
+			float artifactX = p.x;
+			float artifactY = p.y;
 			float distance = tmpVec6.set(artifactX - rocketX, artifactY - rocketY).len();
 			if (distance < shortestDistance || shortestDistance == -1) {
 				shortestDistance = distance;
@@ -398,10 +398,6 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		for (ArtifactObject o : currentVisibleArtifacts) {
 			renderEnv(o.getModelInstance(), batch, environment);
-			tmpVec3.set(o.getDefinition().x * TILE_GRAPHIC_SIZE,
-					o.getDefinition().y * TILE_GRAPHIC_SIZE, 100);
-			controllerPhysic.calculateVerticalIntersection(tmpVec3, tmpVec4);
-			o.adjust(tmpVec4.z);
 		}
 	}
 
@@ -430,7 +426,11 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		ani.add(c.createScaleAnimation());
 	}
 
-	private void addArtifact(ArtifactObject o) {
+	public void addArtifact(ArtifactObject o) {
+		tmpVec3.set(o.getDefinition().x, o.getDefinition().y, 10000);
+		controllerPhysic.calculateVerticalIntersection(tmpVec3, tmpVec4);
+		o.adjust(tmpVec4.z);
+
 		if (!SpaceShipProperties.properties.isCollectedArtifact(o.getDefinition().id)) {
 			currentVisibleArtifacts.add(o);
 		}
@@ -513,7 +513,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		return currentVisibleCollectibles;
 	}
 
-	public List<PointWithId> getAllArtifactsOnPlanet() {
+	public List<ObjectPlacementInfo> getAllArtifactsOnPlanet() {
 		return allArtifactsOnPlanet;
 	}
 }

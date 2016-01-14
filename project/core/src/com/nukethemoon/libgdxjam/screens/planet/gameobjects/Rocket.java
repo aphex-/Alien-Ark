@@ -27,7 +27,6 @@ import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
 import com.nukethemoon.libgdxjam.game.attributes.ShieldCapacity;
-import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 
 import java.awt.*;
@@ -215,9 +214,7 @@ public class Rocket extends GameObject implements Disposable {
 
 	private void updateTilePosition() {
 		Vector3 position = getPosition();
-		int x = (int) (Math.floor(position.x) / ControllerPlanet.TILE_GRAPHIC_SIZE);
-		int y = (int) (Math.floor(position.y) / ControllerPlanet.TILE_GRAPHIC_SIZE);
-		lastTilePosition.setLocation(x, y);
+		lastTilePosition.setLocation(PlanetPart.getTileX(position.x), PlanetPart.getTileY(position.y));
 	}
 
 	private void thrust() {

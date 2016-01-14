@@ -63,29 +63,14 @@
   ],
   "artifacts": [
     {
-      "x": 110,
-      "y": 80,
-      "id": "art0001_planet01"
-    },
-    {
-      "x": -329,
-      "y": 86,
-      "id": "art0002_planet01"
-    },
-    {
-      "x": -27,
-      "y": -283,
-      "id": "art0003_planet01"
-    },
-    {
-      "x": -502,
-      "y": -339,
-      "id": "art0004_planet01"
-    },
-    {
-      "x": -384,
-      "y": 406,
-      "id": "art0005_planet01"
+      "x": 424.02225,
+      "y": -383.58423,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0001_planet01",
+      "type": "ATTRIBUTE_FUEL_CAPACITY"
     }
   ],
   "layerConfigs": [

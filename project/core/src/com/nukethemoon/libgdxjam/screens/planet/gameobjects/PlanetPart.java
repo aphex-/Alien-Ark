@@ -21,7 +21,7 @@ import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.screens.planet.CollectedItemCache;
 import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
-import com.nukethemoon.libgdxjam.screens.planet.PointWithId;
+import com.nukethemoon.libgdxjam.screens.planet.ObjectPlacementInfo;
 import com.nukethemoon.libgdxjam.screens.planet.helper.StandardMotionState;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.tools.opusproto.interpreter.TypeInterpreter;
@@ -102,7 +102,7 @@ public class PlanetPart extends GameObject {
 		}
 		model = modelBuilder.end();
 		modelInstance = new ModelInstance(model);
-		modelInstance.transform.translate(getGraphicOffsetX(chunk), getGraphicOffsetY(chunk), 0);
+		modelInstance.transform.translate(getChunkGraphicX(chunk), getChunkGraphicY(chunk), 0);
 
 		initPhysics();
 		initCollectibles(chunk, collectedItemCache, seed);
@@ -110,42 +110,54 @@ public class PlanetPart extends GameObject {
 	}
 
 	private void initArtifacts(Chunk chunk) {
-		for (PointWithId p : planetConfig.artifacts) {
-			if (isTileOnPlanetPart(p.x, p.y, chunk)) {
+		for (ObjectPlacementInfo p : planetConfig.artifacts) {
+			if (isPositionOnPlanetPart(p.x, p.y, chunk)) {
 				artifactObjects.add(new ArtifactObject(p));
 			}
 		}
 	}
 
-	private boolean isTileOnPlanetPart(int tileX, int tileY, Chunk chunk) {
-		return getChunkX(chunk) <= tileX
-				&& getChunkY(chunk) <= tileY
-				&& tileX < getChunkX(chunk) + (chunk.getWidth() - 2)
-				&& tileY < getChunkY(chunk) + (chunk.getHeight() - 2);
+	private boolean isPositionOnPlanetPart(float graphicX, float graphicY, Chunk chunk) {
+		float chunkGraphicX01 = getChunkGraphicX(chunk);
+		float chunkGraphicY01 = getChunkGraphicY(chunk);
+		float chunkGraphicX02 = getChunkGraphicX(chunk) + (chunk.getWidth() - 1) * tileSize;
+		float chunkGraphicY02 = getChunkGraphicY(chunk) + (chunk.getHeight() - 1) * tileSize;
+		return 		chunkGraphicX01 <= graphicX
+				&& 	chunkGraphicY01 <= graphicY
+				&& 	chunkGraphicX02 > graphicX
+				&& 	chunkGraphicY02 > graphicY;
 	}
 
-	private int getChunkX(Chunk chunk) {
+	private int getChunkTileX(Chunk chunk) {
 		return chunk.getChunkX() * (chunk.getWidth() - 1);// -1 because of one overlapping tile
 	}
 
-	private int getChunkY(Chunk chunk) {
+	private int getChunkTileY(Chunk chunk) {
 		return chunk.getChunkY() * (chunk.getHeight() - 1);// -1 because of one overlapping tile
 	}
 
-	private float getGraphicOffsetX(Chunk chunk) {
-		return getChunkX(chunk) * tileSize;
+	private float getChunkGraphicX(Chunk chunk) {
+		return getChunkTileX(chunk) * tileSize;
 	}
 
-	private float getGraphicOffsetY(Chunk chunk) {
-		return getChunkY(chunk) * tileSize;
+	private float getChunkGraphicY(Chunk chunk) {
+		return getChunkTileY(chunk) * tileSize;
 	}
 
-	public static float getTileGraphicX(int tileX) {
+	public static float getGraphicX(int tileX) {
 		return tileX * ControllerPlanet.TILE_GRAPHIC_SIZE;
 	}
 
-	public static float getTileGraphicY(int tileY) {
+	public static float getGraphicY(int tileY) {
 		return tileY * ControllerPlanet.TILE_GRAPHIC_SIZE;
+	}
+
+	public static int getTileX(float graphicX) {
+		return (int) (Math.floor(graphicX) / ControllerPlanet.TILE_GRAPHIC_SIZE);
+	}
+
+	public static int getTileY(float graphicY) {
+		return (int) (Math.floor(graphicY) / ControllerPlanet.TILE_GRAPHIC_SIZE);
 	}
 
 	/**
@@ -236,8 +248,8 @@ public class PlanetPart extends GameObject {
 		int randomTileX = (int) (noise01 * chunk.getWidth());
 		int randomTileY = (int) (noise02 * chunk.getHeight());
 		float graphicZ = chunk.getRelative(randomTileX, randomTileY, 0) * planetConfig.landscapeHeight + COLLECTIBLE_GROUND_OFFSET;
-		float graphicX = getGraphicOffsetX(chunk) + (randomTileX * tileSize);
-		float graphicY = getGraphicOffsetY(chunk) + (randomTileY * tileSize);
+		float graphicX = getChunkGraphicX(chunk) + (randomTileX * tileSize);
+		float graphicY = getChunkGraphicY(chunk) + (randomTileY * tileSize);
 		Vector3 position = new Vector3(graphicX, graphicY, graphicZ);
 		collectibles.add(new Collectible(type, position, new Point(chunk.getChunkX(), chunk.getChunkY())));
 	}

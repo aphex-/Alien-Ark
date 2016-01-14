@@ -48,7 +48,6 @@ import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWindow;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
-import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPart;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
@@ -174,7 +173,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				rocket.rigidBodyList.get(0),
 				com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes.ROCKET);
 
-		multiplexer.addProcessor(this);
+
 
 		miniMap = new MiniMap(rocket, planetController);
 
@@ -185,6 +184,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		onReloadScene(planetConfig);
 		initParticles();
 		initStage(planetConfig);
+		multiplexer.addProcessor(this);
 
 		shieldProgressBar = new ShipProgressBar(ShipProgressBar.ProgressType.SHIELD);
 		stage.addActor(shieldProgressBar);
@@ -658,9 +658,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		rocket.handlePhysicTick();
 	}
 
-	public void devJumpTo(int tileX, int tileY) {
-		float graphicX = PlanetPart.getTileGraphicX(tileX);
-		float graphicY = PlanetPart.getTileGraphicY(tileY);
+	public void devJumpTo(float graphicX, float graphicY) {
 		camera.position.set(graphicX - 50, graphicY, 60);
 		camera.lookAt(graphicX, graphicY, 0);
 		camera.up.set(Vector3.Z);
