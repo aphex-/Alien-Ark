@@ -186,7 +186,7 @@ public class SpaceShipProperties {
 		return radius.getCurrentValue();
 	}
 
-	public float misLuck() {
+	public float getLuck() {
 		return luck.getCurrentValue();
 	}
 
