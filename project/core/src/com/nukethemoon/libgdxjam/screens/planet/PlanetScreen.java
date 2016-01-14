@@ -43,10 +43,12 @@ import com.nukethemoon.libgdxjam.screens.planet.animations.ArtifactCollectAnimat
 import com.nukethemoon.libgdxjam.screens.planet.animations.EnterPlanetAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ExitPlanetAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ScanAnimation;
+import com.nukethemoon.libgdxjam.screens.planet.devtools.DevelopmentPlacementRenderer;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWindow;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPart;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
@@ -66,6 +68,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 
 	private final FirstPersonCameraController firstPersonCameraController;
+	private DevelopmentPlacementRenderer placementRenderer;
 	private ModelBatch modelBatch;
 	private Environment environment;
 
@@ -103,6 +106,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	public static Gson gson;
 	private AssetManager assetManager;
+
+	private Vector3 tmpVector = new Vector3();
 
 	private final MiniMap miniMap;
 
@@ -173,6 +178,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		miniMap = new MiniMap(rocket, planetController);
 
+		if (App.config.debugMode) {
+			placementRenderer = new DevelopmentPlacementRenderer();
+		}
 
 		onReloadScene(planetConfig);
 		initParticles();
@@ -203,6 +211,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		multiplexer.addProcessor(firstPersonCameraController);
 
 		ani.add(enterPlanetAnimation);
+
 	}
 
 	private void initParticles() {
@@ -255,7 +264,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		multiplexer.addProcessor(stage);
 
 		if (App.config.debugMode) {
-			developmentWindow = new DevelopmentWindow(uiSkin, stage, planetConfig, this, this);
+			developmentWindow = new DevelopmentWindow(uiSkin, stage, planetConfig, this, this, placementRenderer, planetController);
 			developmentWindow.setVisible(false);
 			stage.addActor(developmentWindow);
 
@@ -350,6 +359,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		modelBatch.begin(camera);
 		rocket.drawModel(modelBatch, environment, effectThrust, effectExplosion);
 		planetController.render(modelBatch, environment, false, rocket.getPosition());
+		if (App.config.debugMode) {
+			placementRenderer.render(modelBatch);
+		}
 		modelBatch.end();
 
 		particleSystem.begin();
@@ -451,6 +463,11 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		if (App.config.debugMode) {
+			physicsController.calculateCameraPickIntersection(camera, screenX, screenY, tmpVector);
+			placementRenderer.setCursorPosition(tmpVector);
+
+		}
 		return false;
 	}
 
@@ -641,6 +658,15 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		rocket.handlePhysicTick();
 	}
 
+	public void devJumpTo(int tileX, int tileY) {
+		float graphicX = PlanetPart.getTileGraphicX(tileX);
+		float graphicY = PlanetPart.getTileGraphicY(tileY);
+		camera.position.set(graphicX - 50, graphicY, 60);
+		camera.lookAt(graphicX, graphicY, 0);
+		camera.up.set(Vector3.Z);
+		planetController.updateRequestCenter(new Vector3(graphicX, graphicY, 0f));
+	}
+
 	@Override
 	public void dispose() {
 		particleSystem.removeAll();
@@ -654,6 +680,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		effectThrust.dispose();
 		effectExplosion.dispose();
 		effectPortal.dispose();
+		if (App.config.debugMode) {
+			placementRenderer.dispose();
+		}
 	}
 
 }

@@ -11,8 +11,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
+import com.nukethemoon.libgdxjam.screens.planet.devtools.DevelopmentPlacementRenderer;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
 
 public class DevelopmentWindow extends ClosableWindow {
@@ -20,12 +22,11 @@ public class DevelopmentWindow extends ClosableWindow {
 	public static NinePatchDrawable INNER_BACKGROUND;
 
 	public DevelopmentWindow(final Skin skin, Stage stage, final PlanetConfig planetConfig,
-							 final PlanetScreen planetScreen, final ReloadSceneListener reloadSceneListener) {
+							 final PlanetScreen planetScreen, final ReloadSceneListener reloadSceneListener,
+							 DevelopmentPlacementRenderer placementRenderer, ControllerPlanet controllerPlanet) {
 		super("Development", skin);
 		NinePatch patch = new NinePatch(new Texture(Gdx.files.internal("skin/background.png")),
 				1, 1, 1, 1);
-
-
 
 		INNER_BACKGROUND = new NinePatchDrawable(patch);
 
@@ -37,6 +38,10 @@ public class DevelopmentWindow extends ClosableWindow {
 		final MaterialsWindow materialsWindow = new MaterialsWindow(stage, skin, reloadSceneListener);
 		materialsWindow.setVisible(false);
 		stage.addActor(materialsWindow);
+
+		final PlacementWindow placementWindow = new PlacementWindow(skin, placementRenderer, controllerPlanet, planetScreen);
+		placementWindow.setVisible(false);
+		stage.addActor(placementWindow);
 
 
 		/*final ColorAttribute colorAttribute = planetConfig.environmentColorAttributes.get(0);
@@ -51,6 +56,16 @@ public class DevelopmentWindow extends ClosableWindow {
 		add(colorAttributeForm);
 		row();*/
 
+		TextButton placementButton = new TextButton("Placement", skin);
+		placementButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				placementWindow.setVisible(true);
+				placementWindow.toFront();
+			}
+		});
+		add(placementButton);
+		row();
 
 		TextButton lightsButton = new TextButton("Directional Lights", skin);
 		lightsButton.addListener(new ClickListener() {

@@ -62,7 +62,9 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	private List<Point> currentVisiblePlanetParts = new ArrayList<Point>();
 	private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
+
 	private List<ArtifactObject> currentVisibleArtifacts = new ArrayList<ArtifactObject>();
+
 	private List<PointWithId> allArtifactsOnPlanet = new ArrayList<PointWithId>();
 
 	private Map<Point, PlanetPart> planetPartBuffer = new HashMap<Point, PlanetPart>();
@@ -399,7 +401,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 			renderEnv(o.getModelInstance(), batch, environment);
 			tmpVec3.set(o.getDefinition().x * TILE_GRAPHIC_SIZE,
 					o.getDefinition().y * TILE_GRAPHIC_SIZE, 100);
-			controllerPhysic.calculateGroundIntersection(tmpVec3, tmpVec4);
+			controllerPhysic.calculateVerticalIntersection(tmpVec3, tmpVec4);
 			o.adjust(tmpVec4.z);
 		}
 	}
@@ -501,5 +503,9 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	public List<Collectible> getCurrentVisibleCollectibles() {
 		return currentVisibleCollectibles;
+	}
+
+	public List<PointWithId> getAllArtifactsOnPlanet() {
+		return allArtifactsOnPlanet;
 	}
 }
