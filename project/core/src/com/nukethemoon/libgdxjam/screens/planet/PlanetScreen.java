@@ -518,7 +518,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	}
 
 	private void onGameOver() {
-		SpaceShipProperties.properties.reset();
 		gameOver = true;
 		GameOverTable gameOverTable = new GameOverTable(uiSkin, new ClickListener() {
 			@Override

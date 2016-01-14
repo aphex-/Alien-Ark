@@ -99,6 +99,7 @@ public class App extends Game {
 
 
 	public static void onGameOver() {
+		SpaceShipProperties.properties.reset();
 		SpaceShipProperties.properties.currentSolarPosition.set(
 				SolarScreen.INITIAL_ARK_POSITION_X, SolarScreen.INITIAL_ARK_POSITION_Y);
 		openSolarScreen();
