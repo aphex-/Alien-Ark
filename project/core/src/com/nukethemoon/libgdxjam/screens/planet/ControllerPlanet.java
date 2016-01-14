@@ -64,7 +64,6 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
 
 	private List<ArtifactObject> currentVisibleArtifacts = new ArrayList<ArtifactObject>();
-
 	private List<PointWithId> allArtifactsOnPlanet = new ArrayList<PointWithId>();
 
 	private Map<Point, PlanetPart> planetPartBuffer = new HashMap<Point, PlanetPart>();

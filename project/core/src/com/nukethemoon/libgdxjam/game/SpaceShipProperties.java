@@ -131,6 +131,10 @@ public class SpaceShipProperties {
 		return collectedArtifactIds.contains(id);
 	}
 
+	public boolean removeCollectedAtrifact(String id) {
+		return collectedArtifactIds.remove(id);
+	}
+
 	public void computeProperties() {
 		resetAttributes();
 
