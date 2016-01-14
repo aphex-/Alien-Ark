@@ -277,7 +277,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		multiplexer.addProcessor(stage);
 
 		if (App.config.debugMode) {
-			developmentWindow = new DevelopmentWindow(uiSkin, stage, planetConfig, this, this, placementRenderer, planetController);
+			developmentWindow = new DevelopmentWindow(uiSkin, stage, planetConfig, this, this,
+					placementRenderer, planetController, KNOWN_PLANETS);
 			developmentWindow.setVisible(false);
 			stage.addActor(developmentWindow);
 
@@ -318,11 +319,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	}
 
 	public void leavePlanet() {
-		App.TUTORIAL_CONTROLLER.onLeavePlanet();
-		renderEnabled = false;
-		multiplexer.removeProcessor(stage);
-		multiplexer.removeProcessor(this);
-		multiplexer.removeProcessor(firstPersonCameraController);
 		dispose();
 		App.saveProgress();
 		App.openSolarScreen();
@@ -713,6 +709,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		if (App.config.debugMode) {
 			placementRenderer.dispose();
 		}
+
+		App.TUTORIAL_CONTROLLER.onLeavePlanet();
+		renderEnabled = false;
+		multiplexer.removeProcessor(stage);
+		multiplexer.removeProcessor(this);
+		multiplexer.removeProcessor(firstPersonCameraController);
 	}
 
 }

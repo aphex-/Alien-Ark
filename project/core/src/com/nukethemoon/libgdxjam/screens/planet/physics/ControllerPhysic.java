@@ -1,5 +1,6 @@
 package com.nukethemoon.libgdxjam.screens.planet.physics;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
@@ -110,10 +111,13 @@ public class ControllerPhysic extends ContactListener {
 	}
 
 	public void stepSimulation(float delta) {
-		float timeStep = Math.min(1f / 60f, delta);
+		final float delta2 = Math.min(1f / 60f, Gdx.graphics.getDeltaTime());
+		dynamicsWorld.stepSimulation(delta2, 1, 1f/60f);
+
+		/*float timeStep = Math.min(1f / 60f, delta);
 		int maxSubSteps = 10;
 		float fixedTimeStep = 1f / 60f;
-		dynamicsWorld.stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
+		dynamicsWorld.stepSimulation(timeStep, maxSubSteps, fixedTimeStep);*/
 	}
 
 	public void debugRender(Camera camera) {
