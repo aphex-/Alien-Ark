@@ -75,7 +75,7 @@ public class Models {
 		ARTIFACT_MODELS.put(ATTRIBUTE_LANDSLIDE, 		load("models/artifact_landslide.obj"));
 		ARTIFACT_MODELS.put(ATTRIBUTE_FUEL_CAPACITY, 	load("models/artifact_inertia.obj"));
 		ARTIFACT_MODELS.put(ATTRIBUTE_SHIELD_CAPACITY, 	load("models/artifact_shield.obj"));
-		ARTIFACT_MODELS.put(ATTRIBUTE_SCAN_RADIUS, 		load("models/artifact_shield.obj"));
+		ARTIFACT_MODELS.put(ATTRIBUTE_SCAN_RADIUS, 		load("models/artifact_radius.obj"));
 		ARTIFACT_MODELS.put(ATTRIBUTE_LUCK, 			load("models/artifact_luck.obj"));
 		ARTIFACT_MODELS.put(OPERATOR_PLUS, 				load("models/artifact_shield.obj"));
 		ARTIFACT_MODELS.put(OPERATOR_MINUS, 			load("models/artifact_shield.obj"));
