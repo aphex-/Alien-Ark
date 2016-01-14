@@ -16,4 +16,6 @@ public interface RocketListener {
 	void onRocketScanEnd();
 	void onRocketEntersPortal();
 
+	void onRocketFliesToHigh();
+	void onRocketBackToNormalHeight();
 }

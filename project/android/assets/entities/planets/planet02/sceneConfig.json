@@ -35,13 +35,6 @@
       }
     }
   ],
-  "artifacts": [
-    {
-      "x": -76,
-      "y": 113,
-      "id": "art0001_planet02"
-    }
-  ],
   "layerConfigs": [
     {
       "name": "Lava",

@@ -42,6 +42,9 @@ public class Rocket extends GameObject implements Disposable {
 	private static final float FUEL_CONSUMPTION = 0.1f;
 	private static final int SCAN_DELAY = 50;
 	private static final int THRUST_START_FUEL_COST = 15;
+
+	private static final int PLANET_Z_LIMIT = 200;
+
 	private final Sound thrustSound;
 
 	private long ticksSinceLastLaunch = 0;
@@ -77,6 +80,7 @@ public class Rocket extends GameObject implements Disposable {
 	private boolean thrusting = true;
 	private boolean moving = true;
 	private boolean exploded = false;
+	private boolean toHigh = false;
 
 	private boolean tractorBeamVisible = false;
 
@@ -168,9 +172,27 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	public void update() {
+		if (exploded) {
+			return;
+		}
+
 		if (thrusting) {
 			thrust();
 			drill += 2;
+		}
+
+		float zPosition = getPosition().z;
+		if (zPosition > PLANET_Z_LIMIT) {
+			if (zPosition > PLANET_Z_LIMIT * 1.5f) {
+				onExplode();
+			}
+			listener.onRocketFliesToHigh();
+			toHigh = true;
+		} else {
+			if (toHigh) {
+				listener.onRocketBackToNormalHeight();
+			}
+			toHigh = false;
 		}
 
 		rotationMatrix.setToRotation(Vector3.Z, zRotation);
@@ -377,7 +399,7 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
-	private void dealDamage(int damage) {
+	public void dealDamage(int damage) {
 		if (System.currentTimeMillis() - lastDamageTime < MIN_DAMAGE_DELAY_MILLIS) {
 			return;
 		}

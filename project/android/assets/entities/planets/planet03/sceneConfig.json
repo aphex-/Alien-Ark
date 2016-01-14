@@ -61,13 +61,6 @@
       }
     }
   ],
-  "artifacts": [
-    {
-      "x": 110,
-      "y": 80,
-      "id": "myArtifactId"
-    }
-  ],
   "layerConfigs": [
     {
       "name": "Ice",

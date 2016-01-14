@@ -598,6 +598,16 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	@Override
+	public void onRocketFliesToHigh() {
+
+	}
+
+	@Override
+	public void onRocketBackToNormalHeight() {
+
+	}
+
+	@Override
 	public void onRocketCollided(CollisionTypes type, btCollisionObject collisionObject) {
 
 	}

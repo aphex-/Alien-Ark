@@ -38,6 +38,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Balancing;
+import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ArtifactCollectAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.animations.EnterPlanetAnimation;
@@ -52,6 +53,7 @@ import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
+import com.nukethemoon.libgdxjam.ui.DialogTable;
 import com.nukethemoon.libgdxjam.ui.GameOverTable;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.MenuTable;
@@ -108,6 +110,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private Vector3 tmpVector = new Vector3();
 
+	private DialogTable fliesToHighInfo;
+
 	private final MiniMap miniMap;
 
 	private static String[] KNOWN_PLANETS = new String[] {
@@ -161,8 +165,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		shapeRenderer = new ShapeRenderer();
 		shapeRenderer.setAutoShapeType(true);
 
-
-
 		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/" + KNOWN_PLANETS[planetIndex] + "/sceneConfig.json");
 		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
 		planetConfig.deserialize();
@@ -184,7 +186,14 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		onReloadScene(planetConfig);
 		initParticles();
 		initStage(planetConfig);
+
+		// STAGE INITIALIZED
+
 		multiplexer.addProcessor(this);
+
+		fliesToHighInfo = new DialogTable(Styles.UI_SKIN, new String[] {"The rocket flies to high!"}, "WARNING");
+		fliesToHighInfo.setVisible(false);
+		stage.addActor(fliesToHighInfo);
 
 		shieldProgressBar = new ShipProgressBar(ShipProgressBar.ProgressType.SHIELD);
 		stage.addActor(shieldProgressBar);
@@ -636,6 +645,17 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			}
 		});
 		ani.add(exitPlanetAnimation);
+	}
+
+	@Override
+	public void onRocketFliesToHigh() {
+		rocket.dealDamage(10);
+		fliesToHighInfo.setVisible(true);
+	}
+
+	@Override
+	public void onRocketBackToNormalHeight() {
+		fliesToHighInfo.setVisible(false);
 	}
 
 	// === physic events ===
