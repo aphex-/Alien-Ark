@@ -444,9 +444,18 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		planetPartBuffer.get(c.getPlanetPartPosition()).getCollectibles().remove(c);
 	}
 
-	private void removeArtifact(ArtifactObject o) {
+	public void removeArtifactModel(ArtifactObject o) {
 		currentVisibleArtifacts.remove(o);
 		o.dispose();
+	}
+
+	public ArtifactObject getCurrentVisibleArtifact(String id) {
+		for (ArtifactObject o : currentVisibleArtifacts) {
+			if (o.getDefinition().id.equals(id)) {
+				return o;
+			}
+		}
+		return null;
 	}
 
 	public ArtifactObject tryCollect(Vector3 position, float tractorBeamRadius) {
@@ -462,7 +471,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	public void collectArtifact(ArtifactObject o) {
 		if (!SpaceShipProperties.properties.isCollectedArtifact(o.getDefinition().id)) {
-			removeArtifact(o);
+			removeArtifactModel(o);
 			allArtifactsOnPlanet.remove(o.getDefinition());
 			SpaceShipProperties.properties.addArtifact(o.getDefinition().id);
 		}

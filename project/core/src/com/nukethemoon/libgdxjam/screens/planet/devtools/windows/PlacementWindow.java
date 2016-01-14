@@ -6,8 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
+import com.nukethemoon.libgdxjam.screens.planet.PointWithId;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.DevelopmentPlacementRenderer;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.forms.PlacedArtifactTable;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
 
 public class PlacementWindow extends ClosableWindow implements DevelopmentPlacementRenderer.CursorChangeListener, PlacedArtifactTable.ArtifactPlacementListener {
 
@@ -33,7 +35,7 @@ public class PlacementWindow extends ClosableWindow implements DevelopmentPlacem
 		row();
 		artifactTable = new PlacedArtifactTable();
 		artifactTable.setArtifactPlacementListener(this);
-		artifactTable.update(controllerPlanet);
+
 
 		add(artifactTable);
 		row();
@@ -43,6 +45,12 @@ public class PlacementWindow extends ClosableWindow implements DevelopmentPlacem
 
 
 	public void update() {
+		artifactTable.update(controllerPlanet);
+		updateCursorLabel();
+		pack();
+	}
+
+	private void updateCursorLabel() {
 		Vector3 cp = renderer.getCursorPosition();
 		this.cursorPositionLabel.setText(
 				"CURSOR: x: " + (Math.floor(cp.x * 10f) / 10f)
@@ -52,17 +60,32 @@ public class PlacementWindow extends ClosableWindow implements DevelopmentPlacem
 
 	@Override
 	public void onCursorPositionChange(Vector3 position) {
-		update();
+		updateCursorLabel();
 	}
 
 	@Override
 	public void onArtifactAdd() {
+		Vector3 cp = renderer.getCursorPosition();
 
 	}
 
 	@Override
 	public void onArtifactRemove(String id) {
-
+		ArtifactObject a = controllerPlanet.getCurrentVisibleArtifact(id);
+		if (a != null) {
+			controllerPlanet.removeArtifactModel(a);
+		}
+		PointWithId pointToRemove = null;
+		for (PointWithId p : controllerPlanet.getAllArtifactsOnPlanet()) {
+			if (p.id.equals(id)) {
+				pointToRemove = p;
+				break;
+			}
+		}
+		if (pointToRemove != null) {
+			controllerPlanet.getAllArtifactsOnPlanet().remove(pointToRemove);
+		}
+		update();
 	}
 
 	@Override
