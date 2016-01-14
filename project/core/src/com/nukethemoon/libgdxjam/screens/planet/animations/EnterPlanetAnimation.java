@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Bezier;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.screens.planet.OverlayRenderer;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.tools.ani.AnimationFinishedListener;
 import com.nukethemoon.tools.ani.BaseAnimation;
@@ -14,13 +15,15 @@ public class EnterPlanetAnimation extends BaseAnimation {
 	private final Bezier<Vector3> exitPath;
 	private PerspectiveCamera camera;
 	private Rocket rocket;
+	private OverlayRenderer overlayRenderer;
 	private Vector3 tmpVector = new Vector3();
 	private Vector3 tmpVector2 = new Vector3();
 
-	public EnterPlanetAnimation(PerspectiveCamera camera, Rocket rocket, AnimationFinishedListener listener) {
+	public EnterPlanetAnimation(PerspectiveCamera camera, Rocket rocket, OverlayRenderer overlayRenderer, AnimationFinishedListener listener) {
 		super(3000, listener);
 		this.camera = camera;
 		this.rocket = rocket;
+		this.overlayRenderer = overlayRenderer;
 
 		camera.up.set(Vector3.Z);
 
@@ -33,6 +36,12 @@ public class EnterPlanetAnimation extends BaseAnimation {
 
 	@Override
 	protected void onProgress(float v) {
+
+		float overlayProgress = computeIntervalProgress(v, 0.0f, 0.5f);
+
+		if (overlayProgress > 0) {
+			overlayRenderer.setColor(0, 0, 0, 1 - overlayProgress);
+		}
 
 		Matrix4 transform = rocket.getRocketModelInstance().transform;
 		transform.setToRotation(Vector3.Z, -90);
@@ -55,5 +64,11 @@ public class EnterPlanetAnimation extends BaseAnimation {
 		camera.update();
 		rocket.setXRotation(0);
 		rocket.setZRotation(-90);
+		overlayRenderer.setEnabled(false);
+	}
+
+	@Override
+	protected void onStart() {
+		overlayRenderer.setEnabled(true);
 	}
 }

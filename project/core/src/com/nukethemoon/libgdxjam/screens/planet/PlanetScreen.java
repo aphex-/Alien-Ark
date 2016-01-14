@@ -126,7 +126,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private DevelopmentWindow developmentWindow;
 	private MenuButton menuButton;
 
-
+	private OverlayRenderer overlayRenderer;
 
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
 		pPlanetIndex = pPlanetIndex % KNOWN_PLANETS.length;
@@ -164,6 +164,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		shapeRenderer = new ShapeRenderer();
 		shapeRenderer.setAutoShapeType(true);
+
+		overlayRenderer = new OverlayRenderer();
+		overlayRenderer.setEnabled(true);
+		overlayRenderer.setColor(0, 0, 0, 0.5f);
 
 		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/" + KNOWN_PLANETS[planetIndex] + "/sceneConfig.json");
 		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
@@ -207,7 +211,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		planetController.updateRequestCenter(new Vector3(0, 0, 0));
 
-		EnterPlanetAnimation enterPlanetAnimation = new EnterPlanetAnimation(camera, rocket, new AnimationFinishedListener() {
+		EnterPlanetAnimation enterPlanetAnimation = new EnterPlanetAnimation(camera, rocket, overlayRenderer, new AnimationFinishedListener() {
 			@Override
 			public void onAnimationFinished(BaseAnimation baseAnimation) {
 				physicEnabled = true;
@@ -378,8 +382,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		particleSystem.end();
 
 		modelBatch.render(particleSystem);
-		drawOrigin();
-
+		if (App.config.debugMode) {
+			//drawOrigin();
+		}
 
 		if (!pause) {
 			particleSystem.update();
@@ -395,7 +400,13 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			stage.act(delta);
 			stage.draw();
 		}
-		miniMap.drawMiniMap();
+
+
+		if (overlayRenderer.isEnabled()) {
+			overlayRenderer.render();
+		} else {
+			miniMap.drawMiniMap();
+		}
 	}
 
 
@@ -638,7 +649,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public void onRocketEntersPortal() {
 		physicEnabled = false;
 		rocketEnabled = false;
-		ExitPlanetAnimation exitPlanetAnimation = new ExitPlanetAnimation(camera, rocket, new AnimationFinishedListener() {
+		ExitPlanetAnimation exitPlanetAnimation = new ExitPlanetAnimation(camera, rocket, overlayRenderer, new AnimationFinishedListener() {
 			@Override
 			public void onAnimationFinished(BaseAnimation baseAnimation) {
 				leavePlanet();
