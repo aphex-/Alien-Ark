@@ -104,7 +104,7 @@ public class PlacementWindow extends ClosableWindow implements DevelopmentPlacem
 			// planet config remove
 			removeArtifactFromList(controllerPlanet.getPlanetConfig().artifacts, a.getDefinition().id);
 			// save game remove
-			SpaceShipProperties.properties.removeCollectedAtrifact(a.getDefinition().id);
+			SpaceShipProperties.properties.unregisterCollectedArtifact(a.getDefinition().id);
 		}
 		update();
 	}

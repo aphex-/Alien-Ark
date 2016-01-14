@@ -1,12 +1,6 @@
 package com.nukethemoon.libgdxjam.game;
 
 import com.badlogic.gdx.math.Vector2;
-import com.nukethemoon.libgdxjam.game.artifacts.AttributeArtifact;
-import com.nukethemoon.libgdxjam.game.artifacts.OperatorArtifact;
-import com.nukethemoon.libgdxjam.game.artifacts.ValueArtifact;
-import com.nukethemoon.libgdxjam.game.artifacts.operators.Divide;
-import com.nukethemoon.libgdxjam.game.artifacts.operators.Increase;
-import com.nukethemoon.libgdxjam.game.artifacts.operators.Multiply;
 import com.nukethemoon.libgdxjam.game.attributes.Attribute;
 import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
 import com.nukethemoon.libgdxjam.game.attributes.Inertia;
@@ -32,17 +26,14 @@ public class SpaceShipProperties {
 	public static final int INITIAL_COLLECT_RADIUS = 12;
 	public static final float INITIAL_INERTIA = .75f;
 
-	private List<String> collectedArtifactIds = new ArrayList<String>();
+	private List<String> collectedArtifactIds = new ArrayList<String>(); // just to save the already collected artifacts
 
 	private List<Artifact> artifacts = new ArrayList<Artifact>();
 	private List<Alien> aliens = new ArrayList<Alien>();
 
 	private int currentInternalFuel;
 	private int currentInternalShield;
-
 	public Vector2 currentSolarPosition;
-
-
 
 	private Speed speed = new Speed(INITIAL_SPEED);
 
@@ -65,7 +56,7 @@ public class SpaceShipProperties {
 
 	public void testInit() {
 
-		ValueArtifact v = new ValueArtifact(10);
+		/*ValueArtifact v = new ValueArtifact(10);
 		OperatorArtifact o = new Increase();
 
 		artifacts.add(new AttributeArtifact(Speed.class));
@@ -85,9 +76,13 @@ public class SpaceShipProperties {
 
 		artifacts.add(new Divide());
 		artifacts.add(new Increase());
-		artifacts.add(new Multiply());
+		artifacts.add(new Multiply());*/
 	}
 
+	public void onArtifactCollected(Artifact artifact, String inGameId) {
+		registerArtifactCollected(inGameId);
+		getArtifacts().add(artifact);
+	}
 
 	public List<Alien> getAliens() {
 		return aliens;
@@ -121,18 +116,6 @@ public class SpaceShipProperties {
 
 	public int addCurrentShield(int add) {
 		return setCurrentInternalShield(getCurrentInternalShield() + add);
-	}
-
-	public void addArtifact(String id) {
-		collectedArtifactIds.add(id);
-	}
-
-	public boolean isCollectedArtifact(String id) {
-		return collectedArtifactIds.contains(id);
-	}
-
-	public boolean removeCollectedAtrifact(String id) {
-		return collectedArtifactIds.remove(id);
 	}
 
 	public void computeProperties() {
@@ -197,8 +180,20 @@ public class SpaceShipProperties {
 		return radius.getCurrentValue();
 	}
 
-	public float misFortune() {
-		return 1 - luck.getCurrentValue(); //HÄ? wieso umgedreht?
+	public float misLuck() {
+		return luck.getCurrentValue();
+	}
+
+	public void registerArtifactCollected(String id) {
+		collectedArtifactIds.add(id);
+	}
+
+	public boolean isArtifactCollected(String id) {
+		return collectedArtifactIds.contains(id);
+	}
+
+	public boolean unregisterCollectedArtifact(String id) {
+		return collectedArtifactIds.remove(id);
 	}
 
 

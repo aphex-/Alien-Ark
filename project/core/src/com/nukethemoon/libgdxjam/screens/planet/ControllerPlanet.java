@@ -19,6 +19,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
+import com.nukethemoon.libgdxjam.ArtifactDefinitions;
 import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
@@ -126,7 +127,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		updateNearestArtifact(0, 0);
 
 		for (ObjectPlacementInfo p : pPlanetConfig.artifacts) {
-			if (!SpaceShipProperties.properties.isCollectedArtifact(p.id)) {
+			if (!SpaceShipProperties.properties.isArtifactCollected(p.id)) {
 				allArtifactsOnPlanet.add(p);
 			}
 		}
@@ -431,7 +432,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		controllerPhysic.calculateVerticalIntersection(tmpVec3, tmpVec4);
 		o.adjust(tmpVec4.z);
 
-		if (!SpaceShipProperties.properties.isCollectedArtifact(o.getDefinition().id)) {
+		if (!SpaceShipProperties.properties.isArtifactCollected(o.getDefinition().id)) {
 			currentVisibleArtifacts.add(o);
 		}
 	}
@@ -469,10 +470,12 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	}
 
 	public void collectArtifact(ArtifactObject o) {
-		if (!SpaceShipProperties.properties.isCollectedArtifact(o.getDefinition().id)) {
+		if (!SpaceShipProperties.properties.isArtifactCollected(o.getDefinition().id)) {
 			removeArtifactModel(o);
 			allArtifactsOnPlanet.remove(o.getDefinition());
-			SpaceShipProperties.properties.addArtifact(o.getDefinition().id);
+			ArtifactDefinitions.ConcreteArtifactType concreteArtifactType
+					= ArtifactDefinitions.ConcreteArtifactType.byName(o.getDefinition().type);
+			SpaceShipProperties.properties.onArtifactCollected(concreteArtifactType.createArtifact(), o.getDefinition().id);
 		}
 	}
 
