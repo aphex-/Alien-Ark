@@ -24,6 +24,7 @@ import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BufferedParticleBatch;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
+import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
@@ -38,7 +39,6 @@ import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
-import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ArtifactCollectAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.animations.EnterPlanetAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ExitPlanetAnimation;
@@ -65,6 +65,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		ControllerPhysic.PhysicsListener  {
 
 
+	private final FirstPersonCameraController firstPersonCameraController;
 	private ModelBatch modelBatch;
 	private Environment environment;
 
@@ -85,14 +86,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private final InputMultiplexer multiplexer;
 	private final Skin uiSkin;
 	private final int planetIndex;
-
 	private ControllerPlanet planetController;
 	private ControllerPhysic physicsController;
 
 	private Stage stage;
-	private final FreeCameraInput freeCameraInput;
-
-
 
 	private final ShipProgressBar shieldProgressBar;
 	private final ShipProgressBar fuelProgressBar;
@@ -102,6 +99,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private boolean renderEnabled = true;
 	private boolean physicEnabled = false;
 	private boolean rocketEnabled = false;
+	private boolean debugCameraEnabled = false;
 
 	public static Gson gson;
 	private AssetManager assetManager;
@@ -172,9 +170,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes.ROCKET);
 
 		multiplexer.addProcessor(this);
-		freeCameraInput = new FreeCameraInput(camera);
-		freeCameraInput.setEnabled(false);
-		multiplexer.addProcessor(freeCameraInput);
 
 		miniMap = new MiniMap(rocket, planetController);
 
@@ -202,6 +197,11 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				rocketEnabled = true;
 			}
 		});
+
+
+		firstPersonCameraController = new FirstPersonCameraController(camera);
+		multiplexer.addProcessor(firstPersonCameraController);
+
 		ani.add(enterPlanetAnimation);
 	}
 
@@ -300,7 +300,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		renderEnabled = false;
 		multiplexer.removeProcessor(stage);
 		multiplexer.removeProcessor(this);
-		multiplexer.removeProcessor(freeCameraInput);
+		multiplexer.removeProcessor(firstPersonCameraController);
 		dispose();
 		App.saveProgress();
 		App.openSolarScreen();
@@ -337,12 +337,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			}
 		}
 
-		if (freeCameraInput.isEnabled()) {
-			freeCameraInput.update(delta);
+		if (debugCameraEnabled) {
+			firstPersonCameraController.update(delta * 10);
 		}
 		camera.update();
 
-		if (!pause && rocketEnabled) {
+		if (!pause && rocketEnabled && !debugCameraEnabled) {
 			//rocket.thrust();
 			rocket.update();
 		}
@@ -364,7 +364,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			particleSystem.update();
 			ani.update();
 			if (!gameOver && physicEnabled) {
-				physicsController.stepSimulation(delta);
+				if (!debugCameraEnabled) {
+					physicsController.stepSimulation(delta);
+				}
 				physicsController.debugRender(camera);
 			}
 		}
@@ -422,13 +424,15 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public boolean keyDown(int keycode) {
-		if (keycode == 61) {
-			freeCameraInput.setEnabled(!freeCameraInput.isEnabled());
+		if (keycode == Input.Keys.TAB) {
+			if (App.config.debugMode) {
+				debugCameraEnabled = !debugCameraEnabled;
+			}
 		}
-		if (keycode == 44) {
-			onPauseClicked();
+		if (keycode == Input.Keys.P) {
+			pause = !pause;
 		}
-		if (keycode == 62) {
+		if (keycode == Input.Keys.SPACE) {
 			rocket.toggleThrust();
 		}
 		return false;

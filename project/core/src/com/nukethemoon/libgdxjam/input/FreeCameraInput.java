@@ -1,5 +1,6 @@
 package com.nukethemoon.libgdxjam.input;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector2;
@@ -34,34 +35,28 @@ public class FreeCameraInput implements InputProcessor {
 		if (!enabled) {
 			return false;
 		}
-		if (keycode == 51) {
-			// W
+		if (keycode == Input.Keys.W) {
 			forwardPressed = true;
 		}
 
-		if (keycode == 29) {
-			// A
+		if (keycode == Input.Keys.A) {
 			leftPressed = true;
 
 		}
 
-		if (keycode == 47) {
-			// S
+		if (keycode == Input.Keys.S) {
 			backwardPressed = true;
 		}
 
-		if (keycode == 32) {
-			// D
+		if (keycode == Input.Keys.D) {
 			rightPressed = true;
 		}
 
-		if (keycode == 46) {
-			// R
+		if (keycode == Input.Keys.R) {
 			upPressed = true;
 		}
 
-		if (keycode == 34) {
-			// F
+		if (keycode == Input.Keys.F) {
 			downPressed = true;
 		}
 
@@ -87,33 +82,27 @@ public class FreeCameraInput implements InputProcessor {
 		if (!enabled) {
 			return false;
 		}
-		if (keycode == 51) {
-			// W
+		if (keycode == Input.Keys.W) {
 			forwardPressed = false;
 		}
 
-		if (keycode == 29) {
-			// A
+		if (keycode == Input.Keys.A) {
 			leftPressed = false;
 		}
 
-		if (keycode == 47) {
-			// S
+		if (keycode == Input.Keys.S) {
 			backwardPressed = false;
 		}
 
-		if (keycode == 32) {
-			// D
+		if (keycode == Input.Keys.D) {
 			rightPressed = false;
 		}
 
-		if (keycode == 46) {
-			// R
+		if (keycode == Input.Keys.R) {
 			upPressed = false;
 		}
 
-		if (keycode == 34) {
-			// F
+		if (keycode == Input.Keys.F) {
 			downPressed = false;
 		}
 		return false;
