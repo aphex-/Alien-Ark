@@ -73,13 +73,13 @@ public class Models {
 		ARTIFACT_MODELS.put(ATTRIBUTE_SPEED, 			load("models/artifact_speed.obj"));
 		ARTIFACT_MODELS.put(ATTRIBUTE_INERTIA, 			load("models/artifact_inertia.obj"));
 		ARTIFACT_MODELS.put(ATTRIBUTE_LANDSLIDE, 		load("models/artifact_landslide.obj"));
-		ARTIFACT_MODELS.put(ATTRIBUTE_FUEL_CAPACITY, 	load("models/artifact_inertia.obj"));
+		ARTIFACT_MODELS.put(ATTRIBUTE_FUEL_CAPACITY, 	load("models/artifact_fuel.obj"));
 		ARTIFACT_MODELS.put(ATTRIBUTE_SHIELD_CAPACITY, 	load("models/artifact_shield.obj"));
 		ARTIFACT_MODELS.put(ATTRIBUTE_SCAN_RADIUS, 		load("models/artifact_radius.obj"));
 		ARTIFACT_MODELS.put(ATTRIBUTE_LUCK, 			load("models/artifact_luck.obj"));
-		ARTIFACT_MODELS.put(OPERATOR_PLUS, 				load("models/artifact_shield.obj"));
-		ARTIFACT_MODELS.put(OPERATOR_MINUS, 			load("models/artifact_shield.obj"));
-		ARTIFACT_MODELS.put(OPERATOR_MULTIPLY, 			load("models/artifact_shield.obj"));
+		ARTIFACT_MODELS.put(OPERATOR_PLUS, 				load("models/artifact_plus.obj"));
+		ARTIFACT_MODELS.put(OPERATOR_MINUS, 			load("models/artifact_minus.obj"));
+		ARTIFACT_MODELS.put(OPERATOR_MULTIPLY, 			load("models/artifact_multiply.obj"));
 		ARTIFACT_MODELS.put(OPERATOR_DIVIDE, 			load("models/artifact_shield.obj"));
 		ARTIFACT_MODELS.put(VALUE_100,		 			load("models/artifact_shield.obj"));
 		ARTIFACT_MODELS.put(VALUE_200,		 			load("models/artifact_shield.obj"));
