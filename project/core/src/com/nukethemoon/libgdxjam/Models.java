@@ -80,9 +80,9 @@ public class Models {
 		ARTIFACT_MODELS.put(OPERATOR_PLUS, 				load("models/artifact_plus.obj"));
 		ARTIFACT_MODELS.put(OPERATOR_MINUS, 			load("models/artifact_minus.obj"));
 		ARTIFACT_MODELS.put(OPERATOR_MULTIPLY, 			load("models/artifact_multiply.obj"));
-		ARTIFACT_MODELS.put(OPERATOR_DIVIDE, 			load("models/artifact_shield.obj"));
-		ARTIFACT_MODELS.put(VALUE_100,		 			load("models/artifact_shield.obj"));
-		ARTIFACT_MODELS.put(VALUE_200,		 			load("models/artifact_shield.obj"));
+		ARTIFACT_MODELS.put(OPERATOR_DIVIDE, 			load("models/artifact_divide.obj"));
+		ARTIFACT_MODELS.put(VALUE_100,		 			load("models/artifact_100.obj"));
+		ARTIFACT_MODELS.put(VALUE_200,		 			load("models/artifact_200.obj"));
 		ARTIFACT_MODELS.put(VALUE_500,		 			load("models/artifact_shield.obj"));
 		ARTIFACT_MODELS.put(VALUE_1000,		 			load("models/artifact_shield.obj"));
 		ARTIFACT_MODELS.put(VALUE_2000,		 			load("models/artifact_shield.obj"));
