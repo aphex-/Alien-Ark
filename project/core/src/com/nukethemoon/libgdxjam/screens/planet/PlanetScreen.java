@@ -58,7 +58,7 @@ import com.nukethemoon.libgdxjam.ui.GameOverTable;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.MenuTable;
 import com.nukethemoon.libgdxjam.ui.ToastTable;
-import com.nukethemoon.libgdxjam.ui.animation.FadeTableAnimation;
+import com.nukethemoon.libgdxjam.ui.animation.GameOverAnimation;
 import com.nukethemoon.libgdxjam.ui.hud.ShipProgressBar;
 import com.nukethemoon.tools.ani.Ani;
 import com.nukethemoon.tools.ani.AnimationFinishedListener;
@@ -396,15 +396,16 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				physicsController.debugRender(camera);
 			}
 		}
+
+		if (overlayRenderer.isEnabled()) {
+			overlayRenderer.render();
+		}
 		if (stage != null) {
 			stage.act(delta);
 			stage.draw();
 		}
 
-
-		if (overlayRenderer.isEnabled()) {
-			overlayRenderer.render();
-		} else {
+		if (!overlayRenderer.isEnabled()) {
 			miniMap.drawMiniMap();
 		}
 	}
@@ -527,9 +528,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				App.onGameOver();
 			}
 		});
-		gameOverTable.setColor(1, 1, 1, 0);
+		stage.clear();
 		stage.addActor(gameOverTable);
-		ani.add(2500, new FadeTableAnimation(gameOverTable));
+		ani.add(1500, new GameOverAnimation(gameOverTable, overlayRenderer));
 	}
 
 	@Override

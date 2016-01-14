@@ -18,7 +18,7 @@ public class OverlayRenderer {
 	}
 
 	public void render() {
-		if (enabled) {
+		if (enabled && drawColor.a > 0) {
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			shapeRenderer.setColor(drawColor.r, drawColor.g, drawColor.b, drawColor.a);
