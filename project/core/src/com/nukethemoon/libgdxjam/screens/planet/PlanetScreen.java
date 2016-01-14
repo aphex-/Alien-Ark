@@ -72,6 +72,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private ParticleSystem particleSystem;
 	private BufferedParticleBatch particleSpriteBatch;
+	private ParticleEffect effectPortal;
+	private ParticleEffect effectThrust;
+	private ParticleEffect effectExplosion;
 
 	private Rocket rocket;
 
@@ -89,8 +92,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private Stage stage;
 	private final FreeCameraInput freeCameraInput;
 
-	private ParticleEffect effectThrust;
-	private ParticleEffect effectExplosion;
+
 
 	private final ShipProgressBar shieldProgressBar;
 	private final ShipProgressBar fuelProgressBar;
@@ -117,6 +119,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private Ani ani;
 	private DevelopmentWindow developmentWindow;
 	private MenuButton menuButton;
+
 
 
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
@@ -216,15 +219,25 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		assetManager.setLoader(ParticleEffect.class, loader);
 		assetManager.load("particles/rocket_thruster.pfx", ParticleEffect.class, loadParam);
 		assetManager.load("particles/rocket_explosion.pfx", ParticleEffect.class, loadParam);
+		assetManager.load("particles/planet_portal.pfx", ParticleEffect.class, loadParam);
 		assetManager.finishLoading();
 
-		effectThrust = ((ParticleEffect) assetManager.get("particles/rocket_thruster.pfx")).copy();
-		effectExplosion = ((ParticleEffect) assetManager.get("particles/rocket_explosion.pfx")).copy();
+		effectThrust = 		((ParticleEffect) assetManager.get("particles/rocket_thruster.pfx")).copy();
+		effectExplosion = 	((ParticleEffect) assetManager.get("particles/rocket_explosion.pfx")).copy();
+		effectPortal = 		((ParticleEffect) assetManager.get("particles/planet_portal.pfx")).copy();
 		effectThrust.init();
 		effectExplosion.init();
 		effectThrust.start();
 
+		effectPortal.init();
+		effectPortal.start();
+		effectPortal.translate(new Vector3(-30, 0, 135));
+		effectPortal.rotate(Vector3.Z, 90);
+		effectPortal.rotate(Vector3.X, 30);
+		effectPortal.scale(2f, 2f, 2f);
+
 		particleSystem.add(effectThrust);
+		particleSystem.add(effectPortal);
 	}
 
 	@Override
@@ -636,6 +649,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		//shapeRenderer.dispose();
 		effectThrust.dispose();
 		effectExplosion.dispose();
+		effectPortal.dispose();
 	}
 
 }

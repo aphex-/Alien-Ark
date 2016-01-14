@@ -1,0 +1,11 @@
+# Blender MTL File: 'artifact_shield.blend'
+# Material Count: 1
+
+newmtl Material.001
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.896269 0.768151 0.584078
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2

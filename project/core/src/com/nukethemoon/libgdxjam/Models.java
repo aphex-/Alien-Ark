@@ -40,15 +40,15 @@ public class Models {
 
 		FUEL = loader.loadModel(Gdx.files.internal("models/fuel.obj"), param);
 		FUEL.calculateBoundingBox(boundingBox);
-		FUEL_SHAPE = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.65f));
+		FUEL_SHAPE = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.8f));
 
 		SHIELD = loader.loadModel(Gdx.files.internal("models/shield.obj"), param);
 		SHIELD.calculateBoundingBox(boundingBox);
-		SHIELD_SHAPE = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.65f));
+		SHIELD_SHAPE = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.8f));
 
-		ARTIFACT_E = loader.loadModel(Gdx.files.internal("models/artifact_e.obj"), param);
-		ARTIFACT_W = loader.loadModel(Gdx.files.internal("models/artifact_w.obj"), param);
-		ARTIFACT_F = loader.loadModel(Gdx.files.internal("models/artifact_f.obj"), param);
+		ARTIFACT_E = loader.loadModel(Gdx.files.internal("models/artifact_shield.obj"), param);
+		ARTIFACT_W = loader.loadModel(Gdx.files.internal("models/artifact_shield.obj"), param);
+		ARTIFACT_F = loader.loadModel(Gdx.files.internal("models/artifact_shield.obj"), param);
 
 		PLANET_PORTAL = 		loader.loadModel(Gdx.files.internal("models/planetPortal.obj"), param);
 		PLANET_PORTAL_TORUS = 	loader.loadModel(Gdx.files.internal("models/portalTorus.obj"), param);
