@@ -47,7 +47,6 @@ public class DevelopmentPlacementRenderer implements Disposable {
 
 	@Override
 	public void dispose() {
-		cursorModel.dispose();
 	}
 
 	public interface CursorChangeListener {
