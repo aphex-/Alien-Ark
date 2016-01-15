@@ -718,9 +718,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public void onRaceProgress(int pointIndex, int pointCount, float timeBonus) {
 		String addition = "";
 		if (timeBonus > 0) {
-			addition = " +" + timeBonus + "s";
+			addition = "   +" + timeBonus + "s";
 		}
-		showToast(+ pointIndex + "/" + pointCount + addition);
+		showToast(+ pointIndex + " of " + pointCount + addition);
 		App.audioController.playSound("dialogHighlight.mp3");
 		raceTimeTable.setTime(planetController.getTimeToReachWayPoint(0));
 	}
