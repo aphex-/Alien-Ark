@@ -2,7 +2,7 @@
 game.png
 size: 1024,1024
 format: RGBA8888
-filter: Nearest,Nearest
+filter: Linear,Linear
 repeat: none
 ShieldProgressBar01
   rotate: false
@@ -225,7 +225,7 @@ sunParticle
 game2.png
 size: 1024,1024
 format: RGBA8888
-filter: Nearest,Nearest
+filter: Linear,Linear
 repeat: none
 FuelShieldBackground
   rotate: false
@@ -469,7 +469,7 @@ sun
 game3.png
 size: 512,512
 format: RGBA8888
-filter: Nearest,Nearest
+filter: Linear,Linear
 repeat: none
 attributeLandingDistance
   rotate: false
