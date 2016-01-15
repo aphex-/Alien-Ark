@@ -27,10 +27,12 @@ public class SpaceShipProperties {
 
 	public static final int USER_VALUE_MAX = 9999; // the maximum value for crew member bonus
 	public static final int INITIAL_SPEED = 30;
-	public static final float INITIAL_LUCK = .1f;
+	public static final int INITIAL_SHIELD = 1000;
+	public static final int INITIAL_FUEL = 3000;
+	public static final float INITIAL_LUCK = 1f;
 	public static final int INITIAL_LANDING_DISTANCE = 10;
 	public static final int INITIAL_COLLECT_RADIUS = 12;
-	public static final float INITIAL_INERTIA = .75f;
+	public static final float INITIAL_INERTIA = 500;
 
 	private List<String> collectedArtifactIds = new ArrayList<String>(); // just to save the already collected artifacts
 	private List<Artifact> artifacts = new ArrayList<Artifact>();
@@ -49,7 +51,7 @@ public class SpaceShipProperties {
 	private Inertia inertia;
 
 	public Attribute[] getAttributes() {
-		return new Attribute[]{fuelCapacity, shieldCapacity, speed, luck, landingDistance, radius, inertia};
+		return new Attribute[]{speed, fuelCapacity, shieldCapacity, landingDistance, luck, radius, inertia};
 	}
 
 	private SpaceShipProperties() {
@@ -89,13 +91,7 @@ public class SpaceShipProperties {
 		artifacts.clear();
 		aliens.clear();
 
-		speed = new Speed(INITIAL_SPEED);
-		fuelCapacity = new FuelCapacity((int) FuelCapacity.INTERNAL_INITIAL);
-		luck = new Luck(INITIAL_LUCK);
-		shieldCapacity = new ShieldCapacity((int) ShieldCapacity.INTERNAL_INITIAL);
-		landingDistance = new LandingDistance(INITIAL_LANDING_DISTANCE);
-		radius = new ItemCollectRadius(INITIAL_COLLECT_RADIUS);
-		inertia = new Inertia(INITIAL_INERTIA);
+		resetAttributes();
 
 		currentInternalFuel = (int) fuelCapacity.getCurrentValue();
 		currentInternalShield = (int) shieldCapacity.getCurrentValue();
@@ -153,9 +149,9 @@ public class SpaceShipProperties {
 
 	private void resetAttributes() {
 		speed = new Speed(INITIAL_SPEED);
-		fuelCapacity = new FuelCapacity((int) FuelCapacity.INTERNAL_INITIAL);
+		fuelCapacity = new FuelCapacity(INITIAL_FUEL);
 		luck = new Luck(INITIAL_LUCK);
-		shieldCapacity = new ShieldCapacity((int) ShieldCapacity.INTERNAL_INITIAL);
+		shieldCapacity = new ShieldCapacity(INITIAL_SHIELD);
 		landingDistance = new LandingDistance(INITIAL_LANDING_DISTANCE);
 		radius = new ItemCollectRadius(INITIAL_COLLECT_RADIUS);
 		inertia = new Inertia(INITIAL_INERTIA);

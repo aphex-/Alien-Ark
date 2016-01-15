@@ -32,15 +32,14 @@ import com.nukethemoon.tools.ani.Ani;
 
 import java.util.List;
 
-//TODO cancel von Artifatcs merges
 //TODO Scroll shadow
-//TODO mehr error handling
-//TODO polishing. Abstände, Größen, Farben, Reihenfolge properties
+//TODO (optional) highlight that slot is hit
 
-//TODO (opional) Artifact hint text, wenn Attr. noch unbekannt ("???")
+
+//TODO polishing. Abstände, Größen, Farben, Reihenfolge properties
 //TODO (optional) anzahl aliens beschränken
 //TODO (optional) delete crew memeber
-//TODO (optional) highlight that slot is hit
+
 
 public class ArkScreen implements Screen {
 
@@ -142,7 +141,7 @@ public class ArkScreen implements Screen {
 				updateResultSlot();
 				updateArtifactsInventory();
 			}
-			
+
 		});
 
 		workbenchSlot1.addListener(new ClickListener() {
@@ -256,21 +255,23 @@ public class ArkScreen implements Screen {
 			singleProperty.padLeft(5);
 			singleProperty.setBackground(new TextureRegionDrawable(Attribute.getPropertiesTexture(a.getClass())));
 			Label label = new Label(a.name(), skin);
-			singleProperty.add(label).width(395);
-			Label value = new Label(String.valueOf(a.getCurrentValue()), skin);
-			singleProperty.add(value).width(100);
+			label.setStyle(Styles.LABEL_PROPERTY);
+			singleProperty.add(label).width(410);
+			Label value = new Label(String.valueOf((int)a.getCurrentValue()), skin);
+			value.setStyle(Styles.LABEL_VALUE_ARTIFACT);
+			singleProperty.add(value).width(110);
 
-			propertiesTable.add(singleProperty).width(500).height(39);
+			propertiesTable.add(singleProperty).width(520).height(39);
 			propertiesTable.row().space(3);
 		}
 
 		propertiesTable.setWidth(520);
 		ScrollPane pane = new ScrollPane(propertiesTable);
 
-		pane.setX(390);
+		pane.setX(380);
 		pane.setY(100);
-		pane.setWidth(500);
-		pane.setHeight(210);
+		pane.setWidth(520);
+		pane.setHeight(204);
 		stage.addActor(pane);
 
 

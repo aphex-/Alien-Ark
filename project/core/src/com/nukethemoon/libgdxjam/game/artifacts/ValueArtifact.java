@@ -30,7 +30,7 @@ public class ValueArtifact extends Artifact {
 	public Actor createActor(float w, float h) {
 		Actor a  = super.createActor(w,h);
 		Group g = new Group();
-		Label l = new Label(String.valueOf(value), Styles.UI_SKIN);
+		Label l = new Label(String.valueOf((int)value), Styles.UI_SKIN);
 		l.setStyle(Styles.LABEL_VALUE_ARTIFACT);
 		l.setAlignment(Align.center);
 		l.setWidth(w);

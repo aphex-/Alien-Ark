@@ -49,6 +49,7 @@ public class Styles {
 	public static Label.LabelStyle LABEL_HUD_NUMBERS;
 	public static Label.LabelStyle LABEL_DIALOG_HEADLINE;
 	public static Label.LabelStyle LABEL_VALUE_ARTIFACT;
+	public static Label.LabelStyle LABEL_PROPERTY;
 	public static Label.LabelStyle LABEL_RACE_TIME;
 
 	public static Skin UI_SKIN;
@@ -92,6 +93,10 @@ public class Styles {
 		Label.LabelStyle standardLabelStyle = UI_SKIN.get(Label.LabelStyle.class);
 		LABEL_01 = new Label.LabelStyle(standardLabelStyle);
 		LABEL_01.font = FONT_DOSIS_SMALL;
+
+		LABEL_PROPERTY = new Label.LabelStyle(standardLabelStyle);
+		LABEL_PROPERTY.font = FONT_DOSIS_SMALL;
+		LABEL_PROPERTY.fontColor = Color.BLACK;
 
 		LABEL_02 = new Label.LabelStyle(standardLabelStyle);
 		LABEL_02.font = FONT_DOSIS_MEDIUM_BORDER;
