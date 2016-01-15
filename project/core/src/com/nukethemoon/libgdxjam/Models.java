@@ -86,9 +86,9 @@ public class Models {
 		ARTIFACT_MODELS.put(OPERATOR_DIVIDE, 			load("models/artifact_divide.obj"));
 		ARTIFACT_MODELS.put(VALUE_100,		 			load("models/artifact_100.obj"));
 		ARTIFACT_MODELS.put(VALUE_200,		 			load("models/artifact_200.obj"));
-		ARTIFACT_MODELS.put(VALUE_500,		 			load("models/artifact_shield.obj"));
-		ARTIFACT_MODELS.put(VALUE_1000,		 			load("models/artifact_shield.obj"));
-		ARTIFACT_MODELS.put(VALUE_2000,		 			load("models/artifact_shield.obj"));
+		ARTIFACT_MODELS.put(VALUE_500,		 			load("models/artifact_500.obj"));
+		ARTIFACT_MODELS.put(VALUE_1000,		 			load("models/artifact_1000.obj"));
+		ARTIFACT_MODELS.put(VALUE_2000,		 			load("models/artifact_2000.obj"));
 
 		PLANET_PORTAL = 		load("models/planetPortal.obj");
 		PLANET_PORTAL_TORUS = 	load("models/portalTorus.obj");
