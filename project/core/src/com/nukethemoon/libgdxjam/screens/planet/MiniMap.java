@@ -33,6 +33,7 @@ public class MiniMap {
 	private TextureRegion artifactIcon;
 	private TextureRegion minimapBorder;
 	private TextureRegion planetPortal;
+	private TextureRegion raceIcon;
 
 	private Rocket rocket;
 	private ControllerPlanet planetController;
@@ -59,6 +60,7 @@ public class MiniMap {
 		artifactIcon = 	App.TEXTURES.findRegion("minimap_artifact");
 		minimapBorder = App.TEXTURES.findRegion("minimapBorder");
 		planetPortal = 	App.TEXTURES.findRegion("planetPortal");
+		raceIcon = App.TEXTURES.findRegion("minimap_race");
 	}
 
 	public void drawMiniMap() {
@@ -163,6 +165,13 @@ public class MiniMap {
 		tmpVec5.set(0, 0);
 		tmpVec5 = getPositionInsideMiniMap(rocket.getPosition(), tmpVec5, 0);
 		drawMiniMapItem(miniMapBatch, planetPortal, tmpVec5, upRotation);
+
+		// race
+		Vector2 nextRaceWayPointPosition = planetController.getNextRaceWayPointPosition();
+		if (nextRaceWayPointPosition != null) {
+			nextRaceWayPointPosition = getPositionInsideMiniMap(rocketPosition, nextRaceWayPointPosition, 0);
+			drawMiniMapItem(miniMapBatch, raceIcon, nextRaceWayPointPosition, upRotation);
+		}
 	}
 
 	public void drawMiniMapDistanceText(Vector2 position, Vector3 rocketPosition, float upRotation) {

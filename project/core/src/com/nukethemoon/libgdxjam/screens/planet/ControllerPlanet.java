@@ -106,6 +106,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private Vector2 tmpVec5 = new Vector2();
 	private Vector2 tmpVec6 = new Vector2();
 	private Vector3 tmpVec7 = new Vector3();
+	private Vector2 tmpVec8 = new Vector2();
 
 
 
@@ -504,7 +505,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	}
 
 	public void addRaceWayPoint(RaceWayPoint r) {
-		if (!alreadyReachedWayPoints.contains(r)) {
+		if (!alreadyReachedWayPoints.contains(r) && !r.triggerRemoved) {
 			updateWayPoint(r);
 			controllerPhysic.addCollisionObject(r.getTrigger());
 			currentlyVisibleRaceWayPoints.add(r);
@@ -560,6 +561,20 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		}
 		return -1;
+	}
+
+	public Vector2 getNextRaceWayPointPosition() {
+		if (planetConfig.planetRace.wayPoints.size() > 0 && !(alreadyReachedWayPoints.size() == planetConfig.planetRace.wayPoints.size())) {
+			if (lastRaceWayPointIndex == -1) {
+				RaceWayPoint point = planetConfig.planetRace.wayPoints.get(0);
+				return tmpVec8.set(point.x, point.y);
+			}
+			if (lastRaceWayPointIndex + 1 < planetConfig.planetRace.wayPoints.size()) {
+				RaceWayPoint point = planetConfig.planetRace.wayPoints.get(lastRaceWayPointIndex + 1);
+				return tmpVec8.set(point.x, point.y);
+			}
+		}
+		return null;
 	}
 
 	public boolean isRaceRunning() {

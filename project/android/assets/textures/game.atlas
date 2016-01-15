@@ -125,21 +125,28 @@ minimap_artifact
   index: -1
 minimap_fuel
   rotate: false
-  xy: 862, 24
+  xy: 884, 24
   size: 10, 10
   orig: 10, 10
   offset: 0, 0
   index: -1
+minimap_race
+  rotate: false
+  xy: 819, 14
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
 minimap_shield
   rotate: false
-  xy: 874, 24
+  xy: 896, 24
   size: 10, 10
   orig: 10, 10
   offset: 0, 0
   index: -1
 planetPortal
   rotate: false
-  xy: 819, 14
+  xy: 841, 14
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
@@ -223,7 +230,7 @@ stars
   index: -1
 sunParticle
   rotate: false
-  xy: 841, 15
+  xy: 863, 15
   size: 19, 19
   orig: 19, 19
   offset: 0, 0
