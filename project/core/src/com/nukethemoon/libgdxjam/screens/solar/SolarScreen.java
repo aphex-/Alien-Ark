@@ -31,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
@@ -48,7 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class SolarScreen implements Screen, RocketListener, ControllerPhysic.PhysicsListener, InputProcessor {
+public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, InputProcessor {
 
 	//TODO:
 	/*
@@ -107,7 +108,6 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	private Stage stage;
 	private Sprite sunSprite;
-	private Rocket rocket;
 	private List<Body> bodies;
 	private PointLight[] pointLight;
 	private float counter = 0f;
@@ -115,9 +115,11 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	private ShipProgressBar fuelProgressBar;
 	private ShipProgressBar shieldProgressBar;
 	private TiledDrawable bgTile;
+	private boolean isThrusting;
 
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
+		Log.d(getClass(), "create SolarScreen");
 		this.multiplexer = multiplexer;
 		multiplexer.addProcessor(this);
 		batch = new SpriteBatch();
@@ -148,6 +150,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 		stage.addActor(fuelProgressBar);
 		stage.addActor(shieldProgressBar);
+		Log.d(getClass(), "end of setup");
 
 	}
 
@@ -156,8 +159,6 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	private void setupSpaceship() {
-		rocket = new Rocket();
-		rocket.setListener(this);
 		arkSprite.setPosition(shipPosition.x, shipPosition.y);
 		arkWidth = arkSprite.getWidth();
 		arkHeight = arkSprite.getHeight();
@@ -299,7 +300,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		batch.begin();
 		moveArcPosition();
 		adjustRotationIfNeccessary();
-		if (rocket.isThrusting()) {
+		if (isThrusting) {
 			exhaustSprite.draw(batch);
 		}
 		arkSprite.draw(batch);
@@ -354,10 +355,10 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		//if (Gdx.app.getInput().isKeyPressed(19) && !rocket.isOutOfFuel()) {
 		if (Gdx.app.getInput().isKeyPressed(19)) {
 			currentSpeedLevel += 1;
-			rocket.setThrust(true);
+			isThrusting = true;
 
 		} else {
-			rocket.setThrust(false);
+			isThrusting = false;
 		}
 
 		if (Gdx.app.getInput().isKeyPressed(20)) {
@@ -398,7 +399,6 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	@Override
 	public void dispose() {
-		rocket.dispose();
 		rayHandler.dispose();
 	}
 
@@ -494,7 +494,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 		final int planetIndex = determinePlanetCollison();
 		if (planetIndex == SUN_COLLISION) {
-			rocket.onExplode();
+			dealDamageToRocket();
 		} else if (planetIndex != -1) {
 			if (enterOrbitTable == null) {
 				enterOrbitTable = new EnterOrbitTable(Styles.UI_SKIN, planetIndex);
@@ -518,6 +518,10 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		}
 	}
 
+	private void dealDamageToRocket() {
+
+	}
+
 	private void rotatePlanets(float delta) {
 		float limit = 0.1f;
 		if (counter < limit) {
@@ -528,94 +532,17 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 			counter = 0;
 
 		}
-		App.solarSystem.rotate((Math.PI / 256), 0.5f);
+		App.solarSystem.rotate((Math.PI / 512), 0.5f);
 //		updateShadowBodies(world);
 		updatePlanets();
-		rocket.handlePhysicTick();
 	}
 
 	private void updatePlanets() {
 		for (int i = 0; i < planetSprites.length; i++) {
 			Vector2 position = App.solarSystem.getPlanetPosition(i);
 			planetSprites[i].setPosition(position.x, position.y);
-			planetSprites[i].rotate((float) (5f * Math.PI));
+			planetSprites[i].rotate((float) (0.5f * Math.PI));
 		}
-	}
-
-	@Override
-	public void onRocketLanded() {
-
-	}
-
-	@Override
-	public void onRocketLaunched() {
-
-	}
-
-	@Override
-	public void onRocketDisabledThrust() {
-
-	}
-
-	@Override
-	public void onRocketEnabledThrust() {
-
-	}
-
-	@Override
-	public void onRocketDamage() {
-		App.audioController.playSound("hit_high.mp3");
-		shieldProgressBar.updateFromShipProperties();
-	}
-
-	@Override
-	public void onRocketFuelConsumed() {
-		fuelProgressBar.updateFromShipProperties();
-	}
-
-	@Override
-	public void onRocketExploded() {
-		App.audioController.playSound("explosion.mp3");
-	}
-
-	@Override
-	public void onRocketFuelBonus() {
-
-	}
-
-	@Override
-	public void onRocketShieldBonus() {
-
-	}
-
-	@Override
-	public void onRocketChangedTilePosition() {
-
-	}
-
-	@Override
-	public void onRocketScanStart() {
-
-	}
-
-	@Override
-	public void onRocketScanEnd() {
-
-	}
-
-	@Override
-	public void onRocketEntersPortal() {
-
-	}
-
-	@Override
-	public void onRocketFliesToHigh() {
-
-	}
-
-	@Override
-	public void onRocketBackToNormalHeight() {
-
 	}
 
 	@Override

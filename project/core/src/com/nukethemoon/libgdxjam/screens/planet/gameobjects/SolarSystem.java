@@ -2,6 +2,7 @@ package com.nukethemoon.libgdxjam.screens.planet.gameobjects;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
+import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.game.Planet;
 
 import java.util.Random;
@@ -21,15 +22,20 @@ public class SolarSystem implements Disposable {
 	}
 
 	private Planet calculateSuitablePlanet(int index) {
+		Log.d(getClass(), "calculate suitable planet " + index);
 		boolean foundPosition = false;
 		Planet result = null;
 		Random random = new Random(System.currentTimeMillis()%((int)(Math.PI * 10)));
+		int fuckitcounter = 0;
 		while (!foundPosition) {
+			fuckitcounter++;
+
+			Log.d(getClass(), "not yet found position " +index);
 			result = new Planet();
-			result.radius = random.nextInt(2000);
+			result.radius = random.nextInt(1750);
 
 			result.radians = (float) (random.nextFloat() * 2 * Math.PI);
-			if (result.radius > 350 && !arePlanetsColliding(result.radians, index) && isSeparateOrbit(result.radius)) {
+			if (result.radius > 350 && !arePlanetsColliding(result.radians, index) && (isSeparateOrbit(result.radius) || fuckitcounter > 100 )) {
 				foundPosition = true;
 			}
 		}
@@ -42,7 +48,7 @@ public class SolarSystem implements Disposable {
 			if (planet == null) {
 				continue;
 			}
-			if (radius < planet.radius + 75 && radius > planet.radius - 75) {
+			if (radius < planet.radius + 35 && radius > planet.radius - 35) {
 				return false;
 			}
 		}
