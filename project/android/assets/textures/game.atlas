@@ -228,6 +228,13 @@ rocket_arrow
   orig: 16, 16
   offset: 0, 0
   index: -1
+scrollShadow
+  rotate: false
+  xy: 1016, 962
+  size: 1, 60
+  orig: 1, 60
+  offset: 0, 0
+  index: -1
 stars
   rotate: false
   xy: 2, 78

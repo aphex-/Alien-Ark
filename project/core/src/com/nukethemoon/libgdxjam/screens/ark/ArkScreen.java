@@ -253,6 +253,7 @@ public class ArkScreen implements Screen {
 		pane.setY(102);
 		pane.setWidth(520);
 		pane.setHeight(202);
+
 		stage.addActor(pane);
 
 
