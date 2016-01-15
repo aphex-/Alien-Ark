@@ -32,7 +32,7 @@ public class PlacedRaceWayPointTable extends Table {
 		content = new Table();
 		scrollPane = new ScrollPane(content);
 		scrollPane.setFadeScrollBars(false);
-		add(scrollPane);
+		add(scrollPane).height(200);
 
 		pack();
 	}

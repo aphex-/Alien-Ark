@@ -36,7 +36,7 @@ public class PlacedArtifactTable extends Table {
 		artifactContent = new Table();
 		scrollPane = new ScrollPane(artifactContent);
 		scrollPane.setFadeScrollBars(false);
-		add(scrollPane).colspan(2);
+		add(scrollPane).colspan(2).height(200);
 
 		pack();
 	}
