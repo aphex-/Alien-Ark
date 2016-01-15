@@ -144,52 +144,9 @@ public class ArkScreen implements Screen {
 
 		});
 
-		workbenchSlot1.addListener(new ClickListener() {
-
-			@Override
-			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-				if(fromActor != cancelButton) {
-					hoveredSlot = workbenchSlot1;
-					showCancel();
-				}
-			}
-
-			@Override
-			public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-				if(toActor != cancelButton) {
-					hoveredSlot = null;
-					cancelButton.setVisible(false);
-				}
-			}
-		});
-		workbenchSlot2.addListener(new ClickListener() {
-
-			@Override
-			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-				hoveredSlot = workbenchSlot2;
-				showCancel();
-			}
-
-			@Override
-			public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-				hoveredSlot = null;
-				cancelButton.setVisible(false);
-			}
-		});
-		workbenchSlot3.addListener(new ClickListener() {
-
-			@Override
-			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-				hoveredSlot = workbenchSlot3;
-				showCancel();
-			}
-
-			@Override
-			public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-				hoveredSlot = null;
-				cancelButton.setVisible(false);
-			}
-		});
+		workbenchSlot1.addListener(new WorkBenchClickListener(workbenchSlot1));
+		workbenchSlot2.addListener(new WorkBenchClickListener(workbenchSlot2));
+		workbenchSlot3.addListener(new WorkBenchClickListener(workbenchSlot3));
 
 		propertiesTable = new Table();
 		createPropertiesList();
@@ -202,6 +159,30 @@ public class ArkScreen implements Screen {
 		multiplexer.addProcessor(stage);
 
 		App.TUTORIAL_CONTROLLER.onArkEntered();
+	}
+
+	private class WorkBenchClickListener extends ClickListener {
+		private final WorkbenchSlot slot;
+
+		private WorkBenchClickListener(WorkbenchSlot slot) {
+			this.slot = slot;
+		}
+
+		@Override
+		public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+			if(fromActor != cancelButton) {
+				hoveredSlot = slot;
+				showCancel();
+			}
+		}
+
+		@Override
+		public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+			if(toActor != cancelButton) {
+				hoveredSlot = null;
+				cancelButton.setVisible(false);
+			}
+		}
 	}
 
 	private void showCancel() {
@@ -269,9 +250,9 @@ public class ArkScreen implements Screen {
 		ScrollPane pane = new ScrollPane(propertiesTable);
 
 		pane.setX(380);
-		pane.setY(100);
+		pane.setY(102);
 		pane.setWidth(520);
-		pane.setHeight(204);
+		pane.setHeight(202);
 		stage.addActor(pane);
 
 
