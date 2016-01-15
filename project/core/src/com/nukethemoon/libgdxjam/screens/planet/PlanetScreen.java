@@ -66,7 +66,7 @@ import com.nukethemoon.tools.ani.AnimationFinishedListener;
 import com.nukethemoon.tools.ani.BaseAnimation;
 
 public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener, RocketListener,
-		ControllerPhysic.PhysicsListener  {
+		ControllerPhysic.PhysicsListener, ControllerPlanet.PlanetRaceListener  {
 
 
 	private final FirstPersonCameraController firstPersonCameraController;
@@ -177,7 +177,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		planetConfig.deserialize();
 
 		physicsController = new ControllerPhysic(planetConfig.gravity, this);
-		planetController = new ControllerPlanet(KNOWN_PLANETS[planetIndex], planetConfig, physicsController, ani);
+		planetController = new ControllerPlanet(KNOWN_PLANETS[planetIndex], planetConfig, physicsController, ani, this);
 		physicsController.addRigidBody(
 				rocket.rigidBodyList.get(0),
 				com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes.ROCKET);
@@ -686,6 +686,26 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			RaceWayPoint raceWayPoint = planetController.getRaceWayPoint(collisionObject);
 			planetController.reachWayPoint(raceWayPoint);
 		}
+	}
+
+	@Override
+	public void onRaceStart() {
+		showToast("Race Started");
+	}
+
+	@Override
+	public void onRaceProgress() {
+		showToast("Race progress");
+	}
+
+	@Override
+	public void onRaceTimeOut() {
+		showToast("Race timeout");
+	}
+
+	@Override
+	public void onRaceSuccess() {
+		showToast("Won");
 	}
 
 	@Override

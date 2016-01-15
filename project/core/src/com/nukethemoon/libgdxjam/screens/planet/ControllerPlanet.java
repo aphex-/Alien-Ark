@@ -63,6 +63,8 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private ControllerPhysic controllerPhysic;
 	private Ani ani;
 
+	private PlanetRaceListener raceListener;
+
 	private List<Point> currentVisiblePlanetParts = new ArrayList<Point>();
 	private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
 	private List<ArtifactObject> currentVisibleArtifacts = new ArrayList<ArtifactObject>();
@@ -105,10 +107,13 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private Vector3 tmpVec8 = new Vector3();
 
 
-	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
+	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani,
+							PlanetRaceListener raceListener) {
+
 		this.planetConfig = pPlanetConfig;
 		this.controllerPhysic = controllerPhysic;
 		this.ani = ani;
+		this.raceListener = raceListener;
 
 
 		OpusLoaderJson loader = new OpusLoaderJson();
@@ -513,6 +518,13 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	}
 
 	public void reachWayPoint(RaceWayPoint r) {
+		if (r == planetConfig.planetRace.wayPoints.get(0)) {
+			raceListener.onRaceStart();
+		} else if (r == planetConfig.planetRace.wayPoints.get(planetConfig.planetRace.wayPoints.size() - 1)) {
+			raceListener.onRaceSuccess();
+		} else {
+			raceListener.onRaceProgress();
+		}
 		alreadyReachedWayPoints.add(r);
 		removeRaceWayPoint(r);
 	}
@@ -568,5 +580,12 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	public List<ObjectPlacementInfo> getAllArtifactsOnPlanet() {
 		return allArtifactsOnPlanet;
+	}
+
+	public interface PlanetRaceListener {
+		void onRaceStart();
+		void onRaceProgress();
+		void onRaceTimeOut();
+		void onRaceSuccess();
 	}
 }
