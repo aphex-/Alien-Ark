@@ -13,11 +13,10 @@ public class MenuButton extends ImageButton {
 		super(new TextureRegionDrawable(App.TEXTURES.findRegion("buttonMenu")));
 		setSkin(skin);
 		pack();
-		setPosition(10, Gdx.graphics.getHeight() - this.getHeight() - 10
-		);
+		setPosition(10, Gdx.graphics.getHeight() - this.getHeight() - 10);
 	}
 
 	public void openMenu(Stage stage, MenuTable.CloseListener closeListener) {
-		stage.addActor(new MenuTable(getSkin(), closeListener));
+		stage.addActor(new MenuTable(stage, closeListener));
 	}
 }

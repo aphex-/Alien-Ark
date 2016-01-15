@@ -32,35 +32,28 @@ public class SpaceShipProperties {
 	public static final int INITIAL_COLLECT_RADIUS = 12;
 	public static final float INITIAL_INERTIA = .75f;
 
-	private List<String> collectedArtifactIds = new ArrayList<String>();
-
+	private List<String> collectedArtifactIds = new ArrayList<String>(); // just to save the already collected artifacts
 	private List<Artifact> artifacts = new ArrayList<Artifact>();
 	private List<Alien> aliens = new ArrayList<Alien>();
 
 	private int currentInternalFuel;
 	private int currentInternalShield;
-
 	public Vector2 currentSolarPosition;
 
-
-
-	private Speed speed = new Speed(INITIAL_SPEED);
-
-	private FuelCapacity fuelCapacity = new FuelCapacity((int) FuelCapacity.INTERNAL_INITIAL);
-	private Luck luck = new Luck(INITIAL_LUCK);
-	private ShieldCapacity shieldCapacity = new ShieldCapacity((int) ShieldCapacity.INTERNAL_INITIAL);
-	private LandingDistance landingDistance = new LandingDistance(INITIAL_LANDING_DISTANCE);
-	private ItemCollectRadius radius = new ItemCollectRadius(INITIAL_COLLECT_RADIUS);
-	private Inertia inertia = new Inertia(INITIAL_INERTIA);
+	private Speed speed;
+	private FuelCapacity fuelCapacity;
+	private Luck luck;
+	private ShieldCapacity shieldCapacity;
+	private LandingDistance landingDistance;
+	private ItemCollectRadius radius;
+	private Inertia inertia;
 
 	public Attribute[] getAttributes() {
 		return new Attribute[]{fuelCapacity, shieldCapacity, speed, luck, landingDistance, radius, inertia};
 	}
 
 	private SpaceShipProperties() {
-		currentInternalFuel = (int) fuelCapacity.getCurrentValue();
-		currentInternalShield = (int) shieldCapacity.getCurrentValue();
-		currentSolarPosition = new Vector2(SolarScreen.INITIAL_ARK_POSITION_X, SolarScreen.INITIAL_ARK_POSITION_Y);
+		reset();
 	}
 
 	public void testInit() {
@@ -88,6 +81,31 @@ public class SpaceShipProperties {
 		artifacts.add(new Multiply());
 	}
 
+	/**
+	 * For GameOver
+	 */
+	public void reset() {
+		collectedArtifactIds.clear();
+		artifacts.clear();
+		aliens.clear();
+
+		speed = new Speed(INITIAL_SPEED);
+		fuelCapacity = new FuelCapacity((int) FuelCapacity.INTERNAL_INITIAL);
+		luck = new Luck(INITIAL_LUCK);
+		shieldCapacity = new ShieldCapacity((int) ShieldCapacity.INTERNAL_INITIAL);
+		landingDistance = new LandingDistance(INITIAL_LANDING_DISTANCE);
+		radius = new ItemCollectRadius(INITIAL_COLLECT_RADIUS);
+		inertia = new Inertia(INITIAL_INERTIA);
+
+		currentInternalFuel = (int) fuelCapacity.getCurrentValue();
+		currentInternalShield = (int) shieldCapacity.getCurrentValue();
+		currentSolarPosition = new Vector2(SolarScreen.INITIAL_ARK_POSITION_X, SolarScreen.INITIAL_ARK_POSITION_Y);
+	}
+
+	public void onArtifactCollected(Artifact artifact, String inGameId) {
+		registerArtifactCollected(inGameId);
+		getArtifacts().add(artifact);
+	}
 
 	public List<Alien> getAliens() {
 		return aliens;
@@ -121,14 +139,6 @@ public class SpaceShipProperties {
 
 	public int addCurrentShield(int add) {
 		return setCurrentInternalShield(getCurrentInternalShield() + add);
-	}
-
-	public void addArtifact(String id) {
-		collectedArtifactIds.add(id);
-	}
-
-	public boolean isCollectedArtifact(String id) {
-		return collectedArtifactIds.contains(id);
 	}
 
 	public void computeProperties() {
@@ -193,8 +203,20 @@ public class SpaceShipProperties {
 		return radius.getCurrentValue();
 	}
 
-	public float misFortune() {
-		return 1 - luck.getCurrentValue(); //HÄ? wieso umgedreht?
+	public float getLuck() {
+		return luck.getCurrentValue();
+	}
+
+	public void registerArtifactCollected(String id) {
+		collectedArtifactIds.add(id);
+	}
+
+	public boolean isArtifactCollected(String id) {
+		return collectedArtifactIds.contains(id);
+	}
+
+	public boolean unregisterCollectedArtifact(String id) {
+		return collectedArtifactIds.remove(id);
 	}
 
 

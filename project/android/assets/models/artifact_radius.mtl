@@ -1,0 +1,11 @@
+# Blender MTL File: 'artifact radius.blend'
+# Material Count: 1
+
+newmtl Material.001
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.014444 0.082283 0.278894
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1

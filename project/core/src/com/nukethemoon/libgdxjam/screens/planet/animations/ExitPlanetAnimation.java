@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Bezier;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.screens.planet.OverlayRenderer;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.tools.ani.AnimationFinishedListener;
 import com.nukethemoon.tools.ani.BaseAnimation;
@@ -15,15 +16,17 @@ public class ExitPlanetAnimation extends BaseAnimation {
 	private final Bezier<Vector3> exitPath;
 	private PerspectiveCamera camera;
 	private Rocket rocket;
+	private final OverlayRenderer overlayRenderer;
 	private float baseFieldOfView;
 	boolean playedLaunchSound = false;
 	private Vector3 tmpVector = new Vector3();
 	private Vector3 tmpVector2 = new Vector3();
 
-	public ExitPlanetAnimation(PerspectiveCamera camera, Rocket rocket, AnimationFinishedListener listener) {
+	public ExitPlanetAnimation(PerspectiveCamera camera, Rocket rocket, OverlayRenderer overlayRenderer, AnimationFinishedListener listener) {
 		super(3000, listener);
 		this.camera = camera;
 		this.rocket = rocket;
+		this.overlayRenderer = overlayRenderer;
 		this.baseFieldOfView = camera.fieldOfView;
 		rocket.setThirdPersonCam(null);
 		exitPath = new Bezier<Vector3>();
@@ -35,6 +38,8 @@ public class ExitPlanetAnimation extends BaseAnimation {
 
 	@Override
 	protected void onProgress(float v) {
+
+
 		float p1 = computeIntervalProgress(v, 0, 0.5f);
 		float p2 = computeIntervalProgress(v, 0.3f, 1.0f);
 
@@ -61,6 +66,21 @@ public class ExitPlanetAnimation extends BaseAnimation {
 			camera.fieldOfView = baseFieldOfView + (p1 * 60f);
 		}
 		camera.update();
+
+		float overlayProgress = computeIntervalProgress(v, 0.5f, 1);
+
+		if (overlayProgress > 0) {
+			overlayRenderer.setColor(0, 0, 0, overlayProgress);
+		}
 	}
 
+	@Override
+	protected void onFinish() {
+
+	}
+
+	@Override
+	protected void onStart() {
+		overlayRenderer.setEnabled(true);
+	}
 }

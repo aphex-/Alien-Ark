@@ -31,7 +31,7 @@ public class DialogTable extends Table {
 		imageButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				DialogTable.this.remove();
+				onClose();
 			}
 		});
 		add(imageButton).top().right();
@@ -45,6 +45,10 @@ public class DialogTable extends Table {
 		add(content).colspan(2);
 
 		updatePosition(20, 50);
+	}
+
+	protected void onClose() {
+		DialogTable.this.remove();
 	}
 
 	public void updatePosition(int left, int top) {

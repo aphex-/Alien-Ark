@@ -19,12 +19,15 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
+import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.ArtifactDefinitions;
 import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPart;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPortal;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RaceWayPoint;
 import com.nukethemoon.libgdxjam.screens.planet.helper.SphereTextureProvider;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
@@ -60,10 +63,16 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private ControllerPhysic controllerPhysic;
 	private Ani ani;
 
+	private PlanetRaceListener raceListener;
+
 	private List<Point> currentVisiblePlanetParts = new ArrayList<Point>();
 	private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
 	private List<ArtifactObject> currentVisibleArtifacts = new ArrayList<ArtifactObject>();
-	private List<PointWithId> allArtifactsOnPlanet = new ArrayList<PointWithId>();
+	private List<RaceWayPoint> currentlyVisibleRaceWayPoints = new ArrayList<RaceWayPoint>();
+
+	private List<RaceWayPoint> alreadyReachedWayPoints = new ArrayList<RaceWayPoint>();
+
+	private List<ObjectPlacementInfo> allArtifactsOnPlanet = new ArrayList<ObjectPlacementInfo>();
 
 	private Map<Point, PlanetPart> planetPartBuffer = new HashMap<Point, PlanetPart>();
 	private final TypeInterpreter typeInterpreter;
@@ -72,7 +81,6 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	private List<Point> tmpRequestList = new ArrayList<Point>();
 
-	private int requestRadiusInTiles = 110;
 	private int lastRequestCenterTileX = 0;
 	private int lastRequestCenterTileY = 0;
 	private long requestCount = 0;
@@ -85,6 +93,8 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private List<Collectible> tmpRemoveList2 = new ArrayList<Collectible>();
 	private List<Point> tmpRemoveList3 = new ArrayList<Point>();
 
+	private int lastRaceWayPointIndex = -1;
+	private long timeLastWayPointReached = -1;
 
 	private Vector2 nearestArtifactPosition = new Vector2();
 
@@ -96,12 +106,17 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private Vector2 tmpVec5 = new Vector2();
 	private Vector2 tmpVec6 = new Vector2();
 	private Vector3 tmpVec7 = new Vector3();
+	private Vector2 tmpVec8 = new Vector2();
 
 
-	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
+
+	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani,
+							PlanetRaceListener raceListener) {
+
 		this.planetConfig = pPlanetConfig;
 		this.controllerPhysic = controllerPhysic;
 		this.ani = ani;
+		this.raceListener = raceListener;
 
 
 		OpusLoaderJson loader = new OpusLoaderJson();
@@ -111,7 +126,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 			;
 			com.nukethemoon.tools.opusproto.log.Log.logLevel = com.nukethemoon.tools.opusproto.log.Log.LogType.Error;
 
-			chunkBufferSize = (requestRadiusInTiles / opus.getConfig().chunkSize) * 2;
+			chunkBufferSize = (App.config.requestRadiusInTiles / opus.getConfig().chunkSize) * 2;
 
 			// add a callback to receive chunks
 			opus.addChunkListener(this);
@@ -122,18 +137,19 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		typeInterpreter = toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter());
 
-		updateNearestArtifact(0, 0);
-
-		for (PointWithId p : pPlanetConfig.artifacts) {
-			if (!SpaceShipProperties.properties.isCollectedArtifact(p.id)) {
+		// == init artifacts ==
+		for (ObjectPlacementInfo p : pPlanetConfig.artifacts) {
+			if (!SpaceShipProperties.properties.isArtifactCollected(p.id)) {
 				allArtifactsOnPlanet.add(p);
 			}
 		}
+		updateNearestArtifact(0, 0);
 
-		// init water
+		// == init water ==
 		waterModel = createInfiniteWaterPart(typeInterpreter, 0, pPlanetConfig);
 		waterModelInstance = new ModelInstance(waterModel);
 
+		// == init planet portal ==
 		planetPortal = new PlanetPortal();
 		for (btRigidBody body : planetPortal.rigidBodyList) {
 			controllerPhysic.addRigidBody(body, CollisionTypes.GROUND);
@@ -211,9 +227,9 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	public void updateNearestArtifact(float rocketX, float rocketY) {
 		float shortestDistance = -1;
 		nearestArtifactPosition = null;
-		for(PointWithId p : allArtifactsOnPlanet) {
-			float artifactX = PlanetPart.getTileGraphicX(p.x);
-			float artifactY = PlanetPart.getTileGraphicY(p.y);
+		for(ObjectPlacementInfo p : allArtifactsOnPlanet) {
+			float artifactX = p.x;
+			float artifactY = p.y;
 			float distance = tmpVec6.set(artifactX - rocketX, artifactY - rocketY).len();
 			if (distance < shortestDistance || shortestDistance == -1) {
 				shortestDistance = distance;
@@ -260,22 +276,22 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 				int currentChunkY = chunkBufferCenterY + chunkIndexY - (chunkBufferSize / 2);
 				// chunk tile corner 1
 				tmpVector1.set(currentChunkX * chunkSize, currentChunkY * chunkSize);
-				if (Math.abs(tmpVector1.dst(tmpVector2)) < requestRadiusInTiles) {
+				if (Math.abs(tmpVector1.dst(tmpVector2)) < App.config.requestRadiusInTiles) {
 					isInRadius = true;
 				}
 				// chunk tile corner 2
 				tmpVector1.set(currentChunkX * chunkSize, currentChunkY * chunkSize + chunkSize);
-				if (Math.abs(tmpVector1.dst(tmpVector2)) < requestRadiusInTiles) {
+				if (Math.abs(tmpVector1.dst(tmpVector2)) < App.config.requestRadiusInTiles) {
 					isInRadius = true;
 				}
 				// chunk tile corner 3
 				tmpVector1.set(currentChunkX * chunkSize + chunkSize, currentChunkY * chunkSize + chunkSize);
-				if (Math.abs(tmpVector1.dst(tmpVector2)) < requestRadiusInTiles) {
+				if (Math.abs(tmpVector1.dst(tmpVector2)) < App.config.requestRadiusInTiles) {
 					isInRadius = true;
 				}
 				// chunk tile corner 4
 				tmpVector1.set(currentChunkX * chunkSize + chunkSize, currentChunkY * chunkSize);
-				if (Math.abs(tmpVector1.dst(tmpVector2)) < requestRadiusInTiles) {
+				if (Math.abs(tmpVector1.dst(tmpVector2)) < App.config.requestRadiusInTiles) {
 					isInRadius = true;
 				}
 				if (isInRadius) {
@@ -365,11 +381,16 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 				addArtifact(o);
 			}
 
+			for (RaceWayPoint r : planetPart.getRaceWayPoints()) {
+				addRaceWayPoint(r);
+			}
+
 			planetPartBuffer.put(point, planetPart);
 		} else {
 			Log.d(getClass(), "Created a chunk that already exists. x " + x + " y " + y);
 		}
 	}
+
 
 	public void render(ModelBatch batch, Environment environment, boolean planetOnly, Vector3 rocketPosition) {
 		for (Map.Entry<Point, PlanetPart> entry : planetPartBuffer.entrySet()) {
@@ -397,11 +418,13 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		for (ArtifactObject o : currentVisibleArtifacts) {
 			renderEnv(o.getModelInstance(), batch, environment);
-			tmpVec3.set(o.getDefinition().x * TILE_GRAPHIC_SIZE,
-					o.getDefinition().y * TILE_GRAPHIC_SIZE, 100);
-			controllerPhysic.calculateGroundIntersection(tmpVec3, tmpVec4);
-			o.adjust(tmpVec4.z);
 		}
+
+		for (RaceWayPoint r : currentlyVisibleRaceWayPoints) {
+			renderEnv(r.getModelInstance(), batch, environment);
+		}
+
+
 	}
 
 	private void renderEnv(ModelInstance model, ModelBatch batch, Environment environment) {
@@ -429,12 +452,6 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		ani.add(c.createScaleAnimation());
 	}
 
-	private void addArtifact(ArtifactObject o) {
-		if (!SpaceShipProperties.properties.isCollectedArtifact(o.getDefinition().id)) {
-			currentVisibleArtifacts.add(o);
-		}
-	}
-
 	public void removeCollectible(Collectible c) {
 		currentVisibleCollectibles.remove(c);
 		controllerPhysic.removeCollisionObject(c.getCollisionObject());
@@ -442,9 +459,28 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		planetPartBuffer.get(c.getPlanetPartPosition()).getCollectibles().remove(c);
 	}
 
-	private void removeArtifact(ArtifactObject o) {
+	public void addArtifact(ArtifactObject o) {
+		tmpVec3.set(o.getDefinition().x, o.getDefinition().y, 10000);
+		controllerPhysic.calculateVerticalIntersection(tmpVec3, tmpVec4);
+		o.adjust(tmpVec4.z);
+
+		if (!SpaceShipProperties.properties.isArtifactCollected(o.getDefinition().id)) {
+			currentVisibleArtifacts.add(o);
+		}
+	}
+
+	public void removeArtifactModel(ArtifactObject o) {
 		currentVisibleArtifacts.remove(o);
 		o.dispose();
+	}
+
+	public ArtifactObject getCurrentVisibleArtifact(String id) {
+		for (ArtifactObject o : currentVisibleArtifacts) {
+			if (o.getDefinition().id.equals(id)) {
+				return o;
+			}
+		}
+		return null;
 	}
 
 	public ArtifactObject tryCollect(Vector3 position, float tractorBeamRadius) {
@@ -459,13 +495,129 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	}
 
 	public void collectArtifact(ArtifactObject o) {
-		if (!SpaceShipProperties.properties.isCollectedArtifact(o.getDefinition().id)) {
-			removeArtifact(o);
+		if (!SpaceShipProperties.properties.isArtifactCollected(o.getDefinition().id)) {
+			removeArtifactModel(o);
 			allArtifactsOnPlanet.remove(o.getDefinition());
-			SpaceShipProperties.properties.addArtifact(o.getDefinition().id);
+			ArtifactDefinitions.ConcreteArtifactType concreteArtifactType
+					= ArtifactDefinitions.ConcreteArtifactType.byName(o.getDefinition().type);
+			SpaceShipProperties.properties.onArtifactCollected(concreteArtifactType.createArtifact(), o.getDefinition().id);
 		}
 	}
 
+	public void addRaceWayPoint(RaceWayPoint r) {
+		if (!alreadyReachedWayPoints.contains(r) && !r.triggerRemoved) {
+			updateWayPoint(r);
+			controllerPhysic.addCollisionObject(r.getTrigger());
+			currentlyVisibleRaceWayPoints.add(r);
+		}
+	}
+
+	public void removeRaceWayPoint(RaceWayPoint r) {
+		if (!r.triggerRemoved) {
+			controllerPhysic.removeCollisionObject(r.getTrigger());
+		}
+		r.triggerRemoved = true;
+		currentlyVisibleRaceWayPoints.remove(r);
+	}
+
+	public void reachWayPoint(RaceWayPoint r) {
+		int pointIndex = planetConfig.planetRace.wayPoints.indexOf(r);
+
+		if (pointIndex > 0 && !isRaceRunning()) {
+			raceListener.onRaceDidNotStart();
+			return;
+		}
+
+		if (pointIndex != (lastRaceWayPointIndex + 1)) {
+			raceListener.onRaceWrongProgress();
+			resetRace();
+			return;
+		}
+
+		int timeBonus = 0;
+
+		if (pointIndex == 0) {
+			raceListener.onRaceStart();
+		} else if (pointIndex == planetConfig.planetRace.wayPoints.size() - 1) {
+			raceListener.onRaceSuccess();
+			removeRaceWayPoint(r);
+			resetRace();
+			return;
+		} else {
+			timeBonus = (int) getTimeToReachWayPoint(0);
+			raceListener.onRaceProgress(pointIndex + 1, planetConfig.planetRace.wayPoints.size(), timeBonus);
+		}
+
+		lastRaceWayPointIndex = planetConfig.planetRace.wayPoints.indexOf(r);
+		timeLastWayPointReached = System.currentTimeMillis() + (timeBonus * 1000);
+		alreadyReachedWayPoints.add(r);
+		removeRaceWayPoint(r);
+	}
+
+	public float getTimeToReachWayPoint(int waypointOffset) {
+		if (isRaceRunning()) {
+			float pastTime = (System.currentTimeMillis() - timeLastWayPointReached) / 1000f;
+			int wayPointIndex = (lastRaceWayPointIndex + 1) + waypointOffset;
+			if (wayPointIndex < planetConfig.planetRace.wayPoints.size() && wayPointIndex >= 0) {
+				RaceWayPoint point = planetConfig.planetRace.wayPoints.get(wayPointIndex);
+				return (float) Math.floor((point.secondsToReach - pastTime) * 10) / 10f;
+			}
+
+		}
+		return -1;
+	}
+
+	public Vector2 getNextRaceWayPointPosition() {
+		if (planetConfig.planetRace.wayPoints.size() > 0 && !(alreadyReachedWayPoints.size() == planetConfig.planetRace.wayPoints.size())) {
+			if (lastRaceWayPointIndex == -1) {
+				RaceWayPoint point = planetConfig.planetRace.wayPoints.get(0);
+				return tmpVec8.set(point.x, point.y);
+			}
+			if (lastRaceWayPointIndex + 1 < planetConfig.planetRace.wayPoints.size()) {
+				RaceWayPoint point = planetConfig.planetRace.wayPoints.get(lastRaceWayPointIndex + 1);
+				return tmpVec8.set(point.x, point.y);
+			}
+		}
+		return null;
+	}
+
+	public boolean isRaceRunning() {
+		return lastRaceWayPointIndex != -1;
+	}
+
+	public void updateWayPoint(RaceWayPoint r) {
+		tmpVec3.set(r.x, r.y, 10000);
+		controllerPhysic.calculateVerticalIntersection(tmpVec3, tmpVec4);
+		r.adjust(tmpVec4.z);
+	}
+
+	public RaceWayPoint getRaceWayPoint(btCollisionObject collision) {
+		for (RaceWayPoint r : currentlyVisibleRaceWayPoints) {
+			if (r.getTrigger() == collision) {
+				return r;
+			}
+		}
+		return null;
+	}
+
+	public float updateRace() {
+		if (isRaceRunning()) {
+			float timeToReachNextWayPoint = getTimeToReachWayPoint(0);
+			if (timeToReachNextWayPoint <= 0) {
+				resetRace();
+				raceListener.onRaceTimeOut();
+				return 0;
+			}
+			return timeToReachNextWayPoint;
+		}
+		return 0;
+	}
+
+	public void resetRace() {
+		lastRaceWayPointIndex = -1;
+		timeLastWayPointReached = -1;
+		alreadyReachedWayPoints.clear();
+	}
 
 	public void dispose() {
 		tmpRemoveList3.clear();
@@ -501,5 +653,18 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	public List<Collectible> getCurrentVisibleCollectibles() {
 		return currentVisibleCollectibles;
+	}
+
+	public List<ObjectPlacementInfo> getAllArtifactsOnPlanet() {
+		return allArtifactsOnPlanet;
+	}
+
+	public interface PlanetRaceListener {
+		void onRaceStart();
+		void onRaceProgress(int wayPointIndex, int wayPointCount, float timeBonus);
+		void onRaceWrongProgress();
+		void onRaceTimeOut();
+		void onRaceSuccess();
+		void onRaceDidNotStart();
 	}
 }

@@ -24,6 +24,7 @@ import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BufferedParticleBatch;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
+import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
@@ -37,34 +38,40 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Balancing;
+import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
-import com.nukethemoon.libgdxjam.input.FreeCameraInput;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ArtifactCollectAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.animations.EnterPlanetAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ExitPlanetAnimation;
 import com.nukethemoon.libgdxjam.screens.planet.animations.ScanAnimation;
+import com.nukethemoon.libgdxjam.screens.planet.devtools.DevelopmentPlacementRenderer;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWindow;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RaceWayPoint;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
+import com.nukethemoon.libgdxjam.ui.DialogTable;
 import com.nukethemoon.libgdxjam.ui.GameOverTable;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.MenuTable;
 import com.nukethemoon.libgdxjam.ui.ToastTable;
-import com.nukethemoon.libgdxjam.ui.animation.FadeTableAnimation;
+import com.nukethemoon.libgdxjam.ui.animation.GameOverAnimation;
+import com.nukethemoon.libgdxjam.ui.hud.RaceTable;
 import com.nukethemoon.libgdxjam.ui.hud.ShipProgressBar;
 import com.nukethemoon.tools.ani.Ani;
 import com.nukethemoon.tools.ani.AnimationFinishedListener;
 import com.nukethemoon.tools.ani.BaseAnimation;
 
 public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener, RocketListener,
-		ControllerPhysic.PhysicsListener  {
+		ControllerPhysic.PhysicsListener, ControllerPlanet.PlanetRaceListener  {
 
 
+	private final FirstPersonCameraController firstPersonCameraController;
+	private DevelopmentPlacementRenderer placementRenderer;
 	private ModelBatch modelBatch;
 	private Environment environment;
 
@@ -85,14 +92,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private final InputMultiplexer multiplexer;
 	private final Skin uiSkin;
 	private final int planetIndex;
-
 	private ControllerPlanet planetController;
 	private ControllerPhysic physicsController;
 
 	private Stage stage;
-	private final FreeCameraInput freeCameraInput;
-
-
 
 	private final ShipProgressBar shieldProgressBar;
 	private final ShipProgressBar fuelProgressBar;
@@ -102,9 +105,17 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private boolean renderEnabled = true;
 	private boolean physicEnabled = false;
 	private boolean rocketEnabled = false;
+	private boolean debugCameraEnabled = false;
 
 	public static Gson gson;
 	private AssetManager assetManager;
+
+	private RaceTable raceTimeTable;
+	private DialogTable raceDidNotStartInfo = null;
+
+	private Vector3 tmpVector = new Vector3();
+
+	private DialogTable fliesToHighInfo;
 
 	private final MiniMap miniMap;
 
@@ -113,14 +124,16 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		"planet02",
 		"planet03",
 		"planet04",
-		"planet05"
+		"planet05",
+		"planet06",
+		"planet07"
 	};
 
 	private Ani ani;
 	private DevelopmentWindow developmentWindow;
 	private MenuButton menuButton;
 
-
+	private OverlayRenderer overlayRenderer;
 
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
 		pPlanetIndex = pPlanetIndex % KNOWN_PLANETS.length;
@@ -159,29 +172,48 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		shapeRenderer = new ShapeRenderer();
 		shapeRenderer.setAutoShapeType(true);
 
-
+		overlayRenderer = new OverlayRenderer();
+		overlayRenderer.setEnabled(true);
+		overlayRenderer.setColor(0, 0, 0, 0.5f);
 
 		FileHandle sceneConfigFile = Gdx.files.internal("entities/planets/" + KNOWN_PLANETS[planetIndex] + "/sceneConfig.json");
 		PlanetConfig planetConfig = gson.fromJson(sceneConfigFile.reader(), PlanetConfig.class);
 		planetConfig.deserialize();
 
 		physicsController = new ControllerPhysic(planetConfig.gravity, this);
-		planetController = new ControllerPlanet(KNOWN_PLANETS[planetIndex], planetConfig, physicsController, ani);
+		planetController = new ControllerPlanet(KNOWN_PLANETS[planetIndex], planetConfig, physicsController, ani, this);
 		physicsController.addRigidBody(
 				rocket.rigidBodyList.get(0),
 				com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes.ROCKET);
 
-		multiplexer.addProcessor(this);
-		freeCameraInput = new FreeCameraInput(camera);
-		freeCameraInput.setEnabled(false);
-		multiplexer.addProcessor(freeCameraInput);
+
 
 		miniMap = new MiniMap(rocket, planetController);
 
+		if (App.config.debugMode) {
+			placementRenderer = new DevelopmentPlacementRenderer();
+		}
 
 		onReloadScene(planetConfig);
 		initParticles();
 		initStage(planetConfig);
+
+		// STAGE INITIALIZED
+
+		raceTimeTable = new RaceTable();
+		stage.addActor(raceTimeTable);
+		raceTimeTable.setVisible(false);
+
+		raceDidNotStartInfo = new DialogTable(Styles.UI_SKIN, new String[]{
+				"The race did not start yet!" , "Search the first waypoint to", "start the race."}, "RACE INFO");
+		raceDidNotStartInfo.setVisible(false);
+		stage.addActor(raceDidNotStartInfo);
+
+		multiplexer.addProcessor(this);
+
+		fliesToHighInfo = new DialogTable(Styles.UI_SKIN, new String[] {"The rocket flies to high!"}, "WARNING");
+		fliesToHighInfo.setVisible(false);
+		stage.addActor(fliesToHighInfo);
 
 		shieldProgressBar = new ShipProgressBar(ShipProgressBar.ProgressType.SHIELD);
 		stage.addActor(shieldProgressBar);
@@ -195,14 +227,20 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		planetController.updateRequestCenter(new Vector3(0, 0, 0));
 
-		EnterPlanetAnimation enterPlanetAnimation = new EnterPlanetAnimation(camera, rocket, new AnimationFinishedListener() {
+		EnterPlanetAnimation enterPlanetAnimation = new EnterPlanetAnimation(camera, rocket, overlayRenderer, new AnimationFinishedListener() {
 			@Override
 			public void onAnimationFinished(BaseAnimation baseAnimation) {
 				physicEnabled = true;
 				rocketEnabled = true;
 			}
 		});
+
+
+		firstPersonCameraController = new FirstPersonCameraController(camera);
+		multiplexer.addProcessor(firstPersonCameraController);
+
 		ani.add(enterPlanetAnimation);
+
 	}
 
 	private void initParticles() {
@@ -255,7 +293,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		multiplexer.addProcessor(stage);
 
 		if (App.config.debugMode) {
-			developmentWindow = new DevelopmentWindow(uiSkin, stage, planetConfig, this, this);
+			developmentWindow = new DevelopmentWindow(uiSkin, stage, planetConfig, this, this,
+					placementRenderer, planetController, KNOWN_PLANETS);
 			developmentWindow.setVisible(false);
 			stage.addActor(developmentWindow);
 
@@ -296,11 +335,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	}
 
 	public void leavePlanet() {
-		App.TUTORIAL_CONTROLLER.onLeavePlanet();
-		renderEnabled = false;
-		multiplexer.removeProcessor(stage);
-		multiplexer.removeProcessor(this);
-		multiplexer.removeProcessor(freeCameraInput);
 		dispose();
 		App.saveProgress();
 		App.openSolarScreen();
@@ -337,12 +371,12 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			}
 		}
 
-		if (freeCameraInput.isEnabled()) {
-			freeCameraInput.update(delta);
+		if (debugCameraEnabled) {
+			firstPersonCameraController.update(delta * 10);
 		}
 		camera.update();
 
-		if (!pause && rocketEnabled) {
+		if (!pause && rocketEnabled && !debugCameraEnabled) {
 			//rocket.thrust();
 			rocket.update();
 		}
@@ -350,6 +384,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		modelBatch.begin(camera);
 		rocket.drawModel(modelBatch, environment, effectThrust, effectExplosion);
 		planetController.render(modelBatch, environment, false, rocket.getPosition());
+		if (App.config.debugMode) {
+			placementRenderer.render(modelBatch);
+		}
 		modelBatch.end();
 
 		particleSystem.begin();
@@ -357,22 +394,36 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		particleSystem.end();
 
 		modelBatch.render(particleSystem);
-		drawOrigin();
-
+		if (App.config.debugMode) {
+			//drawOrigin();
+		}
 
 		if (!pause) {
 			particleSystem.update();
 			ani.update();
 			if (!gameOver && physicEnabled) {
-				physicsController.stepSimulation(delta);
+				if (!debugCameraEnabled) {
+					physicsController.stepSimulation(delta);
+				}
 				physicsController.debugRender(camera);
 			}
+		}
+
+		if (overlayRenderer.isEnabled()) {
+			overlayRenderer.render();
 		}
 		if (stage != null) {
 			stage.act(delta);
 			stage.draw();
 		}
-		miniMap.drawMiniMap();
+
+		if (!overlayRenderer.isEnabled()) {
+			miniMap.drawMiniMap();
+		}
+
+		if (planetController.isRaceRunning()) {
+			raceTimeTable.setTime(planetController.updateRace());
+		}
 	}
 
 
@@ -422,13 +473,15 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public boolean keyDown(int keycode) {
-		if (keycode == 61) {
-			freeCameraInput.setEnabled(!freeCameraInput.isEnabled());
+		if (keycode == Input.Keys.TAB) {
+			if (App.config.debugMode) {
+				debugCameraEnabled = !debugCameraEnabled;
+			}
 		}
-		if (keycode == 44) {
-			onPauseClicked();
+		if (keycode == Input.Keys.P) {
+			pause = !pause;
 		}
-		if (keycode == 62) {
+		if (keycode == Input.Keys.SPACE) {
 			rocket.toggleThrust();
 		}
 		return false;
@@ -447,6 +500,11 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		if (App.config.debugMode) {
+			physicsController.calculateCameraPickIntersection(camera, screenX, screenY, tmpVector);
+			placementRenderer.setCursorPosition(tmpVector);
+
+		}
 		return false;
 	}
 
@@ -485,9 +543,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 				App.onGameOver();
 			}
 		});
-		gameOverTable.setColor(1, 1, 1, 0);
+		stage.clear();
 		stage.addActor(gameOverTable);
-		ani.add(2500, new FadeTableAnimation(gameOverTable));
+		ani.add(1500, new GameOverAnimation(gameOverTable, overlayRenderer));
 	}
 
 	@Override
@@ -608,13 +666,24 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public void onRocketEntersPortal() {
 		physicEnabled = false;
 		rocketEnabled = false;
-		ExitPlanetAnimation exitPlanetAnimation = new ExitPlanetAnimation(camera, rocket, new AnimationFinishedListener() {
+		ExitPlanetAnimation exitPlanetAnimation = new ExitPlanetAnimation(camera, rocket, overlayRenderer, new AnimationFinishedListener() {
 			@Override
 			public void onAnimationFinished(BaseAnimation baseAnimation) {
 				leavePlanet();
 			}
 		});
 		ani.add(exitPlanetAnimation);
+	}
+
+	@Override
+	public void onRocketFliesToHigh() {
+		rocket.dealDamage(10);
+		fliesToHighInfo.setVisible(true);
+	}
+
+	@Override
+	public void onRocketBackToNormalHeight() {
+		fliesToHighInfo.setVisible(false);
 	}
 
 	// === physic events ===
@@ -630,11 +699,66 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 					collectible.getPlanetPartPosition().y,
 					collectible.getType());
 		}
+		if (type == CollisionTypes.WAY_POINT_TRIGGER) {
+			RaceWayPoint raceWayPoint = planetController.getRaceWayPoint(collisionObject);
+			planetController.reachWayPoint(raceWayPoint);
+		}
+	}
+
+	@Override
+	public void onRaceStart() {
+		showToast("Race Started!");
+		raceTimeTable.setTime(planetController.getTimeToReachWayPoint(0));
+		raceTimeTable.setVisible(true);
+		raceDidNotStartInfo.setVisible(false);
+		App.audioController.playSound("dialogHighlight.mp3");
+	}
+
+	@Override
+	public void onRaceProgress(int pointIndex, int pointCount, float timeBonus) {
+		String addition = "";
+		if (timeBonus > 0) {
+			addition = "   +" + timeBonus + "s";
+		}
+		showToast(+ pointIndex + " of " + pointCount + addition);
+		App.audioController.playSound("dialogHighlight.mp3");
+		raceTimeTable.setTime(planetController.getTimeToReachWayPoint(0));
+	}
+
+	@Override
+	public void onRaceWrongProgress() {
+		showToast("Wrong waypoint");
+		raceTimeTable.setVisible(false);
+	}
+
+	@Override
+	public void onRaceTimeOut() {
+		showToast("Race timeout");
+		raceTimeTable.setVisible(false);
+	}
+
+	@Override
+	public void onRaceSuccess() {
+		showToast("You have won the race!");
+		App.audioController.playSound("race_won.mp3");
+		raceTimeTable.setVisible(false);
+	}
+
+	@Override
+	public void onRaceDidNotStart() {
+		raceDidNotStartInfo.setVisible(true);
 	}
 
 	@Override
 	public void onInternalTick() {
 		rocket.handlePhysicTick();
+	}
+
+	public void devJumpTo(float graphicX, float graphicY) {
+		camera.position.set(graphicX - 50, graphicY, 60);
+		camera.lookAt(graphicX, graphicY, 0);
+		camera.up.set(Vector3.Z);
+		planetController.updateRequestCenter(new Vector3(graphicX, graphicY, 0f));
 	}
 
 	@Override
@@ -650,6 +774,15 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		effectThrust.dispose();
 		effectExplosion.dispose();
 		effectPortal.dispose();
+		if (App.config.debugMode) {
+			placementRenderer.dispose();
+		}
+
+		App.TUTORIAL_CONTROLLER.onLeavePlanet();
+		renderEnabled = false;
+		multiplexer.removeProcessor(stage);
+		multiplexer.removeProcessor(this);
+		multiplexer.removeProcessor(firstPersonCameraController);
 	}
 
 }

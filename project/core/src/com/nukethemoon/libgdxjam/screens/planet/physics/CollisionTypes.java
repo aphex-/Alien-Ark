@@ -6,24 +6,26 @@ import java.util.Map;
 
 public enum CollisionTypes {
 
-	GROUND(		(short) (1<< 8)),
-	ROCKET(		(short) (1<< 9)),
-	WATER(		(short) (1<<10)),
-	FUEL(		(short) (1<<11)),
-	SHIELD(		(short) (1<<12)),
-	PORTAL_EXIT((short) (1<<13)),
-	NOTHING(	(short) 0);
+	GROUND(				(short) (1<< 8)),
+	ROCKET(				(short) (1<< 9)),
+	WATER(				(short) (1<<10)),
+	FUEL(				(short) (1<<11)),
+	SHIELD(				(short) (1<<12)),
+	PORTAL_EXIT(		(short) (1<<13)),
+	WAY_POINT_TRIGGER(	(short) (1<<14)),
+	NOTHING(			(short) 0);
 
 	public static Map<CollisionTypes, CollisionTypes[]> TYPE_TO_COLLISIONS = new HashMap<CollisionTypes, CollisionTypes[]>();
 
 	// collision filtering
 	static {
-		TYPE_TO_COLLISIONS.put(ROCKET, 		new CollisionTypes[] {GROUND, WATER, FUEL, SHIELD, PORTAL_EXIT});
-		TYPE_TO_COLLISIONS.put(GROUND,	 	new CollisionTypes[] {ROCKET});
-		TYPE_TO_COLLISIONS.put(WATER, 		new CollisionTypes[] {ROCKET});
-		TYPE_TO_COLLISIONS.put(FUEL, 		new CollisionTypes[] {ROCKET});
-		TYPE_TO_COLLISIONS.put(SHIELD, 		new CollisionTypes[] {ROCKET});
-		TYPE_TO_COLLISIONS.put(PORTAL_EXIT,	new CollisionTypes[] {ROCKET});
+		TYPE_TO_COLLISIONS.put(ROCKET, 				new CollisionTypes[] {GROUND, WATER, FUEL, SHIELD, PORTAL_EXIT, WAY_POINT_TRIGGER});
+		TYPE_TO_COLLISIONS.put(GROUND,	 			new CollisionTypes[] {ROCKET});
+		TYPE_TO_COLLISIONS.put(WATER, 				new CollisionTypes[] {ROCKET});
+		TYPE_TO_COLLISIONS.put(FUEL, 				new CollisionTypes[] {ROCKET});
+		TYPE_TO_COLLISIONS.put(SHIELD, 				new CollisionTypes[] {ROCKET});
+		TYPE_TO_COLLISIONS.put(PORTAL_EXIT,			new CollisionTypes[] {ROCKET});
+		TYPE_TO_COLLISIONS.put(WAY_POINT_TRIGGER,	new CollisionTypes[] {ROCKET});
 	}
 
 	public short mask;

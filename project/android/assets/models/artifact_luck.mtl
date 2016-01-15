@@ -1,0 +1,11 @@
+# Blender MTL File: 'artifact luck.blend'
+# Material Count: 1
+
+newmtl Material.001
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.206546 0.007777 0.027472
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1

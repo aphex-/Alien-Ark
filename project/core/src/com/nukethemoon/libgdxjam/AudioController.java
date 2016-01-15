@@ -34,7 +34,8 @@ public class AudioController {
 			"thrust.wav",
 			"bonus_stream.mp3",
 			"dialogHighlight.mp3",
-			"robo_laser.mp3"
+			"robo_laser.mp3",
+			"race_won.mp3"
 	};
 
 
@@ -130,6 +131,12 @@ public class AudioController {
 
 	public void setSoundEnabled(boolean soundEnabled) {
 		this.soundEnabled = soundEnabled;
+
+		if (!soundEnabled) {
+			for (Sound sound : soundMap.values()) {
+				sound.stop();
+			}
+		}
 	}
 
 	public void fadeOut() {

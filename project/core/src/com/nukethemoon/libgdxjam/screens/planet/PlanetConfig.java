@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.GsonMaterial;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetRace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +31,10 @@ public class PlanetConfig {
 	public List<ColorAttribute> environmentColorAttributes = new ArrayList<ColorAttribute>();
 	public List<DirectionalLight> environmentDirectionalLights = new ArrayList<DirectionalLight>();
 
-	public List<PointWithId> artifacts = new ArrayList<PointWithId>();
-
+	public List<ObjectPlacementInfo> artifacts = new ArrayList<ObjectPlacementInfo>();
 	public List<LandscapeLayerConfig> layerConfigs = new ArrayList<LandscapeLayerConfig>();
+
+	public PlanetRace planetRace = new PlanetRace();
 
 	public void deserialize() {
 		for (LandscapeLayerConfig c : layerConfigs) {
@@ -56,6 +58,40 @@ public class PlanetConfig {
 		FileHandle fileHandle = new FileHandle(
 				"entities/planets/"+ planetConfig.id +"/sceneConfig.json");
 		fileHandle.writeString(str, false);
+	}
+
+	public String consumeArtifactId() {
+		int i = 1;
+		while (contains(createArtifactId(i))) {
+			i++;
+		}
+		return createArtifactId(i);
+	}
+
+	private String createArtifactId(int number) {
+		return "art" + createNumberString(number) + "_" + id;
+	}
+
+	public boolean contains(String artifactId) {
+		for (ObjectPlacementInfo info : artifacts) {
+			if (info.id.equals(artifactId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static String createNumberString(int number) {
+		if (number < 10) {
+			return "000" + number;
+		}
+		if (number < 100) {
+			return "00" + number;
+		}
+		if (number < 1000) {
+			return "0" + number;
+		}
+		return "" + number;
 	}
 
 }

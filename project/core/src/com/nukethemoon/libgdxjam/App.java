@@ -11,12 +11,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.input.InputController;
-import com.nukethemoon.libgdxjam.screens.MenuScreen;
 import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
 import com.nukethemoon.libgdxjam.screens.planet.TutorialController;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.solar.SolarScreen;
+import com.nukethemoon.libgdxjam.screens.splash.SplashScreen;
 
 import java.io.IOException;
 
@@ -35,7 +35,7 @@ public class App extends Game {
 	private static Gson gson;
 	public static Save save;
 	public static Config config;
-	public static int ratioCorrectionXOffset = 1;
+
 
 	@Override
 	public void create () {
@@ -53,30 +53,27 @@ public class App extends Game {
 		Gdx.input.setInputProcessor(MULTIPLEXER);
 
 		audioController = new AudioController();
+		App.audioController.setSoundEnabled(App.config.playAudio);
+		App.audioController.setMusicEnabled(App.config.playAudio);
+
 		solarSystem = new SolarSystem();
 		solarSystem.calculatePlanetPositions();
 
 		SpaceShipProperties.properties.testInit();
-		// instance space ship
-		// load game entities
-		// openScreen(SplashScreen.class);
-		openPlanetScreen(0);
 
-		//openArkScreen();
-
-
-		//openSolarScreen();
+		if (config.debugMode) {
+			openPlanetScreen(0);
+		} else {
+			openSplashScreen();
+		}
 	}
 
-	public static void openScreen(Class<? extends Screen> screenClass) {
-		/*Screen screen = SCREENS.get(screenClass);
-		if (screen == null) {
-
-		}*/
-		MenuScreen menuScreen = new MenuScreen(Styles.UI_SKIN, MULTIPLEXER);
-		menuScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		app.setScreen(menuScreen);
+	public static void openSplashScreen() {
+		SplashScreen splashScreen = new SplashScreen(MULTIPLEXER);
+		splashScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		app.setScreen(splashScreen);
 	}
+
 
 	public static void openPlanetScreen(int worldIndex) {
 		PlanetScreen screen = new PlanetScreen(Styles.UI_SKIN, MULTIPLEXER, worldIndex);
@@ -99,6 +96,7 @@ public class App extends Game {
 
 
 	public static void onGameOver() {
+		SpaceShipProperties.properties.reset();
 		SpaceShipProperties.properties.currentSolarPosition.set(
 				SolarScreen.INITIAL_ARK_POSITION_X, SolarScreen.INITIAL_ARK_POSITION_Y);
 		openSolarScreen();

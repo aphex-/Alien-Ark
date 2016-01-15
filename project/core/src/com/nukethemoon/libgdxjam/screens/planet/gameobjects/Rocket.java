@@ -17,7 +17,6 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
@@ -27,7 +26,6 @@ import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
 import com.nukethemoon.libgdxjam.game.attributes.ShieldCapacity;
-import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 
 import java.awt.*;
@@ -43,6 +41,9 @@ public class Rocket extends GameObject implements Disposable {
 	private static final float FUEL_CONSUMPTION = 0.1f;
 	private static final int SCAN_DELAY = 50;
 	private static final int THRUST_START_FUEL_COST = 15;
+
+	private static final int PLANET_Z_LIMIT = 200;
+
 	private final Sound thrustSound;
 
 	private long ticksSinceLastLaunch = 0;
@@ -78,6 +79,7 @@ public class Rocket extends GameObject implements Disposable {
 	private boolean thrusting = true;
 	private boolean moving = true;
 	private boolean exploded = false;
+	private boolean toHigh = false;
 
 	private boolean tractorBeamVisible = false;
 
@@ -113,9 +115,11 @@ public class Rocket extends GameObject implements Disposable {
 
 
 		// init physic
-		BoundingBox boundingBox = new BoundingBox();
-		model.calculateBoundingBox(boundingBox);
-		btCollisionShape shape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.5f));
+		//BoundingBox boundingBox = new BoundingBox();
+		//model.calculateBoundingBox(boundingBox);
+		//btCollisionShape shape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.5f));
+		btCollisionShape shape = new btBoxShape(new Vector3(1, 1, 1));
+
 		rocketModelInstance.transform.setToRotation(0, 0, 1, 0);
 		rocketModelInstance.transform.trn(START_POSITION);
 		float mass = 1;
@@ -125,10 +129,15 @@ public class Rocket extends GameObject implements Disposable {
 		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(
 				SpaceShipProperties.properties.getSpeed()));
 
-		SpaceShipProperties.properties.setCurrentInternalFuel((int) 	FuelCapacity.INTERNAL_MAX);
+		SpaceShipProperties.properties.setCurrentInternalFuel((int) FuelCapacity.INTERNAL_MAX);
 		SpaceShipProperties.properties.setCurrentInternalShield((int) ShieldCapacity.INTERNAL_MAX);
 
+
 		thrustSound = App.audioController.getSound("thrust.wav");
+		if (App.config.playAudio) {
+			thrustSound.loop();
+			thrustSound.play();
+		}
 	}
 
 	public void setThirdPersonCam(PerspectiveCamera camera) {
@@ -153,25 +162,52 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	public void rotateDown() {
+		int invert = 1;
+		if (App.config.invertUpDown) {
+			invert = -1;
+		}
+
 		if (thrusting) {
 			if ((xRotation - SpaceShipProperties.properties.getManeuverability()) > -89) {
-				xRotation = (xRotation - SpaceShipProperties.properties.getManeuverability()) % 360;
+				xRotation = (xRotation - SpaceShipProperties.properties.getManeuverability() * invert) % 360;
 			}
 		}
 	}
 
 	public void rotateUp() {
+		int invert = 1;
+		if (App.config.invertUpDown) {
+			invert = -1;
+		}
 		if (thrusting) {
 			if((xRotation + SpaceShipProperties.properties.getManeuverability()) < 89) {
-				xRotation = (xRotation + SpaceShipProperties.properties.getManeuverability()) % 360;
+				xRotation = (xRotation + SpaceShipProperties.properties.getManeuverability() * invert) % 360;
 			}
 		}
 	}
 
 	public void update() {
+		if (exploded) {
+			return;
+		}
+
 		if (thrusting) {
 			thrust();
 			drill += 2;
+		}
+
+		float zPosition = getPosition().z;
+		if (zPosition > PLANET_Z_LIMIT) {
+			if (zPosition > PLANET_Z_LIMIT * 1.5f) {
+				onExplode();
+			}
+			listener.onRocketFliesToHigh();
+			toHigh = true;
+		} else {
+			if (toHigh) {
+				listener.onRocketBackToNormalHeight();
+			}
+			toHigh = false;
 		}
 
 		rotationMatrix.setToRotation(Vector3.Z, zRotation);
@@ -215,9 +251,7 @@ public class Rocket extends GameObject implements Disposable {
 
 	private void updateTilePosition() {
 		Vector3 position = getPosition();
-		int x = (int) (Math.floor(position.x) / ControllerPlanet.TILE_GRAPHIC_SIZE);
-		int y = (int) (Math.floor(position.y) / ControllerPlanet.TILE_GRAPHIC_SIZE);
-		lastTilePosition.setLocation(x, y);
+		lastTilePosition.setLocation(PlanetPart.getTileX(position.x), PlanetPart.getTileY(position.y));
 	}
 
 	private void thrust() {
@@ -257,8 +291,11 @@ public class Rocket extends GameObject implements Disposable {
 			return;
 		}
 
-		thrustSound.loop();
-		thrustSound.play();
+		if (App.config.playAudio) {
+			thrustSound.loop();
+			thrustSound.play();
+		}
+
 
 		if (!moving) {
 			onLaunch();
@@ -337,7 +374,7 @@ public class Rocket extends GameObject implements Disposable {
 
 	@Override
 	public void dispose() {
-		//model.dispose();
+		thrustSound.stop();
 	}
 
 	public void handlePhysicTick() {
@@ -380,7 +417,7 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
-	private void dealDamage(int damage) {
+	public void dealDamage(int damage) {
 		if (System.currentTimeMillis() - lastDamageTime < MIN_DAMAGE_DELAY_MILLIS) {
 			return;
 		}
@@ -421,18 +458,6 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
-	public boolean isThrusting() {
-		return thrusting;
-	}
-
-	public void setThrust(boolean thrusting) {
-		this.thrusting = thrusting;
-		if (!thrusting) {
-			onThrustDisabled();
-		} else {
-			onThrustEnabled();
-		}
-	}
 
 	public boolean isOutOfFuel() {
 		return SpaceShipProperties.properties.getCurrentInternalFuel() <= 0;
@@ -520,6 +545,7 @@ public class Rocket extends GameObject implements Disposable {
 		}
 
 	}
+
 
 
 }

@@ -2,12 +2,12 @@ package com.nukethemoon.libgdxjam.screens.solar;
 
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -30,14 +30,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
-import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
-import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.libgdxjam.ui.EnterOrbitTable;
+import com.nukethemoon.libgdxjam.ui.GameOverTable;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.MenuTable;
 import com.nukethemoon.libgdxjam.ui.hud.ShipProgressBar;
@@ -47,25 +47,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class SolarScreen implements Screen, RocketListener, ControllerPhysic.PhysicsListener, InputProcessor {
+public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, InputProcessor {
 
 	//TODO:
 	/*
-	- in die mitte kommt eine fette sonne, wenn du da rein fliegst, explodiert das schiff und sind alle aliens tot
-	- apply attributes to solarscreen
-	- planeten müssen entdeckt werden per radar */
+	+ Ich halte den Schatten für unverzichtbar.
+	+ Refactoring der bestehenden box2d Methoden (bzgl. new instance creation)
+	*/
 
 	private static final int RAYS_NUM = 333;
 	private static final int SUN_COLLISION = 999;
 	private final World world;
 	private final InputMultiplexer multiplexer;
 	private final Ani ani;
+	private final Skin uiSkin;
 //	private StarsBackground bg;
 
 	private EnterOrbitTable enterOrbitTable = null;
 
 	private Vector2 shipPosition;
-	private final RayHandler rayHandler;
+	//private final RayHandler rayHandler;
 	private OrthographicCamera camera;
 
 	//0 - 359
@@ -100,7 +101,6 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	private Stage stage;
 	private Sprite sunSprite;
-	private Rocket rocket;
 	private List<Body> bodies;
 	private PointLight[] pointLight;
 	private float counter = 0f;
@@ -108,11 +108,16 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	private ShipProgressBar fuelProgressBar;
 	private ShipProgressBar shieldProgressBar;
 	private TiledDrawable bgTile;
+	private boolean isThrusting;
+	private boolean gameOver = false;
+	private float shieldAudioCounter = 0;
 
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
+		Log.d(getClass(), "create SolarScreen");
 		this.multiplexer = multiplexer;
 		multiplexer.addProcessor(this);
+		this.uiSkin = uiSkin;
 		batch = new SpriteBatch();
 		arkSprite = new Sprite(App.TEXTURES.findRegion("rocket"));
 		exhaustSprite = new Sprite(App.TEXTURES.findRegion("exhaust_placeholder"));
@@ -132,7 +137,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		setupArkButton(uiSkin, multiplexer);
 		setupPlanets();
 
-		rayHandler = createRayHandler(world);
+		//rayHandler = createRayHandler(world);
 		createPointLights();
 //		updateShadowBodies(world);
 
@@ -141,16 +146,15 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 		stage.addActor(fuelProgressBar);
 		stage.addActor(shieldProgressBar);
+		Log.d(getClass(), "end of setup");
 
 	}
 
 	private void createPointLights() {
-		new PointLight(rayHandler, RAYS_NUM, new Color(1f, 1f, 1f, 1f), 5000, 0, 0);
+		//new PointLight(rayHandler, RAYS_NUM, new Color(1f, 1f, 1f, 1f), 5000, 0, 0);
 	}
 
 	private void setupSpaceship() {
-		rocket = new Rocket();
-		rocket.setListener(this);
 		arkSprite.setPosition(shipPosition.x, shipPosition.y);
 		arkWidth = arkSprite.getWidth();
 		arkHeight = arkSprite.getHeight();
@@ -163,7 +167,12 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		planetSprites[1] = new Sprite(App.TEXTURES.findRegion("planet02"));
 		planetSprites[2] = new Sprite(App.TEXTURES.findRegion("plantet03"));
 		planetSprites[3] = new Sprite(App.TEXTURES.findRegion("plantet04"));
-
+		planetSprites[4] = new Sprite(App.TEXTURES.findRegion("plantet05"));
+		planetSprites[5] = new Sprite(App.TEXTURES.findRegion("plantet06"));
+		planetSprites[6] = new Sprite(App.TEXTURES.findRegion("plantet07"));
+		planetSprites[7] = new Sprite(App.TEXTURES.findRegion("plantet08"));
+		planetSprites[8] = new Sprite(App.TEXTURES.findRegion("plantet09"));
+		planetSprites[9] = new Sprite(App.TEXTURES.findRegion("plantet10"));
 
 		sunSprite = new Sprite(App.TEXTURES.findRegion("sun"));
 		sunSprite.setPosition(SolarSystem.SUN_POSITION.x, SolarSystem.SUN_POSITION.y);
@@ -254,25 +263,24 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(21/255f, 21/255f, 21/255f, 1);
+		Gdx.gl.glClearColor(21 / 255f, 21 / 255f, 21 / 255f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		handleArkMovementInput(delta);
-		handleAppNavigation();
+		handleAppNavigation(delta);
 
 //		camera.update();
 //		batch.setProjectionMatrix(camera.combined);
-//		//batch.disableBlending();
-//		bg.draw(batch);
+
 		renderPlanets();
-
 		renderArc();
-
 		rotatePlanets(delta);
+		shieldProgressBar.updateFromShipProperties();
+		fuelProgressBar.updateFromShipProperties();
 
-		rayHandler.setCombinedMatrix(camera);
+//	    rayHandler.setCombinedMatrix(camera);
 //		rayHandler.setCombinedMatrix(camera.combined);
-		rayHandler.updateAndRender();
-//
+//		rayHandler.updateAndRender();
+
 		camera.position.set(arkSprite.getX(), arkSprite.getY(), 0);
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
@@ -287,7 +295,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		batch.begin();
 		moveArcPosition();
 		adjustRotationIfNeccessary();
-		if (rocket.isThrusting()) {
+		if (isThrusting) {
 			exhaustSprite.draw(batch);
 		}
 		arkSprite.draw(batch);
@@ -338,14 +346,14 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 			currentSpeedLevel -= 1;
 		}
 
-
 		//if (Gdx.app.getInput().isKeyPressed(19) && !rocket.isOutOfFuel()) {
 		if (Gdx.app.getInput().isKeyPressed(19)) {
 			currentSpeedLevel += 1;
-			rocket.setThrust(true);
+			SpaceShipProperties.properties.addCurrentInternalFuel(-1);
+			isThrusting = true;
 
 		} else {
-			rocket.setThrust(false);
+			isThrusting = false;
 		}
 
 		if (Gdx.app.getInput().isKeyPressed(20)) {
@@ -371,7 +379,6 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		shipPosition.y = arkSprite.getY();
 
 		exhaustSprite.setPosition(shipPosition.x, shipPosition.y);
-		//checkIfArkIsOffScreenAndCorrect();
 	}
 
 	@Override
@@ -386,8 +393,6 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	@Override
 	public void dispose() {
-		rocket.dispose();
-		rayHandler.dispose();
 	}
 
 	@Override
@@ -398,9 +403,6 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		camera = new OrthographicCamera(screenWidth, screenHeight);
 		camera.position.set(0, screenWidth / 2f, 0);
 		camera.update();
-
-
-//		bg = new StarsBackground(screenWidth, screenHeight);
 	}
 
 	@Override
@@ -420,9 +422,9 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		return -1;
 	}
 
-	private boolean isColliding(Sprite sprite ) {
+	private boolean isColliding(Sprite sprite) {
 		Rectangle planetBounds = sprite.getBoundingRectangle();
-		if (planetBounds.contains(shipPosition.x, shipPosition.y)) {
+		if (planetBounds.contains(shipPosition.x + (arkSprite.getWidth() / 2), shipPosition.y + (arkSprite.getHeight() / 2))) {
 			return true;
 
 		}
@@ -445,45 +447,13 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		App.openArkScreen();
 	}
 
-	private void checkIfArkIsOffScreenAndCorrect() {
-		if (isArkOffScreenLeft()) {
-			arkSprite.translateX(0 - shipPosition.x + screenWidth - 20);
+	private void handleAppNavigation(float delta) {
+		if (SpaceShipProperties.properties.getCurrentInternalShield() <= 0) {
+			explodeRocket();
 		}
-		if (isArkOffScreenRight()) {
-			arkSprite.translateX(-1 * (arkWidth + screenWidth - 20));
-		}
-		if (isArkOffScreenTop()) {
-			arkSprite.translateY(-1 * (arkHeight + screenHeight - 20));
-		}
-		if (isArkOffScreenBottom()) {
-			arkSprite.translateY(0 - shipPosition.y + screenHeight - 20);
-		}
-
-	}
-
-	private boolean isArkOffScreenBottom() {
-		return shipPosition.y < 0 - arkHeight;
-	}
-
-	private boolean isArkOffScreenTop() {
-		return screenHeight < shipPosition.y;
-	}
-
-	private boolean isArkOffScreenRight() {
-		return screenWidth < shipPosition.x;
-	}
-
-	private boolean isArkOffScreenLeft() {
-		return shipPosition.x < 0 - arkWidth;
-	}
-
-	private void handleAppNavigation() {
-
-
-
 		final int planetIndex = determinePlanetCollison();
 		if (planetIndex == SUN_COLLISION) {
-			rocket.onExplode();
+			dealDamageToRocket(delta);
 		} else if (planetIndex != -1) {
 			if (enterOrbitTable == null) {
 				enterOrbitTable = new EnterOrbitTable(Styles.UI_SKIN, planetIndex);
@@ -507,94 +477,55 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		}
 	}
 
+	private void explodeRocket() {
+		if (!gameOver) {
+			gameOver = true;
+			App.audioController.playSound("explosion.mp3");
+			onGameOver();
+		}
+	}
+
+	private void onGameOver() {
+		GameOverTable gameOverTable = new GameOverTable(uiSkin, new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				dispose();
+				App.onGameOver();
+			}
+		});
+		stage.clear();
+		stage.addActor(gameOverTable);
+	}
+
+	private void dealDamageToRocket(float delta) {
+		shieldAudioCounter += delta;
+		if (shieldAudioCounter > 0.45 && !gameOver) {
+			shieldAudioCounter = 0;
+			App.audioController.playSound("energy_shield.mp3");
+		}
+		SpaceShipProperties.properties.addCurrentShield(-20);
+	}
+
 	private void rotatePlanets(float delta) {
 		float limit = 0.1f;
 		if (counter < limit) {
-//			s(SolarScreen.class, "" + counter);
 			counter += delta;
 			return;
 		} else {
 			counter = 0;
 
 		}
-		App.solarSystem.rotate((Math.PI / 256), 0.5f);
+		App.solarSystem.rotate((Math.PI / 512), 0.5f);
 //		updateShadowBodies(world);
 		updatePlanets();
-		rocket.handlePhysicTick();
 	}
 
 	private void updatePlanets() {
 		for (int i = 0; i < planetSprites.length; i++) {
 			Vector2 position = App.solarSystem.getPlanetPosition(i);
 			planetSprites[i].setPosition(position.x, position.y);
-			planetSprites[i].rotate((float) (5f * Math.PI));
+			planetSprites[i].rotate((float) (0.5f * Math.PI));
 		}
-	}
-
-	@Override
-	public void onRocketLanded() {
-
-	}
-
-	@Override
-	public void onRocketLaunched() {
-
-	}
-
-	@Override
-	public void onRocketDisabledThrust() {
-
-	}
-
-	@Override
-	public void onRocketEnabledThrust() {
-
-	}
-
-	@Override
-	public void onRocketDamage() {
-		App.audioController.playSound("hit_high.mp3");
-		shieldProgressBar.updateFromShipProperties();
-	}
-
-	@Override
-	public void onRocketFuelConsumed() {
-		fuelProgressBar.updateFromShipProperties();
-	}
-
-	@Override
-	public void onRocketExploded() {
-		App.audioController.playSound("explosion.mp3");
-	}
-
-	@Override
-	public void onRocketFuelBonus() {
-
-	}
-
-	@Override
-	public void onRocketShieldBonus() {
-
-	}
-
-	@Override
-	public void onRocketChangedTilePosition() {
-
-	}
-
-	@Override
-	public void onRocketScanStart() {
-
-	}
-
-	@Override
-	public void onRocketScanEnd() {
-
-	}
-
-	@Override
-	public void onRocketEntersPortal() {
-
 	}
 
 	@Override

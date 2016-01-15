@@ -1,0 +1,11 @@
+# Blender MTL File: 'artifact plus.blend'
+# Material Count: 1
+
+newmtl Material.001
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.254152 0.009721 0.034340
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1

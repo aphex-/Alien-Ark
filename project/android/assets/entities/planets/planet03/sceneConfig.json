@@ -1,6 +1,6 @@
 {
   "id": "planet03",
-  "gravity": -25.0,
+  "gravity": -10.0,
   "landscapeHeight": 100.0,
   "fuelChance": 0.08,
   "fuelChanceGain": -1.0E-4,
@@ -59,13 +59,6 @@
         "b": 0.95,
         "a": 1.0
       }
-    }
-  ],
-  "artifacts": [
-    {
-      "x": 110,
-      "y": 80,
-      "id": "myArtifactId"
     }
   ],
   "layerConfigs": [
