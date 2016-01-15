@@ -8,7 +8,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -34,8 +33,6 @@ import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
-import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
-import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
@@ -43,7 +40,6 @@ import com.nukethemoon.libgdxjam.ui.EnterOrbitTable;
 import com.nukethemoon.libgdxjam.ui.GameOverTable;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.MenuTable;
-import com.nukethemoon.libgdxjam.ui.animation.GameOverAnimation;
 import com.nukethemoon.libgdxjam.ui.hud.ShipProgressBar;
 import com.nukethemoon.tools.ani.Ani;
 
@@ -55,13 +51,8 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 
 	//TODO:
 	/*
-	- in die mitte kommt eine fette sonne, wenn du da rein fliegst, nimmt das schiff schaden
-
 	+ Ich halte den Schatten für unverzichtbar.
 	+ Refactoring der bestehenden box2d Methoden (bzgl. new instance creation)
-	+ Die Kollision ist irgendwie verschoben zur Grafik
-	+ Die Sounds sind kaputt
-
 	*/
 
 	private static final int RAYS_NUM = 333;
@@ -118,6 +109,8 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	private ShipProgressBar shieldProgressBar;
 	private TiledDrawable bgTile;
 	private boolean isThrusting;
+	private boolean gameOver = false;
+	private float shieldAudioCounter = 0;
 
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
@@ -273,24 +266,21 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		Gdx.gl.glClearColor(21 / 255f, 21 / 255f, 21 / 255f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		handleArkMovementInput(delta);
-		handleAppNavigation();
+		handleAppNavigation(delta);
 
 //		camera.update();
 //		batch.setProjectionMatrix(camera.combined);
-//		//batch.disableBlending();
-//		bg.draw(batch);
+
 		renderPlanets();
-
 		renderArc();
-
 		rotatePlanets(delta);
-
 		shieldProgressBar.updateFromShipProperties();
+		fuelProgressBar.updateFromShipProperties();
 
-	//	rayHandler.setCombinedMatrix(camera);
+//	    rayHandler.setCombinedMatrix(camera);
 //		rayHandler.setCombinedMatrix(camera.combined);
 //		rayHandler.updateAndRender();
-//
+
 		camera.position.set(arkSprite.getX(), arkSprite.getY(), 0);
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
@@ -356,10 +346,10 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 			currentSpeedLevel -= 1;
 		}
 
-
 		//if (Gdx.app.getInput().isKeyPressed(19) && !rocket.isOutOfFuel()) {
 		if (Gdx.app.getInput().isKeyPressed(19)) {
 			currentSpeedLevel += 1;
+			SpaceShipProperties.properties.addCurrentInternalFuel(-1);
 			isThrusting = true;
 
 		} else {
@@ -389,7 +379,6 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		shipPosition.y = arkSprite.getY();
 
 		exhaustSprite.setPosition(shipPosition.x, shipPosition.y);
-		//checkIfArkIsOffScreenAndCorrect();
 	}
 
 	@Override
@@ -414,9 +403,6 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		camera = new OrthographicCamera(screenWidth, screenHeight);
 		camera.position.set(0, screenWidth / 2f, 0);
 		camera.update();
-
-
-//		bg = new StarsBackground(screenWidth, screenHeight);
 	}
 
 	@Override
@@ -438,7 +424,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 
 	private boolean isColliding(Sprite sprite) {
 		Rectangle planetBounds = sprite.getBoundingRectangle();
-		if (planetBounds.contains(shipPosition.x, shipPosition.y)) {
+		if (planetBounds.contains(shipPosition.x + (arkSprite.getWidth() / 2), shipPosition.y + (arkSprite.getHeight() / 2))) {
 			return true;
 
 		}
@@ -461,45 +447,13 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		App.openArkScreen();
 	}
 
-	private void checkIfArkIsOffScreenAndCorrect() {
-		if (isArkOffScreenLeft()) {
-			arkSprite.translateX(0 - shipPosition.x + screenWidth - 20);
+	private void handleAppNavigation(float delta) {
+		if (SpaceShipProperties.properties.getCurrentInternalShield() <= 0) {
+			explodeRocket();
 		}
-		if (isArkOffScreenRight()) {
-			arkSprite.translateX(-1 * (arkWidth + screenWidth - 20));
-		}
-		if (isArkOffScreenTop()) {
-			arkSprite.translateY(-1 * (arkHeight + screenHeight - 20));
-		}
-		if (isArkOffScreenBottom()) {
-			arkSprite.translateY(0 - shipPosition.y + screenHeight - 20);
-		}
-
-	}
-
-	private boolean isArkOffScreenBottom() {
-		return shipPosition.y < 0 - arkHeight;
-	}
-
-	private boolean isArkOffScreenTop() {
-		return screenHeight < shipPosition.y;
-	}
-
-	private boolean isArkOffScreenRight() {
-		return screenWidth < shipPosition.x;
-	}
-
-	private boolean isArkOffScreenLeft() {
-		return shipPosition.x < 0 - arkWidth;
-	}
-
-	private void handleAppNavigation() {
 		final int planetIndex = determinePlanetCollison();
 		if (planetIndex == SUN_COLLISION) {
-			dealDamageToRocket();
-			if (SpaceShipProperties.properties.getCurrentInternalShield() <= 0) {
-				explodeRocket();
-			}
+			dealDamageToRocket(delta);
 		} else if (planetIndex != -1) {
 			if (enterOrbitTable == null) {
 				enterOrbitTable = new EnterOrbitTable(Styles.UI_SKIN, planetIndex);
@@ -524,7 +478,11 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	}
 
 	private void explodeRocket() {
-		onGameOver();
+		if (!gameOver) {
+			gameOver = true;
+			App.audioController.playSound("explosion.mp3");
+			onGameOver();
+		}
 	}
 
 	private void onGameOver() {
@@ -539,7 +497,12 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		stage.addActor(gameOverTable);
 	}
 
-	private void dealDamageToRocket() {
+	private void dealDamageToRocket(float delta) {
+		shieldAudioCounter += delta;
+		if (shieldAudioCounter > 0.45 && !gameOver) {
+			shieldAudioCounter = 0;
+			App.audioController.playSound("energy_shield.mp3");
+		}
 		SpaceShipProperties.properties.addCurrentShield(-20);
 	}
 
