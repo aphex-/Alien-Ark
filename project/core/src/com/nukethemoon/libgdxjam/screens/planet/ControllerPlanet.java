@@ -503,10 +503,8 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	public void addRaceWayPoint(RaceWayPoint r) {
 		if (!alreadyReachedWayPoints.contains(r)) {
-			tmpVec3.set(r.x, r.y, 10000);
-			controllerPhysic.calculateVerticalIntersection(tmpVec3, tmpVec4);
+			updateWayPoint(r);
 			controllerPhysic.addCollisionObject(r.getTrigger());
-			r.adjust(tmpVec4.z);
 			currentlyVisibleRaceWayPoints.add(r);
 		}
 	}
@@ -527,6 +525,12 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 		alreadyReachedWayPoints.add(r);
 		removeRaceWayPoint(r);
+	}
+
+	public void updateWayPoint(RaceWayPoint r) {
+		tmpVec3.set(r.x, r.y, 10000);
+		controllerPhysic.calculateVerticalIntersection(tmpVec3, tmpVec4);
+		r.adjust(tmpVec4.z);
 	}
 
 	public RaceWayPoint getRaceWayPoint(btCollisionObject collision) {

@@ -49,11 +49,15 @@ public class PlacementWindow extends ClosableWindow implements DevelopmentPlacem
 		add(cursorPositionLabel);
 		row();
 
+		add(new Label("Artifacts:", Styles.LABEL_DEV));
+		row();
 		artifactTable = new PlacedArtifactTable();
 		artifactTable.setArtifactPlacementListener(this);
 		add(artifactTable);
 		row();
 
+		add(new Label("RacePoints:", Styles.LABEL_DEV));
+		row();
 		raceTable = new PlacedRaceWayPointTable();
 		raceTable.setWayPointPlacementListener(this);
 		add(raceTable);
@@ -168,5 +172,10 @@ public class PlacementWindow extends ClosableWindow implements DevelopmentPlacem
 	@Override
 	public void onWayPointView(float graphicX, float graphicY) {
 		planetScreen.devJumpTo(graphicX, graphicY);
+	}
+
+	@Override
+	public void onWayPointChange(RaceWayPoint wayPoint) {
+		controllerPlanet.updateWayPoint(wayPoint);
 	}
 }

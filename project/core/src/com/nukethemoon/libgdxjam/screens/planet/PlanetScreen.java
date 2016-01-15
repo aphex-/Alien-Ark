@@ -695,7 +695,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRaceProgress() {
-		showToast("Race progress");
+		App.audioController.playSound("dialogHighlight.mp3");
+		showToast("Great!");
 	}
 
 	@Override

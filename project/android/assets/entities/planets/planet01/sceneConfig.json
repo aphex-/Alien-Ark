@@ -175,11 +175,11 @@
   "planetRace": {
     "wayPoints": [
       {
-        "rotationZ": 0.0,
-        "rotationX": 0.0,
+        "rotationZ": -30.0,
+        "rotationX": 10.0,
         "x": 145.84674,
         "y": -128.04738,
-        "zOffset": 0.0
+        "zOffset": 11.0
       },
       {
         "rotationZ": 0.0,

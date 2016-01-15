@@ -36,7 +36,7 @@ public class PlacedArtifactTable extends Table {
 		artifactContent = new Table();
 		scrollPane = new ScrollPane(artifactContent);
 		scrollPane.setFadeScrollBars(false);
-		add(scrollPane);
+		add(scrollPane).colspan(2);
 
 		pack();
 	}
@@ -52,10 +52,10 @@ public class PlacedArtifactTable extends Table {
 	private void addToList(final ObjectPlacementInfo p) {
 		Table artifactEntry = new Table();
 
-		artifactEntry.add(new Label(p.type, Styles.LABEL_DEV)).left().width(250).fill();
-		artifactEntry.add(new Label("X: " + p.x, Styles.LABEL_DEV)).left().width(100).fill();
-		artifactEntry.add(new Label("Y: " + p.y, Styles.LABEL_DEV)).left().width(100).fill();
-		artifactEntry.add(new Label("ID: " + p.id, Styles.LABEL_DEV)).left().width(200).fill();
+		artifactEntry.add(new Label(p.type, Styles.LABEL_DEV)).left().width(200).fill();
+		artifactEntry.add(new Label("X: " + Math.floor(p.x), Styles.LABEL_DEV)).left().width(100).fill().width(80).padLeft(4);
+		artifactEntry.add(new Label("Y: " + Math.floor(p.y), Styles.LABEL_DEV)).left().width(100).fill().width(80).padLeft(4);
+		artifactEntry.add(new Label("ID: " + p.id, Styles.LABEL_DEV)).left().width(200).fill().padRight(2);
 		TextButton removeButton = new TextButton("X", Styles.UI_SKIN);
 		artifactEntry.add(removeButton).left();
 		removeButton.addListener(new ClickListener() {

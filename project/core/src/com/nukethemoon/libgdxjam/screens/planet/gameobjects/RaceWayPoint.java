@@ -10,6 +10,7 @@ public class RaceWayPoint {
 
 	transient private final btCollisionObject trigger;
 	transient private final ModelInstance modelInstance;
+	transient private float initialHeight = -1;
 
 	public float rotationZ = 0;
 	public float rotationX = 0;
@@ -18,6 +19,8 @@ public class RaceWayPoint {
 	public float y;
 
 	public float zOffset;
+
+	public int secondsToReach = 10;
 
 	public RaceWayPoint() {
 		modelInstance = new ModelInstance(Models.RACE_WAY_POINT);
@@ -30,9 +33,12 @@ public class RaceWayPoint {
 	}
 
 	public void adjust(float height) {
+		if (initialHeight == -1) {
+			initialHeight = height;
+		}
 		modelInstance.transform.setToRotation(0, 0, 1, rotationZ);
-		modelInstance.transform.rotate(1, 0, 0, rotationX);
-		modelInstance.transform.trn(x, y, height + zOffset);
+		modelInstance.transform.rotate(0, 1, 0, rotationX);
+		modelInstance.transform.trn(x, y, initialHeight + zOffset);
 		trigger.setWorldTransform(modelInstance.transform);
 	}
 

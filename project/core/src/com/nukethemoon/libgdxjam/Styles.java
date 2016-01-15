@@ -11,9 +11,11 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 
 public class Styles {
+
 
 	public static NinePatchDrawable NINE_PATCH_POPUP_BG_01;
 	public static NinePatchDrawable NINE_PATCH_BUTTON_BG_01;
@@ -49,6 +51,9 @@ public class Styles {
 	public static Label.LabelStyle LABEL_VALUE_ARTIFACT;
 
 	public static Skin UI_SKIN;
+
+	public static TextField.TextFieldStyle TEXT_FIELD_STYLE_FAIL;
+	public static TextField.TextFieldStyle TEXT_FIELD_STYLE;
 
 	public static void init(TextureAtlas atlas) {
 		UI_SKIN = new Skin();
@@ -103,6 +108,11 @@ public class Styles {
 		LABEL_PROGRESS_TYPE = new Label.LabelStyle(standardLabelStyle);
 		LABEL_PROGRESS_TYPE.font = FONT_DOSIS_PROGRESS_TYPE;
 
+		TextField.TextFieldStyle standardTextFieldStyle = UI_SKIN.get(TextField.TextFieldStyle.class);
+		TEXT_FIELD_STYLE_FAIL = new TextField.TextFieldStyle(standardTextFieldStyle);
+		TEXT_FIELD_STYLE_FAIL.fontColor = Color.RED;
+
+		TEXT_FIELD_STYLE = new TextField.TextFieldStyle(standardTextFieldStyle);
 	}
 
 	private static BitmapFont createFont(String path, int size, Color color, Color borderColor, float borderWidth) {
