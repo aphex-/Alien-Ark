@@ -202,7 +202,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		raceTimeTable = new RaceTable();
 		stage.addActor(raceTimeTable);
-		raceTimeTable.setPosition(300, Gdx.graphics.getHeight() - raceTimeTable.getHeight() - 50);
 		raceTimeTable.setVisible(false);
 
 		raceDidNotStartInfo = new DialogTable(Styles.UI_SKIN, new String[]{
