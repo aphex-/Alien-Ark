@@ -49,6 +49,7 @@ import com.nukethemoon.libgdxjam.screens.planet.devtools.ReloadSceneListener;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.windows.DevelopmentWindow;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RaceWayPoint;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RocketListener;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
@@ -680,6 +681,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 					collectible.getPlanetPartPosition().x,
 					collectible.getPlanetPartPosition().y,
 					collectible.getType());
+		}
+		if (type == CollisionTypes.WAY_POINT_TRIGGER) {
+			RaceWayPoint raceWayPoint = planetController.getRaceWayPoint(collisionObject);
+			planetController.reachWayPoint(raceWayPoint);
 		}
 	}
 

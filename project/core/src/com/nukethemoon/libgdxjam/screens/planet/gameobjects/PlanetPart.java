@@ -70,6 +70,8 @@ public class PlanetPart extends GameObject {
 
 	private List<ArtifactObject> artifactObjects = new ArrayList<ArtifactObject>();
 
+	private List<RaceWayPoint> raceWayPoints = new ArrayList<RaceWayPoint>();
+
 	private List<btCollisionShape> shapes = new ArrayList<btCollisionShape>();
 	private static SimplexNoise simplexNoise = new SimplexNoise();
 
@@ -107,12 +109,23 @@ public class PlanetPart extends GameObject {
 		initPhysics();
 		initCollectibles(chunk, collectedItemCache, seed);
 		initArtifacts(chunk);
+		initRaceWayPoints(chunk);
 	}
 
 	private void initArtifacts(Chunk chunk) {
 		for (ObjectPlacementInfo p : planetConfig.artifacts) {
 			if (isPositionOnPlanetPart(p.x, p.y, chunk)) {
 				artifactObjects.add(new ArtifactObject(p));
+			}
+		}
+	}
+
+	private void initRaceWayPoints(Chunk chunk) {
+		if (planetConfig.planetRace != null) {
+			for (RaceWayPoint r : planetConfig.planetRace.wayPoints) {
+				if (isPositionOnPlanetPart(r.x, r.y, chunk)) {
+					raceWayPoints.add(r);
+				}
 			}
 		}
 	}
@@ -438,6 +451,10 @@ public class PlanetPart extends GameObject {
 
 	public List<Collectible> getCollectibles() {
 		return collectibles;
+	}
+
+	public List<RaceWayPoint> getRaceWayPoints() {
+		return raceWayPoints;
 	}
 
 	public void dispose() {

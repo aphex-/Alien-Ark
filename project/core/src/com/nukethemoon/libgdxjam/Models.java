@@ -47,6 +47,9 @@ public class Models {
 	public static btCollisionShape PORTAL_STAND_COLLISION;
 	public static btCollisionShape PORTAL_TRIGGER_COLLISION;
 
+	public static Model RACE_WAY_POINT;
+	public static btCollisionShape RACE_WAY_POINT_COLLISION;
+
 	private static ObjLoader loader;
 	private static ObjLoader.ObjLoaderParameters param;
 
@@ -61,11 +64,11 @@ public class Models {
 		BoundingBox boundingBox = new BoundingBox();
 
 
-		FUEL = loader.loadModel(Gdx.files.internal("models/fuel.obj"), param);
+		FUEL = load("models/fuel.obj");
 		FUEL.calculateBoundingBox(boundingBox);
 		FUEL_SHAPE = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.8f));
 
-		SHIELD = loader.loadModel(Gdx.files.internal("models/shield.obj"), param);
+		SHIELD = load("models/shield.obj");
 		SHIELD.calculateBoundingBox(boundingBox);
 		SHIELD_SHAPE = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.8f));
 
@@ -87,16 +90,21 @@ public class Models {
 		ARTIFACT_MODELS.put(VALUE_1000,		 			load("models/artifact_shield.obj"));
 		ARTIFACT_MODELS.put(VALUE_2000,		 			load("models/artifact_shield.obj"));
 
-		PLANET_PORTAL = 		loader.loadModel(Gdx.files.internal("models/planetPortal.obj"), param);
-		PLANET_PORTAL_TORUS = 	loader.loadModel(Gdx.files.internal("models/portalTorus.obj"), param);
+		PLANET_PORTAL = 		load("models/planetPortal.obj");
+		PLANET_PORTAL_TORUS = 	load("models/portalTorus.obj");
 
 		PORTAL_STAND_COLLISION = Bullet.obtainStaticNodeShape(PLANET_PORTAL.nodes);
 
-		Model portalTorusCollisionModel = loader.loadModel(Gdx.files.internal("models/planetPortalCollisionTube.obj"), param);
+		Model portalTorusCollisionModel = load("models/planetPortalCollisionTube.obj");
 		PORTAL_TUBE_COLLISION = Bullet.obtainStaticNodeShape(portalTorusCollisionModel.nodes);
 
-		Model portalTriggerModel = loader.loadModel(Gdx.files.internal("models/portalTrigger.obj"), param);
+		Model portalTriggerModel = load("models/portalTrigger.obj");
 		PORTAL_TRIGGER_COLLISION = Bullet.obtainStaticNodeShape(portalTriggerModel.nodes);
+
+		RACE_WAY_POINT = load("models/race_waypoint.obj");
+
+		Model raceWayPointTrigger = load("models/race_waypoint_trigger.obj");
+		RACE_WAY_POINT_COLLISION = Bullet.obtainStaticNodeShape(raceWayPointTrigger.nodes);
 	}
 
 	private static Model load(String path) {

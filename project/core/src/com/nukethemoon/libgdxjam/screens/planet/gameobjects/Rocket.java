@@ -17,7 +17,6 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
@@ -116,9 +115,11 @@ public class Rocket extends GameObject implements Disposable {
 
 
 		// init physic
-		BoundingBox boundingBox = new BoundingBox();
-		model.calculateBoundingBox(boundingBox);
-		btCollisionShape shape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.5f));
+		//BoundingBox boundingBox = new BoundingBox();
+		//model.calculateBoundingBox(boundingBox);
+		//btCollisionShape shape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.5f));
+		btCollisionShape shape = new btBoxShape(new Vector3(1, 1, 1));
+
 		rocketModelInstance.transform.setToRotation(0, 0, 1, 0);
 		rocketModelInstance.transform.trn(START_POSITION);
 		float mass = 1;

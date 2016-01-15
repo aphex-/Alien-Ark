@@ -15,11 +15,15 @@ import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.DevelopmentPlacementRenderer;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.forms.PlacedArtifactTable;
+import com.nukethemoon.libgdxjam.screens.planet.devtools.forms.PlacedRaceWayPointTable;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetRace;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RaceWayPoint;
 
 import java.util.List;
 
-public class PlacementWindow extends ClosableWindow implements DevelopmentPlacementRenderer.CursorChangeListener, PlacedArtifactTable.ArtifactPlacementListener {
+public class PlacementWindow extends ClosableWindow implements DevelopmentPlacementRenderer.CursorChangeListener,
+		PlacedArtifactTable.ArtifactPlacementListener, PlacedRaceWayPointTable.WayPointPlacementListener {
 
 	private final TextButton saveButton;
 	private Label cursorPositionLabel;
@@ -27,6 +31,8 @@ public class PlacementWindow extends ClosableWindow implements DevelopmentPlacem
 	private DevelopmentPlacementRenderer renderer;
 
 	private PlacedArtifactTable artifactTable;
+	private PlacedRaceWayPointTable raceTable;
+
 	private ControllerPlanet controllerPlanet;
 	private final PlanetScreen planetScreen;
 
@@ -42,10 +48,15 @@ public class PlacementWindow extends ClosableWindow implements DevelopmentPlacem
 		cursorPositionLabel = new Label("", Styles.LABEL_DEV);
 		add(cursorPositionLabel);
 		row();
+
 		artifactTable = new PlacedArtifactTable();
 		artifactTable.setArtifactPlacementListener(this);
-
 		add(artifactTable);
+		row();
+
+		raceTable = new PlacedRaceWayPointTable();
+		raceTable.setWayPointPlacementListener(this);
+		add(raceTable);
 		row();
 
 		saveButton = new TextButton("save", Styles.UI_SKIN);
@@ -62,6 +73,7 @@ public class PlacementWindow extends ClosableWindow implements DevelopmentPlacem
 
 	public void update() {
 		artifactTable.update(controllerPlanet);
+		raceTable.update(controllerPlanet);
 		updateCursorLabel();
 		pack();
 	}
@@ -124,6 +136,37 @@ public class PlacementWindow extends ClosableWindow implements DevelopmentPlacem
 
 	@Override
 	public void onArtifactView(float graphicX, float graphicY) {
+		planetScreen.devJumpTo(graphicX, graphicY);
+	}
+
+	@Override
+	public void onWayPointAdd() {
+		Vector3 cp = renderer.getCursorPosition();
+		RaceWayPoint point = new RaceWayPoint();
+		point.x = cp.x;
+		point.y = cp.y;
+
+		// live add
+		controllerPlanet.addRaceWayPoint(point);
+		// planet config add
+		if (controllerPlanet.getPlanetConfig().planetRace == null) {
+			controllerPlanet.getPlanetConfig().planetRace = new PlanetRace();
+		}
+		controllerPlanet.getPlanetConfig().planetRace.wayPoints.add(point);
+		update();
+	}
+
+	@Override
+	public void onWayPointRemove(RaceWayPoint wayPoint) {
+		// live remove
+		controllerPlanet.removeRaceWayPoint(wayPoint);
+		// planet config remove
+		controllerPlanet.getPlanetConfig().planetRace.wayPoints.remove(wayPoint);
+		update();
+	}
+
+	@Override
+	public void onWayPointView(float graphicX, float graphicY) {
 		planetScreen.devJumpTo(graphicX, graphicY);
 	}
 }

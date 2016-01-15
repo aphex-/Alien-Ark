@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.screens.planet.devtools.GsonMaterial;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetRace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +32,9 @@ public class PlanetConfig {
 	public List<DirectionalLight> environmentDirectionalLights = new ArrayList<DirectionalLight>();
 
 	public List<ObjectPlacementInfo> artifacts = new ArrayList<ObjectPlacementInfo>();
-
 	public List<LandscapeLayerConfig> layerConfigs = new ArrayList<LandscapeLayerConfig>();
+
+	public PlanetRace planetRace;
 
 	public void deserialize() {
 		for (LandscapeLayerConfig c : layerConfigs) {

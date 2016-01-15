@@ -19,6 +19,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
+import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.ArtifactDefinitions;
 import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
@@ -26,6 +27,7 @@ import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Collectible;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPart;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.PlanetPortal;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.RaceWayPoint;
 import com.nukethemoon.libgdxjam.screens.planet.helper.SphereTextureProvider;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
@@ -63,8 +65,11 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	private List<Point> currentVisiblePlanetParts = new ArrayList<Point>();
 	private List<Collectible> currentVisibleCollectibles = new ArrayList<Collectible>();
-
 	private List<ArtifactObject> currentVisibleArtifacts = new ArrayList<ArtifactObject>();
+	private List<RaceWayPoint> currentlyVisibleRaceWayPoints = new ArrayList<RaceWayPoint>();
+
+	private List<RaceWayPoint> alreadyReachedWayPoints = new ArrayList<RaceWayPoint>();
+
 	private List<ObjectPlacementInfo> allArtifactsOnPlanet = new ArrayList<ObjectPlacementInfo>();
 
 	private Map<Point, PlanetPart> planetPartBuffer = new HashMap<Point, PlanetPart>();
@@ -74,7 +79,6 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	private List<Point> tmpRequestList = new ArrayList<Point>();
 
-	private int requestRadiusInTiles = 110;
 	private int lastRequestCenterTileX = 0;
 	private int lastRequestCenterTileY = 0;
 	private long requestCount = 0;
@@ -98,6 +102,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private Vector2 tmpVec5 = new Vector2();
 	private Vector2 tmpVec6 = new Vector2();
 	private Vector3 tmpVec7 = new Vector3();
+	private Vector3 tmpVec8 = new Vector3();
 
 
 	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani) {
@@ -113,7 +118,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 			;
 			com.nukethemoon.tools.opusproto.log.Log.logLevel = com.nukethemoon.tools.opusproto.log.Log.LogType.Error;
 
-			chunkBufferSize = (requestRadiusInTiles / opus.getConfig().chunkSize) * 2;
+			chunkBufferSize = (App.config.requestRadiusInTiles / opus.getConfig().chunkSize) * 2;
 
 			// add a callback to receive chunks
 			opus.addChunkListener(this);
@@ -124,18 +129,19 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 		typeInterpreter = toTypeInterpreter((ColorInterpreter) opus.getLayers().get(0).getInterpreter());
 
-		updateNearestArtifact(0, 0);
-
+		// == init artifacts ==
 		for (ObjectPlacementInfo p : pPlanetConfig.artifacts) {
 			if (!SpaceShipProperties.properties.isArtifactCollected(p.id)) {
 				allArtifactsOnPlanet.add(p);
 			}
 		}
+		updateNearestArtifact(0, 0);
 
-		// init water
+		// == init water ==
 		waterModel = createInfiniteWaterPart(typeInterpreter, 0, pPlanetConfig);
 		waterModelInstance = new ModelInstance(waterModel);
 
+		// == init planet portal ==
 		planetPortal = new PlanetPortal();
 		for (btRigidBody body : planetPortal.rigidBodyList) {
 			controllerPhysic.addRigidBody(body, CollisionTypes.GROUND);
@@ -262,22 +268,22 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 				int currentChunkY = chunkBufferCenterY + chunkIndexY - (chunkBufferSize / 2);
 				// chunk tile corner 1
 				tmpVector1.set(currentChunkX * chunkSize, currentChunkY * chunkSize);
-				if (Math.abs(tmpVector1.dst(tmpVector2)) < requestRadiusInTiles) {
+				if (Math.abs(tmpVector1.dst(tmpVector2)) < App.config.requestRadiusInTiles) {
 					isInRadius = true;
 				}
 				// chunk tile corner 2
 				tmpVector1.set(currentChunkX * chunkSize, currentChunkY * chunkSize + chunkSize);
-				if (Math.abs(tmpVector1.dst(tmpVector2)) < requestRadiusInTiles) {
+				if (Math.abs(tmpVector1.dst(tmpVector2)) < App.config.requestRadiusInTiles) {
 					isInRadius = true;
 				}
 				// chunk tile corner 3
 				tmpVector1.set(currentChunkX * chunkSize + chunkSize, currentChunkY * chunkSize + chunkSize);
-				if (Math.abs(tmpVector1.dst(tmpVector2)) < requestRadiusInTiles) {
+				if (Math.abs(tmpVector1.dst(tmpVector2)) < App.config.requestRadiusInTiles) {
 					isInRadius = true;
 				}
 				// chunk tile corner 4
 				tmpVector1.set(currentChunkX * chunkSize + chunkSize, currentChunkY * chunkSize);
-				if (Math.abs(tmpVector1.dst(tmpVector2)) < requestRadiusInTiles) {
+				if (Math.abs(tmpVector1.dst(tmpVector2)) < App.config.requestRadiusInTiles) {
 					isInRadius = true;
 				}
 				if (isInRadius) {
@@ -367,11 +373,16 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 				addArtifact(o);
 			}
 
+			for (RaceWayPoint r : planetPart.getRaceWayPoints()) {
+				addRaceWayPoint(r);
+			}
+
 			planetPartBuffer.put(point, planetPart);
 		} else {
 			Log.d(getClass(), "Created a chunk that already exists. x " + x + " y " + y);
 		}
 	}
+
 
 	public void render(ModelBatch batch, Environment environment, boolean planetOnly, Vector3 rocketPosition) {
 		for (Map.Entry<Point, PlanetPart> entry : planetPartBuffer.entrySet()) {
@@ -400,6 +411,12 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		for (ArtifactObject o : currentVisibleArtifacts) {
 			renderEnv(o.getModelInstance(), batch, environment);
 		}
+
+		for (RaceWayPoint r : currentlyVisibleRaceWayPoints) {
+			renderEnv(r.getModelInstance(), batch, environment);
+		}
+
+
 	}
 
 	private void renderEnv(ModelInstance model, ModelBatch batch, Environment environment) {
@@ -427,6 +444,13 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		ani.add(c.createScaleAnimation());
 	}
 
+	public void removeCollectible(Collectible c) {
+		currentVisibleCollectibles.remove(c);
+		controllerPhysic.removeCollisionObject(c.getCollisionObject());
+		c.dispose(ani);
+		planetPartBuffer.get(c.getPlanetPartPosition()).getCollectibles().remove(c);
+	}
+
 	public void addArtifact(ArtifactObject o) {
 		tmpVec3.set(o.getDefinition().x, o.getDefinition().y, 10000);
 		controllerPhysic.calculateVerticalIntersection(tmpVec3, tmpVec4);
@@ -435,13 +459,6 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		if (!SpaceShipProperties.properties.isArtifactCollected(o.getDefinition().id)) {
 			currentVisibleArtifacts.add(o);
 		}
-	}
-
-	public void removeCollectible(Collectible c) {
-		currentVisibleCollectibles.remove(c);
-		controllerPhysic.removeCollisionObject(c.getCollisionObject());
-		c.dispose(ani);
-		planetPartBuffer.get(c.getPlanetPartPosition()).getCollectibles().remove(c);
 	}
 
 	public void removeArtifactModel(ArtifactObject o) {
@@ -479,6 +496,39 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 	}
 
+	public void addRaceWayPoint(RaceWayPoint r) {
+		if (!alreadyReachedWayPoints.contains(r)) {
+			tmpVec3.set(r.x, r.y, 10000);
+			controllerPhysic.calculateVerticalIntersection(tmpVec3, tmpVec4);
+			controllerPhysic.addCollisionObject(r.getTrigger());
+			r.adjust(tmpVec4.z);
+			currentlyVisibleRaceWayPoints.add(r);
+		}
+	}
+
+	public void removeRaceWayPoint(RaceWayPoint r) {
+		currentlyVisibleRaceWayPoints.remove(r);
+		controllerPhysic.removeCollisionObject(r.getTrigger());
+		r.dispose();
+	}
+
+	public void reachWayPoint(RaceWayPoint r) {
+		alreadyReachedWayPoints.add(r);
+		removeRaceWayPoint(r);
+	}
+
+	public RaceWayPoint getRaceWayPoint(btCollisionObject collision) {
+		for (RaceWayPoint r : currentlyVisibleRaceWayPoints) {
+			if (r.getTrigger() == collision) {
+				return r;
+			}
+		}
+		return null;
+	}
+
+	public void resetRace() {
+		alreadyReachedWayPoints.clear();
+	}
 
 	public void dispose() {
 		tmpRemoveList3.clear();
