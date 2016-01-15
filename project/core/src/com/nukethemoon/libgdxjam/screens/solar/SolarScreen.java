@@ -2,21 +2,25 @@ package com.nukethemoon.libgdxjam.screens.solar;
 
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
@@ -30,6 +34,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
@@ -49,11 +54,8 @@ import java.util.List;
 
 public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, InputProcessor {
 
-	//TODO:
-	/*
-	+ Ich halte den Schatten für unverzichtbar.
-	+ Refactoring der bestehenden box2d Methoden (bzgl. new instance creation)
-	*/
+	private Box2DDebugRenderer debugRenderer;
+	private ShapeRenderer debugShapeRenderer;
 
 	private static final int RAYS_NUM = 333;
 	private static final int SUN_COLLISION = 999;
@@ -61,12 +63,15 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	private final InputMultiplexer multiplexer;
 	private final Ani ani;
 	private final Skin uiSkin;
+	private final ParticleEffect thrustEffect;
+
+	private Vector2 tmpVector = new Vector2();
 //	private StarsBackground bg;
 
 	private EnterOrbitTable enterOrbitTable = null;
 
 	private Vector2 shipPosition;
-	//private final RayHandler rayHandler;
+	private final RayHandler rayHandler;
 	private OrthographicCamera camera;
 
 	//0 - 359
@@ -99,11 +104,17 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	float arkHeight;
 	float arkWidth;
 
+	float sunRotation = 0;
+	Matrix4 starsRotationMatrix = new Matrix4();
+	float starsCurrentRotation = 0;
+
 	private Stage stage;
 	private Sprite sunSprite;
 	private List<Body> bodies;
-	private PointLight[] pointLight;
+	private PointLight pointLight;
 	private float counter = 0f;
+
+	private List<PlanetGraphic> planetGraphics = new ArrayList<PlanetGraphic>();
 
 	private ShipProgressBar fuelProgressBar;
 	private ShipProgressBar shieldProgressBar;
@@ -137,9 +148,9 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		setupArkButton(uiSkin, multiplexer);
 		setupPlanets();
 
-		//rayHandler = createRayHandler(world);
+		rayHandler = createRayHandler(world);
 		createPointLights();
-//		updateShadowBodies(world);
+		//updateShadowBodies(world);
 
 		App.TUTORIAL_CONTROLLER.register(stage, ani);
 		App.TUTORIAL_CONTROLLER.nextStepFor(this.getClass());
@@ -148,10 +159,37 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		stage.addActor(shieldProgressBar);
 		Log.d(getClass(), "end of setup");
 
+		thrustEffect = new ParticleEffect();
+		thrustEffect.load(Gdx.files.internal("particles/2D/rocket_thruster.pae"), App.TEXTURES);
+
+		int[] distance = new int[] {
+				500, 700, 880, 1020, 1200, 1350, 1500, 1650, 1800, 1950};
+
+		planetGraphics.add(new PlanetGraphic("planet07", distance[0], 0.1f, 	0.005f));
+		planetGraphics.add(new PlanetGraphic("planet03", distance[1], 0.2f,		-0.004f));
+		planetGraphics.add(new PlanetGraphic("planet01", distance[2], -0.3f, 	-0.002f));
+		planetGraphics.add(new PlanetGraphic("planet10", distance[3], -0.1f, 	0.001f));
+		planetGraphics.add(new PlanetGraphic("planet09", distance[4], -0.4f, 	-0.001f));
+		planetGraphics.add(new PlanetGraphic("planet05", distance[5], 0.1f, 	0.0009f));
+		planetGraphics.add(new PlanetGraphic("planet06", distance[6], 0.1f, 	0.0008f));
+		planetGraphics.add(new PlanetGraphic("planet02", distance[7], 0.13f, 	-0.0005f));
+		planetGraphics.add(new PlanetGraphic("planet08", distance[8], 0.2f, 	0.0005f));
+		planetGraphics.add(new PlanetGraphic("planet04", distance[9], 0.3f, 	0.0005f));
+
+
+		for (PlanetGraphic p : planetGraphics) {
+			p.addToWorld(world);
+		}
+
+		if (Config.DEBUG_RENDERER) {
+			debugRenderer = new Box2DDebugRenderer();
+			debugShapeRenderer = new ShapeRenderer();
+		}
 	}
 
 	private void createPointLights() {
-		//new PointLight(rayHandler, RAYS_NUM, new Color(1f, 1f, 1f, 1f), 5000, 0, 0);
+		pointLight = new PointLight(rayHandler, RAYS_NUM, new Color(1f, 1f, 0f, 0.8f), 3000, 0, 0);
+
 	}
 
 	private void setupSpaceship() {
@@ -165,19 +203,19 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 
 		planetSprites[0] = new Sprite(App.TEXTURES.findRegion("planet01"));
 		planetSprites[1] = new Sprite(App.TEXTURES.findRegion("planet02"));
-		planetSprites[2] = new Sprite(App.TEXTURES.findRegion("plantet03"));
-		planetSprites[3] = new Sprite(App.TEXTURES.findRegion("plantet04"));
-		planetSprites[4] = new Sprite(App.TEXTURES.findRegion("plantet05"));
-		planetSprites[5] = new Sprite(App.TEXTURES.findRegion("plantet06"));
-		planetSprites[6] = new Sprite(App.TEXTURES.findRegion("plantet07"));
-		planetSprites[7] = new Sprite(App.TEXTURES.findRegion("plantet08"));
-		planetSprites[8] = new Sprite(App.TEXTURES.findRegion("plantet09"));
-		planetSprites[9] = new Sprite(App.TEXTURES.findRegion("plantet10"));
+		planetSprites[2] = new Sprite(App.TEXTURES.findRegion("planet03"));
+		planetSprites[3] = new Sprite(App.TEXTURES.findRegion("planet04"));
+		planetSprites[4] = new Sprite(App.TEXTURES.findRegion("planet05"));
+		planetSprites[5] = new Sprite(App.TEXTURES.findRegion("planet06"));
+		planetSprites[6] = new Sprite(App.TEXTURES.findRegion("planet07"));
+		planetSprites[7] = new Sprite(App.TEXTURES.findRegion("planet08"));
+		planetSprites[8] = new Sprite(App.TEXTURES.findRegion("planet09"));
+		planetSprites[9] = new Sprite(App.TEXTURES.findRegion("planet10"));
 
 		sunSprite = new Sprite(App.TEXTURES.findRegion("sun"));
-		sunSprite.setPosition(SolarSystem.SUN_POSITION.x, SolarSystem.SUN_POSITION.y);
+		sunSprite.setPosition(-sunSprite.getWidth() / 2, -sunSprite.getHeight() / 2);
 
-		pointLight = new PointLight[SolarSystem.NUMBER_OF_PLANETS];
+		//pointLight = new PointLight[SolarSystem.NUMBER_OF_PLANETS];
 		for (int i = 0; i < SolarSystem.NUMBER_OF_PLANETS; i++) {
 			Vector2 position = App.solarSystem.getPlanetPosition(i);
 			planetSprites[i].setPosition(position.x, position.y);
@@ -227,7 +265,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		rayHandler.setAmbientLight(0.2f, 0.2f, 0.2f, 0.1f);
 		rayHandler.setCulling(true);
 		rayHandler.pointAtLight(0, 0);
-		rayHandler.setBlurNum(100);
+		rayHandler.setBlurNum(4);
 		return rayHandler;
 	}
 
@@ -271,25 +309,66 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 //		camera.update();
 //		batch.setProjectionMatrix(camera.combined);
 
-		renderPlanets();
+		camera.update();
+		batch.setProjectionMatrix(camera.combined);
 		renderArc();
 		rotatePlanets(delta);
 		shieldProgressBar.updateFromShipProperties();
 		fuelProgressBar.updateFromShipProperties();
 
-//	    rayHandler.setCombinedMatrix(camera);
-//		rayHandler.setCombinedMatrix(camera.combined);
-//		rayHandler.updateAndRender();
-
+		rayHandler.setCombinedMatrix(camera);
+		rayHandler.updateAndRender();
+		renderPlanets();
 		camera.position.set(arkSprite.getX(), arkSprite.getY(), 0);
-		camera.update();
-		batch.setProjectionMatrix(camera.combined);
+		camera.zoom = 2.0f;
+
+		batch.begin();
+		drawThrust(delta);
+		for (PlanetGraphic planet : planetGraphics) {
+			planet.update(delta);
+			planet.draw(batch);
+		}
+		sunRotation -= 0.01;
+		sunSprite.setRotation(sunRotation);
+		sunSprite.draw(batch);
+		batch.end();
 
 		stage.act(delta);
 		stage.draw();
 
+		if (Config.DEBUG_RENDERER) {
+			debugShapeRenderer.setProjectionMatrix(camera.combined);
+			debugRenderer.render(world, camera.combined);
+			debugShapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+			debugShapeRenderer.setColor(1, 0, 0, 1);
+			debugShapeRenderer.line(0, 0, 50, 0);
+			debugShapeRenderer.setColor(0, 0, 1, 1);
+			debugShapeRenderer.line(0, 0, 0, 50);
+			debugShapeRenderer.end();
+		}
+
 		ani.update();
 	}
+
+
+
+	private void drawThrust(float delta) {
+		rotateParticle(thrustEffect, currentRotation);
+		thrustEffect.update(delta);
+		tmpVector.set(1, 0).rotate(currentRotation).scl(-arkSprite.getHeight() / 2);
+		float x = arkSprite.getX() + (arkSprite.getWidth() / 2) + tmpVector.x;
+		float y = arkSprite.getY() + (arkSprite.getHeight() / 2) + tmpVector.y;
+		thrustEffect.setPosition(x, y);
+		thrustEffect.draw(batch);
+	}
+
+	private void rotateParticle(ParticleEffect particleEffect, float angle) {
+		for (int i = 0; i < particleEffect.getEmitters().size; i++) {
+			particleEffect.getEmitters().get(i).getAngle().setLow(angle - 180);
+			particleEffect.getEmitters().get(i).getAngle().setHigh(angle - 180);
+		}
+	}
+
 
 	private void renderArc() {
 		batch.begin();
@@ -319,14 +398,21 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		currentRotation = currentRotation % 360;
 	}
 
+
+
 	private void renderPlanets() {
+		starsCurrentRotation += 0.017f;
+		starsRotationMatrix.setToRotation(0, 0, 1, starsCurrentRotation);
+
+		batch.getProjectionMatrix().mul(starsRotationMatrix);
 		batch.begin();
 		bgTile.draw(batch, -3000, -3000, 6000, 6000);
-		sunSprite.draw(batch);
+		/*sunSprite.draw(batch);
 		for (int i = 0; i < planetSprites.length; i++) {
 			planetSprites[i].draw(batch);
-		}
+		}*/
 		batch.end();
+		batch.getProjectionMatrix().mul(starsRotationMatrix.inv());
 	}
 
 	private void handleArkMovementInput(float delta) {
@@ -393,6 +479,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 
 	@Override
 	public void dispose() {
+		pointLight.dispose();
 	}
 
 	@Override
@@ -578,6 +665,75 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 
 	@Override
 	public boolean scrolled(int amount) {
+		if (amount < 0) {
+			if (camera.zoom > 0.5) {
+				camera.zoom -= 0.1;
+			}
+		} else {
+			if (camera.zoom < 3) {
+				camera.zoom += 0.1;
+			}
+		}
 		return false;
 	}
+
+	public static class PlanetGraphic {
+		public Sprite sprite;
+		private Vector2 tmpVector = new Vector2();
+		private BodyDef bodyDef;
+		private FixtureDef fixtureDef;
+		private Body body;
+		private int solarDistance;
+
+		private float selfRotation = 0;
+		private float solarRotation = 0;
+
+		private float selfRotationSpeed;
+		private float solarRotationSpeed;
+
+		public PlanetGraphic(String textureName, int solarDistance, float selfRotationSpeed,
+					  float solarRotationSpeed) {
+			this.selfRotationSpeed = selfRotationSpeed;
+			this.solarRotationSpeed = solarRotationSpeed;
+			sprite = new Sprite(App.TEXTURES.findRegion(textureName));
+			this.solarDistance = solarDistance;
+			solarRotation = (float) (Math.random() * 360);
+		}
+
+		public void addToWorld(World world) {
+			CircleShape shape = new CircleShape();
+			shape.setRadius(sprite.getWidth() / 2);
+			fixtureDef = new FixtureDef();
+			fixtureDef.shape = shape;
+			bodyDef = new BodyDef();
+			bodyDef.type = BodyDef.BodyType.KinematicBody;
+			body = world.createBody(bodyDef);
+			body.createFixture(fixtureDef);
+		}
+
+		private void setPosition(float x, float y) {
+			sprite.setPosition(
+					x - sprite.getWidth() / 2,
+					y - sprite.getHeight() / 2);
+			tmpVector.set(x, y);
+			body.setTransform(x, y , 0);
+		}
+
+		public void update(float delta) {
+			selfRotation += selfRotationSpeed;
+			solarRotation += solarRotationSpeed;
+
+			sprite.setRotation(selfRotation);
+			float x = (float) (Math.sin(solarRotation) * solarDistance);
+			float y = (float) (Math.cos(solarRotation) * solarDistance);
+
+			setPosition(x, y);
+		}
+
+		public void draw(SpriteBatch batch) {
+			sprite.draw(batch);
+		}
+	}
+
+
 }

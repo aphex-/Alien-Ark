@@ -62,7 +62,7 @@ public class App extends Game {
 		SpaceShipProperties.properties.testInit();
 
 		if (config.debugMode) {
-			openPlanetScreen(0);
+			openSolarScreen();
 		} else {
 			openSplashScreen();
 		}

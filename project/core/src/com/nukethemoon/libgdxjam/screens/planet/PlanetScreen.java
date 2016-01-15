@@ -255,14 +255,14 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		ParticleEffectLoader.ParticleEffectLoadParameter loadParam = new ParticleEffectLoader.ParticleEffectLoadParameter(particleSystem.getBatches());
 		ParticleEffectLoader loader = new ParticleEffectLoader(new InternalFileHandleResolver());
 		assetManager.setLoader(ParticleEffect.class, loader);
-		assetManager.load("particles/rocket_thruster.pfx", ParticleEffect.class, loadParam);
-		assetManager.load("particles/rocket_explosion.pfx", ParticleEffect.class, loadParam);
-		assetManager.load("particles/planet_portal.pfx", ParticleEffect.class, loadParam);
+		assetManager.load("particles/3D/rocket_thruster.pfx", ParticleEffect.class, loadParam);
+		assetManager.load("particles/3D/rocket_explosion.pfx", ParticleEffect.class, loadParam);
+		assetManager.load("particles/3D/planet_portal.pfx", ParticleEffect.class, loadParam);
 		assetManager.finishLoading();
 
-		effectThrust = 		((ParticleEffect) assetManager.get("particles/rocket_thruster.pfx")).copy();
-		effectExplosion = 	((ParticleEffect) assetManager.get("particles/rocket_explosion.pfx")).copy();
-		effectPortal = 		((ParticleEffect) assetManager.get("particles/planet_portal.pfx")).copy();
+		effectThrust = 		((ParticleEffect) assetManager.get("particles/3D/rocket_thruster.pfx")).copy();
+		effectExplosion = 	((ParticleEffect) assetManager.get("particles/3D/rocket_explosion.pfx")).copy();
+		effectPortal = 		((ParticleEffect) assetManager.get("particles/3D/planet_portal.pfx")).copy();
 		effectThrust.init();
 		effectExplosion.init();
 		effectThrust.start();

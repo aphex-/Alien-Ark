@@ -53,7 +53,7 @@ public class ControllerPhysic extends ContactListener {
 		dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
 		dynamicsWorld.setGravity(new Vector3(0, 0, gravity * 2.5f));
 
-		if (Config.DEBUG_BULLET) {
+		if (Config.DEBUG_RENDERER) {
 			debugDrawer = new DebugDrawer();
 			debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
 			dynamicsWorld.setDebugDrawer(debugDrawer);
@@ -124,7 +124,7 @@ public class ControllerPhysic extends ContactListener {
 	}
 
 	public void debugRender(Camera camera) {
-		if (Config.DEBUG_BULLET) {
+		if (Config.DEBUG_RENDERER) {
 			debugDrawer.begin(camera);
 			dynamicsWorld.debugDrawWorld();
 			debugDrawer.end();
