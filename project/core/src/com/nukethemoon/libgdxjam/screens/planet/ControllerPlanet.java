@@ -534,6 +534,8 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 			return;
 		}
 
+		int timeBonus = 0;
+
 		if (pointIndex == 0) {
 			raceListener.onRaceStart();
 		} else if (pointIndex == planetConfig.planetRace.wayPoints.size() - 1) {
@@ -542,20 +544,22 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 			resetRace();
 			return;
 		} else {
-			raceListener.onRaceProgress(pointIndex + 1, planetConfig.planetRace.wayPoints.size());
+			timeBonus = (int) getTimeToReachWayPoint(0);
+			raceListener.onRaceProgress(pointIndex + 1, planetConfig.planetRace.wayPoints.size(), timeBonus);
 		}
 
 		lastRaceWayPointIndex = planetConfig.planetRace.wayPoints.indexOf(r);
-		timeLastWayPointReached = System.currentTimeMillis();
+		timeLastWayPointReached = System.currentTimeMillis() + (timeBonus * 1000);
 		alreadyReachedWayPoints.add(r);
 		removeRaceWayPoint(r);
 	}
 
-	public float getTimeToReachNextWayPoint() {
+	public float getTimeToReachWayPoint(int waypointOffset) {
 		if (isRaceRunning()) {
 			float pastTime = (System.currentTimeMillis() - timeLastWayPointReached) / 1000f;
-			if (lastRaceWayPointIndex + 1 < planetConfig.planetRace.wayPoints.size()) {
-				RaceWayPoint point = planetConfig.planetRace.wayPoints.get(lastRaceWayPointIndex + 1);
+			int wayPointIndex = (lastRaceWayPointIndex + 1) + waypointOffset;
+			if (wayPointIndex < planetConfig.planetRace.wayPoints.size() && wayPointIndex >= 0) {
+				RaceWayPoint point = planetConfig.planetRace.wayPoints.get(wayPointIndex);
 				return (float) Math.floor((point.secondsToReach - pastTime) * 10) / 10f;
 			}
 
@@ -598,7 +602,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	public float updateRace() {
 		if (isRaceRunning()) {
-			float timeToReachNextWayPoint = getTimeToReachNextWayPoint();
+			float timeToReachNextWayPoint = getTimeToReachWayPoint(0);
 			if (timeToReachNextWayPoint <= 0) {
 				resetRace();
 				raceListener.onRaceTimeOut();
@@ -657,7 +661,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	public interface PlanetRaceListener {
 		void onRaceStart();
-		void onRaceProgress(int wayPointIndex, int wayPointCount);
+		void onRaceProgress(int wayPointIndex, int wayPointCount, float timeBonus);
 		void onRaceWrongProgress();
 		void onRaceTimeOut();
 		void onRaceSuccess();

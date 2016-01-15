@@ -188,13 +188,21 @@
         "x": 323.94165,
         "y": -109.4639,
         "zOffset": 0.0,
-        "secondsToReach": 40
+        "secondsToReach": 10
       },
       {
         "rotationZ": 0.0,
         "rotationX": 0.0,
         "x": 600.2338,
         "y": -146.1584,
+        "zOffset": 0.0,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 45.0,
+        "rotationX": 0.0,
+        "x": 757.5174,
+        "y": 59.078888,
         "zOffset": 0.0,
         "secondsToReach": 10
       }

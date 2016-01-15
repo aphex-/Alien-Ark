@@ -708,21 +708,25 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	@Override
 	public void onRaceStart() {
 		showToast("Race Started!");
-		raceTimeTable.setTime(planetController.getTimeToReachNextWayPoint());
+		raceTimeTable.setTime(planetController.getTimeToReachWayPoint(0));
 		raceTimeTable.setVisible(true);
 		raceDidNotStartInfo.setVisible(false);
 	}
 
 	@Override
-	public void onRaceProgress(int pointIndex, int pointCount) {
-		showToast("Reached " + pointIndex + " / " + pointCount);
+	public void onRaceProgress(int pointIndex, int pointCount, float timeBonus) {
+		String addition = "";
+		if (timeBonus > 0) {
+			addition = " time bonus: + " + timeBonus;
+		}
+		showToast("Reached: " + pointIndex + " / " + pointCount + addition);
 		App.audioController.playSound("dialogHighlight.mp3");
-		raceTimeTable.setTime(planetController.getTimeToReachNextWayPoint());
+		raceTimeTable.setTime(planetController.getTimeToReachWayPoint(0));
 	}
 
 	@Override
 	public void onRaceWrongProgress() {
-		showToast("Wrong waypoint!");
+		showToast("Wrong waypoint");
 		raceTimeTable.setVisible(false);
 	}
 
@@ -734,7 +738,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRaceSuccess() {
-		showToast("Won");
+		showToast("You have won the race!");
 		raceTimeTable.setVisible(false);
 	}
 
