@@ -34,12 +34,13 @@ import java.util.List;
 
 //TODO cancel von Artifatcs merges
 //TODO Scroll shadow
-//TODO error handling
+//TODO mehr error handling
 //TODO polishing. Abstände, Größen, Farben, Reihenfolge properties
 
 //TODO (opional) Artifact hint text, wenn Attr. noch unbekannt ("???")
 //TODO (optional) anzahl aliens beschränken
 //TODO (optional) delete crew memeber
+//TODO (optional) highlight that slot is hit
 
 public class ArkScreen implements Screen {
 
@@ -350,7 +351,7 @@ public class ArkScreen implements Screen {
 		dragAndDrop.addTarget(new DragAndDrop.Target(slot) {
 			@Override
 			public boolean drag(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
-				//TODO highlight that slot is hit
+
 				return true;
 			}
 
