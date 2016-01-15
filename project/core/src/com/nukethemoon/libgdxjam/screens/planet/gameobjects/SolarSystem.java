@@ -11,6 +11,10 @@ public class SolarSystem implements Disposable {
 
 	public static final int NUMBER_OF_PLANETS = 10;
 	public static final Vector2 SUN_POSITION = new Vector2(-150, -150);
+	private int[] radius = new int[]{400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300};
+	private float[] radians = new float[]{(float) (7 * Math.PI / 8), (float) (12 * Math.PI / 8), (float) (9 * Math.PI / 8), (float) (4 * Math.PI / 8),
+			(float) (15 * Math.PI / 8), (float) (2 * Math.PI / 8), (float) (3 * Math.PI / 8), (float) (6 * Math.PI / 8),
+			(float) (11 * Math.PI / 8), (float) (16 * Math.PI / 8)};
 
 	private Planet[] planets = new Planet[NUMBER_OF_PLANETS];
 
@@ -23,22 +27,9 @@ public class SolarSystem implements Disposable {
 
 	private Planet calculateSuitablePlanet(int index) {
 		Log.d(getClass(), "calculate suitable planet " + index);
-		boolean foundPosition = false;
-		Planet result = null;
-		Random random = new Random(System.currentTimeMillis()%((int)(Math.PI * 10)));
-		int fuckitcounter = 0;
-		while (!foundPosition) {
-			fuckitcounter++;
-
-			Log.d(getClass(), "not yet found position " +index);
-			result = new Planet();
-			result.radius = random.nextInt(1750);
-
-			result.radians = (float) (random.nextFloat() * 2 * Math.PI);
-			if (result.radius > 350 && !arePlanetsColliding(result.radians, index) && (isSeparateOrbit(result.radius) || fuckitcounter > 100 )) {
-				foundPosition = true;
-			}
-		}
+		Planet result = new Planet();
+		result.radians = radians[index];
+		result.radius = radius[index];
 		return result;
 	}
 
@@ -58,7 +49,7 @@ public class SolarSystem implements Disposable {
 	private boolean arePlanetsColliding(float radians, int index) {
 		for (int i = 0; i < index; i++) {
 			Planet planet = planets[i];
-			if (Math.abs(radians - planet.radians) < Math.PI/6) {
+			if (Math.abs(radians - planet.radians) < Math.PI / 6) {
 				return true;
 			}
 		}
@@ -74,7 +65,7 @@ public class SolarSystem implements Disposable {
 
 	public void rotate(double rad, float delta) {
 		for (int i = 0; i < SolarSystem.NUMBER_OF_PLANETS; i++) {
-			planets[i].radians+= (float) (rad * delta);
+			planets[i].radians += (float) (rad * delta);
 		}
 	}
 

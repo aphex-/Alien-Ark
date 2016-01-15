@@ -40,8 +40,10 @@ import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.libgdxjam.ui.EnterOrbitTable;
+import com.nukethemoon.libgdxjam.ui.GameOverTable;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.MenuTable;
+import com.nukethemoon.libgdxjam.ui.animation.GameOverAnimation;
 import com.nukethemoon.libgdxjam.ui.hud.ShipProgressBar;
 import com.nukethemoon.tools.ani.Ani;
 
@@ -56,10 +58,9 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	- in die mitte kommt eine fette sonne, wenn du da rein fliegst, nimmt das schiff schaden
 
 	+ Ich halte den Schatten für unverzichtbar.
-+ Refactoring der bestehenden box2d Methoden (bzgl. new instance creation)
-+ Die Planeten-Rotation ruckelt.
-+ Die Kollision ist irgendwie verschoben zur Grafik
-+ Die Sounds sind kaputt
+	+ Refactoring der bestehenden box2d Methoden (bzgl. new instance creation)
+	+ Die Kollision ist irgendwie verschoben zur Grafik
+	+ Die Sounds sind kaputt
 
 	*/
 
@@ -68,12 +69,13 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	private final World world;
 	private final InputMultiplexer multiplexer;
 	private final Ani ani;
+	private final Skin uiSkin;
 //	private StarsBackground bg;
 
 	private EnterOrbitTable enterOrbitTable = null;
 
 	private Vector2 shipPosition;
-	private final RayHandler rayHandler;
+	//private final RayHandler rayHandler;
 	private OrthographicCamera camera;
 
 	//0 - 359
@@ -122,6 +124,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		Log.d(getClass(), "create SolarScreen");
 		this.multiplexer = multiplexer;
 		multiplexer.addProcessor(this);
+		this.uiSkin = uiSkin;
 		batch = new SpriteBatch();
 		arkSprite = new Sprite(App.TEXTURES.findRegion("rocket"));
 		exhaustSprite = new Sprite(App.TEXTURES.findRegion("exhaust_placeholder"));
@@ -141,7 +144,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		setupArkButton(uiSkin, multiplexer);
 		setupPlanets();
 
-		rayHandler = createRayHandler(world);
+		//rayHandler = createRayHandler(world);
 		createPointLights();
 //		updateShadowBodies(world);
 
@@ -155,7 +158,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	}
 
 	private void createPointLights() {
-		new PointLight(rayHandler, RAYS_NUM, new Color(1f, 1f, 1f, 1f), 5000, 0, 0);
+		//new PointLight(rayHandler, RAYS_NUM, new Color(1f, 1f, 1f, 1f), 5000, 0, 0);
 	}
 
 	private void setupSpaceship() {
@@ -282,9 +285,11 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 
 		rotatePlanets(delta);
 
-		rayHandler.setCombinedMatrix(camera);
+		shieldProgressBar.updateFromShipProperties();
+
+	//	rayHandler.setCombinedMatrix(camera);
 //		rayHandler.setCombinedMatrix(camera.combined);
-		rayHandler.updateAndRender();
+//		rayHandler.updateAndRender();
 //
 		camera.position.set(arkSprite.getX(), arkSprite.getY(), 0);
 		camera.update();
@@ -399,7 +404,6 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 
 	@Override
 	public void dispose() {
-		rayHandler.dispose();
 	}
 
 	@Override
@@ -490,11 +494,12 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	}
 
 	private void handleAppNavigation() {
-
-
 		final int planetIndex = determinePlanetCollison();
 		if (planetIndex == SUN_COLLISION) {
 			dealDamageToRocket();
+			if (SpaceShipProperties.properties.getCurrentInternalShield() <= 0) {
+				explodeRocket();
+			}
 		} else if (planetIndex != -1) {
 			if (enterOrbitTable == null) {
 				enterOrbitTable = new EnterOrbitTable(Styles.UI_SKIN, planetIndex);
@@ -518,14 +523,29 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		}
 	}
 
-	private void dealDamageToRocket() {
+	private void explodeRocket() {
+		onGameOver();
+	}
 
+	private void onGameOver() {
+		GameOverTable gameOverTable = new GameOverTable(uiSkin, new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				dispose();
+				App.onGameOver();
+			}
+		});
+		stage.clear();
+		stage.addActor(gameOverTable);
+	}
+
+	private void dealDamageToRocket() {
+		SpaceShipProperties.properties.addCurrentShield(-20);
 	}
 
 	private void rotatePlanets(float delta) {
 		float limit = 0.1f;
 		if (counter < limit) {
-//			s(SolarScreen.class, "" + counter);
 			counter += delta;
 			return;
 		} else {
