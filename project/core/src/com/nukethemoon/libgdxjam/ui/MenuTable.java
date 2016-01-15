@@ -3,23 +3,27 @@ package com.nukethemoon.libgdxjam.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.Styles;
 
 public class MenuTable extends Table {
 
+	private final Stage stage;
 	private Table content;
 
-	public MenuTable(Skin skin, final CloseListener closeListener) {
+	public MenuTable(Stage stage, final CloseListener closeListener) {
+		this.stage = stage;
+
 		setBackground(new TextureRegionDrawable(App.TEXTURES.findRegion("popupMenu")));
 		pad(0);
 		content = new Table();
@@ -53,10 +57,21 @@ public class MenuTable extends Table {
 		creditsButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-
+				stage.addActor(new CreditsDialog());
 			}
 		});
-		content.add(creditsButton).width(250).top().colspan(2);
+		content.add(creditsButton).width(250).top().colspan(2).padTop(20);
+		content.row();
+
+		TextButton helpButton = new TextButton("HELP", Styles.STYLE_BUTTON_02);
+		helpButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				stage.addActor(new HelpDialog());
+			}
+		});
+		content.add(helpButton).width(250).top().colspan(2);
+
 
 		addLine();
 
@@ -106,6 +121,11 @@ public class MenuTable extends Table {
 		});
 		content.add(audioButton).top().right();
 		addLine();
+
+
+		Label versionLabel = new Label("Version", Styles.LABEL_PROGRESS_TYPE);
+		content.add(versionLabel).top().left().padLeft(5);
+		content.add(new Label(Config.VERSION, Styles.LABEL_PROGRESS_TYPE)).top().right().padRight(5);
 
 
 	}
