@@ -513,7 +513,6 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	public void removeRaceWayPoint(RaceWayPoint r) {
 		controllerPhysic.removeCollisionObject(r.getTrigger());
-		r.dispose();
 		currentlyVisibleRaceWayPoints.remove(r);
 	}
 
@@ -521,6 +520,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		int pointIndex = planetConfig.planetRace.wayPoints.indexOf(r);
 
 		if (pointIndex > 0 && !isRaceRunning()) {
+			raceListener.onRaceDidNotStart();
 			return;
 		}
 
@@ -538,7 +538,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 			resetRace();
 			return;
 		} else {
-			raceListener.onRaceProgress();
+			raceListener.onRaceProgress(pointIndex + 1, planetConfig.planetRace.wayPoints.size());
 		}
 
 		lastRaceWayPointIndex = planetConfig.planetRace.wayPoints.indexOf(r);
@@ -639,9 +639,10 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	public interface PlanetRaceListener {
 		void onRaceStart();
-		void onRaceProgress();
+		void onRaceProgress(int wayPointIndex, int wayPointCount);
 		void onRaceWrongProgress();
 		void onRaceTimeOut();
 		void onRaceSuccess();
+		void onRaceDidNotStart();
 	}
 }

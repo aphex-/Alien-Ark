@@ -110,7 +110,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public static Gson gson;
 	private AssetManager assetManager;
 
-	private RaceTable raceTable;
+	private RaceTable raceTimeTable;
+	private DialogTable raceDidNotStartInfo = null;
 
 	private Vector3 tmpVector = new Vector3();
 
@@ -199,10 +200,15 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		// STAGE INITIALIZED
 
-		raceTable = new RaceTable();
-		stage.addActor(raceTable);
-		raceTable.setPosition(300, Gdx.graphics.getHeight() - raceTable.getHeight() - 50);
-		raceTable.setVisible(false);
+		raceTimeTable = new RaceTable();
+		stage.addActor(raceTimeTable);
+		raceTimeTable.setPosition(300, Gdx.graphics.getHeight() - raceTimeTable.getHeight() - 50);
+		raceTimeTable.setVisible(false);
+
+		raceDidNotStartInfo = new DialogTable(Styles.UI_SKIN, new String[]{
+				"The race did not start yet!" , "Search the first waypoint to", "start the race."}, "RACE INFO");
+		raceDidNotStartInfo.setVisible(false);
+		stage.addActor(raceDidNotStartInfo);
 
 		multiplexer.addProcessor(this);
 
@@ -417,7 +423,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		}
 
 		if (planetController.isRaceRunning()) {
-			raceTable.setTime(planetController.updateRace());
+			raceTimeTable.setTime(planetController.updateRace());
 		}
 	}
 
@@ -703,33 +709,39 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	@Override
 	public void onRaceStart() {
 		showToast("Race Started!");
-		raceTable.setTime(planetController.getTimeToReachNextWayPoint());
-		raceTable.setVisible(true);
+		raceTimeTable.setTime(planetController.getTimeToReachNextWayPoint());
+		raceTimeTable.setVisible(true);
+		raceDidNotStartInfo.setVisible(false);
 	}
 
 	@Override
-	public void onRaceProgress() {
-		showToast("Great!");
+	public void onRaceProgress(int pointIndex, int pointCount) {
+		showToast("Reached " + pointIndex + " / " + pointCount);
 		App.audioController.playSound("dialogHighlight.mp3");
-		raceTable.setTime(planetController.getTimeToReachNextWayPoint());
+		raceTimeTable.setTime(planetController.getTimeToReachNextWayPoint());
 	}
 
 	@Override
 	public void onRaceWrongProgress() {
 		showToast("Wrong waypoint!");
-		raceTable.setVisible(false);
+		raceTimeTable.setVisible(false);
 	}
 
 	@Override
 	public void onRaceTimeOut() {
 		showToast("Race timeout");
-		raceTable.setVisible(false);
+		raceTimeTable.setVisible(false);
 	}
 
 	@Override
 	public void onRaceSuccess() {
 		showToast("Won");
-		raceTable.setVisible(false);
+		raceTimeTable.setVisible(false);
+	}
+
+	@Override
+	public void onRaceDidNotStart() {
+		raceDidNotStartInfo.setVisible(true);
 	}
 
 	@Override
