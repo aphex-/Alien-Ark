@@ -11,6 +11,7 @@ public class RaceWayPoint {
 	transient private final btCollisionObject trigger;
 	transient private final ModelInstance modelInstance;
 	transient private float initialHeight = -1;
+	transient public boolean triggerRemoved = false;
 
 
 	public float rotationZ = 0;

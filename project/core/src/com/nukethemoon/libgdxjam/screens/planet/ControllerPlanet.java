@@ -512,7 +512,10 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	}
 
 	public void removeRaceWayPoint(RaceWayPoint r) {
-		controllerPhysic.removeCollisionObject(r.getTrigger());
+		if (!r.triggerRemoved) {
+			controllerPhysic.removeCollisionObject(r.getTrigger());
+		}
+		r.triggerRemoved = true;
 		currentlyVisibleRaceWayPoints.remove(r);
 	}
 
