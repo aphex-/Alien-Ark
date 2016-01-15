@@ -60,6 +60,7 @@ import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.MenuTable;
 import com.nukethemoon.libgdxjam.ui.ToastTable;
 import com.nukethemoon.libgdxjam.ui.animation.GameOverAnimation;
+import com.nukethemoon.libgdxjam.ui.hud.RaceTable;
 import com.nukethemoon.libgdxjam.ui.hud.ShipProgressBar;
 import com.nukethemoon.tools.ani.Ani;
 import com.nukethemoon.tools.ani.AnimationFinishedListener;
@@ -108,6 +109,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	public static Gson gson;
 	private AssetManager assetManager;
+
+	private RaceTable raceTable;
 
 	private Vector3 tmpVector = new Vector3();
 
@@ -195,6 +198,11 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		initStage(planetConfig);
 
 		// STAGE INITIALIZED
+
+		raceTable = new RaceTable();
+		stage.addActor(raceTable);
+		raceTable.setPosition(300, Gdx.graphics.getHeight() - raceTable.getHeight() - 50);
+		raceTable.setVisible(false);
 
 		multiplexer.addProcessor(this);
 
@@ -406,6 +414,10 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		if (!overlayRenderer.isEnabled()) {
 			miniMap.drawMiniMap();
+		}
+
+		if (planetController.isRaceRunning()) {
+			raceTable.setTime(planetController.updateRace());
 		}
 	}
 
@@ -690,23 +702,34 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRaceStart() {
-		showToast("Race Started");
+		showToast("Race Started!");
+		raceTable.setTime(planetController.getTimeToReachNextWayPoint());
+		raceTable.setVisible(true);
 	}
 
 	@Override
 	public void onRaceProgress() {
-		App.audioController.playSound("dialogHighlight.mp3");
 		showToast("Great!");
+		App.audioController.playSound("dialogHighlight.mp3");
+		raceTable.setTime(planetController.getTimeToReachNextWayPoint());
+	}
+
+	@Override
+	public void onRaceWrongProgress() {
+		showToast("Wrong waypoint!");
+		raceTable.setVisible(false);
 	}
 
 	@Override
 	public void onRaceTimeOut() {
 		showToast("Race timeout");
+		raceTable.setVisible(false);
 	}
 
 	@Override
 	public void onRaceSuccess() {
 		showToast("Won");
+		raceTable.setVisible(false);
 	}
 
 	@Override

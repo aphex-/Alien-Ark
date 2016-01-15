@@ -34,7 +34,7 @@ public class PlanetConfig {
 	public List<ObjectPlacementInfo> artifacts = new ArrayList<ObjectPlacementInfo>();
 	public List<LandscapeLayerConfig> layerConfigs = new ArrayList<LandscapeLayerConfig>();
 
-	public PlanetRace planetRace;
+	public PlanetRace planetRace = new PlanetRace();
 
 	public void deserialize() {
 		for (LandscapeLayerConfig c : layerConfigs) {

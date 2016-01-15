@@ -93,6 +93,8 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private List<Collectible> tmpRemoveList2 = new ArrayList<Collectible>();
 	private List<Point> tmpRemoveList3 = new ArrayList<Point>();
 
+	private int lastRaceWayPointIndex = -1;
+	private long timeLastWayPointReached = -1;
 
 	private Vector2 nearestArtifactPosition = new Vector2();
 
@@ -104,7 +106,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private Vector2 tmpVec5 = new Vector2();
 	private Vector2 tmpVec6 = new Vector2();
 	private Vector3 tmpVec7 = new Vector3();
-	private Vector3 tmpVec8 = new Vector3();
+
 
 
 	public ControllerPlanet(String planetName, PlanetConfig pPlanetConfig, ControllerPhysic controllerPhysic, Ani ani,
@@ -510,21 +512,55 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	}
 
 	public void removeRaceWayPoint(RaceWayPoint r) {
-		currentlyVisibleRaceWayPoints.remove(r);
 		controllerPhysic.removeCollisionObject(r.getTrigger());
 		r.dispose();
+		currentlyVisibleRaceWayPoints.remove(r);
 	}
 
 	public void reachWayPoint(RaceWayPoint r) {
-		if (r == planetConfig.planetRace.wayPoints.get(0)) {
+		int pointIndex = planetConfig.planetRace.wayPoints.indexOf(r);
+
+		if (pointIndex > 0 && !isRaceRunning()) {
+			return;
+		}
+
+		if (pointIndex != (lastRaceWayPointIndex + 1)) {
+			raceListener.onRaceWrongProgress();
+			resetRace();
+			return;
+		}
+
+		if (pointIndex == 0) {
 			raceListener.onRaceStart();
-		} else if (r == planetConfig.planetRace.wayPoints.get(planetConfig.planetRace.wayPoints.size() - 1)) {
+		} else if (pointIndex == planetConfig.planetRace.wayPoints.size() - 1) {
 			raceListener.onRaceSuccess();
+			removeRaceWayPoint(r);
+			resetRace();
+			return;
 		} else {
 			raceListener.onRaceProgress();
 		}
+
+		lastRaceWayPointIndex = planetConfig.planetRace.wayPoints.indexOf(r);
+		timeLastWayPointReached = System.currentTimeMillis();
 		alreadyReachedWayPoints.add(r);
 		removeRaceWayPoint(r);
+	}
+
+	public float getTimeToReachNextWayPoint() {
+		if (isRaceRunning()) {
+			float pastTime = (System.currentTimeMillis() - timeLastWayPointReached) / 1000f;
+			if (lastRaceWayPointIndex + 1 < planetConfig.planetRace.wayPoints.size()) {
+				RaceWayPoint point = planetConfig.planetRace.wayPoints.get(lastRaceWayPointIndex + 1);
+				return (float) Math.floor((point.secondsToReach - pastTime) * 10) / 10f;
+			}
+
+		}
+		return -1;
+	}
+
+	public boolean isRaceRunning() {
+		return lastRaceWayPointIndex != -1;
 	}
 
 	public void updateWayPoint(RaceWayPoint r) {
@@ -542,7 +578,22 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		return null;
 	}
 
+	public float updateRace() {
+		if (isRaceRunning()) {
+			float timeToReachNextWayPoint = getTimeToReachNextWayPoint();
+			if (timeToReachNextWayPoint <= 0) {
+				resetRace();
+				raceListener.onRaceTimeOut();
+				return 0;
+			}
+			return timeToReachNextWayPoint;
+		}
+		return 0;
+	}
+
 	public void resetRace() {
+		lastRaceWayPointIndex = -1;
+		timeLastWayPointReached = -1;
 		alreadyReachedWayPoints.clear();
 	}
 
@@ -589,6 +640,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	public interface PlanetRaceListener {
 		void onRaceStart();
 		void onRaceProgress();
+		void onRaceWrongProgress();
 		void onRaceTimeOut();
 		void onRaceSuccess();
 	}

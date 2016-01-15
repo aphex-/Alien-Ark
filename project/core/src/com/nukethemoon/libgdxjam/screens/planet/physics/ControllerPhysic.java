@@ -76,6 +76,9 @@ public class ControllerPhysic extends ContactListener {
 			listener.onRocketCollided(CollisionTypes.byMask((short) userValue0), colObj0Wrap.getCollisionObject());
 		}
 
+		colObj0Wrap.dispose();
+		colObj1Wrap.dispose();
+
 		return true;
 	}
 

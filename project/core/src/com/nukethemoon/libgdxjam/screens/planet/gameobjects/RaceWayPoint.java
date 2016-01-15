@@ -11,6 +11,7 @@ public class RaceWayPoint {
 	transient private final btCollisionObject trigger;
 	transient private final ModelInstance modelInstance;
 	transient private float initialHeight = -1;
+	transient boolean disposed = false;
 
 	public float rotationZ = 0;
 	public float rotationX = 0;
@@ -28,18 +29,19 @@ public class RaceWayPoint {
 		int collisionFlags = trigger.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE;
 		trigger.setCollisionFlags(collisionFlags);
 		trigger.setCollisionShape(Models.RACE_WAY_POINT_COLLISION);
-		trigger.setWorldTransform(modelInstance.transform);
 		trigger.setUserValue(CollisionTypes.WAY_POINT_TRIGGER.mask);
 	}
 
 	public void adjust(float height) {
-		if (initialHeight == -1) {
-			initialHeight = height;
+		if (!disposed) {
+			if (initialHeight == -1) {
+				initialHeight = height;
+			}
+			modelInstance.transform.setToRotation(0, 0, 1, rotationZ);
+			modelInstance.transform.rotate(0, 1, 0, rotationX);
+			modelInstance.transform.trn(x, y, initialHeight + zOffset);
+			trigger.setWorldTransform(modelInstance.transform);
 		}
-		modelInstance.transform.setToRotation(0, 0, 1, rotationZ);
-		modelInstance.transform.rotate(0, 1, 0, rotationX);
-		modelInstance.transform.trn(x, y, initialHeight + zOffset);
-		trigger.setWorldTransform(modelInstance.transform);
 	}
 
 	public ModelInstance getModelInstance() {
@@ -52,6 +54,7 @@ public class RaceWayPoint {
 	}
 
 	public void dispose() {
+		disposed = true;
 		trigger.dispose();
 	}
 }
