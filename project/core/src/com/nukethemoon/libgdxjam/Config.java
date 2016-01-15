@@ -10,6 +10,8 @@ public class Config {
 	public int requestRadiusInTiles = 110;
 	public boolean debugMode = false;
 	public boolean tutorialEnabled = true;
+	public boolean invertUpDown = false;
+	public boolean playAudio = true;
 	public float FOV = 68;
 
 }

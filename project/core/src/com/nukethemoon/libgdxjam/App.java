@@ -53,6 +53,9 @@ public class App extends Game {
 		Gdx.input.setInputProcessor(MULTIPLEXER);
 
 		audioController = new AudioController();
+		App.audioController.setSoundEnabled(App.config.playAudio);
+		App.audioController.setMusicEnabled(App.config.playAudio);
+
 		solarSystem = new SolarSystem();
 		solarSystem.calculatePlanetPositions();
 

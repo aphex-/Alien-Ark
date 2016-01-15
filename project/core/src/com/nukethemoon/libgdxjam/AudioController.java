@@ -131,6 +131,12 @@ public class AudioController {
 
 	public void setSoundEnabled(boolean soundEnabled) {
 		this.soundEnabled = soundEnabled;
+
+		if (!soundEnabled) {
+			for (Sound sound : soundMap.values()) {
+				sound.stop();
+			}
+		}
 	}
 
 	public void fadeOut() {

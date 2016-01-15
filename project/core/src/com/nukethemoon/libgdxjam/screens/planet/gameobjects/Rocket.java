@@ -129,10 +129,15 @@ public class Rocket extends GameObject implements Disposable {
 		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(
 				SpaceShipProperties.properties.getSpeed()));
 
-		SpaceShipProperties.properties.setCurrentInternalFuel((int) 	FuelCapacity.INTERNAL_MAX);
+		SpaceShipProperties.properties.setCurrentInternalFuel((int) FuelCapacity.INTERNAL_MAX);
 		SpaceShipProperties.properties.setCurrentInternalShield((int) ShieldCapacity.INTERNAL_MAX);
 
+
 		thrustSound = App.audioController.getSound("thrust.wav");
+		if (App.config.playAudio) {
+			thrustSound.loop();
+			thrustSound.play();
+		}
 	}
 
 	public void setThirdPersonCam(PerspectiveCamera camera) {
@@ -157,17 +162,26 @@ public class Rocket extends GameObject implements Disposable {
 	}
 
 	public void rotateDown() {
+		int invert = 1;
+		if (App.config.invertUpDown) {
+			invert = -1;
+		}
+
 		if (thrusting) {
 			if ((xRotation - SpaceShipProperties.properties.getManeuverability()) > -89) {
-				xRotation = (xRotation - SpaceShipProperties.properties.getManeuverability()) % 360;
+				xRotation = (xRotation - SpaceShipProperties.properties.getManeuverability() * invert) % 360;
 			}
 		}
 	}
 
 	public void rotateUp() {
+		int invert = 1;
+		if (App.config.invertUpDown) {
+			invert = -1;
+		}
 		if (thrusting) {
 			if((xRotation + SpaceShipProperties.properties.getManeuverability()) < 89) {
-				xRotation = (xRotation + SpaceShipProperties.properties.getManeuverability()) % 360;
+				xRotation = (xRotation + SpaceShipProperties.properties.getManeuverability() * invert) % 360;
 			}
 		}
 	}
@@ -277,8 +291,11 @@ public class Rocket extends GameObject implements Disposable {
 			return;
 		}
 
-		thrustSound.loop();
-		thrustSound.play();
+		if (App.config.playAudio) {
+			thrustSound.loop();
+			thrustSound.play();
+		}
+
 
 		if (!moving) {
 			onLaunch();
@@ -357,7 +374,7 @@ public class Rocket extends GameObject implements Disposable {
 
 	@Override
 	public void dispose() {
-		//model.dispose();
+		thrustSound.stop();
 	}
 
 	public void handlePhysicTick() {
@@ -441,18 +458,6 @@ public class Rocket extends GameObject implements Disposable {
 		}
 	}
 
-	public boolean isThrusting() {
-		return thrusting;
-	}
-
-	public void setThrust(boolean thrusting) {
-		this.thrusting = thrusting;
-		if (!thrusting) {
-			onThrustDisabled();
-		} else {
-			onThrustEnabled();
-		}
-	}
 
 	public boolean isOutOfFuel() {
 		return SpaceShipProperties.properties.getCurrentInternalFuel() <= 0;
@@ -540,6 +545,7 @@ public class Rocket extends GameObject implements Disposable {
 		}
 
 	}
+
 
 
 }

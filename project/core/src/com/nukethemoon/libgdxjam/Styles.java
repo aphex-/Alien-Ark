@@ -8,11 +8,13 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class Styles {
 
@@ -53,6 +55,8 @@ public class Styles {
 
 	public static TextField.TextFieldStyle TEXT_FIELD_STYLE_FAIL;
 	public static TextField.TextFieldStyle TEXT_FIELD_STYLE;
+
+	public static ImageButton.ImageButtonStyle IMAGE_BUTTON_STYLE;
 
 	public static void init(TextureAtlas atlas) {
 		UI_SKIN = new Skin();
@@ -116,6 +120,13 @@ public class Styles {
 		TEXT_FIELD_STYLE_FAIL.fontColor = Color.RED;
 
 		TEXT_FIELD_STYLE = new TextField.TextFieldStyle(standardTextFieldStyle);
+
+		IMAGE_BUTTON_STYLE = new ImageButton.ImageButtonStyle();
+		IMAGE_BUTTON_STYLE.checked = new TextureRegionDrawable(atlas.findRegion("checkboxChecked"));
+		IMAGE_BUTTON_STYLE.up = new TextureRegionDrawable(atlas.findRegion("checkbox"));
+
+		//standardCheckBoxStyle.checked =
+		//standardCheckBoxStyle.disabled =
 	}
 
 	private static BitmapFont createFont(String path, int size, Color color, Color borderColor, float borderWidth) {
