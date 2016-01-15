@@ -1,5 +1,5 @@
 {
-  "debugMode": true,
+  "debugMode": false,
   "tutorialEnabled": false,
   "FOV": 68.0
 }

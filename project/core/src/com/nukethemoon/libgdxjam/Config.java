@@ -8,7 +8,7 @@ public class Config {
 	transient public static boolean DEBUG_BULLET = false;
 
 	public int requestRadiusInTiles = 110;
-	public boolean debugMode = true;
+	public boolean debugMode = false;
 	public boolean tutorialEnabled = true;
 	public float FOV = 68;
 
