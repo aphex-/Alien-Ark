@@ -51,7 +51,7 @@ public class ControllerPhysic extends ContactListener {
 		broadphase = new btDbvtBroadphase();
 		constraintSolver = new btSequentialImpulseConstraintSolver();
 		dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
-		dynamicsWorld.setGravity(new Vector3(0, 0, gravity * 1.75f));
+		dynamicsWorld.setGravity(new Vector3(0, 0, gravity * 2.5f));
 
 		if (Config.DEBUG_BULLET) {
 			debugDrawer = new DebugDrawer();
