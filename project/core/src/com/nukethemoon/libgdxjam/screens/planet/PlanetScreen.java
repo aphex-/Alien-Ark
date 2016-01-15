@@ -711,6 +711,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		raceTimeTable.setTime(planetController.getTimeToReachWayPoint(0));
 		raceTimeTable.setVisible(true);
 		raceDidNotStartInfo.setVisible(false);
+		App.audioController.playSound("dialogHighlight.mp3");
 	}
 
 	@Override
@@ -739,6 +740,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	@Override
 	public void onRaceSuccess() {
 		showToast("You have won the race!");
+		App.audioController.playSound("race_won.mp3");
 		raceTimeTable.setVisible(false);
 	}
 

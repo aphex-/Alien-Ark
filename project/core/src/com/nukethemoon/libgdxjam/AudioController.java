@@ -34,7 +34,8 @@ public class AudioController {
 			"thrust.wav",
 			"bonus_stream.mp3",
 			"dialogHighlight.mp3",
-			"robo_laser.mp3"
+			"robo_laser.mp3",
+			"race_won.mp3"
 	};
 
 
