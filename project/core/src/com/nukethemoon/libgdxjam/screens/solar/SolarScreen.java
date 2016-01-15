@@ -2,6 +2,7 @@ package com.nukethemoon.libgdxjam.screens.solar;
 
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -51,9 +52,15 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	//TODO:
 	/*
-	- in die mitte kommt eine fette sonne, wenn du da rein fliegst, explodiert das schiff und sind alle aliens tot
-	- apply attributes to solarscreen
-	- planeten müssen entdeckt werden per radar */
+	- in die mitte kommt eine fette sonne, wenn du da rein fliegst, nimmt das schiff schaden
+
+	+ Ich halte den Schatten für unverzichtbar.
++ Refactoring der bestehenden box2d Methoden (bzgl. new instance creation)
++ Die Planeten-Rotation ruckelt.
++ Die Kollision ist irgendwie verschoben zur Grafik
++ Die Sounds sind kaputt
+
+	*/
 
 	private static final int RAYS_NUM = 333;
 	private static final int SUN_COLLISION = 999;
@@ -163,7 +170,12 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		planetSprites[1] = new Sprite(App.TEXTURES.findRegion("planet02"));
 		planetSprites[2] = new Sprite(App.TEXTURES.findRegion("plantet03"));
 		planetSprites[3] = new Sprite(App.TEXTURES.findRegion("plantet04"));
-
+		planetSprites[4] = new Sprite(App.TEXTURES.findRegion("plantet05"));
+		planetSprites[5] = new Sprite(App.TEXTURES.findRegion("plantet06"));
+		planetSprites[6] = new Sprite(App.TEXTURES.findRegion("plantet07"));
+		planetSprites[7] = new Sprite(App.TEXTURES.findRegion("plantet08"));
+		planetSprites[8] = new Sprite(App.TEXTURES.findRegion("plantet09"));
+		planetSprites[9] = new Sprite(App.TEXTURES.findRegion("plantet10"));
 
 		sunSprite = new Sprite(App.TEXTURES.findRegion("sun"));
 		sunSprite.setPosition(SolarSystem.SUN_POSITION.x, SolarSystem.SUN_POSITION.y);
@@ -254,7 +266,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(21/255f, 21/255f, 21/255f, 1);
+		Gdx.gl.glClearColor(21 / 255f, 21 / 255f, 21 / 255f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		handleArkMovementInput(delta);
 		handleAppNavigation();
@@ -420,7 +432,7 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 		return -1;
 	}
 
-	private boolean isColliding(Sprite sprite ) {
+	private boolean isColliding(Sprite sprite) {
 		Rectangle planetBounds = sprite.getBoundingRectangle();
 		if (planetBounds.contains(shipPosition.x, shipPosition.y)) {
 			return true;
@@ -478,7 +490,6 @@ public class SolarScreen implements Screen, RocketListener, ControllerPhysic.Phy
 	}
 
 	private void handleAppNavigation() {
-
 
 
 		final int planetIndex = determinePlanetCollison();

@@ -8,18 +8,13 @@ import java.util.Random;
 
 public class SolarSystem implements Disposable {
 
-	public static final int NUMBER_OF_PLANETS = 4;
+	public static final int NUMBER_OF_PLANETS = 10;
 	public static final Vector2 SUN_POSITION = new Vector2(-150, -150);
 
 	private Planet[] planets = new Planet[NUMBER_OF_PLANETS];
 
 	public void calculatePlanetPositions() {
-		/*Algorithms algorithms = new Algorithms();
-		SimplePositionConfig positionConfig = new SimplePositionConfig("internal");
-		SimplePositionScattering scattering = new SimplePositionScattering(positionConfig, 2323.34523, algorithms, null);
-		PointList pointList = (PointList) scattering.createGeometries(150, 150, 5000, 5000, 994234.234234);*/
 		for (int i = 0; i < SolarSystem.NUMBER_OF_PLANETS; i++) {
-			//float[] points = pointList.getPoints();
 			Planet planet = calculateSuitablePlanet(i);
 			planets[i] = planet;
 		}
@@ -28,17 +23,30 @@ public class SolarSystem implements Disposable {
 	private Planet calculateSuitablePlanet(int index) {
 		boolean foundPosition = false;
 		Planet result = null;
-		Random random = new Random(System.currentTimeMillis());
+		Random random = new Random(System.currentTimeMillis()%((int)(Math.PI * 10)));
 		while (!foundPosition) {
 			result = new Planet();
-			result.radius = random.nextInt(700);
+			result.radius = random.nextInt(2000);
+
 			result.radians = (float) (random.nextFloat() * 2 * Math.PI);
-			if (result.radius > 350 && !arePlanetsColliding(result.radians, index)) {
+			if (result.radius > 350 && !arePlanetsColliding(result.radians, index) && isSeparateOrbit(result.radius)) {
 				foundPosition = true;
 			}
 		}
 		return result;
+	}
 
+	private boolean isSeparateOrbit(int radius) {
+		for (int i = 0; i < NUMBER_OF_PLANETS; i++) {
+			Planet planet = planets[i];
+			if (planet == null) {
+				continue;
+			}
+			if (radius < planet.radius + 75 && radius > planet.radius - 75) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private boolean arePlanetsColliding(float radians, int index) {
