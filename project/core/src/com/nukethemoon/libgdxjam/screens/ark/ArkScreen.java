@@ -77,6 +77,9 @@ public class ArkScreen implements Screen {
 	private Label artifactCount;
 	private Label alienCount;
 
+	private Image cancelButton;
+	private WorkbenchSlot hoveredSlot;
+
 	public ArkScreen(Skin uiSkin, InputMultiplexer multiplexer) {
 		ani = new Ani();
 		skin = uiSkin;
@@ -98,8 +101,6 @@ public class ArkScreen implements Screen {
 		stage.addActor(fuelProgressBar);
 		stage.addActor(shieldProgressBar);
 
-
-		App.config.tutorialEnabled = true;
 	}
 
 	@Override
@@ -131,6 +132,66 @@ public class ArkScreen implements Screen {
 		addDropTarget(workbenchSlot2);
 		addDropTarget(workbenchSlot3);
 
+		cancelButton = new Image(App.TEXTURES.findRegion("closeButton"));
+		stage.addActor(cancelButton);
+		cancelButton.setVisible(false);
+		cancelButton.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				hoveredSlot.pop();
+				updateResultSlot();
+				updateArtifactsInventory();
+			}
+			
+		});
+
+		workbenchSlot1.addListener(new ClickListener() {
+
+			@Override
+			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+				if(fromActor != cancelButton) {
+					hoveredSlot = workbenchSlot1;
+					showCancel();
+				}
+			}
+
+			@Override
+			public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+				if(toActor != cancelButton) {
+					hoveredSlot = null;
+					cancelButton.setVisible(false);
+				}
+			}
+		});
+		workbenchSlot2.addListener(new ClickListener() {
+
+			@Override
+			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+				hoveredSlot = workbenchSlot2;
+				showCancel();
+			}
+
+			@Override
+			public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+				hoveredSlot = null;
+				cancelButton.setVisible(false);
+			}
+		});
+		workbenchSlot3.addListener(new ClickListener() {
+
+			@Override
+			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+				hoveredSlot = workbenchSlot3;
+				showCancel();
+			}
+
+			@Override
+			public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+				hoveredSlot = null;
+				cancelButton.setVisible(false);
+			}
+		});
+
 		propertiesTable = new Table();
 		createPropertiesList();
 
@@ -138,9 +199,19 @@ public class ArkScreen implements Screen {
 
 		createHintTexts();
 
+
 		multiplexer.addProcessor(stage);
 
 		App.TUTORIAL_CONTROLLER.onArkEntered();
+	}
+
+	private void showCancel() {
+		if(hoveredSlot.isOccupied()) {
+			cancelButton.setX(hoveredSlot.getX() + hoveredSlot.getWidth() / 2 - cancelButton.getWidth() / 2);
+			cancelButton.setY(hoveredSlot.getY() + hoveredSlot.getHeight() / 2 - cancelButton.getHeight() / 2);
+			cancelButton.setVisible(true);
+		}
+
 	}
 
 	private void createHintTexts() {
@@ -382,7 +453,7 @@ public class ArkScreen implements Screen {
 			resultAreaImg.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
-					if(Alien.createAlien(workbenchSlot1.pop(), workbenchSlot2.pop(), workbenchSlot3.pop())) {
+					if (Alien.createAlien(workbenchSlot1.pop(), workbenchSlot2.pop(), workbenchSlot3.pop())) {
 						updateResultSlot();
 						updateAlienInventory();
 						updateArtifactsInventory();

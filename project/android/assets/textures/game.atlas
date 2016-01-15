@@ -62,23 +62,30 @@ buttonMenu
   index: -1
 buttonStandard9patch
   rotate: false
-  xy: 948, 477
+  xy: 948, 430
   size: 38, 41
   orig: 38, 41
   offset: 0, 0
   index: -1
 checkbox
   rotate: false
-  xy: 948, 562
+  xy: 948, 515
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 checkboxChecked
   rotate: false
-  xy: 948, 520
+  xy: 948, 473
   size: 40, 40
   orig: 40, 40
+  offset: 0, 0
+  index: -1
+closeButton
+  rotate: false
+  xy: 948, 557
+  size: 45, 45
+  orig: 45, 45
   offset: 0, 0
   index: -1
 dialogBg01
@@ -97,7 +104,7 @@ exhaust_placeholder
   index: -1
 exitImage
   rotate: false
-  xy: 948, 441
+  xy: 948, 394
   size: 34, 34
   orig: 34, 34
   offset: 0, 0
@@ -167,7 +174,7 @@ plantet10
   index: -1
 popupbg01
   rotate: false
-  xy: 948, 405
+  xy: 948, 358
   size: 34, 34
   orig: 34, 34
   offset: 0, 0
