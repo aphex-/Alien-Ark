@@ -1,0 +1,200 @@
+{
+  "version": "0.0.1a",
+  "samplerConfigs": [
+    {
+      "type": "NoiseConfig",
+      "data": {
+        "noiseAlgorithmName": "SimplexNoise",
+        "id": "EditorDefaultSampler",
+        "worldSeedModifier": 0.0,
+        "scale": 10.0,
+        "modifiers": [
+          {
+            "type": "Multiply",
+            "value": 0.3
+          }
+        ]
+      }
+    },
+    {
+      "type": "MaskedSamplerConfig",
+      "data": {
+        "samplerItems": [
+          {
+            "samplerReferenceId": "noise01",
+            "operator": "Plus",
+            "invert": false,
+            "active": true,
+            "scaleModifier": 1.0,
+            "seedModifier": 0.0,
+            "multiply": 1.0
+          },
+          {
+            "samplerReferenceId": "combi01",
+            "operator": "Plus",
+            "invert": false,
+            "active": true,
+            "scaleModifier": 1.0,
+            "seedModifier": 0.0,
+            "multiply": 1.0
+          }
+        ],
+        "id": "EditorDefaultMask",
+        "worldSeedModifier": 0.0,
+        "scale": 1.0,
+        "modifiers": []
+      }
+    },
+    {
+      "type": "CombinedConfig",
+      "data": {
+        "samplerItems": [
+          {
+            "samplerReferenceId": "EditorDefaultSampler",
+            "operator": "Plus",
+            "invert": false,
+            "active": true,
+            "scaleModifier": 1.0,
+            "seedModifier": 0.0,
+            "multiply": 1.0
+          },
+          {
+            "samplerReferenceId": "continent",
+            "operator": "Minus",
+            "invert": false,
+            "active": true,
+            "scaleModifier": 1.0,
+            "seedModifier": 0.0,
+            "multiply": 1.0
+          }
+        ],
+        "id": "combi01",
+        "worldSeedModifier": 0.0,
+        "scale": 1.0,
+        "modifiers": [
+          {
+            "type": "Limit",
+            "value": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "type": "FlatSamplerConfig",
+      "data": {
+        "value": 1.0,
+        "id": "flat01",
+        "worldSeedModifier": 0.0,
+        "scale": 1.0,
+        "modifiers": []
+      }
+    },
+    {
+      "type": "AContinentConfig",
+      "data": {
+        "size": 0.6,
+        "edge": 0.05,
+        "iterations": 2,
+        "growth": 2.0,
+        "noiseAlgorithmName": "SimplexNoise",
+        "smoothEdge": false,
+        "id": "continent",
+        "worldSeedModifier": 0.0,
+        "scale": 10.0,
+        "modifiers": []
+      }
+    },
+    {
+      "type": "NoiseConfig",
+      "data": {
+        "noiseAlgorithmName": "SimplexNoise",
+        "id": "noise01",
+        "worldSeedModifier": 0.0,
+        "scale": 30.0,
+        "modifiers": [
+          {
+            "type": "Step",
+            "value": 8.0
+          }
+        ]
+      }
+    }
+  ],
+  "interpreters": [
+    {
+      "items": [
+        {
+          "starColorR": 0.6666667,
+          "starColorG": 0.0,
+          "starColorB": 0.0,
+          "endColorR": 1.0,
+          "endColorG": 0.0,
+          "endColorB": 0.0,
+          "startValue": 0.0,
+          "endValue": 0.008
+        },
+        {
+          "starColorR": 0.5,
+          "starColorG": 0.5,
+          "starColorB": 0.5,
+          "endColorR": 1.0,
+          "endColorG": 1.0,
+          "endColorB": 1.0,
+          "startValue": 0.008,
+          "endValue": 0.12
+        },
+        {
+          "starColorR": 0.5,
+          "starColorG": 0.5,
+          "starColorB": 0.5,
+          "endColorR": 1.0,
+          "endColorG": 1.0,
+          "endColorB": 1.0,
+          "startValue": 0.1,
+          "endValue": 0.5
+        },
+        {
+          "starColorR": 0.5,
+          "starColorG": 0.5,
+          "starColorB": 0.5,
+          "endColorR": 1.0,
+          "endColorG": 1.0,
+          "endColorB": 1.0,
+          "startValue": 0.5,
+          "endValue": 1.0
+        }
+      ],
+      "id": "EditorDefaultInterpreter",
+      "it": []
+    }
+  ],
+  "layerConfigs": [
+    {
+      "interpreterId": "EditorDefaultInterpreter",
+      "samplerItems": [
+        {
+          "samplerReferenceId": "EditorDefaultMask",
+          "operator": "Plus",
+          "invert": false,
+          "active": true,
+          "scaleModifier": 1.0,
+          "seedModifier": 0.0,
+          "multiply": 1.0
+        }
+      ],
+      "id": "EditorDefaultLayer",
+      "worldSeedModifier": 0.0,
+      "scale": 1.0,
+      "modifiers": []
+    }
+  ],
+  "worldConfig": {
+    "seedString": "0.0",
+    "chunkSize": 15,
+    "chunkOverlap": 1,
+    "name": "planet08",
+    "layerIds": [
+      "EditorDefaultLayer"
+    ]
+  }
+}

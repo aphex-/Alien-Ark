@@ -1,6 +1,6 @@
 {
   "id": "planet03",
-  "gravity": -10.0,
+  "gravity": -25.0,
   "landscapeHeight": 100.0,
   "fuelChance": 0.08,
   "fuelChanceGain": -1.0E-4,

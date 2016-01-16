@@ -127,7 +127,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		"planet04",
 		"planet05",
 		"planet06",
-		"planet07"
+		"planet07",
+		"planet08"
 	};
 
 	private Ani ani;

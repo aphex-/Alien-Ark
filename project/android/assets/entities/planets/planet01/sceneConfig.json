@@ -1,6 +1,6 @@
 {
   "id": "planet01",
-  "gravity": -10.0,
+  "gravity": -25.0,
   "landscapeHeight": 25.0,
   "fuelChance": 0.08,
   "fuelChanceGain": -1.0E-4,
@@ -63,8 +63,8 @@
   ],
   "artifacts": [
     {
-      "x": -152.35838,
-      "y": 419.00464,
+      "x": 424.02225,
+      "y": -383.58423,
       "groundOffsetZ": 0.0,
       "rotationX": 0.0,
       "rotationY": 0.0,
@@ -171,41 +171,5 @@
         ]
       }
     }
-  ],
-  "planetRace": {
-    "wayPoints": [
-      {
-        "rotationZ": -30.0,
-        "rotationX": 10.0,
-        "x": 145.84674,
-        "y": -128.04738,
-        "zOffset": 11.0,
-        "secondsToReach": 0
-      },
-      {
-        "rotationZ": 0.0,
-        "rotationX": 0.0,
-        "x": 323.94165,
-        "y": -109.4639,
-        "zOffset": 0.0,
-        "secondsToReach": 10
-      },
-      {
-        "rotationZ": 0.0,
-        "rotationX": 0.0,
-        "x": 600.2338,
-        "y": -146.1584,
-        "zOffset": 0.0,
-        "secondsToReach": 10
-      },
-      {
-        "rotationZ": 45.0,
-        "rotationX": 0.0,
-        "x": 757.5174,
-        "y": 59.078888,
-        "zOffset": 0.0,
-        "secondsToReach": 10
-      }
-    ]
-  }
+  ]
 }

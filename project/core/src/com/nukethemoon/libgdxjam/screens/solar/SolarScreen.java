@@ -134,6 +134,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	private long lasTimeDamage = -1;
 	private MenuButton menuButton;
 	private ImageButton arkScreenButton;
+	private PointLight pointLight2;
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
 		Log.d(getClass(), "create SolarScreen");
@@ -177,7 +178,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		int[] distance = new int[] {
 				500, 700, 880, 1020, 1200, 1350, 1500, 1650, 1800, 1950};
 
-		planetGraphics.add(new PlanetGraphic("planet07", distance[0], 0.1f, 	0.005f	,0));
+		planetGraphics.add(new PlanetGraphic("planet07", distance[0], 0.1f, 	0.003f	,0));
 		planetGraphics.add(new PlanetGraphic("planet03", distance[1], 0.2f,		-0.004f, 1));
 		planetGraphics.add(new PlanetGraphic("planet01", distance[2], -0.3f, 	-0.002f, 2));
 		planetGraphics.add(new PlanetGraphic("planet10", distance[3], -0.1f, 	0.001f, 3));
@@ -200,7 +201,8 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	}
 
 	private void createPointLights() {
-		pointLight = new PointLight(rayHandler, RAYS_NUM, new Color(1f, 1f, 0f, 1f), 5000, 0, 0);
+		pointLight = new PointLight(rayHandler, RAYS_NUM, new Color(1f, 0.5f, 0f, 1f), 2500, 0, 0);
+		pointLight2 = new PointLight(rayHandler, RAYS_NUM, new Color(1f, 0.3f, 3f, 1f), 700, 0, 0);
 
 	}
 
@@ -280,7 +282,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		rayHandler.setAmbientLight(0.2f, 0.2f, 0.2f, 0.1f);
 		rayHandler.setCulling(true);
 		rayHandler.pointAtLight(0, 0);
-		rayHandler.setBlurNum(4);
+		rayHandler.setBlurNum(1);
 		return rayHandler;
 	}
 
