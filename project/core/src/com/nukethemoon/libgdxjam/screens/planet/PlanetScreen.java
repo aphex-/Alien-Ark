@@ -138,6 +138,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
 		pPlanetIndex = pPlanetIndex % KNOWN_PLANETS.length;
 
+		SpaceShipProperties.properties.setCurrentInternalFuel(SpaceShipProperties.properties.getFuelCapacity());
+
 		stage = new Stage(new ScreenViewport());
 
 		camera = new PerspectiveCamera(App.config.FOV, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -763,6 +765,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void dispose() {
+		SpaceShipProperties.properties.setCurrentInternalFuel(SpaceShipProperties.properties.getFuelCapacity());
 		particleSystem.removeAll();
 		particleSystem.getBatches().clear();
 		planetController.dispose();

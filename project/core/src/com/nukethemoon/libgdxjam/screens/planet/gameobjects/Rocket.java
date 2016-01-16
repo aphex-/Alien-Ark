@@ -130,10 +130,6 @@ public class Rocket extends GameObject implements Disposable {
 		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(
 				SpaceShipProperties.properties.getEnginePower()));
 
-		SpaceShipProperties.properties.setCurrentInternalFuel(SpaceShipProperties.INITIAL_FUEL_CAPACITY);
-		SpaceShipProperties.properties.setCurrentInternalShield(SpaceShipProperties.INITIAL_SHIELD_CAPACITY);
-
-
 		thrustSound = App.audioController.getSound("thrust.wav");
 		if (App.config.playAudio) {
 			thrustSound.loop();

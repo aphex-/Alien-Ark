@@ -406,7 +406,12 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	private void dealDamage() {
 		if (System.currentTimeMillis() - lasTimeDamage > Rocket.MIN_DAMAGE_DELAY_MILLIS) {
 			lasTimeDamage = System.currentTimeMillis();
-			SpaceShipProperties.properties.addCurrentShield(-1);
+			if ((SpaceShipProperties.properties.getCurrentInternalShield() - 10) > 1) {
+				// no game over on this screen
+				SpaceShipProperties.properties.addCurrentShield(-10);
+			} else {
+				SpaceShipProperties.properties.setCurrentInternalShield(1);
+			}
 			App.audioController.playSound("energy_shield.mp3");
 		}
 	}
