@@ -18,6 +18,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.nukethemoon.libgdxjam.Log;
+import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.planet.CollectedItemCache;
 import com.nukethemoon.libgdxjam.screens.planet.ControllerPlanet;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetConfig;
@@ -230,7 +231,7 @@ public class PlanetPart extends GameObject {
 
 		if (!collectedItemCache.isFuelCollected(chunk.getChunkX(), chunk.getChunkY())) {
 			if (noise01 < calculateChance(chunk, planetConfig.fuelChance, planetConfig.fuelChanceGain,
-					planetConfig.fuelChanceMin)) {
+					planetConfig.fuelChanceMin) + SpaceShipProperties.properties.getLuck() * 0.07f) {
 				addCollectible(CollisionTypes.FUEL, chunk, seed / 2d);
 			} else {
 				collectedItemCache.registerCollected(chunk.getChunkX(), chunk.getChunkY(), CollisionTypes.FUEL);
@@ -239,7 +240,7 @@ public class PlanetPart extends GameObject {
 
 		if (!collectedItemCache.isShieldCollected(chunk.getChunkX(), chunk.getChunkY())) {
 			if (noise02 < calculateChance(chunk, planetConfig.shieldChance, planetConfig.shieldChanceGain,
-					planetConfig.shieldChanceMin)) {
+					planetConfig.shieldChanceMin) + SpaceShipProperties.properties.getLuck() * 0.07f) {
 				addCollectible(CollisionTypes.SHIELD, chunk, seed);
 			} else {
 				collectedItemCache.registerCollected(chunk.getChunkX(), chunk.getChunkY(), CollisionTypes.SHIELD);
