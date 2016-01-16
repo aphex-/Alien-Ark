@@ -422,7 +422,9 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		}
 
 		for (RaceWayPoint r : currentlyVisibleRaceWayPoints) {
-			renderEnv(r.getModelInstance(), batch, environment);
+			if (r.getTrigger() != null) {
+				renderEnv(r.getModelInstance(), batch, null);
+			}
 		}
 
 
