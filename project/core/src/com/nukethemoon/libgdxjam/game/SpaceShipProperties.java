@@ -26,13 +26,14 @@ public class SpaceShipProperties {
 	transient public static final SpaceShipProperties properties = new SpaceShipProperties(); //TODO!
 
 	public static final int USER_VALUE_MAX = 9999; // the maximum value for crew member bonus
-	public static final int INITIAL_SPEED = 30;
-	public static final int INITIAL_SHIELD = 1000;
-	public static final int INITIAL_FUEL = 3000;
-	public static final float INITIAL_LUCK = 1f;
-	public static final int INITIAL_LANDING_DISTANCE = 10;
-	public static final int INITIAL_COLLECT_RADIUS = 12;
-	public static final float INITIAL_INERTIA = 500;
+
+	public static final int INITIAL_SPEED = 200;
+	public static final int INITIAL_SHIELD = 200;
+	public static final int INITIAL_FUEL = 200;
+	public static final float INITIAL_LUCK = 200f;
+	public static final int INITIAL_LANDING_DISTANCE = 5000;
+	public static final int INITIAL_COLLECT_RADIUS = 200;
+	public static final float INITIAL_INERTIA = 5000;
 
 	private List<String> collectedArtifactIds = new ArrayList<String>(); // just to save the already collected artifacts
 	private List<Artifact> artifacts = new ArrayList<Artifact>();
@@ -56,6 +57,8 @@ public class SpaceShipProperties {
 
 	private SpaceShipProperties() {
 		reset();
+		artifacts.add(new ValueArtifact(100));
+		artifacts.add( new Increase());
 	}
 
 	public void testInit() {
@@ -210,7 +213,7 @@ public class SpaceShipProperties {
 
 	public int getShieldCapacity() {
 		// higher = better
-		return (int) toInternalValue(fuelCapacity.getCurrentValue(), 0f, 9999f);
+		return (int) toInternalValue(shieldCapacity.getCurrentValue(), 0f, 9999f);
 	}
 
 	public float getScanRadius() {
