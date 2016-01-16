@@ -2,6 +2,7 @@ package com.nukethemoon.libgdxjam.screens.planet.devtools.windows;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -37,8 +38,8 @@ public class PlacementWindow extends ClosableWindow implements DevelopmentPlacem
 	private final PlanetScreen planetScreen;
 
 
-	public PlacementWindow(Skin skin, DevelopmentPlacementRenderer renderer, final ControllerPlanet controllerPlanet, final PlanetScreen planetScreen) {
-		super("Placement", skin);
+	public PlacementWindow(Stage stage, Skin skin, DevelopmentPlacementRenderer renderer, final ControllerPlanet controllerPlanet, final PlanetScreen planetScreen) {
+		super(stage, "Placement", skin);
 		this.skin = skin;
 		this.renderer = renderer;
 		this.controllerPlanet = controllerPlanet;

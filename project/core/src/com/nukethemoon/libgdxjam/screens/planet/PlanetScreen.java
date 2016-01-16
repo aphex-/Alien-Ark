@@ -140,7 +140,6 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
 		pPlanetIndex = pPlanetIndex % KNOWN_PLANETS.length;
-		pPlanetIndex = 8;
 
 		SpaceShipProperties.properties.setCurrentInternalFuel(SpaceShipProperties.properties.getFuelCapacity());
 

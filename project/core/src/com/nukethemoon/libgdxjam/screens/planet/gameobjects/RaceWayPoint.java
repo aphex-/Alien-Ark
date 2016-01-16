@@ -1,6 +1,7 @@
 package com.nukethemoon.libgdxjam.screens.planet.gameobjects;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.nukethemoon.libgdxjam.Models;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
@@ -8,10 +9,9 @@ import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 public class RaceWayPoint {
 
 
-	transient private final btCollisionObject trigger;
+	transient private btCollisionObject trigger;
 	transient private final ModelInstance modelInstance;
 	transient private float initialHeight = -1;
-	transient public boolean triggerRemoved = false;
 
 
 	public float rotationZ = 0;
@@ -40,7 +40,9 @@ public class RaceWayPoint {
 		modelInstance.transform.setToRotation(0, 0, 1, rotationZ);
 		modelInstance.transform.rotate(0, 1, 0, rotationX);
 		modelInstance.transform.trn(x, y, initialHeight + zOffset);
-		trigger.setWorldTransform(modelInstance.transform);
+		Matrix4 m4 = new Matrix4();
+		m4.set(modelInstance.transform);
+		trigger.setWorldTransform(m4);
 	}
 
 	public ModelInstance getModelInstance() {
@@ -52,5 +54,8 @@ public class RaceWayPoint {
 		return trigger;
 	}
 
+	public void removeTrigger() {
+		trigger = null;
+	}
 
 }

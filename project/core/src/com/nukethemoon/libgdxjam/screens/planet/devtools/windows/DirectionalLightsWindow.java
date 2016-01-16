@@ -1,6 +1,7 @@
 package com.nukethemoon.libgdxjam.screens.planet.devtools.windows;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -16,8 +17,8 @@ public class DirectionalLightsWindow extends ClosableWindow {
 	private PlanetConfig planetConfig;
 
 
-	public DirectionalLightsWindow(Skin skin, final ReloadSceneListener reloadSceneListener) {
-		super("Directional Lights", skin);
+	public DirectionalLightsWindow(Stage stage, Skin skin, final ReloadSceneListener reloadSceneListener) {
+		super(stage, "Directional Lights", skin);
 		this.skin = skin;
 
 

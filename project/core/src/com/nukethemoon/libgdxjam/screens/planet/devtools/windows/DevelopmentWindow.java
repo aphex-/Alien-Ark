@@ -29,14 +29,14 @@ public class DevelopmentWindow extends ClosableWindow {
 							 final PlanetScreen planetScreen, final ReloadSceneListener reloadSceneListener,
 							 DevelopmentPlacementRenderer placementRenderer, ControllerPlanet controllerPlanet,
 							 final String[] knownPlanets) {
-		super("Development", skin);
+		super(stage, "Development", skin);
 		NinePatch patch = new NinePatch(new Texture(Gdx.files.internal("skin/background.png")),
 				1, 1, 1, 1);
 
 		INNER_BACKGROUND = new NinePatchDrawable(patch);
 		defaults().pad(4);
 
-		final DirectionalLightsWindow directionalLightsWindow = new DirectionalLightsWindow(skin, reloadSceneListener);
+		final DirectionalLightsWindow directionalLightsWindow = new DirectionalLightsWindow(stage, skin, reloadSceneListener);
 		directionalLightsWindow.setVisible(false);
 		stage.addActor(directionalLightsWindow);
 
@@ -44,7 +44,7 @@ public class DevelopmentWindow extends ClosableWindow {
 		materialsWindow.setVisible(false);
 		stage.addActor(materialsWindow);
 
-		final PlacementWindow placementWindow = new PlacementWindow(skin, placementRenderer, controllerPlanet, planetScreen);
+		final PlacementWindow placementWindow = new PlacementWindow(stage, skin, placementRenderer, controllerPlanet, planetScreen);
 		placementWindow.setVisible(false);
 		stage.addActor(placementWindow);
 

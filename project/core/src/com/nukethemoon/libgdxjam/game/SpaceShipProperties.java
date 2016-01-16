@@ -8,13 +8,13 @@ import com.nukethemoon.libgdxjam.game.artifacts.operators.Divide;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Increase;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Multiply;
 import com.nukethemoon.libgdxjam.game.attributes.Attribute;
+import com.nukethemoon.libgdxjam.game.attributes.EnginePower;
 import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
 import com.nukethemoon.libgdxjam.game.attributes.Inertia;
-import com.nukethemoon.libgdxjam.game.attributes.ScanRadius;
 import com.nukethemoon.libgdxjam.game.attributes.Landslide;
 import com.nukethemoon.libgdxjam.game.attributes.Luck;
+import com.nukethemoon.libgdxjam.game.attributes.ScanRadius;
 import com.nukethemoon.libgdxjam.game.attributes.ShieldCapacity;
-import com.nukethemoon.libgdxjam.game.attributes.EnginePower;
 import com.nukethemoon.libgdxjam.screens.solar.SolarScreen;
 
 import java.util.ArrayList;

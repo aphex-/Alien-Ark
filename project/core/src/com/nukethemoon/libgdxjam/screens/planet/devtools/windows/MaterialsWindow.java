@@ -15,7 +15,7 @@ public class MaterialsWindow extends ClosableWindow {
 	private Stage stage;
 
 	public MaterialsWindow(Stage stage, Skin skin, ReloadSceneListener reloadSceneListener) {
-		super("Materials", skin);
+		super(stage, "Materials", skin);
 		this.stage = stage;
 		add(content);
 		pack();
@@ -30,7 +30,7 @@ public class MaterialsWindow extends ClosableWindow {
 			button.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
-					SingleMaterialWindow w = new SingleMaterialWindow(getSkin(), layerConfig.material, layerConfig.name);
+					SingleMaterialWindow w = new SingleMaterialWindow(stage, getSkin(), layerConfig.material, layerConfig.name);
 					stage.addActor(w);
 				}
 			});
