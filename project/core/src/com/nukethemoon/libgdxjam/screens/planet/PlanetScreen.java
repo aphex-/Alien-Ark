@@ -128,7 +128,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		"planet05",
 		"planet06",
 		"planet07",
-		"planet08"
+		"planet08",
+		"planet09"
 	};
 
 	private Ani ani;
@@ -139,6 +140,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	public PlanetScreen(Skin pUISkin, InputMultiplexer pMultiplexer, int pPlanetIndex) {
 		pPlanetIndex = pPlanetIndex % KNOWN_PLANETS.length;
+		pPlanetIndex = 8;
 
 		SpaceShipProperties.properties.setCurrentInternalFuel(SpaceShipProperties.properties.getFuelCapacity());
 
