@@ -129,6 +129,8 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	private Vector2 corner03 = new Vector2();
 	private Vector2 corner04 = new Vector2();
 
+	private boolean pause = false;
+
 	private long lasTimeDamage = -1;
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
@@ -253,10 +255,11 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		menuButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				pause = true;
 				menuButton.openMenu(stage, new MenuTable.CloseListener() {
 					@Override
 					public void onClose() {
-
+						pause = false;
 					}
 				});
 			}
@@ -311,17 +314,21 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	public void render(float delta) {
 		Gdx.gl.glClearColor(21 / 255f, 21 / 255f, 21 / 255f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		handleArkMovementInput(delta);
-		handleAppNavigation(delta);
 
-		updateArkBounds();
+		if (!pause) {
+			handleArkMovementInput(delta);
+			handleAppNavigation(delta);
+			updateArkBounds();
+			sunRotation -= 0.01;
+			rotatePlanets(delta);
+		}
+
 //		camera.update();
 //		batch.setProjectionMatrix(camera.combined);
 
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 
-		rotatePlanets(delta);
 		shieldProgressBar.updateFromShipProperties();
 		fuelProgressBar.updateFromShipProperties();
 
@@ -332,12 +339,13 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		camera.zoom = 2.0f;
 
 		batch.begin();
-		sunRotation -= 0.01;
 		sunSprite.setRotation(sunRotation);
 		sunSprite.draw(batch);
 		drawThrust(delta);
 		for (PlanetGraphic planet : planetGraphics) {
-			planet.update(delta);
+			if (!pause) {
+				planet.update(delta);
+			}
 			planet.draw(batch);
 		}
 
@@ -350,8 +358,10 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		debugRender();
 		ani.update();
 
-		if (isColliding(tmpVector.set(0, 0), sunSprite.getHeight() / 2)) {
-			dealDamage();
+		if (!pause) {
+			if (isColliding(tmpVector.set(0, 0), sunSprite.getHeight() / 2)) {
+				dealDamage();
+			}
 		}
 	}
 
@@ -418,8 +428,10 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 
 	private void renderArc() {
 		batch.begin();
-		moveArcPosition();
-		adjustRotationIfNeccessary();
+		if (!pause) {
+			moveArcPosition();
+			adjustRotationIfNeccessary();
+		}
 		if (isThrusting) {
 			exhaustSprite.draw(batch);
 		}
@@ -453,10 +465,12 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 
 
 	private void renderPlanets() {
-		starsCurrentRotation += 0.017f;
+		if (!pause) {
+			starsCurrentRotation += 0.017f;
+		}
 		starsRotationMatrix.setToRotation(0, 0, 1, starsCurrentRotation);
-
 		batch.getProjectionMatrix().mul(starsRotationMatrix);
+
 		batch.begin();
 		bgTile.draw(batch, -3000, -3000, 6000, 6000);
 		/*sunSprite.draw(batch);
@@ -464,6 +478,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 			planetSprites[i].draw(batch);
 		}*/
 		batch.end();
+
 		batch.getProjectionMatrix().mul(starsRotationMatrix.inv());
 	}
 
