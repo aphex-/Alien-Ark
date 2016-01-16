@@ -27,12 +27,12 @@ public class SpaceShipProperties {
 
 	public static final int USER_VALUE_MAX = 9999; // the maximum value for crew member bonus
 
-	public static final int INITIAL_SPEED = 200;
-	public static final int INITIAL_SHIELD = 200;
-	public static final int INITIAL_FUEL = 200;
+	public static final int INITIAL_ENGINE_POWER = 9999;
+	public static final int INITIAL_SHIELD_CAPACITY = 100;
+	public static final int INITIAL_FUEL_CAPACITY = 200;
 	public static final float INITIAL_LUCK = 200f;
-	public static final int INITIAL_LANDING_DISTANCE = 5000;
-	public static final int INITIAL_COLLECT_RADIUS = 200;
+	public static final int INITIAL_LANDSLIDE = 5000;
+	public static final int INITIAL_SCAN_RADIUS = 200;
 	public static final float INITIAL_INERTIA = 5000;
 
 	private List<String> collectedArtifactIds = new ArrayList<String>(); // just to save the already collected artifacts
@@ -163,12 +163,12 @@ public class SpaceShipProperties {
 	}
 
 	private void resetAttributes() {
-		enginePower = new EnginePower(INITIAL_SPEED);
-		fuelCapacity = new FuelCapacity(INITIAL_FUEL);
+		enginePower = new EnginePower(INITIAL_ENGINE_POWER);
+		fuelCapacity = new FuelCapacity(INITIAL_FUEL_CAPACITY);
 		luck = new Luck(INITIAL_LUCK);
-		shieldCapacity = new ShieldCapacity(INITIAL_SHIELD);
-		landslide = new Landslide(INITIAL_LANDING_DISTANCE);
-		scanRadius = new ScanRadius(INITIAL_COLLECT_RADIUS);
+		shieldCapacity = new ShieldCapacity(INITIAL_SHIELD_CAPACITY);
+		landslide = new Landslide(INITIAL_LANDSLIDE);
+		scanRadius = new ScanRadius(INITIAL_SCAN_RADIUS);
 		inertia = new Inertia(INITIAL_INERTIA);
 	}
 
@@ -193,12 +193,12 @@ public class SpaceShipProperties {
 
 	public float getEnginePower() {
 		// balanced = better
-		return toInternalValue(enginePower.getCurrentValue(), 20, 100);
+		return toInternalValue(enginePower.getCurrentValue(), 25, 90);
 	}
 
 	public float getInertia() {
 		// balanced = better
-		return toInternalValue(inertia.getCurrentValue(), 0.75f, 3f);
+		return toInternalValue(inertia.getCurrentValue(), 0.1f, 3f);
 	}
 
 	public float getLandslide() {
