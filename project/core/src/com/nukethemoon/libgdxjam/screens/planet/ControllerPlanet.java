@@ -506,7 +506,9 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	}
 
 	public void addRaceWayPoint(RaceWayPoint r) {
-		if (!alreadyReachedWayPoints.contains(r) && r.getTrigger() != null) {
+		if (!alreadyReachedWayPoints.contains(r) && r.getTrigger() != null
+				&& !currentlyVisibleRaceWayPoints.contains(r)) {
+
 			updateWayPoint(r);
 			controllerPhysic.addCollisionObject(r.getTrigger());
 			currentlyVisibleRaceWayPoints.add(r);

@@ -216,6 +216,96 @@
         "zOffset": 0.0,
         "reached": false,
         "secondsToReach": 5
+      },
+      {
+        "rotationZ": 70.0,
+        "rotationX": 0.0,
+        "x": -699.4756,
+        "y": 50.65634,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 5
+      },
+      {
+        "rotationZ": 90.0,
+        "rotationX": 0.0,
+        "x": -730.3026,
+        "y": -22.492897,
+        "zOffset": 10.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 70.0,
+        "rotationX": 0.0,
+        "x": -749.1252,
+        "y": -193.59724,
+        "zOffset": 20.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 30.0,
+        "rotationX": 20.0,
+        "x": -807.31323,
+        "y": -286.18848,
+        "zOffset": 2.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 90.0,
+        "rotationX": 0.0,
+        "x": -859.8468,
+        "y": -409.10495,
+        "zOffset": 2.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 90.0,
+        "rotationX": 0.0,
+        "x": -885.2562,
+        "y": -481.5741,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 90.0,
+        "rotationX": -30.0,
+        "x": -889.87805,
+        "y": -554.6117,
+        "zOffset": 3.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 150.0,
+        "rotationX": 0.0,
+        "x": -858.9649,
+        "y": -671.0326,
+        "zOffset": 5.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": -30.0,
+        "rotationX": 0.0,
+        "x": -733.04395,
+        "y": -779.0925,
+        "zOffset": 3.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": -50.0,
+        "rotationX": 0.0,
+        "x": -615.34326,
+        "y": -861.58997,
+        "zOffset": 5.0,
+        "reached": false,
+        "secondsToReach": 10
       }
     ]
   }

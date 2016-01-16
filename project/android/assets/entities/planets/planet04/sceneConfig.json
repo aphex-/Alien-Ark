@@ -87,7 +87,68 @@
       }
     }
   ],
-  "artifacts": [],
+  "artifacts": [
+    {
+      "x": -817.1974,
+      "y": -905.07117,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0001_planet04",
+      "type": "ATTRIBUTE_LUCK"
+    },
+    {
+      "x": 1998.264,
+      "y": -1574.4863,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0002_planet04",
+      "type": "ATTRIBUTE_SCAN_RADIUS"
+    },
+    {
+      "x": 4038.1475,
+      "y": -1733.0941,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0003_planet04",
+      "type": "VALUE_500"
+    },
+    {
+      "x": 6503.374,
+      "y": -1018.58563,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0004_planet04",
+      "type": "VALUE_1000"
+    },
+    {
+      "x": 3425.5107,
+      "y": 897.67706,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0005_planet04",
+      "type": "ATTRIBUTE_INERTIA"
+    },
+    {
+      "x": -51.525288,
+      "y": 2458.674,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0006_planet04",
+      "type": "ATTRIBUTE_SPEED"
+    }
+  ],
   "layerConfigs": [
     {
       "name": "Ice",
@@ -185,5 +246,90 @@
         ]
       }
     }
-  ]
+  ],
+  "planetRace": {
+    "wayPoints": [
+      {
+        "rotationZ": 0.0,
+        "rotationX": 0.0,
+        "x": -651.4758,
+        "y": 104.238914,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 0.0,
+        "rotationX": 0.0,
+        "x": -794.562,
+        "y": 135.73788,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": -40.0,
+        "rotationX": 0.0,
+        "x": -905.8757,
+        "y": 241.05672,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": -50.0,
+        "rotationX": 20.0,
+        "x": -979.2722,
+        "y": 322.41772,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": -60.0,
+        "rotationX": 20.0,
+        "x": -1061.4979,
+        "y": 449.23297,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": -40.0,
+        "rotationX": -30.0,
+        "x": -1116.6833,
+        "y": 527.1565,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": -50.0,
+        "rotationX": 0.0,
+        "x": -1201.7545,
+        "y": 610.1035,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": -50.0,
+        "rotationX": 0.0,
+        "x": -1214.244,
+        "y": 817.2445,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 40.0,
+        "rotationX": 0.0,
+        "x": -1372.6063,
+        "y": 871.8431,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      }
+    ]
+  }
 }
