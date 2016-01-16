@@ -35,7 +35,138 @@
       }
     }
   ],
-  "artifacts": [],
+  "artifacts": [
+    {
+      "x": 253.0671,
+      "y": -541.5898,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0001_planet02",
+      "type": "VALUE_200"
+    },
+    {
+      "x": -884.6782,
+      "y": -468.36697,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0002_planet02",
+      "type": "ATTRIBUTE_LANDSLIDE"
+    },
+    {
+      "x": -1061.844,
+      "y": 350.10712,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0003_planet02",
+      "type": "OPERATOR_MINUS"
+    },
+    {
+      "x": -882.9188,
+      "y": 872.6472,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0004_planet02",
+      "type": "ATTRIBUTE_SPEED"
+    },
+    {
+      "x": -89.82663,
+      "y": 1838.6556,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0005_planet02",
+      "type": "OPERATOR_MINUS"
+    },
+    {
+      "x": 671.483,
+      "y": 1282.8821,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0006_planet02",
+      "type": "ATTRIBUTE_INERTIA"
+    },
+    {
+      "x": 1457.9237,
+      "y": 570.51636,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0007_planet02",
+      "type": "VALUE_200"
+    },
+    {
+      "x": 2073.3435,
+      "y": 230.16992,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0008_planet02",
+      "type": "ATTRIBUTE_SCAN_RADIUS"
+    },
+    {
+      "x": 1341.6587,
+      "y": -883.2073,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0009_planet02",
+      "type": "ATTRIBUTE_LANDSLIDE"
+    },
+    {
+      "x": 1019.4515,
+      "y": -1587.7375,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0010_planet02",
+      "type": "OPERATOR_PLUS"
+    },
+    {
+      "x": -179.71387,
+      "y": -2030.6505,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0011_planet02",
+      "type": "VALUE_500"
+    },
+    {
+      "x": 4073.2107,
+      "y": 2332.4846,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0012_planet02",
+      "type": "VALUE_500"
+    },
+    {
+      "x": -2329.3228,
+      "y": -2864.302,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0013_planet02",
+      "type": "ATTRIBUTE_LUCK"
+    }
+  ],
   "layerConfigs": [
     {
       "name": "Lava",
@@ -133,6 +264,7 @@
         "x": 123.214836,
         "y": 534.128,
         "zOffset": 3.0,
+        "reached": false,
         "secondsToReach": 10
       },
       {
@@ -141,6 +273,7 @@
         "x": 2.0715752,
         "y": 614.4723,
         "zOffset": 0.0,
+        "reached": false,
         "secondsToReach": 10
       },
       {
@@ -149,6 +282,7 @@
         "x": -173.84471,
         "y": 644.7192,
         "zOffset": 0.0,
+        "reached": false,
         "secondsToReach": 10
       },
       {
@@ -157,6 +291,7 @@
         "x": -301.85135,
         "y": 656.1829,
         "zOffset": 8.0,
+        "reached": false,
         "secondsToReach": 5
       },
       {
@@ -165,6 +300,7 @@
         "x": -404.64523,
         "y": 847.6241,
         "zOffset": 0.0,
+        "reached": false,
         "secondsToReach": 5
       },
       {
@@ -173,6 +309,7 @@
         "x": -527.7911,
         "y": 1048.3691,
         "zOffset": 0.0,
+        "reached": false,
         "secondsToReach": 5
       },
       {
@@ -181,6 +318,7 @@
         "x": -560.0564,
         "y": 1073.3287,
         "zOffset": 3.0,
+        "reached": false,
         "secondsToReach": 5
       },
       {
@@ -189,6 +327,7 @@
         "x": -699.6272,
         "y": 1061.1843,
         "zOffset": 0.0,
+        "reached": false,
         "secondsToReach": 5
       },
       {
@@ -197,6 +336,7 @@
         "x": -833.7711,
         "y": 1123.8215,
         "zOffset": 0.0,
+        "reached": false,
         "secondsToReach": 8
       },
       {
@@ -205,6 +345,7 @@
         "x": -838.5042,
         "y": 1219.331,
         "zOffset": 1.0,
+        "reached": false,
         "secondsToReach": 5
       },
       {
@@ -213,6 +354,7 @@
         "x": -820.3144,
         "y": 1283.7765,
         "zOffset": 3.0,
+        "reached": false,
         "secondsToReach": 5
       },
       {
@@ -221,6 +363,7 @@
         "x": -740.1424,
         "y": 1309.5724,
         "zOffset": 0.0,
+        "reached": false,
         "secondsToReach": 5
       }
     ]
