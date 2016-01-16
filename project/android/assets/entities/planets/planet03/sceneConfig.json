@@ -61,6 +61,7 @@
       }
     }
   ],
+  "artifacts": [],
   "layerConfigs": [
     {
       "name": "Ice",
@@ -168,5 +169,54 @@
         ]
       }
     }
-  ]
+  ],
+  "planetRace": {
+    "wayPoints": [
+      {
+        "rotationZ": 0.0,
+        "rotationX": 0.0,
+        "x": -7.257757,
+        "y": 493.6311,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 0.0,
+        "rotationX": 0.0,
+        "x": -258.49942,
+        "y": 480.5036,
+        "zOffset": 3.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 0.0,
+        "rotationX": 0.0,
+        "x": -371.59106,
+        "y": 411.5913,
+        "zOffset": 2.0,
+        "reached": false,
+        "secondsToReach": 5
+      },
+      {
+        "rotationZ": 60.0,
+        "rotationX": 0.0,
+        "x": -550.5108,
+        "y": 234.1867,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 70.0,
+        "rotationX": 0.0,
+        "x": -621.64655,
+        "y": 134.22604,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 5
+      }
+    ]
+  }
 }
