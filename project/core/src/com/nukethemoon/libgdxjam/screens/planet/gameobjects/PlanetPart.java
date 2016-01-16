@@ -108,7 +108,7 @@ public class PlanetPart extends GameObject {
 		modelInstance.transform.translate(getChunkGraphicX(chunk), getChunkGraphicY(chunk), 0);
 
 		initPhysics();
-		initCollectibles(chunk, collectedItemCache, seed);
+		initCollectibles(chunk, collectedItemCache, 0);
 		initArtifacts(chunk);
 		initRaceWayPoints(chunk);
 	}

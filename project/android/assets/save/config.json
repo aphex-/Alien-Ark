@@ -1,7 +1,7 @@
 {
   "requestRadiusInTiles": 110,
   "debugMode": true,
-  "tutorialEnabled": false,
+  "tutorialEnabled": true,
   "invertUpDown": false,
   "playAudio": true,
   "FOV": 68.0
