@@ -478,6 +478,13 @@ popupMenu
   orig: 280, 430
   offset: 0, 0
   index: -1
+rocket_shield
+  rotate: false
+  xy: 504, 69
+  size: 80, 134
+  orig: 80, 134
+  offset: 0, 0
+  index: -1
 row03
   rotate: false
   xy: 2, 166
@@ -529,49 +536,49 @@ row09
   index: -1
 slot00
   rotate: false
-  xy: 504, 123
+  xy: 586, 123
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotDrop
   rotate: false
-  xy: 659, 274
+  xy: 823, 262
   size: 76, 76
   orig: 76, 76
   offset: 0, 0
   index: -1
 slotOK
   rotate: false
-  xy: 504, 41
+  xy: 586, 41
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorDivide
   rotate: false
-  xy: 586, 123
+  xy: 832, 422
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorMinus
   rotate: false
-  xy: 586, 41
+  xy: 832, 340
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorMultiply
   rotate: false
-  xy: 832, 422
+  xy: 659, 270
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorPlus
   rotate: false
-  xy: 832, 340
+  xy: 741, 273
   size: 80, 80
   orig: 80, 80
   offset: 0, 0

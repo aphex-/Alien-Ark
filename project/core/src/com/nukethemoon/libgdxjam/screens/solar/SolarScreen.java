@@ -38,6 +38,7 @@ import com.nukethemoon.libgdxjam.Config;
 import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
+import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
@@ -113,6 +114,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	private List<Body> bodies;
 	private PointLight pointLight;
 	private float counter = 0f;
+	private Sprite rocketShield;
 
 	private List<PlanetGraphic> planetGraphics = new ArrayList<PlanetGraphic>();
 
@@ -128,6 +130,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	private Vector2 corner03 = new Vector2();
 	private Vector2 corner04 = new Vector2();
 
+	private long lasTimeDamage = -1;
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
 		Log.d(getClass(), "create SolarScreen");
@@ -136,6 +139,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		this.uiSkin = uiSkin;
 		batch = new SpriteBatch();
 		arkSprite = new Sprite(App.TEXTURES.findRegion("rocket"));
+		rocketShield = new Sprite(App.TEXTURES.findRegion("rocket_shield"));
 		exhaustSprite = new Sprite(App.TEXTURES.findRegion("exhaust_placeholder"));
 		ani = new Ani();
 
@@ -193,7 +197,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	}
 
 	private void createPointLights() {
-		pointLight = new PointLight(rayHandler, RAYS_NUM, new Color(1f, 1f, 0f, 0.8f), 3000, 0, 0);
+		pointLight = new PointLight(rayHandler, RAYS_NUM, new Color(1f, 1f, 0f, 0.9f), 4000, 0, 0);
 
 	}
 
@@ -317,7 +321,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
-		renderArc();
+
 		rotatePlanets(delta);
 		shieldProgressBar.updateFromShipProperties();
 		fuelProgressBar.updateFromShipProperties();
@@ -329,19 +333,30 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		camera.zoom = 2.0f;
 
 		batch.begin();
+		sunRotation -= 0.01;
+		sunSprite.setRotation(sunRotation);
+		sunSprite.draw(batch);
 		drawThrust(delta);
 		for (PlanetGraphic planet : planetGraphics) {
 			planet.update(delta);
 			planet.draw(batch);
 		}
-		sunRotation -= 0.01;
-		sunSprite.setRotation(sunRotation);
-		sunSprite.draw(batch);
+
 		batch.end();
+
+		renderArc();
 
 		stage.act(delta);
 		stage.draw();
+		debugRender();
+		ani.update();
 
+		if (isColliding(tmpVector.set(0, 0), sunSprite.getHeight() / 2)) {
+			dealDamage();
+		}
+	}
+
+	private void debugRender() {
 		if (Config.DEBUG_RENDERER) {
 			debugShapeRenderer.setProjectionMatrix(camera.combined);
 			debugRenderer.render(world, camera.combined);
@@ -358,8 +373,6 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 			debugShapeRenderer.end();
 
 		}
-
-		ani.update();
 	}
 
 	private void updateArkBounds() {
@@ -390,6 +403,14 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		}
 	}
 
+	private void dealDamage() {
+		if (System.currentTimeMillis() - lasTimeDamage > Rocket.MIN_DAMAGE_DELAY_MILLIS) {
+			lasTimeDamage = System.currentTimeMillis();
+			SpaceShipProperties.properties.addCurrentShield(-1);
+			App.audioController.playSound("energy_shield.mp3");
+		}
+	}
+
 
 	private void renderArc() {
 		batch.begin();
@@ -399,6 +420,12 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 			exhaustSprite.draw(batch);
 		}
 		arkSprite.draw(batch);
+		float shieldAlpha = Rocket.MIN_DAMAGE_DELAY_MILLIS / (System.currentTimeMillis() - lasTimeDamage);
+		rocketShield.setAlpha(shieldAlpha);
+		rocketShield.setPosition(arkSprite.getX() - 4, arkSprite.getY() - 5);
+		rocketShield.setRotation(currentRotation - 90);
+		rocketShield.draw(batch);
+
 		batch.end();
 	}
 
@@ -439,9 +466,9 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	private void handleArkMovementInput(float delta) {
 		adjustCurrentSpeed();
 
-		if (Gdx.app.getInput().isKeyPressed(Input.Keys.RIGHT)) {
+		if (Gdx.app.getInput().isKeyPressed(Input.Keys.RIGHT) || Gdx.app.getInput().isKeyPressed(Input.Keys.D)) {
 			adjustRotation = adjustRotation - (50 * delta);
-		} else if (Gdx.app.getInput().isKeyPressed(Input.Keys.LEFT)) {
+		} else if (Gdx.app.getInput().isKeyPressed(Input.Keys.LEFT) || Gdx.app.getInput().isKeyPressed(Input.Keys.A)) {
 			adjustRotation = adjustRotation + (50 * delta);
 		}
 	}
@@ -454,16 +481,15 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		}
 
 		//if (Gdx.app.getInput().isKeyPressed(19) && !rocket.isOutOfFuel()) {
-		if (Gdx.app.getInput().isKeyPressed(19)) {
+		if (Gdx.app.getInput().isKeyPressed(Input.Keys.UP) || Gdx.app.getInput().isKeyPressed(Input.Keys.W)) {
 			currentSpeedLevel += 1;
-			SpaceShipProperties.properties.addCurrentInternalFuel(-1);
 			isThrusting = true;
 
 		} else {
 			isThrusting = false;
 		}
 
-		if (Gdx.app.getInput().isKeyPressed(20)) {
+		if (Gdx.app.getInput().isKeyPressed(Input.Keys.DOWN) || Gdx.app.getInput().isKeyPressed(Input.Keys.S)) {
 			currentSpeedDecay += SPEED_DECREASE_BY_BRAKES_RATE;
 		}
 
@@ -519,29 +545,25 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	}
 
 	private int determinePlanetCollision() {
-		/*if (isColliding(sunSprite)) {
-			return SUN_COLLISION;
-		}*/
 		for (int i = 0; i < planetGraphics.size(); i++) {
-			if (isColliding(planetGraphics.get(i))) {
+			if (isColliding(planetGraphics.get(i).getPosition(), planetGraphics.get(i).getRadius())) {
 				return i;
 			}
 		}
 		return -1;
 	}
 
-	private boolean isColliding(PlanetGraphic planetGraphic) {
-		Vector2 planetPosition = planetGraphic.getPosition();
-		if (corner01.dst(planetPosition) < planetGraphic.getRadius()) {
+	private boolean isColliding(Vector2 planetPosition, float planetRadius) {
+		if (corner01.dst(planetPosition) < planetRadius) {
 			return true;
 		}
-		if (corner02.dst(planetPosition) < planetGraphic.getRadius()) {
+		if (corner02.dst(planetPosition) < planetRadius) {
 			return true;
 		}
-		if (corner03.dst(planetPosition) < planetGraphic.getRadius()) {
+		if (corner03.dst(planetPosition) < planetRadius) {
 			return true;
 		}
-		if (corner04.dst(planetPosition) < planetGraphic.getRadius()) {
+		if (corner04.dst(planetPosition) < planetRadius) {
 			return true;
 		}
 		return Intersector.isPointInTriangle(planetPosition, corner01, corner02, corner03)
@@ -570,7 +592,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		}
 		final int planetIndex = determinePlanetCollision();
 		if (planetIndex == SUN_COLLISION) {
-			dealDamageToRocket(delta);
+			//dealDamageToRocket(delta);
 		} else if (planetIndex != -1) {
 			if (enterOrbitTable == null) {
 				enterOrbitTable = new EnterOrbitTable(Styles.UI_SKIN, planetIndex);

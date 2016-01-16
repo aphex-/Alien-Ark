@@ -34,7 +34,7 @@ public class Rocket extends GameObject implements Disposable {
 
 
 	private static final float THIRD_PERSON_OFFSET_Z = 2;
-	private static final int MIN_DAMAGE_DELAY_MILLIS = 200;
+	public static final int MIN_DAMAGE_DELAY_MILLIS = 200;
 	private static final Vector3 START_POSITION = new Vector3(20, 0, 120);
 	private static final Vector3 LAUNCH_IMPULSE = new Vector3(0, 0, 55);
 	private static final int LAUNCH_INDESTRUCTIBLE_TICKS = 30;

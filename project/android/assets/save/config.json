@@ -3,6 +3,6 @@
   "debugMode": true,
   "tutorialEnabled": false,
   "invertUpDown": false,
-  "playAudio": false,
+  "playAudio": true,
   "FOV": 68.0
 }
