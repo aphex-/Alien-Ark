@@ -200,7 +200,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	}
 
 	private void createPointLights() {
-		pointLight = new PointLight(rayHandler, RAYS_NUM, new Color(1f, 1f, 0f, 0.9f), 4000, 0, 0);
+		pointLight = new PointLight(rayHandler, RAYS_NUM, new Color(1f, 1f, 0f, 1f), 5000, 0, 0);
 
 	}
 

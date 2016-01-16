@@ -158,7 +158,7 @@ public class ArkScreen implements Screen {
 
 		multiplexer.addProcessor(stage);
 
-		App.TUTORIAL_CONTROLLER.onArkEntered();
+
 	}
 
 	private class WorkBenchClickListener extends ClickListener {
@@ -437,6 +437,7 @@ public class ArkScreen implements Screen {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
 					if (Alien.createAlien(workbenchSlot1.pop(), workbenchSlot2.pop(), workbenchSlot3.pop())) {
+						App.TUTORIAL_CONTROLLER.onAlienCrafted();
 						updateResultSlot();
 						updateAlienInventory();
 						updateArtifactsInventory();

@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
 import com.nukethemoon.libgdxjam.screens.solar.SolarScreen;
 import com.nukethemoon.libgdxjam.ui.DialogTable;
@@ -29,7 +30,7 @@ public class TutorialController {
 		COLLECT_THE_ARTIFACT,
 		LEAVE_THE_PLANET,
 		OPEN_COMMAND_CENTER,
-		CRAFT_AN_ALIEN,
+		CRAFT,
 		END_TUTORIAL
 	}
 
@@ -39,9 +40,9 @@ public class TutorialController {
 
 	private long totalKeyEvents = 0;
 
-	private int solarScreenStep = 0;
-	private int planetScreenStep = 0;
-	private int arkScreenStep = 0;
+	private int solarScreenCalls = 0;
+	private int planetScreenCalls = 0;
+	private int arkScreenCalls = 0;
 
 	private boolean pressedLeft = false;
 	private boolean pressedTop = false;
@@ -59,8 +60,9 @@ public class TutorialController {
 				"getting into this LIFE IN SPACE.",
 				"Navigate your ship using the",
 				"CURSOR KEYS or W, A, S and D.",
-				"Travel to a planet and avoid",
-				"to fall into the Star."
+				"Travel to the marked planet",
+				"and enter it. Avoid falling",
+				"into the star."
 		}, "TUTORIAL 01"));
 
 		tutorialDialogs.put(TutorialStep.SHIP_CONTROLS, new DialogTable(skin, new String[]{
@@ -98,18 +100,6 @@ public class TutorialController {
 				"engines if you miss the right spot."
 		}, "TUTORIAL 04"));
 
-		tutorialDialogs.put(TutorialStep.COLLECT_THE_ARTIFACT, new DialogTable(skin, new String[]{
-				"Respect! I underestimated your",
-				"skills. Now try to land your",
-				"ship close to the ARTIFACT to",
-				"collect it.",
-				"Press SPACE to stop the engines",
-				"and start the landing manoeuvre.",
-				"Let the rocket come to a halt",
-				"on solid ground.",
-				"Press SPACE again to start the",
-				"engines if you miss the right spot."
-		}, "TUTORIAL 05"));
 
 		tutorialDialogs.put(TutorialStep.LEAVE_THE_PLANET, new DialogTable(skin, new String[]{
 				"Perfect! You found an ARTIFACT.",
@@ -118,34 +108,50 @@ public class TutorialController {
 				"Lets leave the planet through",
 				"the PLANET PORTAL.",
 				"Press SPACE to start your engines."
-		}, "TUTORIAL 06"));
+		}, "TUTORIAL 05"));
 
 
 		tutorialDialogs.put(TutorialStep.OPEN_COMMAND_CENTER, new DialogTable(skin, new String[]{
-				"Alright. Your progress is saved",
-				"and the fuel is filled up now.",
+				"Alright. Your fuel is filled up",
+				"now.",
 				"Open the COMMAND CENTER by",
 				"pressing the button called",
 				"'command center button'.",
+		}, "TUTORIAL 06"));
+
+
+		tutorialDialogs.put(TutorialStep.CRAFT, new DialogTable(skin, new String[]{
+				"There is your collected ARTIFACT",
+				"It can improve the FUEL CAPACITY",
+				"of the rocket. Luckily you ",
+				"have two additional ARTIFACTS",
+				"on board. Drag and drop them",
+				"into the LAB to craft an ALIEN."
 		}, "TUTORIAL 07"));
 
-
-		tutorialDialogs.put(TutorialStep.CRAFT_AN_ALIEN, new DialogTable(skin, new String[]{
-				"The ARTIFACTS you collected are",
-				"organic life forms.",
-				"With the lab that is on board you can",
-				"easily hybridize them into fully-fletched ALIENS!",
-				"Drag & Drop three ARTIFACTS into the LAB."
-		}, "TUTORIAL 08"));
-
 		tutorialDialogs.put(TutorialStep.END_TUTORIAL, new DialogTable(skin, new String[]{
-				"The end of the tutorial",
-		}, "TUTORIAL 09"));
+				"Perfect! Your ship has improved.",
+				"If you find ARTIFACTS that",
+				"improve the speed you can even",
+				"win a race on a planet."
+		}, "TUTORIAL END"));
 	}
 
 	public void register(Stage stage, Ani ani) {
 		this.stage = stage;
 		this.ani = ani;
+	}
+
+	public void reset() {
+		currentStep = TutorialStep.NULL;
+		totalKeyEvents = 0;
+		solarScreenCalls = 0;
+		planetScreenCalls = 0;
+		arkScreenCalls = 0;
+		pressedLeft = false;
+		pressedTop = false;
+		pressedRight = false;
+		pressedDown = false;
 	}
 
 	private void next() {
@@ -155,8 +161,20 @@ public class TutorialController {
 				currentStep = TutorialStep.values()[currentStep.ordinal() + 1];
 				dialogTable = tutorialDialogs.get(currentStep);
 
-				stage.addActor(dialogTable);
-				ani.add(dialogTable.createAnimation());
+				if (currentStep == TutorialStep.CRAFT) {
+					dialogTable.setPosition(10, dialogTable.getHeight() + 20);
+				}
+
+				if (dialogTable != null) {
+					stage.addActor(dialogTable);
+					ani.add(dialogTable.createAnimation());
+				}
+
+				if (currentStep == TutorialStep.SHIP_CONTROLS || currentStep == TutorialStep.REACH_THE_ARTIFACT
+						|| currentStep == TutorialStep.COLLECT_THE_ARTIFACT || currentStep ==  TutorialStep.LEAVE_THE_PLANET) {
+					SpaceShipProperties.properties.addCurrentInternalFuel(SpaceShipProperties.properties.getFuelCapacity());
+				}
+
 			}
 			if (currentStep == TutorialStep.END_TUTORIAL) {
 				App.config.tutorialEnabled = false;
@@ -177,28 +195,31 @@ public class TutorialController {
 		}
 
 		if (screenClass == PlanetScreen.class) {
-			if (planetScreenStep == 0) {
+			if (planetScreenCalls == 0) {
 				currentStep = TutorialStep.values()[TutorialStep.SHIP_CONTROLS.ordinal() - 1];
 				next();
 			}
+			planetScreenCalls++;
 		}
 
 		if (screenClass == SolarScreen.class) {
-			if (solarScreenStep == 0) {
+			if (solarScreenCalls == 0) {
 				currentStep = TutorialStep.values()[TutorialStep.REACH_PLANET.ordinal() - 1];
 				next();
 			}
-			if (solarScreenStep == 1) {
+			if (solarScreenCalls == 1) {
 				currentStep = TutorialStep.values()[TutorialStep.OPEN_COMMAND_CENTER.ordinal() - 1];
 				next();
 			}
+			solarScreenCalls++;
 		}
 
 		if (screenClass == ArkScreen.class) {
-			if (arkScreenStep == 0) {
-				currentStep = TutorialStep.values()[TutorialStep.CRAFT_AN_ALIEN.ordinal() - 1];
+			if (arkScreenCalls == 0) {
+				currentStep = TutorialStep.values()[TutorialStep.CRAFT.ordinal() - 1];
 				next();
 			}
+			arkScreenCalls++;
 		}
 	}
 
@@ -249,9 +270,9 @@ public class TutorialController {
 		}
 	}
 
-	public void onArkEntered() {
+	public void onAlienCrafted() {
 		if (App.config.tutorialEnabled) {
-			if (currentStep == TutorialStep.CRAFT_AN_ALIEN) {
+			if (currentStep == TutorialStep.CRAFT) {
 				next();
 			}
 		}
@@ -269,12 +290,12 @@ public class TutorialController {
 		if (App.config.tutorialEnabled) {
 			if (currentStep.ordinal() < TutorialStep.LEAVE_THE_PLANET.ordinal()) {
 				currentStep = TutorialStep.LEAVE_THE_PLANET;
-				planetScreenStep = 1;
+				planetScreenCalls = 1;
 			}
 		}
 	}
 
 	public boolean isForcedPlanet01() {
-		return solarScreenStep == 0 && App.config.tutorialEnabled;
+		return solarScreenCalls == 1 && App.config.tutorialEnabled;
 	}
 }
