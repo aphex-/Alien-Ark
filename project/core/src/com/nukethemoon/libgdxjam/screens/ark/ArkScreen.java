@@ -237,7 +237,7 @@ public class ArkScreen implements Screen {
 			singleProperty.setBackground(new TextureRegionDrawable(Attribute.getPropertiesTexture(a.getClass())));
 			Label label = new Label(a.name(), skin);
 			label.setStyle(Styles.LABEL_PROPERTY);
-			singleProperty.add(label).width(410);
+			singleProperty.add(label).width(410).bottom();
 			Label value = new Label(String.valueOf((int)a.getCurrentValue()), skin);
 			value.setStyle(Styles.LABEL_VALUE_ARTIFACT);
 			singleProperty.add(value).width(110);
