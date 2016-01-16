@@ -105,7 +105,7 @@ public class ControllerPhysic extends ContactListener {
 		object.dispose();
 	}
 
-	public void removeCollisionObject(btCollisionObject object) {
+	public void removeCollisionObject(final btCollisionObject object) {
 		if (object == null) {
 			return;
 		}

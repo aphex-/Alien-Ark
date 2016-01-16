@@ -102,9 +102,9 @@ public class Models {
 		PORTAL_TRIGGER_COLLISION = Bullet.obtainStaticNodeShape(portalTriggerModel.nodes);
 
 		RACE_WAY_POINT = load("models/race_waypoint.obj");
-
-		Model raceWayPointTrigger = load("models/race_waypoint_trigger.obj");
-		RACE_WAY_POINT_COLLISION = Bullet.obtainStaticNodeShape(raceWayPointTrigger.nodes);
+		RACE_WAY_POINT.calculateBoundingBox(boundingBox);
+		//Model raceWayPointTrigger = load("models/race_waypoint_trigger.obj");
+		RACE_WAY_POINT_COLLISION = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.5f));
 	}
 
 	private static Model load(String path) {

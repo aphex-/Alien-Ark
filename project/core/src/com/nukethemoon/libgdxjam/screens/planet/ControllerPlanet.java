@@ -540,8 +540,8 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		if (pointIndex == 0) {
 			raceListener.onRaceStart();
 		} else if (pointIndex == planetConfig.planetRace.wayPoints.size() - 1) {
-			raceListener.onRaceSuccess();
 			removeRaceWayPoint(r);
+			raceListener.onRaceSuccess();
 			resetRace();
 			return;
 		} else {

@@ -21,6 +21,7 @@ public class RaceWayPoint {
 	public float y;
 
 	public float zOffset;
+	public boolean reached = false;
 
 	public int secondsToReach = 10;
 
@@ -42,6 +43,7 @@ public class RaceWayPoint {
 		modelInstance.transform.trn(x, y, initialHeight + zOffset);
 		Matrix4 m4 = new Matrix4();
 		m4.set(modelInstance.transform);
+		m4.trn(0, 0, 5);
 		trigger.setWorldTransform(m4);
 	}
 
