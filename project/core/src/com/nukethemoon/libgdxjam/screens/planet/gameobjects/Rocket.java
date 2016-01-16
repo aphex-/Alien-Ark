@@ -127,7 +127,7 @@ public class Rocket extends GameObject implements Disposable {
 				new RocketMotionState(rocketModelInstance.transform));
 		rigidBodyList.get(0).setActivationState(4); // disable deactivation
 		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(
-				SpaceShipProperties.properties.getSpeed()));
+				SpaceShipProperties.properties.getEnginePower()));
 
 		SpaceShipProperties.properties.setCurrentInternalFuel((int) FuelCapacity.INTERNAL_MAX);
 		SpaceShipProperties.properties.setCurrentInternalShield((int) ShieldCapacity.INTERNAL_MAX);
@@ -151,13 +151,13 @@ public class Rocket extends GameObject implements Disposable {
 
 	public void rotateLeft() {
 		if (thrusting) {
-			zRotation = (zRotation + SpaceShipProperties.properties.getManeuverability()) % 360;
+			zRotation = (zRotation + SpaceShipProperties.properties.getInertia()) % 360;
 		}
 	}
 
 	public void rotateRight() {
 		if (thrusting) {
-			zRotation = (zRotation - SpaceShipProperties.properties.getManeuverability()) % 360;
+			zRotation = (zRotation - SpaceShipProperties.properties.getInertia()) % 360;
 		}
 	}
 
@@ -168,8 +168,8 @@ public class Rocket extends GameObject implements Disposable {
 		}
 
 		if (thrusting) {
-			if ((xRotation - SpaceShipProperties.properties.getManeuverability()) > -89) {
-				xRotation = (xRotation - SpaceShipProperties.properties.getManeuverability() * invert) % 360;
+			if ((xRotation - SpaceShipProperties.properties.getInertia()) > -89) {
+				xRotation = (xRotation - SpaceShipProperties.properties.getInertia() * invert) % 360;
 			}
 		}
 	}
@@ -180,8 +180,8 @@ public class Rocket extends GameObject implements Disposable {
 			invert = -1;
 		}
 		if (thrusting) {
-			if((xRotation + SpaceShipProperties.properties.getManeuverability()) < 89) {
-				xRotation = (xRotation + SpaceShipProperties.properties.getManeuverability() * invert) % 360;
+			if((xRotation + SpaceShipProperties.properties.getInertia()) < 89) {
+				xRotation = (xRotation + SpaceShipProperties.properties.getInertia() * invert) % 360;
 			}
 		}
 	}
@@ -258,7 +258,7 @@ public class Rocket extends GameObject implements Disposable {
 		if (isOutOfFuel()) {
 			return;
 		}
-		tmpMovement.set(getDirection()).nor().scl(SpaceShipProperties.properties.getSpeed());
+		tmpMovement.set(getDirection()).nor().scl(SpaceShipProperties.properties.getEnginePower());
 		rigidBodyList.get(0).applyCentralForce(tmpMovement);
 	}
 
@@ -410,8 +410,8 @@ public class Rocket extends GameObject implements Disposable {
 			// cap the speed
 			Vector3 linearVelocity = rigidBodyList.get(0).getLinearVelocity();
 			float tickSpeed = linearVelocity.len();
-			if (tickSpeed > SpaceShipProperties.properties.getSpeed()) {
-				linearVelocity.scl(SpaceShipProperties.properties.getSpeed() / tickSpeed);
+			if (tickSpeed > SpaceShipProperties.properties.getEnginePower()) {
+				linearVelocity.scl(SpaceShipProperties.properties.getEnginePower() / tickSpeed);
 				rigidBodyList.get(0).setLinearVelocity(tmpMovement);
 			}
 		}

@@ -18,7 +18,7 @@ public abstract class Attribute {
 
 	public static TextureRegion getSlotTexture(Class<? extends Attribute> clazz) {
 		String slot = "slot00";
-		if (clazz == Speed.class) {
+		if (clazz == EnginePower.class) {
 			slot = "attributeSpeed";
 		} else if (clazz == FuelCapacity.class) {
 			slot = "attributeFuelCapacity";
@@ -26,9 +26,9 @@ public abstract class Attribute {
 			slot = "attributeLuck";
 		} else if (clazz == ShieldCapacity.class) {
 			slot = "attributeShieldCapacity";
-		} else if (clazz == LandingDistance.class) {
+		} else if (clazz == Landslide.class) {
 			slot = "attributeLandingDistance";
-		} else if (clazz == ItemCollectRadius.class) {
+		} else if (clazz == ScanRadius.class) {
 			slot = "attributeItemCollectRadius";
 		} else if (clazz == Inertia.class) {
 			slot = "attributeTraegheit";
@@ -42,7 +42,7 @@ public abstract class Attribute {
 
 	public static TextureRegion getPropertiesTexture(Class<? extends Attribute> clazz) {
 		String row = "row00";
-		if (clazz == Speed.class) {
+		if (clazz == EnginePower.class) {
 			row = "row03";
 		} else if (clazz == FuelCapacity.class) {
 			row = "row01";
@@ -50,9 +50,9 @@ public abstract class Attribute {
 			row = "row02";
 		} else if (clazz == ShieldCapacity.class) {
 			row = "row04";
-		} else if (clazz == LandingDistance.class) {
+		} else if (clazz == Landslide.class) {
 			row = "row05";
-		} else if (clazz == ItemCollectRadius.class) {
+		} else if (clazz == ScanRadius.class) {
 			row = "row07";
 		} else if (clazz == Inertia.class) {
 			row = "row06";
@@ -72,18 +72,18 @@ public abstract class Attribute {
 
 	public static String getName(Class<? extends Attribute> clazz) {
 		String name = "?";
-		if (clazz == Speed.class) {
-			name = "SPEED";
+		if (clazz == EnginePower.class) {
+			name = "ENGINE POWER";
 		} else if (clazz == FuelCapacity.class) {
-			name = "MAXIMUM FUEL";
+			name = "FUEL CAPACITY";
 		} else if (clazz == Luck.class) {
 			name = "LUCK";
 		} else if (clazz == ShieldCapacity.class) {
-			name = "MAXIMUM SHIELD";
-		} else if (clazz == LandingDistance.class) {
-			name = "LANDING DISTANCE";
-		} else if (clazz == ItemCollectRadius.class) {
-			name = "ITEM COLLECT RADIUS";
+			name = "SHIELD CAPACITY";
+		} else if (clazz == Landslide.class) {
+			name = "LANDSLIDE";
+		} else if (clazz == ScanRadius.class) {
+			name = "SCAN RADIUS";
 		} else if (clazz == Inertia.class) {
 			name = "INERTIA";
 		}
@@ -93,7 +93,7 @@ public abstract class Attribute {
 
 	public static TextureRegion getAlienTexture(Class<? extends Attribute> clazz) {
 		String row = "slot00";
-		if (clazz == Speed.class) {
+		if (clazz == EnginePower.class) {
 			row = "alienSpeed";
 		} else if (clazz == FuelCapacity.class) {
 			row = "alienFuelCapacity";
@@ -101,9 +101,9 @@ public abstract class Attribute {
 			row = "alienLuck";
 		} else if (clazz == ShieldCapacity.class) {
 			row = "alienShieldCapacity";
-		} else if (clazz == LandingDistance.class) {
+		} else if (clazz == Landslide.class) {
 			row = "alienLandingDistance";
-		} else if (clazz == ItemCollectRadius.class) {
+		} else if (clazz == ScanRadius.class) {
 			row = "alienItemCollectRadius";
 		} else if (clazz == Inertia.class) {
 			row = "alienTraegheit";

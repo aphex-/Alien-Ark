@@ -1,10 +1,10 @@
 package com.nukethemoon.libgdxjam.game.attributes;
 
 
-public class Speed extends Attribute {
+public class EnginePower extends Attribute {
 
 
-	public Speed(int speed) {
+	public EnginePower(int speed) {
 		setCurrentValue(speed);
 	}
 

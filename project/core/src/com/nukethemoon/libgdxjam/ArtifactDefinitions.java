@@ -9,11 +9,11 @@ import com.nukethemoon.libgdxjam.game.artifacts.operators.Increase;
 import com.nukethemoon.libgdxjam.game.artifacts.operators.Multiply;
 import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
 import com.nukethemoon.libgdxjam.game.attributes.Inertia;
-import com.nukethemoon.libgdxjam.game.attributes.ItemCollectRadius;
-import com.nukethemoon.libgdxjam.game.attributes.LandingDistance;
+import com.nukethemoon.libgdxjam.game.attributes.ScanRadius;
+import com.nukethemoon.libgdxjam.game.attributes.Landslide;
 import com.nukethemoon.libgdxjam.game.attributes.Luck;
 import com.nukethemoon.libgdxjam.game.attributes.ShieldCapacity;
-import com.nukethemoon.libgdxjam.game.attributes.Speed;
+import com.nukethemoon.libgdxjam.game.attributes.EnginePower;
 
 public class ArtifactDefinitions {
 
@@ -47,13 +47,13 @@ public class ArtifactDefinitions {
 
 		public Artifact createArtifact() {
 			if (this == ATTRIBUTE_SPEED) {
-				return new AttributeArtifact(Speed.class);
+				return new AttributeArtifact(EnginePower.class);
 			}
 			if (this == ATTRIBUTE_INERTIA) {
 				return new AttributeArtifact(Inertia.class);
 			}
 			if (this == ATTRIBUTE_LANDSLIDE) {
-				return new AttributeArtifact(LandingDistance.class);
+				return new AttributeArtifact(Landslide.class);
 			}
 			if (this == ATTRIBUTE_FUEL_CAPACITY) {
 				return new AttributeArtifact(FuelCapacity.class);
@@ -62,7 +62,7 @@ public class ArtifactDefinitions {
 				return new AttributeArtifact(ShieldCapacity.class);
 			}
 			if (this == ATTRIBUTE_SCAN_RADIUS) {
-				return new AttributeArtifact(ItemCollectRadius.class);
+				return new AttributeArtifact(ScanRadius.class);
 			}
 			if (this == ATTRIBUTE_LUCK) {
 				return new AttributeArtifact(Luck.class);

@@ -10,11 +10,11 @@ import com.nukethemoon.libgdxjam.game.artifacts.operators.Multiply;
 import com.nukethemoon.libgdxjam.game.attributes.Attribute;
 import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
 import com.nukethemoon.libgdxjam.game.attributes.Inertia;
-import com.nukethemoon.libgdxjam.game.attributes.ItemCollectRadius;
-import com.nukethemoon.libgdxjam.game.attributes.LandingDistance;
+import com.nukethemoon.libgdxjam.game.attributes.ScanRadius;
+import com.nukethemoon.libgdxjam.game.attributes.Landslide;
 import com.nukethemoon.libgdxjam.game.attributes.Luck;
 import com.nukethemoon.libgdxjam.game.attributes.ShieldCapacity;
-import com.nukethemoon.libgdxjam.game.attributes.Speed;
+import com.nukethemoon.libgdxjam.game.attributes.EnginePower;
 import com.nukethemoon.libgdxjam.screens.solar.SolarScreen;
 
 import java.util.ArrayList;
@@ -42,16 +42,16 @@ public class SpaceShipProperties {
 	private int currentInternalShield;
 	public Vector2 currentSolarPosition;
 
-	private Speed speed;
+	private EnginePower enginePower;
 	private FuelCapacity fuelCapacity;
 	private Luck luck;
 	private ShieldCapacity shieldCapacity;
-	private LandingDistance landingDistance;
-	private ItemCollectRadius radius;
+	private Landslide landslide;
+	private ScanRadius scanRadius;
 	private Inertia inertia;
 
 	public Attribute[] getAttributes() {
-		return new Attribute[]{speed, fuelCapacity, shieldCapacity, landingDistance, luck, radius, inertia};
+		return new Attribute[]{enginePower, fuelCapacity, shieldCapacity, landslide, luck, scanRadius, inertia};
 	}
 
 	private SpaceShipProperties() {
@@ -63,20 +63,20 @@ public class SpaceShipProperties {
 		ValueArtifact v = new ValueArtifact(10);
 		OperatorArtifact o = new Increase();
 
-		artifacts.add(new AttributeArtifact(Speed.class));
-		artifacts.add(new AttributeArtifact(Speed.class));
+		artifacts.add(new AttributeArtifact(EnginePower.class));
+		artifacts.add(new AttributeArtifact(EnginePower.class));
 		artifacts.add(v);
 		artifacts.add(o);
 		artifacts.add(new ValueArtifact(10));
 		artifacts.add(new ValueArtifact(15));
 		artifacts.add(new AttributeArtifact(Inertia.class));
-		artifacts.add(new AttributeArtifact(ItemCollectRadius.class));
+		artifacts.add(new AttributeArtifact(ScanRadius.class));
 		artifacts.add(new AttributeArtifact(ShieldCapacity.class));
 		artifacts.add(new AttributeArtifact(FuelCapacity.class));
 		artifacts.add(new AttributeArtifact(Luck.class));
-		artifacts.add(new AttributeArtifact(LandingDistance.class));
+		artifacts.add(new AttributeArtifact(Landslide.class));
 
-		Alien.createAlien(v, o, new AttributeArtifact(Speed.class));
+		Alien.createAlien(v, o, new AttributeArtifact(EnginePower.class));
 
 		artifacts.add(new Divide());
 		artifacts.add(new Increase());
@@ -101,6 +101,18 @@ public class SpaceShipProperties {
 	public void onArtifactCollected(Artifact artifact, String inGameId) {
 		registerArtifactCollected(inGameId);
 		getArtifacts().add(artifact);
+	}
+
+	public void registerArtifactCollected(String id) {
+		collectedArtifactIds.add(id);
+	}
+
+	public boolean isArtifactCollected(String id) {
+		return collectedArtifactIds.contains(id);
+	}
+
+	public boolean unregisterCollectedArtifact(String id) {
+		return collectedArtifactIds.remove(id);
 	}
 
 	public List<Alien> getAliens() {
@@ -148,12 +160,12 @@ public class SpaceShipProperties {
 	}
 
 	private void resetAttributes() {
-		speed = new Speed(INITIAL_SPEED);
+		enginePower = new EnginePower(INITIAL_SPEED);
 		fuelCapacity = new FuelCapacity(INITIAL_FUEL);
 		luck = new Luck(INITIAL_LUCK);
 		shieldCapacity = new ShieldCapacity(INITIAL_SHIELD);
-		landingDistance = new LandingDistance(INITIAL_LANDING_DISTANCE);
-		radius = new ItemCollectRadius(INITIAL_COLLECT_RADIUS);
+		landslide = new Landslide(INITIAL_LANDING_DISTANCE);
+		scanRadius = new ScanRadius(INITIAL_COLLECT_RADIUS);
 		inertia = new Inertia(INITIAL_INERTIA);
 	}
 
@@ -175,45 +187,42 @@ public class SpaceShipProperties {
 		return (int) ((USER_VALUE_MAX) * internalValueScale);
 	}
 
-	public float getSpeed() {
-		return speed.getCurrentValue();
+
+	public float getEnginePower() {
+		// balanced = better
+		return toInternalValue(enginePower.getCurrentValue(), 20, 100);
 	}
 
-	public float getManeuverability() {
-		return toInternalValue(inertia.getCurrentValue(), 0.75f, 20f);
+	public float getInertia() {
+		// balanced = better
+		return toInternalValue(inertia.getCurrentValue(), 0.75f, 3f);
 	}
 
 	public float getLandslide() {
-		return toInternalValue(landingDistance.getCurrentValue(), 1f, 90f);
+		// lower = better
+		return toInternalValue(landslide.getCurrentValue(), 0.2f, 3f);
 	}
 
 	public int getFuelCapacity() {
-		return (int) fuelCapacity.getCurrentValue();
+		// higher = better
+		return (int) toInternalValue(fuelCapacity.getCurrentValue(), 0f, 9999f);
 	}
 
 	public int getShieldCapacity() {
-		return (int) shieldCapacity.getCurrentValue();
+		// higher = better
+		return (int) toInternalValue(fuelCapacity.getCurrentValue(), 0f, 9999f);
 	}
 
 	public float getScanRadius() {
-		return radius.getCurrentValue();
+		// higher = better
+		return toInternalValue(scanRadius.getCurrentValue(), 5, 50);
 	}
 
 	public float getLuck() {
-		return luck.getCurrentValue();
+		// lower = better
+		return toInternalValue(luck.getCurrentValue(), 0, 1);
 	}
 
-	public void registerArtifactCollected(String id) {
-		collectedArtifactIds.add(id);
-	}
-
-	public boolean isArtifactCollected(String id) {
-		return collectedArtifactIds.contains(id);
-	}
-
-	public boolean unregisterCollectedArtifact(String id) {
-		return collectedArtifactIds.remove(id);
-	}
 
 
 	/*
@@ -221,13 +230,13 @@ public class SpaceShipProperties {
 	we should rename 'speed' to 'engine power' (more abstract)
 	we should rename 'scanradius' to 'scan accuracy' (more abstract)
 
-	Speed				// internal min  20.00f 	internal max  100.00f		// balanced = better
-	Maneuverability 	// internal min   0.75f 	internal max    3.00f		// higher = better
-	Landslide 			// internal min   0.20f 	internal max    3.00f		// lower = better
-	FuelCapacity 		// internal min 200.00f 	internal max 9999.00f		// higher = better
-	ShieldCapacity = 	// internal min 200.00f 	internal max 9999.00f		// higher = better
-	ScanRadius			// internal min   5.00f 	internal max   50.00f		// higher = better
-	Misfortune 			// internal min   0.00f 	internal max    1.00f		// lower = better
+	Speed				// internal min  20.00f 	internal max  100.00f
+	Maneuverability 	// internal min   0.75f 	internal max    3.00f
+	Landslide 			// internal min   0.20f 	internal max    3.00f
+	FuelCapacity 		// internal min 200.00f 	internal max 9999.00f
+	ShieldCapacity = 	// internal min 200.00f 	internal max 9999.00f
+	ScanRadius			// internal min   5.00f 	internal max   50.00f
+	Misfortune 			// internal min   0.00f 	internal max    1.00f
 
 	Ship attributes must be scaled.
 	The 'internal value' (float) that is used physic etc. calculations

@@ -3,8 +3,8 @@ package com.nukethemoon.libgdxjam.game.attributes;
 /*
  * Formally known as "friction" but now inverted
  */
-public class LandingDistance extends Attribute{
-	public LandingDistance(int meter){
+public class Landslide extends Attribute{
+	public Landslide(int meter){
 		setCurrentValue(meter);
 	}
 
