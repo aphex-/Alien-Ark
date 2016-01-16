@@ -41,8 +41,11 @@ public class Rocket extends GameObject implements Disposable {
 	private static final float FUEL_CONSUMPTION = 0.05f;
 	private static final int SCAN_DELAY = 50;
 	private static final int THRUST_START_FUEL_COST = 15;
-
 	private static final int PLANET_Z_LIMIT = 200;
+	private static final int STANDARD_TPC_OFFSET_Y = 3;
+	private static final int SCAN_TPC_OFFSET_Y = 25;
+
+	private float thirdPersonOffsetY = STANDARD_TPC_OFFSET_Y;
 
 	private final Sound thrustSound;
 
@@ -62,7 +65,7 @@ public class Rocket extends GameObject implements Disposable {
 	float zRotation = 0;
 
 	private Point lastTilePosition = null;
-	private float thirdPersonOffsetY = 3;
+
 
 	private Vector3 lastCamPosition = new Vector3();
 	private Vector3 tmpCamPosition = new Vector3();
@@ -267,6 +270,7 @@ public class Rocket extends GameObject implements Disposable {
 			return;
 		}
 		if (currentScanDelay <= 0) {
+			thirdPersonOffsetY = STANDARD_TPC_OFFSET_Y;
 			listener.onRocketScanEnd();
 		}
 		currentScanDelay = SCAN_DELAY;
@@ -392,6 +396,7 @@ public class Rocket extends GameObject implements Disposable {
 			if (currentScanDelay > 0) {
 				currentScanDelay--;
 				if (currentScanDelay == 0) {
+					thirdPersonOffsetY = SCAN_TPC_OFFSET_Y;
 					listener.onRocketScanStart();
 				}
 			}
