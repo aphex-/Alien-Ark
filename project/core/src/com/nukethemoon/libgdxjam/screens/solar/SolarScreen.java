@@ -42,7 +42,7 @@ import com.nukethemoon.libgdxjam.screens.planet.gameobjects.Rocket;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
-import com.nukethemoon.libgdxjam.ui.EnterOrbitTable;
+import com.nukethemoon.libgdxjam.ui.EnterPlanetTable;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.MenuTable;
 import com.nukethemoon.libgdxjam.ui.hud.ShipProgressBar;
@@ -68,7 +68,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	private Vector2 tmpVector = new Vector2();
 //	private StarsBackground bg;
 
-	private EnterOrbitTable enterOrbitTable = null;
+	private EnterPlanetTable enterPlanetTable = null;
 
 	private Vector2 shipPosition;
 	private final RayHandler rayHandler;
@@ -80,7 +80,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	//starts at 90 - ark facing up
 	private float currentRotation = 90;
 
-	private float[] shipSpeedLevels = new float[]{0, 0.5f, 1f, 1.5f, 2.0f, 3.0f};
+	private float[] shipSpeedLevels = new float[]{0, 1f, 2f, 3f, 4.0f, 6.0f};
 	private final int MAX_SPEED_LEVEL = shipSpeedLevels.length - 1;
 	private static final float SPEED_DECREASE_BY_DECAY_RATE = 0.02f;
 	private static final float SPEED_DECREASE_BY_BRAKES_RATE = 0.1f;
@@ -471,9 +471,9 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		adjustCurrentSpeed();
 
 		if (Gdx.app.getInput().isKeyPressed(Input.Keys.RIGHT) || Gdx.app.getInput().isKeyPressed(Input.Keys.D)) {
-			adjustRotation = adjustRotation - (50 * delta);
+			adjustRotation = adjustRotation - (100 * delta);
 		} else if (Gdx.app.getInput().isKeyPressed(Input.Keys.LEFT) || Gdx.app.getInput().isKeyPressed(Input.Keys.A)) {
-			adjustRotation = adjustRotation + (50 * delta);
+			adjustRotation = adjustRotation + (100 * delta);
 		}
 	}
 
@@ -594,11 +594,11 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		final int planetIndex = determinePlanetCollision();
 		if (planetIndex == SUN_COLLISION) {
 			//dealDamageToRocket(delta);
-		} else if (planetIndex != -1) {
-			if (enterOrbitTable == null) {
-				enterOrbitTable = new EnterOrbitTable(Styles.UI_SKIN, planetIndex);
-				stage.addActor(enterOrbitTable);
-				enterOrbitTable.setClickListener(new ClickListener() {
+		} else if (planetIndex != -1 && planetIndex < 9) {
+			if (enterPlanetTable == null) {
+				enterPlanetTable = new EnterPlanetTable(Styles.UI_SKIN, planetIndex);
+				stage.addActor(enterPlanetTable);
+				enterPlanetTable.setClickListener(new ClickListener() {
 					@Override
 					public void clicked(InputEvent event, float x, float y) {
 						openPlanetScreen(planetIndex);
@@ -606,9 +606,9 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 				});
 			}
 		} else {
-			if (enterOrbitTable != null) {
-				enterOrbitTable.remove();
-				enterOrbitTable = null;
+			if (enterPlanetTable != null) {
+				enterPlanetTable.remove();
+				enterPlanetTable = null;
 			}
 		}
 
@@ -661,8 +661,8 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 
 	@Override
 	public boolean keyDown(int keycode) {
-		if (keycode == Input.Keys.ENTER && enterOrbitTable != null) {
-			openPlanetScreen(enterOrbitTable.getPlanetIndex());
+		if (keycode == Input.Keys.ENTER && enterPlanetTable != null) {
+			openPlanetScreen(enterPlanetTable.getPlanetIndex());
 		}
 		return false;
 	}

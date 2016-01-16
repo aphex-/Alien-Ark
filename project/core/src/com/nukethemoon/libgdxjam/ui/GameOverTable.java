@@ -11,7 +11,10 @@ public class GameOverTable extends DialogTable {
 	private ClickListener clickListener;
 
 	public GameOverTable(Skin skin, final ClickListener clickListener) {
-		super(Styles.UI_SKIN, new String[]{"Your journey ends here.", "Try it again."}, "GAME OVER");
+		super(Styles.UI_SKIN, new String[]{
+				"Your lost your rocket. All ARTIFACTS",
+				"that you collected on this planet",
+				"exploration are lost.", "Try Again!"}, "ROCKET LOST");
 		this.clickListener = clickListener;
 		setBackground(Styles.NINE_PATCH_DIALOG_01);
 

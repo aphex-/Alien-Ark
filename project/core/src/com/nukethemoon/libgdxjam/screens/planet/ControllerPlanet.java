@@ -20,7 +20,6 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.App;
-import com.nukethemoon.libgdxjam.ArtifactDefinitions;
 import com.nukethemoon.libgdxjam.Log;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.screens.planet.gameobjects.ArtifactObject;
@@ -73,6 +72,8 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	private List<RaceWayPoint> alreadyReachedWayPoints = new ArrayList<RaceWayPoint>();
 
 	private List<ObjectPlacementInfo> allArtifactsOnPlanet = new ArrayList<ObjectPlacementInfo>();
+
+	private List<ArtifactObject> collectedArtifactsThisSession = new ArrayList<ArtifactObject>();
 
 	private Map<Point, PlanetPart> planetPartBuffer = new HashMap<Point, PlanetPart>();
 	private final TypeInterpreter typeInterpreter;
@@ -464,7 +465,7 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 		controllerPhysic.calculateVerticalIntersection(tmpVec3, tmpVec4);
 		o.adjust(tmpVec4.z);
 
-		if (!SpaceShipProperties.properties.isArtifactCollected(o.getDefinition().id)) {
+		if (!SpaceShipProperties.properties.isArtifactCollected(o.getDefinition().id) && !collectedArtifactsThisSession.contains(o)) {
 			currentVisibleArtifacts.add(o);
 		}
 	}
@@ -495,12 +496,10 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	}
 
 	public void collectArtifact(ArtifactObject o) {
-		if (!SpaceShipProperties.properties.isArtifactCollected(o.getDefinition().id)) {
+		if (!SpaceShipProperties.properties.isArtifactCollected(o.getDefinition().id) && !collectedArtifactsThisSession.contains(o)) {
 			removeArtifactModel(o);
 			allArtifactsOnPlanet.remove(o.getDefinition());
-			ArtifactDefinitions.ConcreteArtifactType concreteArtifactType
-					= ArtifactDefinitions.ConcreteArtifactType.byName(o.getDefinition().type);
-			SpaceShipProperties.properties.onArtifactCollected(concreteArtifactType.createArtifact(), o.getDefinition().id);
+			collectedArtifactsThisSession.add(o);
 		}
 	}
 
@@ -657,6 +656,10 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 
 	public List<ObjectPlacementInfo> getAllArtifactsOnPlanet() {
 		return allArtifactsOnPlanet;
+	}
+
+	public List<ArtifactObject> getCollectedArtifactsThisSession() {
+		return collectedArtifactsThisSession;
 	}
 
 	public interface PlanetRaceListener {

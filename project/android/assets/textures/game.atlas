@@ -436,18 +436,39 @@ ntm_logo
   orig: 150, 150
   offset: 0, 0
   index: -1
+planet01_preview
+  rotate: false
+  xy: 683, 352
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
 planet02
   rotate: false
-  xy: 511, 205
+  xy: 653, 53
   size: 146, 145
   orig: 146, 145
   offset: 0, 0
   index: -1
+planet02_preview
+  rotate: false
+  xy: 511, 200
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
 planet03
   rotate: false
-  xy: 683, 355
+  xy: 504, 51
   size: 147, 147
   orig: 147, 147
+  offset: 0, 0
+  index: -1
+planet03_preview
+  rotate: false
+  xy: 663, 200
+  size: 150, 150
+  orig: 150, 150
   offset: 0, 0
   index: -1
 planet04
@@ -480,7 +501,7 @@ popupMenu
   index: -1
 rocket_shield
   rotate: false
-  xy: 504, 69
+  xy: 835, 368
   size: 80, 134
   orig: 80, 134
   offset: 0, 0
@@ -536,49 +557,49 @@ row09
   index: -1
 slot00
   rotate: false
-  xy: 586, 123
+  xy: 815, 270
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotDrop
   rotate: false
-  xy: 823, 262
+  xy: 897, 290
   size: 76, 76
   orig: 76, 76
   offset: 0, 0
   index: -1
 slotOK
   rotate: false
-  xy: 586, 41
+  xy: 815, 188
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorDivide
   rotate: false
-  xy: 832, 422
+  xy: 801, 106
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorMinus
   rotate: false
-  xy: 832, 340
+  xy: 801, 24
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorMultiply
   rotate: false
-  xy: 659, 270
+  xy: 883, 106
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorPlus
   rotate: false
-  xy: 741, 273
+  xy: 883, 24
   size: 80, 80
   orig: 80, 80
   offset: 0, 0

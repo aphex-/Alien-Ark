@@ -37,6 +37,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nukethemoon.libgdxjam.App;
+import com.nukethemoon.libgdxjam.ArtifactDefinitions;
 import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.Styles;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
@@ -541,8 +542,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				renderEnabled = false;
+				SpaceShipProperties.properties.setCurrentInternalShield(1);
 				dispose();
-				//App.onGameOver();
+				App.openPlanetScreen(planetIndex);
 			}
 		});
 		stage.clear();
@@ -666,15 +668,23 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRocketEntersPortal() {
-		physicEnabled = false;
-		rocketEnabled = false;
-		ExitPlanetAnimation exitPlanetAnimation = new ExitPlanetAnimation(camera, rocket, overlayRenderer, new AnimationFinishedListener() {
-			@Override
-			public void onAnimationFinished(BaseAnimation baseAnimation) {
-				leavePlanet();
+		if (physicEnabled) {
+			for (ArtifactObject o : planetController.getCollectedArtifactsThisSession()) {
+				ArtifactDefinitions.ConcreteArtifactType concreteArtifactType
+						= ArtifactDefinitions.ConcreteArtifactType.byName(o.getDefinition().type);
+				SpaceShipProperties.properties.onArtifactCollected(concreteArtifactType.createArtifact(), o.getDefinition().id);
 			}
-		});
-		ani.add(exitPlanetAnimation);
+
+			physicEnabled = false;
+			rocketEnabled = false;
+			ExitPlanetAnimation exitPlanetAnimation = new ExitPlanetAnimation(camera, rocket, overlayRenderer, new AnimationFinishedListener() {
+				@Override
+				public void onAnimationFinished(BaseAnimation baseAnimation) {
+					leavePlanet();
+				}
+			});
+			ani.add(exitPlanetAnimation);
+		}
 	}
 
 	@Override
