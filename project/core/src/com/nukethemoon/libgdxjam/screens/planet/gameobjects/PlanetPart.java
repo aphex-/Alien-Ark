@@ -225,14 +225,14 @@ public class PlanetPart extends GameObject {
 	}
 
 	private void initCollectibles(Chunk chunk, CollectedItemCache collectedItemCache, double seed) {
-		double noise01 = simplexNoise.noise(chunk.getChunkX(), chunk.getChunkY(), seed / 2d);
-		double noise02 = simplexNoise.noise(chunk.getChunkX(), chunk.getChunkY(), seed / 3d);
+		double noise01 = simplexNoise.noise(chunk.getChunkX(), chunk.getChunkY(), 34.924823d);
+		double noise02 = simplexNoise.noise(chunk.getChunkX(), chunk.getChunkY(), 3482.2423d);
 
 
 		if (!collectedItemCache.isFuelCollected(chunk.getChunkX(), chunk.getChunkY())) {
 			if (noise01 < calculateChance(chunk, planetConfig.fuelChance, planetConfig.fuelChanceGain,
 					planetConfig.fuelChanceMin) + SpaceShipProperties.properties.getLuck() * 0.07f) {
-				addCollectible(CollisionTypes.FUEL, chunk, seed / 2d);
+				addCollectible(CollisionTypes.FUEL, chunk, 2348.123d);
 			} else {
 				collectedItemCache.registerCollected(chunk.getChunkX(), chunk.getChunkY(), CollisionTypes.FUEL);
 			}
@@ -241,7 +241,7 @@ public class PlanetPart extends GameObject {
 		if (!collectedItemCache.isShieldCollected(chunk.getChunkX(), chunk.getChunkY())) {
 			if (noise02 < calculateChance(chunk, planetConfig.shieldChance, planetConfig.shieldChanceGain,
 					planetConfig.shieldChanceMin) + SpaceShipProperties.properties.getLuck() * 0.07f) {
-				addCollectible(CollisionTypes.SHIELD, chunk, seed);
+				addCollectible(CollisionTypes.SHIELD, chunk, 1283764.2342d);
 			} else {
 				collectedItemCache.registerCollected(chunk.getChunkX(), chunk.getChunkY(), CollisionTypes.SHIELD);
 			}
@@ -256,8 +256,8 @@ public class PlanetPart extends GameObject {
 	}
 
 	private void addCollectible(CollisionTypes type, Chunk chunk, double seed) {
-		double noise01 = simplexNoise.noise(chunk.getChunkX(), chunk.getChunkY(), seed / 4d);
-		double noise02 = simplexNoise.noise(-chunk.getChunkX(), -chunk.getChunkY(), seed / 5d);
+		double noise01 = simplexNoise.noise(chunk.getChunkX(), chunk.getChunkY(), 272893.234d);
+		double noise02 = simplexNoise.noise(-chunk.getChunkX(), -chunk.getChunkY(), 942783.1237);
 
 		int randomTileX = (int) (noise01 * chunk.getWidth());
 		int randomTileY = (int) (noise02 * chunk.getHeight());

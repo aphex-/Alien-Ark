@@ -91,6 +91,146 @@
       "rotationZ": 0.0,
       "id": "art0003_planet01",
       "type": "OPERATOR_PLUS"
+    },
+    {
+      "x": 1245.4685,
+      "y": 315.42062,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0004_planet01",
+      "type": "VALUE_200"
+    },
+    {
+      "x": 1533.9768,
+      "y": 1221.4647,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0005_planet01",
+      "type": "ATTRIBUTE_FUEL_CAPACITY"
+    },
+    {
+      "x": 2008.8949,
+      "y": 466.83652,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0006_planet01",
+      "type": "VALUE_200"
+    },
+    {
+      "x": 1876.7859,
+      "y": -128.63171,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0007_planet01",
+      "type": "ATTRIBUTE_SHIELD_CAPACITY"
+    },
+    {
+      "x": 1469.9692,
+      "y": -789.95807,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0008_planet01",
+      "type": "OPERATOR_PLUS"
+    },
+    {
+      "x": 623.00543,
+      "y": -1456.0306,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0009_planet01",
+      "type": "VALUE_100"
+    },
+    {
+      "x": 169.75592,
+      "y": -1902.1926,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0010_planet01",
+      "type": "ATTRIBUTE_SPEED"
+    },
+    {
+      "x": -505.72992,
+      "y": -2295.4976,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0011_planet01",
+      "type": "OPERATOR_PLUS"
+    },
+    {
+      "x": -1392.2411,
+      "y": -2076.2502,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0012_planet01",
+      "type": "ATTRIBUTE_SPEED"
+    },
+    {
+      "x": -1516.5289,
+      "y": -1218.7914,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0013_planet01",
+      "type": "ATTRIBUTE_SHIELD_CAPACITY"
+    },
+    {
+      "x": -1860.6118,
+      "y": 81.119545,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0014_planet01",
+      "type": "VALUE_100"
+    },
+    {
+      "x": -212.0689,
+      "y": -1818.5947,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0015_planet01",
+      "type": "ATTRIBUTE_LANDSLIDE"
+    },
+    {
+      "x": 1497.0254,
+      "y": -4083.647,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0016_planet01",
+      "type": "VALUE_500"
+    },
+    {
+      "x": 4097.2324,
+      "y": -1443.9218,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0017_planet01",
+      "type": "ATTRIBUTE_LANDSLIDE"
     }
   ],
   "layerConfigs": [
