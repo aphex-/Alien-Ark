@@ -89,7 +89,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 
 
 	public static final int INITIAL_ARK_POSITION_Y = -300;
-	public static final int INITIAL_ARK_POSITION_X = -125;
+	public static final int INITIAL_ARK_POSITION_X = -525;
 
 	private SpriteBatch batch;
 
@@ -173,7 +173,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		planetGraphics.add(new PlanetGraphic("planet05", distance[5], 0.1f, 	0.0009f));
 		planetGraphics.add(new PlanetGraphic("planet06", distance[6], 0.1f, 	0.0008f));
 		planetGraphics.add(new PlanetGraphic("planet02", distance[7], 0.13f, 	-0.0005f));
-		planetGraphics.add(new PlanetGraphic("planet08", distance[8], 0.2f, 	0.0005f));
+		planetGraphics.add(new PlanetGraphic("planet08", distance[8], 0.2f, 	0.0006f));
 		planetGraphics.add(new PlanetGraphic("planet04", distance[9], 0.3f, 	0.0005f));
 
 
