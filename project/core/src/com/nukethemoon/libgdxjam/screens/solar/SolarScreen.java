@@ -132,6 +132,8 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	private boolean pause = false;
 
 	private long lasTimeDamage = -1;
+	private MenuButton menuButton;
+	private ImageButton arkScreenButton;
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
 		Log.d(getClass(), "create SolarScreen");
@@ -175,16 +177,16 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		int[] distance = new int[] {
 				500, 700, 880, 1020, 1200, 1350, 1500, 1650, 1800, 1950};
 
-		planetGraphics.add(new PlanetGraphic("planet07", distance[0], 0.1f, 	0.005f));
-		planetGraphics.add(new PlanetGraphic("planet03", distance[1], 0.2f,		-0.004f));
-		planetGraphics.add(new PlanetGraphic("planet01", distance[2], -0.3f, 	-0.002f));
-		planetGraphics.add(new PlanetGraphic("planet10", distance[3], -0.1f, 	0.001f));
-		planetGraphics.add(new PlanetGraphic("planet09", distance[4], -0.4f, 	-0.001f));
-		planetGraphics.add(new PlanetGraphic("planet05", distance[5], 0.1f, 	0.0009f));
-		planetGraphics.add(new PlanetGraphic("planet06", distance[6], 0.1f, 	0.0008f));
-		planetGraphics.add(new PlanetGraphic("planet02", distance[7], 0.13f, 	-0.0005f));
-		planetGraphics.add(new PlanetGraphic("planet08", distance[8], 0.2f, 	0.0006f));
-		planetGraphics.add(new PlanetGraphic("planet04", distance[9], 0.3f, 	0.0005f));
+		planetGraphics.add(new PlanetGraphic("planet07", distance[0], 0.1f, 	0.005f	,0));
+		planetGraphics.add(new PlanetGraphic("planet03", distance[1], 0.2f,		-0.004f, 1));
+		planetGraphics.add(new PlanetGraphic("planet01", distance[2], -0.3f, 	-0.002f, 2));
+		planetGraphics.add(new PlanetGraphic("planet10", distance[3], -0.1f, 	0.001f, 3));
+		planetGraphics.add(new PlanetGraphic("planet09", distance[4], -0.4f, 	-0.001f, 4));
+		planetGraphics.add(new PlanetGraphic("planet05", distance[5], 0.1f, 	0.0009f, 5));
+		planetGraphics.add(new PlanetGraphic("planet06", distance[6], 0.1f, 	0.0008f, 6));
+		planetGraphics.add(new PlanetGraphic("planet02", distance[7], 0.13f, 	-0.0005f, 7));
+		planetGraphics.add(new PlanetGraphic("planet08", distance[8], 0.2f, 	0.0006f, 8));
+		planetGraphics.add(new PlanetGraphic("planet04", distance[9], 0.3f, 	0.0005f, 9));
 
 
 		for (PlanetGraphic p : planetGraphics) {
@@ -240,18 +242,20 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		multiplexer.addProcessor(stage);
 
 		TextureRegionDrawable drawable = new TextureRegionDrawable(App.TEXTURES.findRegion("buttonControlCenter"));
-		ImageButton arkScreenButton = new ImageButton(drawable);
+		arkScreenButton = new ImageButton(drawable);
 		arkScreenButton.setPosition((Gdx.graphics.getWidth() / 2) - (arkScreenButton.getWidth() / 2),
 				10);
 		stage.addActor(arkScreenButton);
 		arkScreenButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				openArkScreen();
+				if (!App.TUTORIAL_CONTROLLER.isForcedPlanet01()) {
+					openArkScreen();
+				}
 			}
 		});
 
-		final MenuButton menuButton = new MenuButton(uiSkin);
+		menuButton = new MenuButton(uiSkin);
 		menuButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -314,6 +318,12 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	public void render(float delta) {
 		Gdx.gl.glClearColor(21 / 255f, 21 / 255f, 21 / 255f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		if (App.TUTORIAL_CONTROLLER.isForcedPlanet01()) {
+			arkScreenButton.setVisible(false);
+		} else {
+			arkScreenButton.setVisible(true);
+		}
 
 		if (!pause) {
 			handleArkMovementInput(delta);
@@ -610,15 +620,17 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		if (planetIndex == SUN_COLLISION) {
 			//dealDamageToRocket(delta);
 		} else if (planetIndex != -1 && planetIndex < 9) {
-			if (enterPlanetTable == null) {
-				enterPlanetTable = new EnterPlanetTable(Styles.UI_SKIN, planetIndex);
-				stage.addActor(enterPlanetTable);
-				enterPlanetTable.setClickListener(new ClickListener() {
-					@Override
-					public void clicked(InputEvent event, float x, float y) {
-						openPlanetScreen(planetIndex);
-					}
-				});
+			if (!(App.TUTORIAL_CONTROLLER.isForcedPlanet01() && planetIndex != 0)) {
+				if (enterPlanetTable == null) {
+					enterPlanetTable = new EnterPlanetTable(Styles.UI_SKIN, planetIndex);
+					stage.addActor(enterPlanetTable);
+					enterPlanetTable.setClickListener(new ClickListener() {
+						@Override
+						public void clicked(InputEvent event, float x, float y) {
+							openPlanetScreen(planetIndex);
+						}
+					});
+				}
 			}
 		} else {
 			if (enterPlanetTable != null) {
@@ -734,20 +746,27 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		private FixtureDef fixtureDef;
 		private Body body;
 		private int solarDistance;
+		private static Sprite planetMarkerSprite;
 
 		private float selfRotation = 0;
 		private float solarRotation = 0;
 
 		private float selfRotationSpeed;
 		private float solarRotationSpeed;
+		private final int index;
+		private float markerScale = 0;
 
 		public PlanetGraphic(String textureName, int solarDistance, float selfRotationSpeed,
-					  float solarRotationSpeed) {
+					  float solarRotationSpeed, int index) {
 			this.selfRotationSpeed = selfRotationSpeed;
 			this.solarRotationSpeed = solarRotationSpeed;
+			this.index = index;
 			this.sprite = new Sprite(App.TEXTURES.findRegion(textureName));
 			this.solarDistance = solarDistance;
 			this.solarRotation = (float) (Math.random() * 360);
+			if (planetMarkerSprite == null) {
+				planetMarkerSprite = new Sprite(App.TEXTURES.findRegion("planetMarker"));
+			}
 		}
 
 		public void addToWorld(World world) {
@@ -791,6 +810,15 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 
 		public void draw(SpriteBatch batch) {
 			sprite.draw(batch);
+			if (index == 0 && App.TUTORIAL_CONTROLLER.isForcedPlanet01()) {
+				markerScale = (markerScale + 0.01f) % 1f;
+				planetMarkerSprite.setPosition(
+						sprite.getX() - (planetMarkerSprite.getWidth() - sprite.getWidth()) / 2,
+						sprite.getY() - (planetMarkerSprite.getHeight() - sprite.getHeight()) / 2);
+				planetMarkerSprite.draw(batch);
+				float scaleProgress = (float) (Math.sin(Math.PI * markerScale) + 1f) / 2f;
+				planetMarkerSprite.setScale(1.2f + scaleProgress * 0.75f);
+			}
 		}
 	}
 

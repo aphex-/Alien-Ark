@@ -273,4 +273,8 @@ public class TutorialController {
 			}
 		}
 	}
+
+	public boolean isForcedPlanet01() {
+		return solarScreenStep == 0 && App.config.tutorialEnabled;
+	}
 }

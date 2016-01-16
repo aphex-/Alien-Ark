@@ -318,13 +318,6 @@ attributeItemCollectRadius
   orig: 150, 150
   offset: 0, 0
   index: -1
-buttonbg01
-  rotate: false
-  xy: 914, 63
-  size: 92, 100
-  orig: 92, 100
-  offset: 0, 0
-  index: -1
 credits
   rotate: false
   xy: 2, 496
@@ -341,7 +334,7 @@ help
   index: -1
 placeholder_alien
   rotate: false
-  xy: 914, 165
+  xy: 914, 60
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -362,9 +355,16 @@ planet07
   index: -1
 planet08
   rotate: false
-  xy: 804, 272
+  xy: 914, 162
   size: 103, 103
   orig: 103, 103
+  offset: 0, 0
+  index: -1
+planetMarker
+  rotate: false
+  xy: 804, 271
+  size: 104, 104
+  orig: 104, 104
   offset: 0, 0
   index: -1
 row01
@@ -420,6 +420,13 @@ attributeTraegheit
   xy: 379, 352
   size: 150, 150
   orig: 150, 150
+  offset: 0, 0
+  index: -1
+buttonbg01
+  rotate: false
+  xy: 815, 250
+  size: 92, 100
+  orig: 92, 100
   offset: 0, 0
   index: -1
 minimapBorder
@@ -557,49 +564,49 @@ row09
   index: -1
 slot00
   rotate: false
-  xy: 815, 270
+  xy: 815, 168
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotDrop
   rotate: false
-  xy: 897, 290
+  xy: 936, 513
   size: 76, 76
   orig: 76, 76
   offset: 0, 0
   index: -1
 slotOK
   rotate: false
-  xy: 815, 188
+  xy: 801, 86
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorDivide
   rotate: false
-  xy: 801, 106
+  xy: 801, 4
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorMinus
   rotate: false
-  xy: 801, 24
+  xy: 883, 86
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorMultiply
   rotate: false
-  xy: 883, 106
+  xy: 883, 4
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorPlus
   rotate: false
-  xy: 883, 24
+  xy: 897, 168
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
