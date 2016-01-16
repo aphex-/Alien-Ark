@@ -43,7 +43,6 @@ import com.nukethemoon.libgdxjam.screens.planet.gameobjects.SolarSystem;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 import com.nukethemoon.libgdxjam.screens.planet.physics.ControllerPhysic;
 import com.nukethemoon.libgdxjam.ui.EnterOrbitTable;
-import com.nukethemoon.libgdxjam.ui.GameOverTable;
 import com.nukethemoon.libgdxjam.ui.MenuButton;
 import com.nukethemoon.libgdxjam.ui.MenuTable;
 import com.nukethemoon.libgdxjam.ui.hud.ShipProgressBar;
@@ -592,9 +591,6 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	}
 
 	private void handleAppNavigation(float delta) {
-		if (SpaceShipProperties.properties.getCurrentInternalShield() <= 0) {
-			explodeRocket();
-		}
 		final int planetIndex = determinePlanetCollision();
 		if (planetIndex == SUN_COLLISION) {
 			//dealDamageToRocket(delta);
@@ -621,25 +617,6 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		}
 	}
 
-	private void explodeRocket() {
-		if (!gameOver) {
-			gameOver = true;
-			App.audioController.playSound("explosion.mp3");
-			onGameOver();
-		}
-	}
-
-	private void onGameOver() {
-		GameOverTable gameOverTable = new GameOverTable(uiSkin, new ClickListener() {
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				dispose();
-				App.onGameOver();
-			}
-		});
-		stage.clear();
-		stage.addActor(gameOverTable);
-	}
 
 	private void dealDamageToRocket(float delta) {
 		shieldAudioCounter += delta;

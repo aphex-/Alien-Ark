@@ -542,7 +542,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			public void clicked(InputEvent event, float x, float y) {
 				renderEnabled = false;
 				dispose();
-				App.onGameOver();
+				//App.onGameOver();
 			}
 		});
 		stage.clear();

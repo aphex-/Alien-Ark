@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.input.InputController;
 import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
@@ -95,12 +94,6 @@ public class App extends Game {
 	}
 
 
-	public static void onGameOver() {
-		SpaceShipProperties.properties.reset();
-		SpaceShipProperties.properties.currentSolarPosition.set(
-				SolarScreen.INITIAL_ARK_POSITION_X, SolarScreen.INITIAL_ARK_POSITION_Y);
-		openSolarScreen();
-	}
 
 	public static void saveProgress() {
 		FileHandle fileHandle = openFile("save/save.json");
