@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -19,9 +20,13 @@ public class SplashScreen implements Screen, InputProcessor {
 	private SpriteBatch batch;
 
 	private Sprite splashScreen00;
+	private Color splashScreen00Color = Color.WHITE;
+
 	private Sprite splashScreen01;
+	private Color splashScreen01Color = new Color(18f / 255f, 18f / 255f, 4f / 255f, 1);
 
 	private Sprite currentSprite;
+	private Color currentColor;
 	private int nextCount = 0;
 
 
@@ -36,6 +41,7 @@ public class SplashScreen implements Screen, InputProcessor {
 		splashScreen01.setAlpha(0);
 
 		startAnimation(splashScreen00);
+		currentColor = splashScreen00Color;
 	}
 
 	private void startAnimation(Sprite sprite) {
@@ -56,7 +62,9 @@ public class SplashScreen implements Screen, InputProcessor {
 	private void next() {
 		nextCount++;
 		if (nextCount == 1) {
+			currentColor = splashScreen01Color;
 			startAnimation(splashScreen01);
+
 		}
 		if (nextCount == 2) {
 			exit();
@@ -79,9 +87,11 @@ public class SplashScreen implements Screen, InputProcessor {
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClearColor(currentColor.r, currentColor.g, currentColor.b, 1);
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+
+		//18, 18, 4
 
 		batch.begin();
 		if (currentSprite != null) {
