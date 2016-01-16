@@ -198,12 +198,12 @@ public class SpaceShipProperties {
 
 	public float getInertia() {
 		// balanced = better
-		return toInternalValue(9999 - inertia.getCurrentValue(), 0.75f, 3f);
+		return toInternalValue(USER_VALUE_MAX - inertia.getCurrentValue(), 0.75f, 3f);
 	}
 
 	public float getLandslide() {
 		// lower = better
-		return toInternalValue(landslide.getCurrentValue(), 0.2f, 3f);
+		return toInternalValue(USER_VALUE_MAX - landslide.getCurrentValue(), 0.2f, 3f);
 	}
 
 	public int getFuelCapacity() {

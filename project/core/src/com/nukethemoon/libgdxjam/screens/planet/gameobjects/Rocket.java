@@ -24,8 +24,6 @@ import com.badlogic.gdx.utils.Disposable;
 import com.nukethemoon.libgdxjam.App;
 import com.nukethemoon.libgdxjam.Balancing;
 import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
-import com.nukethemoon.libgdxjam.game.attributes.FuelCapacity;
-import com.nukethemoon.libgdxjam.game.attributes.ShieldCapacity;
 import com.nukethemoon.libgdxjam.screens.planet.physics.CollisionTypes;
 
 import java.awt.*;
@@ -132,8 +130,8 @@ public class Rocket extends GameObject implements Disposable {
 		rigidBodyList.get(0).setLinearVelocity(tmpMovement.set(getDirection()).nor().scl(
 				SpaceShipProperties.properties.getEnginePower()));
 
-		SpaceShipProperties.properties.setCurrentInternalFuel((int) FuelCapacity.INTERNAL_MAX);
-		SpaceShipProperties.properties.setCurrentInternalShield((int) ShieldCapacity.INTERNAL_MAX);
+		SpaceShipProperties.properties.setCurrentInternalFuel(SpaceShipProperties.INITIAL_FUEL_CAPACITY);
+		SpaceShipProperties.properties.setCurrentInternalShield(SpaceShipProperties.INITIAL_SHIELD_CAPACITY);
 
 
 		thrustSound = App.audioController.getSound("thrust.wav");
