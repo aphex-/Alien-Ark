@@ -14,7 +14,7 @@ public class ScanAnimation extends BaseAnimation {
 	private float radius;
 
 	public ScanAnimation(ModelInstance beamInstance, float radius, AnimationFinishedListener listener) {
-		super(500, listener);
+ 		super(500, listener);
 		this.radius = radius;
 		this.modelInstance = beamInstance;
 		modelInstance.transform.getScale(baseScale);
@@ -28,7 +28,7 @@ public class ScanAnimation extends BaseAnimation {
 		float scale = (1 - v) * radius;
 		modelInstance.transform.setToTranslationAndScaling(
 				baseTranslation.x, baseTranslation.y, baseTranslation.z,
-				baseScale.x + scale, baseScale.y + scale, baseScale.z + scale);
+				scale, scale, scale);
 	}
 
 	@Override

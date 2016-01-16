@@ -441,11 +441,11 @@ public class Rocket extends GameObject implements Disposable {
 
 	public void handleCollision(CollisionTypes type) {
 		if (type == CollisionTypes.GROUND && thrusting) {
-			dealDamage(10);
+			dealDamage(5);
 		}
 
 		if (type == CollisionTypes.WATER) {
-			dealDamage(20);
+			dealDamage(10);
 		}
 
 		if (type == CollisionTypes.FUEL) {

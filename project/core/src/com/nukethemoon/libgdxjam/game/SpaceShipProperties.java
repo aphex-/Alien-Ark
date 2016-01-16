@@ -218,7 +218,7 @@ public class SpaceShipProperties {
 
 	public float getScanRadius() {
 		// higher = better
-		return toInternalValue(scanRadius.getCurrentValue(), 5, 50);
+		return toInternalValue(scanRadius.getCurrentValue(), 5, 70);
 	}
 
 	public float getLuck() {
