@@ -15,8 +15,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -122,6 +122,11 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	private boolean isThrusting;
 	private boolean gameOver = false;
 	private float shieldAudioCounter = 0;
+
+	private Vector2 corner01 = new Vector2();
+	private Vector2 corner02 = new Vector2();
+	private Vector2 corner03 = new Vector2();
+	private Vector2 corner04 = new Vector2();
 
 
 	public SolarScreen(Skin uiSkin, InputMultiplexer multiplexer) {
@@ -306,6 +311,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		handleArkMovementInput(delta);
 		handleAppNavigation(delta);
 
+		updateArkBounds();
 //		camera.update();
 //		batch.setProjectionMatrix(camera.combined);
 
@@ -344,13 +350,28 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 			debugShapeRenderer.line(0, 0, 50, 0);
 			debugShapeRenderer.setColor(0, 0, 1, 1);
 			debugShapeRenderer.line(0, 0, 0, 50);
+			debugShapeRenderer.setColor(1, 1, 1, 1);
+			debugShapeRenderer.line(corner01, corner02);
+			debugShapeRenderer.line(corner02, corner03);
+			debugShapeRenderer.line(corner03, corner04);
+			debugShapeRenderer.line(corner04, corner01);
 			debugShapeRenderer.end();
+
 		}
 
 		ani.update();
 	}
 
-
+	private void updateArkBounds() {
+		float w = arkSprite.getWidth() / 2;
+		float h = arkSprite.getHeight() / 2;
+		float x = arkSprite.getX();
+		float y = arkSprite.getY();
+		corner01.set(-w, -h).rotate(currentRotation - 90).add(x + w, y + h);
+		corner02.set(-w, h).rotate(currentRotation - 90).add(x + w, y + h);
+		corner03.set(w, h).rotate(currentRotation - 90).add(x + w, y + h);
+		corner04.set(w, -h).rotate(currentRotation - 90).add(x + w, y + h);
+	}
 
 	private void drawThrust(float delta) {
 		rotateParticle(thrustEffect, currentRotation);
@@ -497,25 +518,34 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 
 	}
 
-	private int determinePlanetCollison() {
-		if (isColliding(sunSprite)) {
+	private int determinePlanetCollision() {
+		/*if (isColliding(sunSprite)) {
 			return SUN_COLLISION;
-		}
-		for (int i = 0; i < planetSprites.length; i++) {
-			if (isColliding(planetSprites[i])) {
+		}*/
+		for (int i = 0; i < planetGraphics.size(); i++) {
+			if (isColliding(planetGraphics.get(i))) {
 				return i;
 			}
 		}
 		return -1;
 	}
 
-	private boolean isColliding(Sprite sprite) {
-		Rectangle planetBounds = sprite.getBoundingRectangle();
-		if (planetBounds.contains(shipPosition.x + (arkSprite.getWidth() / 2), shipPosition.y + (arkSprite.getHeight() / 2))) {
+	private boolean isColliding(PlanetGraphic planetGraphic) {
+		Vector2 planetPosition = planetGraphic.getPosition();
+		if (corner01.dst(planetPosition) < planetGraphic.getRadius()) {
 			return true;
-
 		}
-		return false;
+		if (corner02.dst(planetPosition) < planetGraphic.getRadius()) {
+			return true;
+		}
+		if (corner03.dst(planetPosition) < planetGraphic.getRadius()) {
+			return true;
+		}
+		if (corner04.dst(planetPosition) < planetGraphic.getRadius()) {
+			return true;
+		}
+		return Intersector.isPointInTriangle(planetPosition, corner01, corner02, corner03)
+				|| Intersector.isPointInTriangle(planetPosition, corner03, corner04, corner01);
 	}
 
 	private boolean isArcSelected() {
@@ -538,7 +568,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		if (SpaceShipProperties.properties.getCurrentInternalShield() <= 0) {
 			explodeRocket();
 		}
-		final int planetIndex = determinePlanetCollison();
+		final int planetIndex = determinePlanetCollision();
 		if (planetIndex == SUN_COLLISION) {
 			dealDamageToRocket(delta);
 		} else if (planetIndex != -1) {
@@ -680,6 +710,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 	public static class PlanetGraphic {
 		public Sprite sprite;
 		private Vector2 tmpVector = new Vector2();
+		private Vector2 tmpVector2 = new Vector2();
 		private BodyDef bodyDef;
 		private FixtureDef fixtureDef;
 		private Body body;
@@ -695,9 +726,9 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 					  float solarRotationSpeed) {
 			this.selfRotationSpeed = selfRotationSpeed;
 			this.solarRotationSpeed = solarRotationSpeed;
-			sprite = new Sprite(App.TEXTURES.findRegion(textureName));
+			this.sprite = new Sprite(App.TEXTURES.findRegion(textureName));
 			this.solarDistance = solarDistance;
-			solarRotation = (float) (Math.random() * 360);
+			this.solarRotation = (float) (Math.random() * 360);
 		}
 
 		public void addToWorld(World world) {
@@ -716,7 +747,16 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 					x - sprite.getWidth() / 2,
 					y - sprite.getHeight() / 2);
 			tmpVector.set(x, y);
-			body.setTransform(x, y , 0);
+			body.setTransform(x, y, 0);
+		}
+
+		private float getRadius() {
+			return sprite.getWidth() / 2;
+		}
+
+		public Vector2 getPosition() {
+			tmpVector2.set(sprite.getX() + getRadius(), sprite.getY() + getRadius());
+			return tmpVector2;
 		}
 
 		public void update(float delta) {
