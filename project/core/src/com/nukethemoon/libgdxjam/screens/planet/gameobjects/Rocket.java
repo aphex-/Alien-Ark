@@ -71,6 +71,12 @@ public class Rocket extends GameObject implements Disposable {
 
 	private Matrix4 rotationMatrix = new Matrix4();
 
+	private Matrix4 thrustMatrix1 = new Matrix4();
+	private Matrix4 thrustMatrix2 = new Matrix4();
+	private Matrix4 thrustMatrix3 = new Matrix4();
+
+	private Matrix4 tmpMatrix = new Matrix4();
+
 	private Vector3 tmpDirection = new Vector3();
 	private Vector3 tmpPosition = new Vector3();
 	private Vector3 tmpMovement = new Vector3();
@@ -349,7 +355,7 @@ public class Rocket extends GameObject implements Disposable {
 
 
 
-	public void drawModel(ModelBatch modelBatch, Environment environment, ParticleEffect thrustEffect,
+	public void drawModel(ModelBatch modelBatch, Environment environment, ParticleEffect[] thrustEffect,
 						  ParticleEffect effectExplosion) {
 
 		if (!exploded) {
@@ -366,7 +372,27 @@ public class Rocket extends GameObject implements Disposable {
 				modelBatch.render(tractorBeamModelInstance, environment);
 			}
 		}
-		thrustEffect.setTransform(rocketModelInstance.transform);
+
+		thrustMatrix1.set(rocketModelInstance.transform);
+		tmpMatrix.setToRotation(0, 1, 0, drill);
+		tmpMatrix.trn(0, 1, 0.35f);
+		thrustMatrix1.mul(tmpMatrix);
+		thrustEffect[0].setTransform(thrustMatrix1);
+
+		thrustMatrix2.set(rocketModelInstance.transform);
+		tmpMatrix.setToRotation(0, 1, 0, drill);
+		tmpMatrix.trn(-0.35f, 1, -0.20f);
+		thrustMatrix2.mul(tmpMatrix);
+		thrustEffect[1].setTransform(thrustMatrix2);
+
+
+		thrustMatrix3.set(rocketModelInstance.transform);
+		tmpMatrix.setToRotation(0, 1, 0, drill);
+		tmpMatrix.trn(0.350f, 1, -0.25f);
+		thrustMatrix3.mul(tmpMatrix);
+		thrustEffect[2].setTransform(thrustMatrix3);
+
+
 		effectExplosion.setTransform(rocketModelInstance.transform);
 	}
 

@@ -81,8 +81,8 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	private ParticleSystem particleSystem;
 	private BufferedParticleBatch particleSpriteBatch;
 	private ParticleEffect effectPortal;
-	private ParticleEffect effectThrust;
 	private ParticleEffect effectExplosion;
+	private ParticleEffect[] effectThrust;
 
 	private Rocket rocket;
 
@@ -265,12 +265,23 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		assetManager.load("particles/3D/planet_portal.pfx", ParticleEffect.class, loadParam);
 		assetManager.finishLoading();
 
-		effectThrust = 		((ParticleEffect) assetManager.get("particles/3D/rocket_thruster.pfx")).copy();
+		effectThrust = new ParticleEffect[3];
+		effectThrust[0] = 		((ParticleEffect) assetManager.get("particles/3D/rocket_thruster.pfx")).copy();
+		effectThrust[1] = 		((ParticleEffect) assetManager.get("particles/3D/rocket_thruster.pfx")).copy();
+		effectThrust[2] = 		((ParticleEffect) assetManager.get("particles/3D/rocket_thruster.pfx")).copy();
+
 		effectExplosion = 	((ParticleEffect) assetManager.get("particles/3D/rocket_explosion.pfx")).copy();
 		effectPortal = 		((ParticleEffect) assetManager.get("particles/3D/planet_portal.pfx")).copy();
-		effectThrust.init();
 		effectExplosion.init();
-		effectThrust.start();
+
+		for (ParticleEffect e : effectThrust) {
+			e.init();
+			e.start();
+
+
+			particleSystem.add(e);
+
+		}
 
 		effectPortal.init();
 		effectPortal.start();
@@ -279,7 +290,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		effectPortal.rotate(Vector3.X, 30);
 		effectPortal.scale(2f, 2f, 2f);
 
-		particleSystem.add(effectThrust);
+
 		particleSystem.add(effectPortal);
 	}
 
@@ -569,12 +580,16 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	public void onRocketDisabledThrust() {
 		fuelProgressBar.updateFromShipProperties();
 		showToast("Landing procedure...");
-		particleSystem.remove(effectThrust);
+		for (ParticleEffect e : effectThrust) {
+			particleSystem.remove(e);
+		}
 	}
 
 	@Override
 	public void onRocketEnabledThrust() {
-		particleSystem.add(effectThrust);
+		for (ParticleEffect e : effectThrust) {
+			particleSystem.add(e);
+		}
 	}
 
 	@Override
@@ -591,7 +606,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	@Override
 	public void onRocketExploded() {
 		App.audioController.playSound("explosion.mp3");
-		particleSystem.remove(effectThrust);
+		for (ParticleEffect e : effectThrust) {
+			particleSystem.remove(e);
+		}
 		effectExplosion.start();
 		particleSystem.add(effectExplosion);
 		onGameOver();
@@ -786,7 +803,9 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		assetManager.dispose();
 		//sphereModel.dispose();
 		//shapeRenderer.dispose();
-		effectThrust.dispose();
+		for (ParticleEffect e : effectThrust) {
+			e.dispose();
+		}
 		effectExplosion.dispose();
 		effectPortal.dispose();
 		if (App.config.debugMode) {
