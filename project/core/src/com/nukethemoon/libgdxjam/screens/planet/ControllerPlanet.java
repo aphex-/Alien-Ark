@@ -463,13 +463,24 @@ public class ControllerPlanet implements ChunkListener, Disposable {
 	}
 
 	public void addArtifact(ArtifactObject o) {
-		tmpVec3.set(o.getDefinition().x, o.getDefinition().y, 10000);
-		controllerPhysic.calculateVerticalIntersection(tmpVec3, tmpVec4);
-		o.adjust(tmpVec4.z);
+		if (!isCollectedInThisSession(o.getDefinition().id)) {
+			tmpVec3.set(o.getDefinition().x, o.getDefinition().y, 10000);
+			controllerPhysic.calculateVerticalIntersection(tmpVec3, tmpVec4);
+			o.adjust(tmpVec4.z);
 
-		if (!SpaceShipProperties.properties.isArtifactCollected(o.getDefinition().id) && !collectedArtifactsThisSession.contains(o)) {
-			currentVisibleArtifacts.add(o);
+			if (!SpaceShipProperties.properties.isArtifactCollected(o.getDefinition().id) && !collectedArtifactsThisSession.contains(o)) {
+				currentVisibleArtifacts.add(o);
+			}
 		}
+	}
+
+	private boolean isCollectedInThisSession(String id) {
+		for (ArtifactObject o : collectedArtifactsThisSession) {
+			if (o.getDefinition().id.equals(id)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void removeArtifactModel(ArtifactObject o) {

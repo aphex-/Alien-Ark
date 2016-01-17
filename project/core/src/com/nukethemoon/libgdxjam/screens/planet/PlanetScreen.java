@@ -552,6 +552,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	private void onGameOver() {
 		gameOver = true;
+		planetController.getCollectedArtifactsThisSession().clear();
 		GameOverTable gameOverTable = new GameOverTable(uiSkin, new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -694,6 +695,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 						= ArtifactDefinitions.ConcreteArtifactType.byName(o.getDefinition().type);
 				SpaceShipProperties.properties.onArtifactCollected(concreteArtifactType.createArtifact(), o.getDefinition().id);
 			}
+			planetController.getCollectedArtifactsThisSession().clear();
 
 			physicEnabled = false;
 			rocketEnabled = false;
