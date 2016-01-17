@@ -550,76 +550,104 @@ sun
   index: -1
 
 game4.png
-size: 1024,256
+size: 1024,512
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 planet02
   rotate: false
-  xy: 455, 89
+  xy: 306, 159
   size: 146, 145
   orig: 146, 145
   offset: 0, 0
   index: -1
 planet02_preview
   rotate: false
-  xy: 2, 84
+  xy: 2, 306
   size: 150, 150
   orig: 150, 150
   offset: 0, 0
   index: -1
 planet03
   rotate: false
-  xy: 306, 87
+  xy: 154, 5
   size: 147, 147
   orig: 147, 147
   offset: 0, 0
   index: -1
 planet03_preview
   rotate: false
-  xy: 154, 84
+  xy: 2, 154
   size: 150, 150
   orig: 150, 150
   offset: 0, 0
   index: -1
 planet04
   rotate: false
-  xy: 603, 104
+  xy: 458, 326
   size: 130, 130
   orig: 130, 130
   offset: 0, 0
   index: -1
+planet04_preview
+  rotate: false
+  xy: 154, 306
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+planet05_preview
+  rotate: false
+  xy: 2, 2
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+planet06_preview
+  rotate: false
+  xy: 154, 154
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+planet07_preview
+  rotate: false
+  xy: 306, 306
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
 rocket_shield
   rotate: false
-  xy: 735, 100
+  xy: 590, 322
   size: 80, 134
   orig: 80, 134
   offset: 0, 0
   index: -1
 slotDrop
   rotate: false
-  xy: 899, 158
+  xy: 918, 380
   size: 76, 76
   orig: 76, 76
   offset: 0, 0
   index: -1
 slotOperatorMinus
   rotate: false
-  xy: 2, 2
+  xy: 672, 376
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorMultiply
   rotate: false
-  xy: 817, 154
+  xy: 754, 376
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorPlus
   rotate: false
-  xy: 84, 2
+  xy: 836, 376
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
