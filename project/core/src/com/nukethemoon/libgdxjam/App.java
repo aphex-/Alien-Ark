@@ -59,10 +59,10 @@ public class App extends Game {
 		solarSystem = new SolarSystem();
 		solarSystem.calculatePlanetPositions();
 
-		SpaceShipProperties.properties.testInit();
 
 		if (config.debugMode) {
-			openArkScreen();
+			SpaceShipProperties.properties.testInit();
+			openSolarScreen();
 		} else {
 			openSplashScreen();
 		}

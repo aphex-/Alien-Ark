@@ -27,13 +27,13 @@ public class SpaceShipProperties {
 
 	public static final int USER_VALUE_MAX = 9999; // the maximum value for crew member bonus
 
-	public static final int INITIAL_ENGINE_POWER = 8000;
-	public static final int INITIAL_SHIELD_CAPACITY = 9999;
-	public static final int INITIAL_FUEL_CAPACITY = 9999;
+	public static final int INITIAL_ENGINE_POWER = 500;
+	public static final int INITIAL_SHIELD_CAPACITY = 100;
+	public static final int INITIAL_FUEL_CAPACITY = 200;
 	public static final int INITIAL_LUCK = 200;
 	public static final int INITIAL_LANDSLIDE = 9900;
 	public static final int INITIAL_SCAN_RADIUS = 200;
-	public static final float INITIAL_INERTIA = 1900;
+	public static final float INITIAL_INERTIA = 9500;
 
 	private List<String> collectedArtifactIds = new ArrayList<String>(); // just to save the already collected artifacts
 	private List<Artifact> artifacts = new ArrayList<Artifact>();

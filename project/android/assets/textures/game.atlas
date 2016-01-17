@@ -158,7 +158,7 @@ particle
   orig: 16, 16
   offset: 0, 0
   index: -1
-planet09
+planet01
   rotate: false
   xy: 2, 2
   size: 76, 74
@@ -304,7 +304,7 @@ help
   orig: 800, 500
   offset: 0, 0
   index: -1
-planet01
+planet06
   rotate: false
   xy: 804, 844
   size: 167, 163
@@ -429,28 +429,28 @@ planet01_preview
   orig: 150, 150
   offset: 0, 0
   index: -1
-planet05
-  rotate: false
-  xy: 842, 591
-  size: 123, 121
-  orig: 123, 121
-  offset: 0, 0
-  index: -1
-planet06
-  rotate: false
-  xy: 716, 589
-  size: 124, 123
-  orig: 124, 123
-  offset: 0, 0
-  index: -1
-planet07
+planet02
   rotate: false
   xy: 504, 8
   size: 108, 108
   orig: 108, 108
   offset: 0, 0
   index: -1
+planet07
+  rotate: false
+  xy: 842, 591
+  size: 123, 121
+  orig: 123, 121
+  offset: 0, 0
+  index: -1
 planet08
+  rotate: false
+  xy: 716, 589
+  size: 124, 123
+  orig: 124, 123
+  offset: 0, 0
+  index: -1
+planet09
   rotate: false
   xy: 720, 13
   size: 103, 103
@@ -554,13 +554,6 @@ size: 1024,512
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-planet02
-  rotate: false
-  xy: 306, 7
-  size: 146, 145
-  orig: 146, 145
-  offset: 0, 0
-  index: -1
 planet02_preview
   rotate: false
   xy: 2, 306
@@ -570,9 +563,9 @@ planet02_preview
   index: -1
 planet03
   rotate: false
-  xy: 458, 309
-  size: 147, 147
-  orig: 147, 147
+  xy: 306, 7
+  size: 146, 145
+  orig: 146, 145
   offset: 0, 0
   index: -1
 planet03_preview
@@ -584,9 +577,9 @@ planet03_preview
   index: -1
 planet04
   rotate: false
-  xy: 458, 177
-  size: 130, 130
-  orig: 130, 130
+  xy: 458, 309
+  size: 147, 147
+  orig: 147, 147
   offset: 0, 0
   index: -1
 planet04_preview
@@ -594,6 +587,13 @@ planet04_preview
   xy: 154, 306
   size: 150, 150
   orig: 150, 150
+  offset: 0, 0
+  index: -1
+planet05
+  rotate: false
+  xy: 458, 177
+  size: 130, 130
+  orig: 130, 130
   offset: 0, 0
   index: -1
 planet05_preview
