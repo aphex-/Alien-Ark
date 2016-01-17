@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.nukethemoon.libgdxjam.game.SpaceShipProperties;
 import com.nukethemoon.libgdxjam.input.InputController;
 import com.nukethemoon.libgdxjam.screens.ark.ArkScreen;
 import com.nukethemoon.libgdxjam.screens.planet.PlanetScreen;
@@ -58,10 +59,10 @@ public class App extends Game {
 		solarSystem = new SolarSystem();
 		solarSystem.calculatePlanetPositions();
 
-		//SpaceShipProperties.properties.testInit();
+		SpaceShipProperties.properties.testInit();
 
 		if (config.debugMode) {
-			openPlanetScreen(0);
+			openArkScreen();
 		} else {
 			openSplashScreen();
 		}

@@ -16,6 +16,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -66,9 +68,12 @@ public class ArkScreen implements Screen {
 	private Table artifactsTable;
 	private Label leftHintText;
 	private Label rightHintText;
+	private Table selectedAlienTable;
 
 	private Actor selectedArtifact;
-	private Actor selectedAlien;
+	private Actor selectedAlienImage;
+	private Alien selectedAlien;
+
 	private Table propertiesTable;
 
 	private ShipProgressBar fuelProgressBar;
@@ -78,6 +83,7 @@ public class ArkScreen implements Screen {
 
 	private Image cancelButton;
 	private WorkbenchSlot hoveredSlot;
+
 
 	public ArkScreen(Skin uiSkin, InputMultiplexer multiplexer) {
 		ani = new Ani();
@@ -134,7 +140,7 @@ public class ArkScreen implements Screen {
 		cancelButton = new Image(App.TEXTURES.findRegion("closeButton"));
 		stage.addActor(cancelButton);
 		cancelButton.setVisible(false);
-		cancelButton.addListener(new ClickListener(){
+		cancelButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				hoveredSlot.pop();
@@ -149,6 +155,7 @@ public class ArkScreen implements Screen {
 		workbenchSlot3.addListener(new WorkBenchClickListener(workbenchSlot3));
 
 		propertiesTable = new Table();
+		selectedAlienTable = new Table();
 		createPropertiesList();
 
 		createCloseButton();
@@ -203,14 +210,44 @@ public class ArkScreen implements Screen {
 		leftHintText.setWrap(true);
 		stage.addActor(leftHintText);
 
-		rightHintText = new Label("", skin);
-		rightHintText.setX(Gdx.graphics.getWidth() - 255 - 70);
-		rightHintText.setY(90);
-		rightHintText.setWidth(255);
-		rightHintText.setHeight(95);
-		rightHintText.setWrap(true);
 
-		stage.addActor(rightHintText);
+		selectedAlienTable.top();
+		selectedAlienTable.setX(Gdx.graphics.getWidth() - 255 - 70);
+		selectedAlienTable.setY(90);
+		selectedAlienTable.setWidth(255);
+		selectedAlienTable.setHeight(95);
+
+		rightHintText = new Label("", skin);
+		selectedAlienTable.add(rightHintText).top();
+		selectedAlienTable.row();
+
+		if (selectedAlienImage == null) {
+			selectedAlienTable.setVisible(false);
+		}
+		selectedAlienTable.add(createDismissButton());
+		stage.addActor(selectedAlienTable);
+	}
+
+	private TextButton createDismissButton() {
+		TextButton dismissButton = new TextButton("DISMISS", Styles.STYLE_BUTTON_02);
+		dismissButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				if (selectedAlienImage != null) {
+					SpaceShipProperties.properties.getAliens().remove(selectedAlien);
+					SpaceShipProperties.properties.computeProperties();
+					selectedAlien = null;
+					selectedAlienImage = null;
+					updateResultSlot();
+					updateAlienInventory();
+					updateArtifactsInventory();
+					propertiesTable.clearChildren();
+					createPropertiesList();
+					updateHintTexts();
+				}
+			}
+		});
+		return dismissButton;
 	}
 
 	private void createCloseButton() {
@@ -331,6 +368,7 @@ public class ArkScreen implements Screen {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
 					selectedArtifact = actor;
+					selectedAlienImage = null;
 					selectedAlien = null;
 					updateHintTexts();
 				}
@@ -382,7 +420,8 @@ public class ArkScreen implements Screen {
 
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
-					selectedAlien = img;
+					selectedAlienImage = img;
+					selectedAlien = alien;
 					selectedArtifact = null;
 					updateHintTexts();
 				}
@@ -398,7 +437,13 @@ public class ArkScreen implements Screen {
 
 	private void updateHintTexts() {
 		leftHintText.setText(selectedArtifact == null ? "" : ((Artifact) selectedArtifact.getUserObject()).getDescription());
-		rightHintText.setText(selectedAlien == null ? "" : ((Alien) selectedAlien.getUserObject()).getDescription());
+		if (selectedAlienImage == null) {
+			selectedAlienTable.setVisible(false);
+		} else {
+			selectedAlienTable.setVisible(true);
+			rightHintText.setText(((Alien) selectedAlienImage.getUserObject()).getDescription());
+		}
+
 	}
 
 	private void addDropTarget(final WorkbenchSlot slot) {
