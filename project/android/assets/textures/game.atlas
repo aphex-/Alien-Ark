@@ -556,7 +556,7 @@ filter: Linear,Linear
 repeat: none
 planet02
   rotate: false
-  xy: 306, 159
+  xy: 458, 311
   size: 146, 145
   orig: 146, 145
   offset: 0, 0
@@ -570,7 +570,7 @@ planet02_preview
   index: -1
 planet03
   rotate: false
-  xy: 154, 5
+  xy: 306, 157
   size: 147, 147
   orig: 147, 147
   offset: 0, 0
@@ -584,7 +584,7 @@ planet03_preview
   index: -1
 planet04
   rotate: false
-  xy: 458, 326
+  xy: 306, 25
   size: 130, 130
   orig: 130, 130
   offset: 0, 0
@@ -617,37 +617,44 @@ planet07_preview
   orig: 150, 150
   offset: 0, 0
   index: -1
+planet08_preview
+  rotate: false
+  xy: 154, 2
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
 rocket_shield
   rotate: false
-  xy: 590, 322
+  xy: 606, 322
   size: 80, 134
   orig: 80, 134
   offset: 0, 0
   index: -1
 slotDrop
   rotate: false
-  xy: 918, 380
+  xy: 934, 380
   size: 76, 76
   orig: 76, 76
   offset: 0, 0
   index: -1
 slotOperatorMinus
   rotate: false
-  xy: 672, 376
+  xy: 688, 376
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorMultiply
   rotate: false
-  xy: 754, 376
+  xy: 770, 376
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 slotOperatorPlus
   rotate: false
-  xy: 836, 376
+  xy: 852, 376
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
