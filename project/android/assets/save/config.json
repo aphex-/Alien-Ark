@@ -1,6 +1,6 @@
 {
   "requestRadiusInTiles": 110,
-  "debugMode": true,
+  "debugMode": false,
   "tutorialEnabled": true,
   "invertUpDown": false,
   "playAudio": true,
