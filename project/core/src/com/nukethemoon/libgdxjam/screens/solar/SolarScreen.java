@@ -348,7 +348,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		rayHandler.updateAndRender();
 		renderPlanets();
 		camera.position.set(arkSprite.getX(), arkSprite.getY(), 0);
-		camera.zoom = 2.0f;
+
 
 		batch.begin();
 		sunSprite.setRotation(sunRotation);
@@ -567,6 +567,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 
 		camera = new OrthographicCamera(screenWidth, screenHeight);
 		camera.position.set(0, screenWidth / 2f, 0);
+		camera.zoom = 1.0f;
 		camera.update();
 	}
 

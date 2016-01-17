@@ -569,7 +569,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRocketLanded() {
-		showToast("Rocked landed");
+		showToast("Rocket landed");
 		App.audioController.playSound("hit_deep.mp3");
 	}
 

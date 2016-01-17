@@ -29,9 +29,9 @@ public class SpaceShipProperties {
 
 	public static final int INITIAL_ENGINE_POWER = 500;
 	public static final int INITIAL_SHIELD_CAPACITY = 100;
-	public static final int INITIAL_FUEL_CAPACITY = 200;
+	public static final int INITIAL_FUEL_CAPACITY = 350;
 	public static final int INITIAL_LUCK = 200;
-	public static final int INITIAL_LANDSLIDE = 9900;
+	public static final int INITIAL_LANDSLIDE = 7500;
 	public static final int INITIAL_SCAN_RADIUS = 200;
 	public static final float INITIAL_INERTIA = 9500;
 
