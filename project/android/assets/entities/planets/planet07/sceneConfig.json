@@ -23,44 +23,58 @@
   "environmentDirectionalLights": [
     {
       "direction": {
-        "x": 0.33,
-        "y": 0.25,
-        "z": -0.54
+        "x": 0.58,
+        "y": -0.49,
+        "z": -1.0
       },
       "color": {
-        "r": 0.53,
+        "r": 0.9,
+        "g": 0.47,
+        "b": 0.0,
+        "a": 1.0
+      }
+    },
+    {
+      "direction": {
+        "x": -0.43,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "color": {
+        "r": 0.91,
         "g": 0.32,
-        "b": 0.78,
+        "b": 0.0,
         "a": 1.0
       }
     },
     {
       "direction": {
-        "x": 0.57,
-        "y": 0.31,
-        "z": -0.58
+        "x": 0.61,
+        "y": -0.83,
+        "z": -0.31
       },
       "color": {
-        "r": 0.71,
-        "g": 0.72,
-        "b": 0.22,
+        "r": 1.0,
+        "g": 0.09,
+        "b": 0.0,
         "a": 1.0
       }
     },
     {
       "direction": {
-        "x": -0.71,
-        "y": 0.5,
-        "z": -0.43
+        "x": 0.88,
+        "y": -0.57,
+        "z": -0.03
       },
       "color": {
-        "r": 0.89,
-        "g": 0.76,
-        "b": 0.7,
+        "r": 1.0,
+        "g": 0.19,
+        "b": 0.0,
         "a": 1.0
       }
     }
   ],
+  "artifacts": [],
   "layerConfigs": [
     {
       "name": "Ice",
@@ -70,43 +84,13 @@
         "colorAttributes": [
           {
             "color": {
-              "r": 1.0,
-              "g": 1.0,
-              "b": 1.0,
+              "r": 0.0,
+              "g": 0.0,
+              "b": 0.0,
               "a": 1.0
             },
             "type": 16,
             "typeBit": 4
-          },
-          {
-            "color": {
-              "r": 1.0,
-              "g": 1.0,
-              "b": 1.0,
-              "a": 1.0
-            },
-            "type": 2,
-            "typeBit": 1
-          },
-          {
-            "color": {
-              "r": 0.5,
-              "g": 0.52,
-              "b": 0.75,
-              "a": 1.0
-            },
-            "type": 1,
-            "typeBit": 0
-          },
-          {
-            "color": {
-              "r": 0.19,
-              "g": 0.11,
-              "b": 0.11,
-              "a": 1.0
-            },
-            "type": 32,
-            "typeBit": 5
           }
         ]
       }
@@ -119,9 +103,9 @@
         "colorAttributes": [
           {
             "color": {
-              "r": 0.79,
-              "g": 0.79,
-              "b": 0.78,
+              "r": 0.76,
+              "g": 0.63,
+              "b": 0.17,
               "a": 1.0
             },
             "type": 1,
@@ -138,13 +122,23 @@
         "colorAttributes": [
           {
             "color": {
-              "r": 0.14,
-              "g": 0.19,
-              "b": 0.52,
+              "r": 0.71,
+              "g": 0.82,
+              "b": 0.0,
               "a": 1.0
             },
             "type": 1,
             "typeBit": 0
+          },
+          {
+            "color": {
+              "r": 1.0,
+              "g": 0.0,
+              "b": 0.0,
+              "a": 1.0
+            },
+            "type": 2,
+            "typeBit": 1
           }
         ]
       }
@@ -157,16 +151,138 @@
         "colorAttributes": [
           {
             "color": {
-              "r": 0.0,
-              "g": 0.41,
-              "b": 0.61,
+              "r": 1.0,
+              "g": 0.94,
+              "b": 0.79,
               "a": 1.0
             },
             "type": 1,
             "typeBit": 0
+          },
+          {
+            "color": {
+              "r": 1.0,
+              "g": 0.93,
+              "b": 0.0,
+              "a": 1.0
+            },
+            "type": 2,
+            "typeBit": 1
           }
         ]
       }
     }
-  ]
+  ],
+  "planetRace": {
+    "wayPoints": [
+      {
+        "rotationZ": 120.0,
+        "rotationX": 0.0,
+        "x": 318.14105,
+        "y": 309.02206,
+        "zOffset": 2.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": -70.0,
+        "rotationX": 0.0,
+        "x": 243.71855,
+        "y": 389.69867,
+        "zOffset": 15.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 90.0,
+        "rotationX": 0.0,
+        "x": 224.90614,
+        "y": 559.6393,
+        "zOffset": 5.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 60.0,
+        "rotationX": 0.0,
+        "x": 309.21295,
+        "y": 699.81305,
+        "zOffset": 15.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 80.0,
+        "rotationX": -40.0,
+        "x": 387.83438,
+        "y": 847.3603,
+        "zOffset": 100.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 80.0,
+        "rotationX": 0.0,
+        "x": 387.06653,
+        "y": 981.05585,
+        "zOffset": 130.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 60.0,
+        "rotationX": 0.0,
+        "x": 463.6835,
+        "y": 1114.6694,
+        "zOffset": 80.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 60.0,
+        "rotationX": 0.0,
+        "x": 526.07166,
+        "y": 1184.6464,
+        "zOffset": 80.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 70.0,
+        "rotationX": 20.0,
+        "x": 590.58136,
+        "y": 1319.9694,
+        "zOffset": 40.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 100.0,
+        "rotationX": 0.0,
+        "x": 512.7912,
+        "y": 1531.0459,
+        "zOffset": 15.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 10.0,
+        "rotationX": 0.0,
+        "x": 443.68002,
+        "y": 1586.353,
+        "zOffset": 20.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 0.0,
+        "rotationX": 0.0,
+        "x": 323.6352,
+        "y": 1554.4951,
+        "zOffset": 20.0,
+        "reached": false,
+        "secondsToReach": 10
+      }
+    ]
+  }
 }
