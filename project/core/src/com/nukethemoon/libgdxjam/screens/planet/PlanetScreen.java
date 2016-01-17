@@ -246,6 +246,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 		ani.add(enterPlanetAnimation);
 
+		App.audioController.playMusic("ambient.mp3");
 	}
 
 	private void initParticles() {
@@ -594,7 +595,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 
 	@Override
 	public void onRocketDamage() {
-		App.audioController.playSound("energy_shield.mp3");
+		App.audioController.playSound("soundTooHigh.mp3");
 		shieldProgressBar.updateFromShipProperties();
 	}
 
@@ -742,7 +743,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 		raceTimeTable.setTime(planetController.getTimeToReachWayPoint(0));
 		raceTimeTable.setVisible(true);
 		raceDidNotStartInfo.setVisible(false);
-		App.audioController.playSound("dialogHighlight.mp3");
+		App.audioController.playSound("soundCheck04.mp3");
 	}
 
 	@Override
@@ -752,7 +753,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 			addition = "   +" + timeBonus + "s";
 		}
 		showToast(+ pointIndex + " of " + pointCount + addition);
-		App.audioController.playSound("dialogHighlight.mp3");
+		App.audioController.playSound("soundCheck05.mp3");
 		raceTimeTable.setTime(planetController.getTimeToReachWayPoint(0));
 	}
 
@@ -771,7 +772,7 @@ public class PlanetScreen implements Screen, InputProcessor, ReloadSceneListener
 	@Override
 	public void onRaceSuccess() {
 		showToast("You have won the race!");
-		App.audioController.playSound("race_won.mp3");
+		App.audioController.playSound("trompeten.mp3");
 		raceTimeTable.setVisible(false);
 	}
 

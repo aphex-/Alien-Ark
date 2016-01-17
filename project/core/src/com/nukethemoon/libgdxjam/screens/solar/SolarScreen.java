@@ -433,7 +433,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 			} else {
 				SpaceShipProperties.properties.setCurrentInternalShield(1);
 			}
-			App.audioController.playSound("energy_shield.mp3");
+			App.audioController.playSound("SoundAlarmLoop.mp3");
 		}
 	}
 
@@ -624,6 +624,7 @@ public class SolarScreen implements Screen, ControllerPhysic.PhysicsListener, In
 		} else if (planetIndex != -1 && planetIndex < 9) {
 			if (!(App.TUTORIAL_CONTROLLER.isForcedPlanet01() && planetIndex != 0)) {
 				if (enterPlanetTable == null) {
+					App.audioController.playSound("soundCheck03.mp3");
 					enterPlanetTable = new EnterPlanetTable(Styles.UI_SKIN, planetIndex);
 					stage.addActor(enterPlanetTable);
 					enterPlanetTable.setClickListener(new ClickListener() {

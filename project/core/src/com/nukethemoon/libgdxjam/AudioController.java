@@ -35,7 +35,19 @@ public class AudioController {
 			"bonus_stream.mp3",
 			"dialogHighlight.mp3",
 			"robo_laser.mp3",
-			"race_won.mp3"
+			"race_won.mp3",
+			"scan.mp3",
+			"sound01.mp3",
+			"sound02.mp3",
+			"sound03.mp3",
+			"soundAlarmLoop.mp3",
+			"soundCheck01.mp3",
+			"soundCheck02.mp3",
+			"soundCheck03.mp3",
+			"soundCheck04.mp3",
+			"soundCheck05.mp3",
+			"soundTooHigh.mp3",
+			"trompeten.mp3",
 	};
 
 

@@ -14,13 +14,13 @@ public class ScanAnimation extends BaseAnimation {
 	private float radius;
 
 	public ScanAnimation(ModelInstance beamInstance, float radius, AnimationFinishedListener listener) {
- 		super(500, listener);
+ 		super(750, listener);
 		this.radius = radius;
 		this.modelInstance = beamInstance;
 		modelInstance.transform.getScale(baseScale);
 		modelInstance.transform.getTranslation(baseTranslation);
 		setLoopLength(3);
-		App.audioController.playSound("match_highlight.mp3");
+		App.audioController.playSound("scan.mp3");
 	}
 
 	@Override
@@ -33,6 +33,6 @@ public class ScanAnimation extends BaseAnimation {
 
 	@Override
 	protected void onLoopStart(int pLoopIndex) {
-		App.audioController.playSound("match_highlight.mp3");
+
 	}
 }

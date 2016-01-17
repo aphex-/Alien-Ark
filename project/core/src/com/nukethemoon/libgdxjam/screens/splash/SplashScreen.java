@@ -42,6 +42,7 @@ public class SplashScreen implements Screen, InputProcessor {
 
 		startAnimation(splashScreen00);
 		currentColor = splashScreen00Color;
+		App.audioController.playSound("trompeten.mp3");
 	}
 
 	private void startAnimation(Sprite sprite) {
