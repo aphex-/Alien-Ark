@@ -141,6 +141,16 @@
       "rotationZ": 0.0,
       "id": "art0008_planet08",
       "type": "OPERATOR_MULTIPLY"
+    },
+    {
+      "x": -457.91846,
+      "y": 811.2043,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0009_planet08",
+      "type": "VALUE_200"
     }
   ],
   "layerConfigs": [

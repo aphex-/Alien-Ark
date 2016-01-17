@@ -5,9 +5,9 @@
   "fuelChance": 0.08,
   "fuelChanceGain": -1.0E-4,
   "fuelChanceMin": 0.008,
-  "shieldChance": 0.05,
+  "shieldChance": 0.2,
   "shieldChanceGain": -1.0E-4,
-  "shieldChanceMin": 0.008,
+  "shieldChanceMin": 0.01,
   "environmentColorAttributes": [
     {
       "color": {
@@ -74,7 +74,68 @@
       }
     }
   ],
-  "artifacts": [],
+  "artifacts": [
+    {
+      "x": 1090.1711,
+      "y": 867.6881,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0001_planet09",
+      "type": "VALUE_1000"
+    },
+    {
+      "x": 698.1222,
+      "y": 375.6111,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0002_planet09",
+      "type": "VALUE_500"
+    },
+    {
+      "x": -1458.468,
+      "y": -1421.5256,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0003_planet09",
+      "type": "VALUE_500"
+    },
+    {
+      "x": -374.8618,
+      "y": -1983.1058,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0004_planet09",
+      "type": "VALUE_500"
+    },
+    {
+      "x": -5.8017216,
+      "y": -399.30737,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0005_planet09",
+      "type": "VALUE_2000"
+    },
+    {
+      "x": -538.60815,
+      "y": -236.4657,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0006_planet09",
+      "type": "VALUE_1000"
+    }
+  ],
   "layerConfigs": [
     {
       "name": "Ice",
@@ -194,6 +255,79 @@
     }
   ],
   "planetRace": {
-    "wayPoints": []
+    "wayPoints": [
+      {
+        "rotationZ": 70.0,
+        "rotationX": 0.0,
+        "x": 675.44965,
+        "y": 499.9884,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 120.0,
+        "rotationX": 0.0,
+        "x": 674.2795,
+        "y": 714.8861,
+        "zOffset": 2.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 70.0,
+        "rotationX": 0.0,
+        "x": 639.9893,
+        "y": 839.59106,
+        "zOffset": 2.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 0.0,
+        "rotationX": 0.0,
+        "x": 709.90393,
+        "y": 885.0399,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 0.0,
+        "rotationX": 0.0,
+        "x": 859.81604,
+        "y": 899.0114,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 0.0,
+        "rotationX": 0.0,
+        "x": 1299.7305,
+        "y": 889.51355,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 0.0,
+        "rotationX": 0.0,
+        "x": 1834.0513,
+        "y": 924.3604,
+        "zOffset": 30.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 80.0,
+        "rotationX": 0.0,
+        "x": 2105.5847,
+        "y": 1010.4106,
+        "zOffset": 2.0,
+        "reached": false,
+        "secondsToReach": 10
+      }
+    ]
   }
 }
