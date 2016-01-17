@@ -74,7 +74,88 @@
       }
     }
   ],
-  "artifacts": [],
+  "artifacts": [
+    {
+      "x": -140.58977,
+      "y": 529.4344,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0001_planet07",
+      "type": "ATTRIBUTE_INERTIA"
+    },
+    {
+      "x": -593.6683,
+      "y": 723.13055,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0002_planet07",
+      "type": "VALUE_200"
+    },
+    {
+      "x": -786.84894,
+      "y": -94.17501,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0003_planet07",
+      "type": "ATTRIBUTE_LANDSLIDE"
+    },
+    {
+      "x": -118.28597,
+      "y": -662.0653,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0004_planet07",
+      "type": "OPERATOR_PLUS"
+    },
+    {
+      "x": 799.0932,
+      "y": -265.62625,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0005_planet07",
+      "type": "VALUE_500"
+    },
+    {
+      "x": 1291.6353,
+      "y": 400.0608,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0006_planet07",
+      "type": "OPERATOR_MINUS"
+    },
+    {
+      "x": 955.7238,
+      "y": -1381.2439,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0007_planet07",
+      "type": "ATTRIBUTE_FUEL_CAPACITY"
+    },
+    {
+      "x": 2938.3623,
+      "y": -1503.2252,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0008_planet07",
+      "type": "VALUE_1000"
+    }
+  ],
   "layerConfigs": [
     {
       "name": "Ice",
