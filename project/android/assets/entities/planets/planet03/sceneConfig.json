@@ -61,7 +61,98 @@
       }
     }
   ],
-  "artifacts": [],
+  "artifacts": [
+    {
+      "x": 1152.1538,
+      "y": 78.85227,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0001_planet03",
+      "type": "ATTRIBUTE_SCAN_RADIUS"
+    },
+    {
+      "x": 1122.6007,
+      "y": 1234.0826,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0002_planet03",
+      "type": "VALUE_100"
+    },
+    {
+      "x": 543.07983,
+      "y": 2757.1738,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0003_planet03",
+      "type": "ATTRIBUTE_LANDSLIDE"
+    },
+    {
+      "x": -464.4446,
+      "y": 3205.5198,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0004_planet03",
+      "type": "VALUE_500"
+    },
+    {
+      "x": -682.7029,
+      "y": 2140.0374,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0005_planet03",
+      "type": "VALUE_200"
+    },
+    {
+      "x": -1042.024,
+      "y": 1310.6648,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0006_planet03",
+      "type": "ATTRIBUTE_INERTIA"
+    },
+    {
+      "x": -1116.3624,
+      "y": 398.97427,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0007_planet03",
+      "type": "OPERATOR_MINUS"
+    },
+    {
+      "x": -812.87775,
+      "y": -2884.9946,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0008_planet03",
+      "type": "VALUE_1000"
+    },
+    {
+      "x": 2362.7214,
+      "y": -4968.132,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0009_planet03",
+      "type": "VALUE_2000"
+    }
+  ],
   "layerConfigs": [
     {
       "name": "Ice",
