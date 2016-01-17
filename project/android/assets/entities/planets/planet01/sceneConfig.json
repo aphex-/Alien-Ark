@@ -63,16 +63,6 @@
   ],
   "artifacts": [
     {
-      "x": 424.02225,
-      "y": -383.58423,
-      "groundOffsetZ": 0.0,
-      "rotationX": 0.0,
-      "rotationY": 0.0,
-      "rotationZ": 0.0,
-      "id": "art0001_planet01",
-      "type": "ATTRIBUTE_FUEL_CAPACITY"
-    },
-    {
       "x": -746.21063,
       "y": -270.19858,
       "groundOffsetZ": 0.0,
@@ -261,6 +251,46 @@
       "rotationZ": 0.0,
       "id": "art0020_planet01",
       "type": "VALUE_2000"
+    },
+    {
+      "x": 633.4778,
+      "y": -463.19247,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0001_planet01",
+      "type": "ATTRIBUTE_FUEL_CAPACITY"
+    },
+    {
+      "x": 690.2591,
+      "y": 76.15341,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0021_planet01",
+      "type": "VALUE_200"
+    },
+    {
+      "x": 546.31793,
+      "y": 380.72595,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0022_planet01",
+      "type": "OPERATOR_PLUS"
+    },
+    {
+      "x": 57.87625,
+      "y": 601.1308,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0023_planet01",
+      "type": "ATTRIBUTE_SPEED"
     }
   ],
   "layerConfigs": [
