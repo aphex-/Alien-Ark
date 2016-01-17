@@ -27,7 +27,7 @@ public class SpaceShipProperties {
 
 	public static final int USER_VALUE_MAX = 9999; // the maximum value for crew member bonus
 
-	public static final int INITIAL_ENGINE_POWER = 4000;
+	public static final int INITIAL_ENGINE_POWER = 8000;
 	public static final int INITIAL_SHIELD_CAPACITY = 9999;
 	public static final int INITIAL_FUEL_CAPACITY = 9999;
 	public static final int INITIAL_LUCK = 200;

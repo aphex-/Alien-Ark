@@ -147,6 +147,26 @@
       "rotationZ": 0.0,
       "id": "art0006_planet04",
       "type": "ATTRIBUTE_SPEED"
+    },
+    {
+      "x": -14.241338,
+      "y": 1064.9374,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0007_planet04",
+      "type": "VALUE_100"
+    },
+    {
+      "x": -867.6391,
+      "y": 937.1038,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0008_planet04",
+      "type": "OPERATOR_MINUS"
     }
   ],
   "layerConfigs": [

@@ -231,6 +231,36 @@
       "rotationZ": 0.0,
       "id": "art0017_planet01",
       "type": "ATTRIBUTE_LANDSLIDE"
+    },
+    {
+      "x": 1540.4426,
+      "y": 84.278854,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0018_planet01",
+      "type": "VALUE_100"
+    },
+    {
+      "x": 3535.3145,
+      "y": 1121.7463,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0019_planet01",
+      "type": "VALUE_500"
+    },
+    {
+      "x": 5560.6084,
+      "y": 3169.0232,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0020_planet01",
+      "type": "VALUE_2000"
     }
   ],
   "layerConfigs": [
