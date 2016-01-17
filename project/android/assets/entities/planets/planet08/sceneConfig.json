@@ -61,7 +61,88 @@
       }
     }
   ],
-  "artifacts": [],
+  "artifacts": [
+    {
+      "x": -1996.9984,
+      "y": 1390.8689,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0001_planet08",
+      "type": "OPERATOR_MINUS"
+    },
+    {
+      "x": -1929.1378,
+      "y": -368.77753,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0002_planet08",
+      "type": "VALUE_500"
+    },
+    {
+      "x": -1142.1444,
+      "y": -1827.6089,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0003_planet08",
+      "type": "OPERATOR_MINUS"
+    },
+    {
+      "x": 563.0631,
+      "y": -1862.6271,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0004_planet08",
+      "type": "ATTRIBUTE_SCAN_RADIUS"
+    },
+    {
+      "x": 1797.0085,
+      "y": -535.55695,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0005_planet08",
+      "type": "VALUE_200"
+    },
+    {
+      "x": 1281.249,
+      "y": 1427.4717,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0006_planet08",
+      "type": "ATTRIBUTE_INERTIA"
+    },
+    {
+      "x": 2176.096,
+      "y": 4946.8105,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0007_planet08",
+      "type": "VALUE_2000"
+    },
+    {
+      "x": -1486.21,
+      "y": -4951.3306,
+      "groundOffsetZ": 0.0,
+      "rotationX": 0.0,
+      "rotationY": 0.0,
+      "rotationZ": 0.0,
+      "id": "art0008_planet08",
+      "type": "OPERATOR_MULTIPLY"
+    }
+  ],
   "layerConfigs": [
     {
       "name": "Ice",
@@ -161,6 +242,115 @@
     }
   ],
   "planetRace": {
-    "wayPoints": []
+    "wayPoints": [
+      {
+        "rotationZ": 30.0,
+        "rotationX": 0.0,
+        "x": 416.8501,
+        "y": 446.16348,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 30.0,
+        "rotationX": 0.0,
+        "x": 506.072,
+        "y": 570.3146,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 90.0,
+        "rotationX": 0.0,
+        "x": 486.64224,
+        "y": 788.8755,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 5
+      },
+      {
+        "rotationZ": -40.0,
+        "rotationX": 0.0,
+        "x": 347.58923,
+        "y": 977.4885,
+        "zOffset": 3.0,
+        "reached": false,
+        "secondsToReach": 5
+      },
+      {
+        "rotationZ": 0.0,
+        "rotationX": 0.0,
+        "x": 150.18198,
+        "y": 1102.2034,
+        "zOffset": 2.0,
+        "reached": false,
+        "secondsToReach": 5
+      },
+      {
+        "rotationZ": 0.0,
+        "rotationX": 0.0,
+        "x": -220.22119,
+        "y": 1254.6366,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 5
+      },
+      {
+        "rotationZ": 0.0,
+        "rotationX": 0.0,
+        "x": -812.558,
+        "y": 1427.9613,
+        "zOffset": 3.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": -30.0,
+        "rotationX": 0.0,
+        "x": -1145.0566,
+        "y": 1629.7202,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": -30.0,
+        "rotationX": 0.0,
+        "x": -1431.0482,
+        "y": 1819.7874,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 5
+      },
+      {
+        "rotationZ": 50.0,
+        "rotationX": 0.0,
+        "x": -1919.9382,
+        "y": 1717.8679,
+        "zOffset": 2.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 40.0,
+        "rotationX": 0.0,
+        "x": -2284.0684,
+        "y": 1538.7417,
+        "zOffset": 0.0,
+        "reached": false,
+        "secondsToReach": 10
+      },
+      {
+        "rotationZ": 60.0,
+        "rotationX": 0.0,
+        "x": -2583.5571,
+        "y": 1370.7046,
+        "zOffset": 5.0,
+        "reached": false,
+        "secondsToReach": 10
+      }
+    ]
   }
 }
